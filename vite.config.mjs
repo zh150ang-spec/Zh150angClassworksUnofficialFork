@@ -43,11 +43,13 @@ export default defineConfig({
       },
       manifest: {
         lang: 'zh-CN',
-        name: 'Classworks作业板',
-        short_name: 'Classworks',
+        id: '7C24F2B3.ClassworksPWA',
+        name: 'Classworks PWA',
+        short_name: 'Classworks PWA',
         description: '记录，查看并同步作业',
         theme_color: '#000000',
         background_color: '#000000',
+        dir: 'ltr',
         display: 'standalone',
         start_url: './',
         edge_side_panel: {
