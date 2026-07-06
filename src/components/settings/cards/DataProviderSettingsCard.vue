@@ -1,16 +1,23 @@
 <template>
-  <settings-card icon="mdi-database-cog" title="数据源设置">
+  <settings-card
+    :icon="ICON.DATABASE_COG"
+    title="数据源设置"
+  >
     <v-list>
-      <!-- 服务器模式设置 -->
       <template
         v-if="
           currentProvider === 'kv-server' ||
-          currentProvider === 'classworkscloud'
+            currentProvider === 'classworkscloud' ||
+            currentProvider === 'dual-cloud' ||
+            currentProvider === 'dual-server'
         "
       >
         <v-list-item>
           <template #prepend>
-            <v-icon class="mr-3" icon="mdi-lan-connect"/>
+            <v-icon
+              class="mr-3"
+              :icon="ICON.LAN_CONNECT"
+            />
           </template>
           <v-list-item-title>检查服务器连接</v-list-item-title>
           <template #append>
@@ -22,64 +29,129 @@
               测试连接
             </v-btn>
           </template>
-        </v-list-item
-        ><!-- 数据迁移，仅对KV本地存储有效 -->
+        </v-list-item>
       </template>
 
-      <!-- 本地存储设置 -->
       <template v-if="currentProvider === 'kv-local'">
         <v-list-item>
           <template #prepend>
-            <v-icon class="mr-3" icon="mdi-database"/>
+            <v-icon
+              class="mr-3"
+              :icon="ICON.DATABASE"
+            />
           </template>
           <v-list-item-title>清除数据库缓存</v-list-item-title>
-          <v-list-item-subtitle
-          >这将清除所有本地数据库中的数据
-          </v-list-item-subtitle
-          >
+          <v-list-item-subtitle>这将清除所有本地数据库中的数据</v-list-item-subtitle>
           <template #append>
-            <v-btn color="error" variant="tonal" @click="confirmClearIndexedDB">
+            <v-btn
+              color="error"
+              variant="tonal"
+              @click="confirmClearIndexedDB"
+            >
               清除
             </v-btn>
           </template>
         </v-list-item>
         <v-list-item>
           <template #prepend>
-            <v-icon class="mr-3" icon="mdi-database-export"/>
+            <v-icon
+              class="mr-3"
+              :icon="ICON.DATABASE_EXPORT"
+            />
           </template>
           <v-list-item-title>导出数据库</v-list-item-title>
           <template #append>
-            <v-btn variant="tonal" @click="exportData"> 导出</v-btn>
+            <v-btn
+              variant="tonal"
+              @click="exportData"
+            >
+              导出
+            </v-btn>
           </template>
         </v-list-item>
       </template>
 
       <v-list-item>
         <template #prepend>
-          <v-icon class="mr-3" icon="mdi-lan-connect"/>
+          <v-icon
+            class="mr-3"
+            :icon="ICON.LAN_CONNECT"
+          />
         </template>
         <v-list-item-title>查看本地缓存</v-list-item-title>
         <template #append>
-          <v-btn to="/cachemanagement" variant="tonal"> 查看</v-btn>
+          <v-btn
+            to="/cachemanagement"
+            variant="tonal"
+          >
+            查看
+          </v-btn>
         </template>
       </v-list-item>
     </v-list>
 
-    <!-- 确认对话框 -->
-    <v-dialog v-model="confirmDialog" max-width="400">
+    <v-dialog
+      v-model="confirmDialog"
+      max-width="400"
+    >
       <v-card>
         <v-card-title>{{ confirmTitle }}</v-card-title>
         <v-card-text>{{ confirmMessage }}</v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="grey" variant="text" @click="confirmDialog = false"
-          >取消
-          </v-btn
+          <v-spacer />
+          <v-btn
+            color="medium-emphasis"
+            variant="text"
+            @click="confirmDialog = false"
           >
-          <v-btn color="error" variant="tonal" @click="handleConfirm"
-          >确认
-          </v-btn
+            取消
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="tonal"
+            @click="handleConfirm"
           >
+            确认
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="showEnableSyncDialog"
+      max-width="400"
+      persistent
+    >
+      <v-card>
+        <v-card-title class="d-flex align-center">
+          <v-icon
+            class="mr-2"
+            color="primary"
+            :icon="ICON.SYNC_CIRCLE"
+          />
+          推荐开启双存储同步
+        </v-card-title>
+        <v-card-text>
+          检测到您已切换到双存储模式，推荐开启后台同步功能以获得更好的体验和稳定性。
+          <br>
+          <br>
+          开启后，系统会自动将本地独有数据同步到云端，确保数据一致性。
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            variant="text"
+            @click="handleEnableSyncDialog(false)"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="elevated"
+            @click="handleEnableSyncDialog(true)"
+          >
+            允许
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -87,10 +159,12 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import SettingsCard from "@/components/SettingsCard.vue";
-import {getSetting} from "@/utils/settings";
+import {getSetting, setSetting, watchSettings} from "@/utils/settings";
 import axios from "axios";
 import {tryWithRotation, isRotationEnabled} from "@/utils/serverRotation";
+import BackgroundSyncService from "@/utils/backgroundSync";
 
 export default {
   name: "DataProviderSettingsCard",
@@ -98,6 +172,7 @@ export default {
 
   data() {
     return {
+      ICON,
       loading: false,
       serverchecktime: {},
       confirmDialog: false,
@@ -106,6 +181,9 @@ export default {
       confirmAction: null,
       machineId: null,
       migrateLoading: false,
+      lastProvider: null,
+      unwatchSettings: null,
+      showEnableSyncDialog: false,
     };
   },
 
@@ -115,21 +193,60 @@ export default {
     },
 
     isKvProvider() {
-      return (
-        this.currentProvider === "kv-local" ||
-        this.currentProvider === "kv-server" ||
-        this.currentProvider === "classworkscloud"
-      );
+      return ['kv-local', 'kv-server', 'classworkscloud', 'dual-cloud', 'dual-server'].includes(this.currentProvider);
+    },
+
+    isDualMode() {
+      return this.currentProvider === 'dual-cloud' || this.currentProvider === 'dual-server';
     },
   },
 
-  async created() {
-    // 如果是KV本地存储，获取机器ID
-
+  created() {
     this.machineId = getSetting("device.uuid");
+    this.lastProvider = this.currentProvider;
+    this.unwatchSettings = watchSettings(() => {
+      this.checkProviderChange();
+    });
+  },
+
+  beforeUnmount() {
+    if (this.unwatchSettings) {
+      this.unwatchSettings();
+    }
   },
 
   methods: {
+    checkProviderChange() {
+      if (this.currentProvider !== this.lastProvider) {
+        const wasDualMode = this.lastProvider === 'dual-cloud' || this.lastProvider === 'dual-server';
+        this.lastProvider = this.currentProvider;
+
+        if (wasDualMode && !this.isDualMode) {
+          if (BackgroundSyncService.isActive()) {
+            BackgroundSyncService.stop();
+          }
+          setSetting('sync.enabled', false);
+          this.$message.warning('已自动关闭双存储同步', '当前不是双存储模式');
+        } else if (!wasDualMode && this.isDualMode) {
+          const syncEnabled = getSetting('sync.enabled') !== false;
+          if (!syncEnabled) {
+            this.showEnableSyncDialog = true;
+          } else {
+            BackgroundSyncService.start();
+          }
+        }
+      }
+    },
+
+    handleEnableSyncDialog(enable) {
+      this.showEnableSyncDialog = false;
+      if (enable) {
+        setSetting('sync.enabled', true);
+        BackgroundSyncService.start();
+        this.$message.success('已开启双存储同步', '数据将自动同步到云端');
+      }
+    },
+
     async checkServerConnection() {
       this.loading = true;
       this.serverchecktime = new Date();

@@ -2,7 +2,7 @@
   <settings-card
     :loading="loading"
     border
-    icon="mdi-book-edit"
+    :icon="ICON.BOOK_EDIT"
     title="作业模板配置"
   >
     <!-- 顶部操作按钮 -->
@@ -22,7 +22,7 @@
           :loading="loading"
           class="mr-2"
           color="primary"
-          prepend-icon="mdi-refresh"
+          :prepend-icon="ICON.REFRESH"
           size="large"
           @click="loadConfig"
         >
@@ -31,7 +31,7 @@
         <v-btn
           :loading="loading"
           color="success"
-          prepend-icon="mdi-content-save"
+          :prepend-icon="ICON.CONTENT_SAVE"
           size="large"
           @click="saveConfig"
         >
@@ -48,13 +48,20 @@
     </div>
 
     <v-row>
-      <v-col cols="12" md="6">
-        <setting-group border icon="mdi-book" title="科目配置">
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <setting-group
+          border
+          :icon="ICON.BOOK_SIMPLE"
+          title="科目配置"
+        >
           <v-list>
             <v-list-item>
               <v-text-field
                 v-model="newSubject"
-                append-inner-icon="mdi-plus"
+                :append-inner-icon="ICON.PLUS"
                 density="comfortable"
                 label="添加新科目"
                 variant="outlined"
@@ -63,8 +70,14 @@
               />
             </v-list-item>
 
-            <v-list-item v-for="subject in subjectList" :key="subject">
-              <v-card border class="w-100 mb-2">
+            <v-list-item
+              v-for="subject in subjectList"
+              :key="subject"
+            >
+              <v-card
+                border
+                class="w-100 mb-2"
+              >
                 <v-card-title class="d-flex align-center">
                   <v-text-field
                     v-model="editedSubjects[subject]"
@@ -74,10 +87,10 @@
                     variant="plain"
                     @blur="updateSubject(subject)"
                   />
-                  <v-spacer/>
+                  <v-spacer />
                   <v-btn
                     color="error"
-                    icon="mdi-delete"
+                    :icon="ICON.DELETE"
                     size="small"
                     variant="text"
                     @click="deleteSubject(subject)"
@@ -86,7 +99,7 @@
                 <v-card-text>
                   <v-text-field
                     v-model="newBookTypes[subject]"
-                    append-inner-icon="mdi-plus"
+                    :append-inner-icon="ICON.PLUS"
                     class="mb-2"
                     density="comfortable"
                     label="添加作业本名称"
@@ -95,17 +108,24 @@
                     @keyup.enter="() => addBookType(subject)"
                   />
 
-                  <v-list border density="compact" rounded>
+                  <v-list
+                    border
+                    density="compact"
+                    rounded
+                  >
                     <v-list-item
                       v-for="(books, bookType) in config.subjects[subject].books"
                       :key="bookType"
                       :title="bookType"
                       @click="openSubjectBookDialog(subject, bookType, books)"
                     >
-                      <template v-slot:prepend>
-                        <v-icon class="mr-2" icon="mdi-book-open-variant"/>
+                      <template #prepend>
+                        <v-icon
+                          class="mr-2"
+                          :icon="ICON.BOOK_OPEN_VARIANT"
+                        />
                       </template>
-                      <template v-slot:append>
+                      <template #append>
                         <v-chip
                           class="mr-2"
                           color="info"
@@ -115,7 +135,7 @@
                         </v-chip>
                         <v-btn
                           color="error"
-                          icon="mdi-delete"
+                          :icon="ICON.DELETE"
                           size="small"
                           variant="text"
                           @click.stop="() => deleteBookType(subject, bookType)"
@@ -130,13 +150,20 @@
         </setting-group>
       </v-col>
 
-      <v-col cols="12" md="6">
-        <setting-group border icon="mdi-cog" title="通用配置">
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <setting-group
+          border
+          :icon="ICON.SETTINGS"
+          title="通用配置"
+        >
           <v-list>
             <v-list-item>
               <v-text-field
                 v-model="newCommonBook"
-                append-inner-icon="mdi-plus"
+                :append-inner-icon="ICON.PLUS"
                 density="comfortable"
                 label="添加作业本名称"
                 variant="outlined"
@@ -146,17 +173,24 @@
             </v-list-item>
 
             <v-list-item>
-              <v-list border density="compact" rounded>
+              <v-list
+                border
+                density="compact"
+                rounded
+              >
                 <v-list-item
                   v-for="(books, bookType) in config.commonSubject.books"
                   :key="bookType"
                   :title="bookType"
                   @click="openSubjectBookDialog('common', bookType, books)"
                 >
-                  <template v-slot:prepend>
-                    <v-icon class="mr-2" icon="mdi-book-multiple"/>
+                  <template #prepend>
+                    <v-icon
+                      class="mr-2"
+                      :icon="ICON.BOOK_MULTIPLE"
+                    />
                   </template>
-                  <template v-slot:append>
+                  <template #append>
                     <v-chip
                       class="mr-2"
                       color="info"
@@ -166,7 +200,7 @@
                     </v-chip>
                     <v-btn
                       color="error"
-                      icon="mdi-delete"
+                      :icon="ICON.DELETE"
                       size="small"
                       variant="text"
                       @click.stop="() => deleteBookType('common', bookType)"
@@ -176,12 +210,12 @@
               </v-list>
             </v-list-item>
 
-            <v-divider class="my-2"/>
+            <v-divider class="my-2" />
 
             <v-list-item>
               <v-text-field
                 v-model="newAction"
-                append-inner-icon="mdi-plus"
+                :append-inner-icon="ICON.PLUS"
                 density="comfortable"
                 label="添加操作"
                 variant="outlined"
@@ -191,17 +225,21 @@
             </v-list-item>
 
             <v-list-item>
-              <v-list border density="compact" rounded>
+              <v-list
+                border
+                density="compact"
+                rounded
+              >
                 <v-list-item
                   v-for="action in config.actions"
                   :key="action"
                   :title="action"
                   @click="openActionDialog(action)"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <v-btn
                       color="error"
-                      icon="mdi-delete"
+                      :icon="ICON.DELETE"
                       size="small"
                       variant="text"
                       @click.stop="removeAction(action)"
@@ -212,13 +250,125 @@
             </v-list-item>
           </v-list>
         </setting-group>
+
+        <setting-group
+          border
+          class="mt-4"
+          :icon="ICON.BOOK_NOTEBOOK"
+          title="作业本模板配置"
+        >
+          <v-list>
+            <v-list-item>
+              <div class="text-body-medium text-medium-emphasis mb-2">
+                配置各科目常用的作业本名称，用于快速添加作业本作业
+              </div>
+            </v-list-item>
+
+            <v-list-item>
+              <v-text-field
+                v-model="newCommonNotebook"
+                :append-inner-icon="ICON.PLUS"
+                density="comfortable"
+                label="添加通用作业本"
+                placeholder="如：练习本、作业本"
+                variant="outlined"
+                @click:append-inner="addCommonNotebook"
+                @keyup.enter="addCommonNotebook"
+              />
+            </v-list-item>
+
+            <v-list-item v-if="config.commonNotebooks?.length">
+              <v-chip
+                v-for="notebook in config.commonNotebooks"
+                :key="notebook"
+                class="mr-2 mb-2"
+                closable
+                color="primary"
+                variant="tonal"
+                @click:close="removeCommonNotebook(notebook)"
+              >
+                {{ notebook }}
+              </v-chip>
+            </v-list-item>
+
+            <v-divider class="my-2" />
+
+            <v-list-item
+              v-for="(notebooks, subject) in config.notebookTemplates"
+              :key="subject"
+            >
+              <v-card
+                border
+                class="w-100 mb-2"
+              >
+                <v-card-title class="d-flex align-center py-2">
+                  <v-icon
+                    class="mr-2"
+                    color="primary"
+                    size="small"
+                  >
+                    mdi-book
+                  </v-icon>
+                  {{ subject }}
+                  <v-spacer />
+                  <v-btn
+                    color="error"
+                    :icon="ICON.DELETE"
+                    size="small"
+                    variant="text"
+                    @click="removeNotebookSubject(subject)"
+                  />
+                </v-card-title>
+                <v-card-text class="pt-0">
+                  <v-text-field
+                    v-model="newSubjectNotebook[subject]"
+                    :append-inner-icon="ICON.PLUS"
+                    class="mb-2"
+                    density="comfortable"
+                    label="添加科目作业本"
+                    variant="outlined"
+                    @click:append-inner="() => addSubjectNotebook(subject)"
+                    @keyup.enter="() => addSubjectNotebook(subject)"
+                  />
+                  <v-chip
+                    v-for="notebook in notebooks.notebooks"
+                    :key="notebook"
+                    class="mr-2 mb-2"
+                    closable
+                    color="success"
+                    variant="tonal"
+                    @click:close="removeSubjectNotebook(subject, notebook)"
+                  >
+                    {{ notebook }}
+                  </v-chip>
+                </v-card-text>
+              </v-card>
+            </v-list-item>
+
+            <v-list-item>
+              <v-text-field
+                v-model="newNotebookSubject"
+                :append-inner-icon="ICON.PLUS"
+                density="comfortable"
+                label="添加新科目配置"
+                placeholder="输入科目名称"
+                variant="outlined"
+                @click:append-inner="addNotebookSubject"
+                @keyup.enter="addNotebookSubject"
+              />
+            </v-list-item>
+          </v-list>
+        </setting-group>
       </v-col>
     </v-row>
 
     <!-- 编辑弹框 -->
-    <v-dialog v-model="dialog.show" max-width="600px">
+    <v-dialog
+      v-model="dialog.show"
+      max-width="600px"
+    >
       <v-card>
-        <v-card-title class="text-h5 pa-4">
+        <v-card-title class="text-headline-medium pa-4">
           {{ dialog.title }}
         </v-card-title>
 
@@ -235,22 +385,43 @@
                 />
               </v-col>
 
-              <v-col v-if="dialog.editedItem.type === 'subjectBook'" cols="12">
-                <div class="text-subtitle-2 mb-2">所属科目</div>
-                <v-chip color="primary">{{ dialog.editedItem.subject }}</v-chip>
+              <v-col
+                v-if="dialog.editedItem.type === 'subjectBook'"
+                cols="12"
+              >
+                <div class="text-label-large mb-2">
+                  所属科目
+                </div>
+                <v-chip color="primary">
+                  {{ dialog.editedItem.subject }}
+                </v-chip>
               </v-col>
 
-              <v-col v-if="['subjectBook', 'commonBook'].includes(dialog.editedItem.type)" cols="12">
+              <v-col
+                v-if="['subjectBook', 'commonBook'].includes(dialog.editedItem.type)"
+                cols="12"
+              >
                 <v-card variant="outlined">
-                  <v-card-title class="text-subtitle-1 py-2">需完成部分</v-card-title>
+                  <v-card-title class="text-body-large py-2">
+                    需完成部分
+                  </v-card-title>
                   <v-card-text class="pt-0">
-                    <v-list border class="mb-2" density="compact" rounded>
+                    <v-list
+                      border
+                      class="mb-2"
+                      density="compact"
+                      rounded
+                    >
                       <v-list-item
                         v-for="(task, index) in dialog.editedItem.tasks"
                         :key="index"
                       >
-                        <template v-slot:prepend>
-                          <v-icon class="mr-2" icon="mdi-checkbox-blank-circle-outline" size="small"/>
+                        <template #prepend>
+                          <v-icon
+                            start
+                            :icon="ICON.BOOK_CHECKBOX_BLANK_OUTLINE"
+                            size="small"
+                          />
                         </template>
                         <v-text-field
                           v-model="dialog.editedItem.tasks[index]"
@@ -258,10 +429,10 @@
                           hide-details
                           variant="plain"
                         />
-                        <template v-slot:append>
+                        <template #append>
                           <v-btn
                             color="error"
-                            icon="mdi-delete"
+                            :icon="ICON.DELETE"
                             size="small"
                             variant="text"
                             @click="removeTask(index)"
@@ -271,7 +442,7 @@
                     </v-list>
                     <v-text-field
                       v-model="newTask"
-                      append-inner-icon="mdi-plus"
+                      :append-inner-icon="ICON.PLUS"
                       class="mt-2"
                       density="comfortable"
                       label="添加需完成部分"
@@ -287,14 +458,7 @@
         </v-card-text>
 
         <v-card-actions class="pa-4">
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            variant="elevated"
-            @click="saveDialog"
-          >
-            关闭
-          </v-btn>
+          <v-spacer />
           <v-btn
             color="error"
             variant="text"
@@ -302,22 +466,21 @@
           >
             取消
           </v-btn>
+          <v-btn
+            color="primary"
+            variant="elevated"
+            @click="saveDialog"
+          >
+            保存
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!-- 底部保存提示 -->
-    <v-snackbar
-      v-model="showSnackbar"
-      :color="snackbarColor"
-      :timeout="3000"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
   </settings-card>
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import {reactive} from 'vue';
 import SettingsCard from '@/components/SettingsCard.vue';
 import SettingGroup from '@/components/settings/SettingGroup.vue';
@@ -350,7 +513,13 @@ const DEFAULT_CONFIG = {
       "假期作业": ["必做题", "选做题"]
     }
   },
-  actions: ["写完", "下一课", "不交", "明天交"]
+  actions: ["写完", "下一课", "不交", "明天交"],
+  notebookTemplates: {
+    "语文": { notebooks: ["练习本", "作文本", "听写本"] },
+    "数学": { notebooks: ["练习本", "习题本"] },
+    "英语": { notebooks: ["练习本", "听写本", "单词本"] }
+  },
+  commonNotebooks: ["练习本", "作业本", "习题本"]
 };
 
 export default {
@@ -363,6 +532,7 @@ export default {
 
   data() {
     return {
+      ICON,
       loading: false,
       error: null,
       config: reactive(JSON.parse(JSON.stringify(DEFAULT_CONFIG))),
@@ -375,9 +545,9 @@ export default {
       editedBookTypes: {},
       newBookTypes: {},
       newBooks: {},
-      showSnackbar: false,
-      snackbarText: '',
-      snackbarColor: 'success',
+      newCommonNotebook: '',
+      newNotebookSubject: '',
+      newSubjectNotebook: {},
       isNewConfig: true,
       dialog: {
         show: false,
@@ -415,24 +585,20 @@ export default {
       this.loading = true;
       try {
         const response = await dataProvider.loadData("classworks-config-homework-template");
-        if (response) {
-          // 数据存在且加载成功
+        if (response && response.success !== false) {
           const config = response;
           Object.assign(this.config, config);
           this.originalConfig = JSON.parse(JSON.stringify(config));
           this.isNewConfig = false;
           this.showMessage('配置已加载', 'success');
-        } else if (response.error?.code === 'NOT_FOUND') {
-          // 数据不存在，使用默认配置
+        } else if (response?.error?.code === 'NOT_FOUND') {
           this.showMessage('使用默认配置', 'info');
           this.isNewConfig = true;
         } else {
-          // 其他错误，继续使用当前配置
-          const errorMsg = response.error?.message || '加载失败';
+          const errorMsg = response?.error?.message || '加载失败';
           this.showMessage(`加载失败: ${errorMsg}，可继续编辑当前配置`, 'warning');
         }
       } catch (error) {
-        // 发生错误，继续使用当前配置
         console.error('Failed to load config:', error);
         this.showMessage('加载失败，可继续编辑当前配置', 'warning');
       }
@@ -458,9 +624,15 @@ export default {
     },
 
     showMessage(text, color = 'success') {
-      this.snackbarText = text;
-      this.snackbarColor = color;
-      this.showSnackbar = true;
+      if (color === 'success') {
+        this.$message?.success(text);
+      } else if (color === 'error') {
+        this.$message?.error(text);
+      } else if (color === 'warning') {
+        this.$message?.warning(text);
+      } else {
+        this.$message?.info(text);
+      }
     },
 
     addSubject() {
@@ -678,6 +850,61 @@ export default {
         }
       };
       this.newTask = '';
+    },
+
+    addCommonNotebook() {
+      if (!this.newCommonNotebook) return;
+      if (!this.config.commonNotebooks) {
+        this.config.commonNotebooks = [];
+      }
+      if (!this.config.commonNotebooks.includes(this.newCommonNotebook)) {
+        this.config.commonNotebooks.push(this.newCommonNotebook);
+      }
+      this.newCommonNotebook = '';
+    },
+
+    removeCommonNotebook(notebook) {
+      const index = this.config.commonNotebooks.indexOf(notebook);
+      if (index > -1) {
+        this.config.commonNotebooks.splice(index, 1);
+      }
+    },
+
+    addNotebookSubject() {
+      if (!this.newNotebookSubject) return;
+      if (!this.config.notebookTemplates) {
+        this.config.notebookTemplates = {};
+      }
+      if (!this.config.notebookTemplates[this.newNotebookSubject]) {
+        this.config.notebookTemplates[this.newNotebookSubject] = { notebooks: [] };
+      }
+      this.newNotebookSubject = '';
+    },
+
+    removeNotebookSubject(subject) {
+      delete this.config.notebookTemplates[subject];
+    },
+
+    addSubjectNotebook(subject) {
+      const notebook = this.newSubjectNotebook[subject];
+      if (!notebook) return;
+      if (!this.config.notebookTemplates[subject]) {
+        this.config.notebookTemplates[subject] = { notebooks: [] };
+      }
+      if (!this.config.notebookTemplates[subject].notebooks.includes(notebook)) {
+        this.config.notebookTemplates[subject].notebooks.push(notebook);
+      }
+      this.newSubjectNotebook[subject] = '';
+    },
+
+    removeSubjectNotebook(subject, notebook) {
+      const notebooks = this.config.notebookTemplates[subject]?.notebooks;
+      if (notebooks) {
+        const index = notebooks.indexOf(notebook);
+        if (index > -1) {
+          notebooks.splice(index, 1);
+        }
+      }
     }
   }
 };

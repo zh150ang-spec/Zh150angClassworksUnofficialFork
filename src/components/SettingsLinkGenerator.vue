@@ -1,45 +1,64 @@
 <template>
   <div>
     <!-- 统一链接生成器卡片 -->
-    <v-card border class="unified-link-generator">
-      <v-card-title class="text-h6">
-        <v-icon class="mr-2" icon="mdi-link-variant" start/>
+    <v-card
+      border
+      class="unified-link-generator"
+    >
+      <v-card-title class="text-headline-small">
+        <v-icon
+          class="mr-2"
+          :icon="ICON.LINK_VARIANT"
+          start
+        />
         统一链接生成器
       </v-card-title>
 
       <v-card-text>
-        <div class="text-body-2 text-medium-emphasis mb-4">
+        <div class="text-body-medium text-medium-emphasis mb-4">
           生成包含预配置认证信息和设置的统一链接。可以同时预配置设备认证和应用设置。
         </div>
 
         <!-- 预配置认证信息部分 -->
-        <v-card class="mb-4" variant="tonal">
-          <v-card-title class="text-subtitle-1">
-            <v-icon start>mdi-account-key</v-icon>
+        <v-card
+          class="mb-4"
+          variant="tonal"
+        >
+          <v-card-title class="text-body-large">
+            <v-icon
+              :icon="ICON.ACCOUNT_KEY"
+              start
+            />
             预配置认证信息
           </v-card-title>
 
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col
+                cols="12"
+                md="6"
+              >
                 <v-text-field
                   v-model="preconfigForm.namespace"
                   hint="设备的命名空间标识符"
                   label="命名空间"
                   persistent-hint
                   placeholder="例如: classroom-001"
-                  prepend-inner-icon="mdi-identifier"
+                  :prepend-inner-icon="ICON.IDENTIFIER"
                   variant="outlined"
                 />
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col
+                cols="12"
+                md="6"
+              >
                 <v-text-field
                   v-model="preconfigForm.authCode"
                   hint="留空则需要用户手动输入"
                   label="认证码"
                   persistent-hint
                   placeholder="设备认证码（可选）"
-                  prepend-inner-icon="mdi-lock-outline"
+                  :prepend-inner-icon="ICON.LOCK_OUTLINE"
                   variant="outlined"
                 />
               </v-col>
@@ -64,9 +83,18 @@
               type="info"
               variant="tonal"
             >
-              <div class="text-subtitle-2 mb-2">预配置信息：</div>
-              <v-chip class="mr-2 mb-1" size="small">
-                <v-icon size="small" start>mdi-identifier</v-icon>
+              <div class="text-label-large mb-2">
+                预配置信息：
+              </div>
+              <v-chip
+                class="mr-2 mb-1"
+                size="small"
+              >
+                <v-icon
+                  :icon="ICON.IDENTIFIER"
+                  size="small"
+                  start
+                />
                 命名空间: {{ preconfigForm.namespace }}
               </v-chip>
               <v-chip
@@ -75,12 +103,25 @@
                 color="warning"
                 size="small"
               >
-                <v-icon size="small" start>mdi-lock</v-icon>
+                <v-icon
+                  :icon="ICON.LOCK"
+                  size="small"
+                  start
+                />
                 认证码: {{ preconfigForm.authCode.length > 8 ? preconfigForm.authCode.substring(0, 8) + "..." :
-                preconfigForm.authCode }}
+                  preconfigForm.authCode }}
               </v-chip>
-              <v-chip v-else class="mr-2 mb-1" color="grey" size="small">
-                <v-icon size="small" start>mdi-lock-open</v-icon>
+              <v-chip
+                v-else
+                class="mr-2 mb-1"
+                color="medium-emphasis"
+                size="small"
+              >
+                <v-icon
+                  :icon="ICON.LOCK_OPEN"
+                  size="small"
+                  start
+                />
                 无认证码
               </v-chip>
               <v-chip
@@ -88,8 +129,12 @@
                 class="mr-2 mb-1"
                 size="small"
               >
-                <v-icon size="small" start>{{
-                  preconfigForm.autoExecute ? "mdi-play-circle" : "mdi-hand-back-left"
+                <v-icon
+                  size="small"
+                  start
+                >
+                  {{
+                    preconfigForm.autoExecute ? "mdi-play-circle" : "mdi-hand-back-left"
                   }}
                 </v-icon>
                 {{ preconfigForm.autoExecute ? "自动认证" : "手动认证" }}
@@ -99,14 +144,20 @@
         </v-card>
 
         <!-- 设置分享部分 -->
-        <v-card class="mb-4" variant="tonal">
-          <v-card-title class="text-subtitle-1">
-            <v-icon start>mdi-cog-transfer</v-icon>
+        <v-card
+          class="mb-4"
+          variant="tonal"
+        >
+          <v-card-title class="text-body-large">
+            <v-icon
+              :icon="ICON.COG_TRANSFER"
+              start
+            />
             设置分享（可选）
           </v-card-title>
 
           <v-card-text>
-            <div class="text-body-2 text-medium-emphasis mb-3">
+            <div class="text-body-medium text-medium-emphasis mb-3">
               选择需要包含在链接中的设置项。如果不选择任何设置，将只生成预配置认证链接。
             </div>
 
@@ -114,7 +165,7 @@
             <div class="d-flex mb-3 gap-2 flex-wrap">
               <v-btn
                 color="primary"
-                prepend-icon="mdi-server-network"
+                :prepend-icon="ICON.SERVER_NETWORK"
                 size="small"
                 variant="tonal"
                 @click="selectDataSourceSettings"
@@ -123,7 +174,7 @@
               </v-btn>
               <v-btn
                 color="primary"
-                prepend-icon="mdi-compare"
+                :prepend-icon="ICON.COMPARE"
                 size="small"
                 variant="tonal"
                 @click="selectChangedSettings"
@@ -132,7 +183,7 @@
               </v-btn>
               <v-btn
                 color="success"
-                prepend-icon="mdi-select-all"
+                :prepend-icon="ICON.SELECT_ALL"
                 size="small"
                 variant="tonal"
                 @click="selectAll"
@@ -141,7 +192,7 @@
               </v-btn>
               <v-btn
                 color="error"
-                prepend-icon="mdi-select-remove"
+                :prepend-icon="ICON.SELECT_REMOVE"
                 size="small"
                 variant="tonal"
                 @click="resetSelection"
@@ -152,7 +203,10 @@
 
             <!-- 选择摘要 -->
             <div class="d-flex align-center mb-3 flex-wrap gap-2">
-              <v-chip class="mr-2" color="primary">
+              <v-chip
+                class="mr-2"
+                color="primary"
+              >
                 已选 {{ selectedItems.length }} 项设置
               </v-chip>
 
@@ -168,7 +222,7 @@
                 </v-chip>
                 <v-chip
                   v-if="selectedItems.length > 3"
-                  color="grey"
+                  color="medium-emphasis"
                   size="small"
                   variant="text"
                 >
@@ -183,7 +237,9 @@
                 <v-expansion-panel-title>
                   <template #default="{ expanded }">
                     <div class="d-flex align-center">
-                      <v-icon class="mr-2">{{ expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                      <v-icon class="mr-2">
+                        {{ expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                      </v-icon>
                       显示设置列表详情
                     </div>
                   </template>
@@ -196,7 +252,7 @@
                     clearable
                     hide-details
                     label="搜索设置"
-                    prepend-inner-icon="mdi-magnify"
+                    :prepend-inner-icon="ICON.SEARCH"
                     single-line
                   />
 
@@ -216,8 +272,8 @@
                       <div class="d-flex align-center">
                         <v-icon
                           :icon="item.icon"
-                          class="mr-2"
                           size="small"
+                          start
                         />
                         {{ item.description }}
                         <v-chip
@@ -242,7 +298,7 @@
                     </template>
 
                     <template #[`item.key`]="{ item }">
-                      <span class="text-caption text-grey">{{ item.key }}</span>
+                      <span class="text-body-small text-medium-emphasis">{{ item.key }}</span>
                     </template>
 
                     <template #[`item.isChanged`]="{ item }">
@@ -261,9 +317,15 @@
         </v-card>
 
         <!-- 链接生成和操作部分 -->
-        <v-card class="mb-4" variant="outlined">
-          <v-card-title class="text-subtitle-1">
-            <v-icon start>mdi-link</v-icon>
+        <v-card
+          class="mb-4"
+          variant="outlined"
+        >
+          <v-card-title class="text-body-large">
+            <v-icon
+              :icon="ICON.LINK"
+              start
+            />
             生成的统一链接
           </v-card-title>
 
@@ -273,7 +335,7 @@
               <v-btn
                 :disabled="!preconfigForm.namespace.trim()"
                 color="primary"
-                prepend-icon="mdi-auto-fix"
+                :prepend-icon="ICON.AUTO_FIX"
                 variant="flat"
                 @click="generateUnifiedLink"
               >
@@ -282,7 +344,7 @@
               <v-btn
                 :disabled="!unifiedLink"
                 color="success"
-                prepend-icon="mdi-test-tube"
+                :prepend-icon="ICON.TEST_TUBE"
                 variant="tonal"
                 @click="openTestLink"
               >
@@ -290,7 +352,7 @@
               </v-btn>
               <v-btn
                 color="error"
-                prepend-icon="mdi-delete"
+                :prepend-icon="ICON.DELETE"
                 variant="tonal"
                 @click="clearAll"
               >
@@ -317,10 +379,19 @@
               type="success"
               variant="tonal"
             >
-              <div class="text-subtitle-2 mb-2">链接包含内容：</div>
+              <div class="text-label-large mb-2">
+                链接包含内容：
+              </div>
               <div class="d-flex flex-wrap gap-1">
-                <v-chip color="primary" size="small">
-                  <v-icon size="small" start>mdi-account-key</v-icon>
+                <v-chip
+                  color="primary"
+                  size="small"
+                >
+                  <v-icon
+                    :icon="ICON.ACCOUNT_KEY"
+                    size="small"
+                    start
+                  />
                   预配置认证
                 </v-chip>
                 <v-chip
@@ -328,11 +399,23 @@
                   color="secondary"
                   size="small"
                 >
-                  <v-icon size="small" start>mdi-cog</v-icon>
+                  <v-icon
+                    :icon="ICON.SETTINGS"
+                    size="small"
+                    start
+                  />
                   {{ selectedItems.length }} 项设置
                 </v-chip>
-                <v-chip v-else color="grey" size="small">
-                  <v-icon size="small" start>mdi-cog-off</v-icon>
+                <v-chip
+                  v-else
+                  color="medium-emphasis"
+                  size="small"
+                >
+                  <v-icon
+                    :icon="ICON.COG_OFF"
+                    size="small"
+                    start
+                  />
                   无额外设置
                 </v-chip>
               </div>
@@ -341,9 +424,19 @@
         </v-card>
 
         <!-- 安全提醒 -->
-        <v-alert type="warning" variant="tonal">
-          <div class="text-subtitle-2 mb-2">⚠️ 安全提醒</div>
-          <ul class="text-body-2 pl-4">
+        <v-alert
+          type="warning"
+          variant="tonal"
+        >
+          <div class="d-flex align-center mb-2">
+            <v-icon
+              :icon="ICON.WARNING"
+              color="warning"
+              start
+            />
+            <span>安全提醒</span>
+          </div>
+          <ul class="text-body-medium pl-4">
             <li>认证码和设置信息会在URL中传输，请谨慎分发</li>
             <li>建议仅在受信任的网络环境中使用</li>
             <li>生产环境建议使用HTTPS协议</li>
@@ -356,10 +449,12 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import {
   exportSettingsAsKeyValue,
   settingsDefinitions,
 } from "@/utils/settings";
+import { encodeConfigToBase64Url, isSensitiveKey } from "@/utils/urlConfigCodec";
 
 /**
  * 设置链接生成器组件
@@ -374,6 +469,7 @@ export default {
 
   data() {
     return {
+      ICON,
       // 设置分享相关
       selectedItems: [],
       generatedLink: "",
@@ -429,7 +525,7 @@ export default {
           key: key,
           description: definition.description || key,
           value: currentSettings[key],
-          icon: definition.icon || "mdi-cog",
+          icon: definition.icon || ICON.SETTINGS,
           isChanged: isChanged,
           defaultValue: definition.default,
         });
@@ -509,6 +605,45 @@ export default {
     },
   },
 
+  watch: {
+    // 监听选择变化，自动生成统一链接
+    selectedItems: {
+      handler() {
+        if (this.preconfigForm.namespace.trim()) {
+          this.generateUnifiedLink();
+        }
+      },
+      deep: true,
+    },
+
+    // 监听预配置表单变化，自动生成统一链接
+    "preconfigForm.namespace": {
+      handler() {
+        if (this.preconfigForm.namespace.trim()) {
+          this.generateUnifiedLink();
+        } else {
+          this.unifiedLink = "";
+        }
+      },
+    },
+
+    "preconfigForm.authCode": {
+      handler() {
+        if (this.preconfigForm.namespace.trim()) {
+          this.generateUnifiedLink();
+        }
+      },
+    },
+
+    "preconfigForm.autoExecute": {
+      handler() {
+        if (this.preconfigForm.namespace.trim()) {
+          this.generateUnifiedLink();
+        }
+      },
+    },
+  },
+
   methods: {
     /**
      * 处理表格选择变化
@@ -542,14 +677,7 @@ export default {
 
       try {
         // 转换为JSON并进行base64编码
-        const jsonString = JSON.stringify(configObj);
-        const utf8Encoder = new TextEncoder();
-        const utf8Bytes = utf8Encoder.encode(jsonString);
-        const base64String = btoa(
-          Array.from(utf8Bytes)
-            .map((byte) => String.fromCharCode(byte))
-            .join("")
-        );
+        const base64String = encodeConfigToBase64Url(configObj);
 
         // 构建查询参数
         const queryParams = {config: base64String};
@@ -614,13 +742,13 @@ export default {
     },
 
     /**
-     * 选择数据源相关设置（默认排除 server.kvToken）
+     * 选择数据源相关设置（默认排除敏感配置项）
      */
     selectDataSourceSettings() {
       const dataSourceKeys = this.settingItems
         .filter((item) =>
           item.key.startsWith("server.") &&
-          item.key !== "server.kvToken" // 默认排除敏感的Token
+          !isSensitiveKey(item.key) // 默认排除敏感配置项
         )
         .map((item) => item.key);
 
@@ -629,13 +757,13 @@ export default {
     },
 
     /**
-     * 选择已修改的设置（默认排除 server.kvToken）
+     * 选择已修改的设置（默认排除敏感配置项）
      */
     selectChangedSettings() {
       const changedKeys = this.settingItems
         .filter((item) =>
           item.isChanged &&
-          item.key !== "server.kvToken" // 默认排除敏感的Token
+          !isSensitiveKey(item.key) // 默认排除敏感配置项
         )
         .map((item) => item.key);
 
@@ -708,14 +836,7 @@ export default {
           }
 
           // 转换为JSON并进行base64编码
-          const jsonString = JSON.stringify(configObj);
-          const utf8Encoder = new TextEncoder();
-          const utf8Bytes = utf8Encoder.encode(jsonString);
-          const base64String = btoa(
-            Array.from(utf8Bytes)
-              .map((byte) => String.fromCharCode(byte))
-              .join("")
-          );
+          const base64String = encodeConfigToBase64Url(configObj);
 
           params.append("config", base64String);
         }
@@ -780,45 +901,6 @@ export default {
       this.unifiedLink = "";
       this.generatedLink = "";
       this.linkCopied = false;
-    },
-  },
-
-  watch: {
-    // 监听选择变化，自动生成统一链接
-    selectedItems: {
-      handler() {
-        if (this.preconfigForm.namespace.trim()) {
-          this.generateUnifiedLink();
-        }
-      },
-      deep: true,
-    },
-
-    // 监听预配置表单变化，自动生成统一链接
-    "preconfigForm.namespace": {
-      handler() {
-        if (this.preconfigForm.namespace.trim()) {
-          this.generateUnifiedLink();
-        } else {
-          this.unifiedLink = "";
-        }
-      },
-    },
-
-    "preconfigForm.authCode": {
-      handler() {
-        if (this.preconfigForm.namespace.trim()) {
-          this.generateUnifiedLink();
-        }
-      },
-    },
-
-    "preconfigForm.autoExecute": {
-      handler() {
-        if (this.preconfigForm.namespace.trim()) {
-          this.generateUnifiedLink();
-        }
-      },
     },
   },
 };

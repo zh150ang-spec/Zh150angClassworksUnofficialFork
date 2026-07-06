@@ -1,30 +1,47 @@
 <template>
   <div class="settings-explorer">
-
-
     <div>
-      <v-text-field v-model="searchQuery" class="mb-4" clearable density="comfortable" label="搜索设置"
-                    prepend-inner-icon="mdi-magnify" variant="outlined"/>
+      <v-text-field
+        v-model="searchQuery"
+        class="mb-4"
+        clearable
+        density="comfortable"
+        label="搜索设置"
+        :prepend-inner-icon="ICON.SEARCH"
+        variant="outlined"
+      />
 
 
       <v-list>
-        <div v-for="setting in allSettings" :key="setting.key">
-          <setting-item :key="setting.key" :disabled="setting.requireDeveloper && !isDeveloperMode"
-                        :setting-key="setting.key" @error="onSettingError"
-                        @update="onSettingUpdate"/>
-          <v-divider class="my-2"/>
+        <div
+          v-for="setting in allSettings"
+          :key="setting.key"
+        >
+          <setting-item
+            :key="setting.key"
+            :disabled="setting.requireDeveloper && !isDeveloperMode"
+            :setting-key="setting.key"
+            @error="onSettingError"
+            @update="onSettingUpdate"
+          />
+          <v-divider class="my-2" />
         </div>
       </v-list>
       <v-card border>
-        <v-card-title class="text-subtitle-1">当前配置</v-card-title>
+        <v-card-title class="text-body-large">
+          当前配置
+        </v-card-title>
         <v-card-text>
           <pre class="settings-json">{{ formattedSettings }}</pre>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn @click="copySettingsToClipboard">
             复制到剪贴板
-            <v-icon right>mdi-content-copy</v-icon>
+            <v-icon
+              end
+              :icon="ICON.CONTENT_COPY"
+            />
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -33,6 +50,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import {getSetting, settingsDefinitions, exportSettingsAsKeyValue, watchSettings} from '@/utils/settings';
 import SettingItem from './SettingItem.vue';
 
@@ -42,9 +60,11 @@ export default {
   components: {
     SettingItem
   },
+  emits: ['update', 'error', 'message'],
 
   data() {
     return {
+      ICON,
       searchQuery: '',
       currentSettings: {},
       unwatchFunction: null,
@@ -133,17 +153,17 @@ export default {
 }
 
 .settings-json {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-fill-soft);
   padding: 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   overflow-x: auto;
-  font-family: monospace;
+  font-family: var(--font-mono);
   white-space: pre-wrap;
   max-height: 300px;
   overflow-y: auto;
 }
 
 .v-theme--dark .settings-json {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-fill-soft);
 }
 </style>

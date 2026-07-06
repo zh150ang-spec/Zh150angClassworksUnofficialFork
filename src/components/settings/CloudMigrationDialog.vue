@@ -1,17 +1,33 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600" scrollable>
+  <v-dialog
+    v-model="dialog"
+    max-width="600"
+    scrollable
+  >
     <v-card>
       <v-card-title>迁移到云端</v-card-title>
       <v-card-text style="height: 400px;">
-        <div v-if="loading" class="d-flex justify-center align-center fill-height">
-          <v-progress-circular indeterminate color="primary"></v-progress-circular>
+        <div
+          v-if="loading"
+          class="d-flex justify-center align-center fill-height"
+        >
+          <v-progress-circular
+            indeterminate
+            color="primary"
+          />
         </div>
-        <div v-else-if="keys.length === 0" class="d-flex justify-center align-center fill-height">
+        <div
+          v-else-if="keys.length === 0"
+          class="d-flex justify-center align-center fill-height"
+        >
           没有找到本地数据
         </div>
         <div v-else>
           <!-- Category Selection -->
-          <v-list select-strategy="classic" class="mb-4">
+          <v-list
+            select-strategy="classic"
+            class="mb-4"
+          >
             <v-list-subheader>选择数据类型</v-list-subheader>
 
             <v-list-item
@@ -19,32 +35,38 @@
               :key="category.id"
               @click="toggleCategory(category)"
             >
-              <template v-slot:prepend>
+              <template #prepend>
                 <v-checkbox-btn
                   :model-value="getCategoryState(category)"
                   :indeterminate="getCategoryIndeterminate(category)"
                   @click.stop="toggleCategory(category)"
-                ></v-checkbox-btn>
+                />
               </template>
               <v-list-item-title>{{ category.label }}</v-list-item-title>
               <v-list-item-subtitle>{{ category.description }} ({{ getCategoryCount(category) }} 项)</v-list-item-subtitle>
             </v-list-item>
           </v-list>
 
-          <v-divider class="mb-4"></v-divider>
+          <v-divider class="mb-4" />
 
           <!-- Individual Keys Expansion -->
           <v-expansion-panels>
             <v-expansion-panel title="详细数据列表">
               <v-expansion-panel-text>
-                <v-list select-strategy="classic" density="compact">
+                <v-list
+                  select-strategy="classic"
+                  density="compact"
+                >
                   <v-list-item
                     v-for="key in keys"
                     :key="key"
                     :value="key"
                   >
-                    <template v-slot:prepend>
-                      <v-checkbox-btn v-model="selectedKeys" :value="key"></v-checkbox-btn>
+                    <template #prepend>
+                      <v-checkbox-btn
+                        v-model="selectedKeys"
+                        :value="key"
+                      />
                     </template>
                     <v-list-item-title>{{ key }}</v-list-item-title>
                   </v-list-item>
@@ -54,14 +76,24 @@
           </v-expansion-panels>
         </div>
       </v-card-text>
-      <v-divider></v-divider>
+      <v-divider />
       <v-card-actions>
-        <div class="text-caption ml-4 text-medium-emphasis">
+        <div class="text-body-small ml-4 text-medium-emphasis">
           已选择 {{ selectedKeys.length }} 项
         </div>
-        <v-spacer></v-spacer>
-        <v-btn variant="text" @click="dialog = false">取消</v-btn>
-        <v-btn color="primary" @click="migrate" :loading="migrating" :disabled="selectedKeys.length === 0">
+        <v-spacer />
+        <v-btn
+          variant="text"
+          @click="dialog = false"
+        >
+          取消
+        </v-btn>
+        <v-btn
+          color="primary"
+          :loading="migrating"
+          :disabled="selectedKeys.length === 0"
+          @click="migrate"
+        >
           开始迁移
         </v-btn>
       </v-card-actions>
@@ -69,7 +101,10 @@
   </v-dialog>
 
   <!-- Result Dialog -->
-  <v-dialog v-model="resultDialog" max-width="500">
+  <v-dialog
+    v-model="resultDialog"
+    max-width="500"
+  >
     <v-card>
       <v-card-title>迁移结果</v-card-title>
       <v-card-text>
@@ -79,12 +114,19 @@
           <p>失败: {{ result.summary.failed }}</p>
         </div>
         <div v-else-if="error">
-          <p class="text-error">{{ error }}</p>
+          <p class="text-error">
+            {{ error }}
+          </p>
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="resultDialog = false">关闭</v-btn>
+        <v-spacer />
+        <v-btn
+          color="primary"
+          @click="resultDialog = false"
+        >
+          关闭
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -94,6 +136,7 @@
 import { ref, watch, computed } from 'vue';
 import { kvLocalProvider } from '@/utils/providers/kvLocalProvider';
 import { getSetting } from '@/utils/settings';
+import { getEffectiveServerUrl } from '@/utils/serverRotation';
 import axios from '@/axios/axios';
 
 const props = defineProps({
@@ -152,7 +195,7 @@ watch(dialog, (val) => {
 const loadKeys = async () => {
   loading.value = true;
   try {
-    const res = await kvLocalProvider.loadKeys({ limit: 1000 }); // Load many keys
+    const res = await kvLocalProvider.loadKeys({ limit: 100000 }); // 加载全部本地键用于迁移选择
     keys.value = res.keys || [];
     selectedKeys.value = [];
   } catch (e) {
@@ -247,7 +290,7 @@ const migrate = async () => {
       }
     }
 
-    const serverUrl = getSetting("server.domain");
+    const serverUrl = getEffectiveServerUrl();
     const token = getSetting("server.kvToken");
 
     if (!serverUrl || !token) {

@@ -15,7 +15,10 @@
         @click:close="showAutoplayWarning = false"
       >
         <div class="d-flex align-center">
-          <v-icon class="mr-2">mdi-information</v-icon>
+          <v-icon
+            start
+            :icon="ICON.INFO"
+          />
           <span>首次使用请点击试听按钮测试音频播放是否正常</span>
         </div>
       </v-alert>
@@ -24,8 +27,11 @@
         <!-- 单次通知铃声 -->
         <v-col cols="12">
           <v-card border>
-            <v-card-title class="text-subtitle-1">
-              <v-icon left>mdi-bell-ring</v-icon>
+            <v-card-title class="text-body-large">
+              <v-icon
+                start
+                :icon="ICON.BELL_RING"
+              />
               单次通知铃声
             </v-card-title>
             <v-card-text>
@@ -33,18 +39,18 @@
                 v-model="singleSound"
                 :items="soundOptions"
                 label="选择铃声"
-                prepend-icon="mdi-music-note"
+                :prepend-icon="ICON.MUSIC_NOTE"
                 variant="outlined"
                 density="comfortable"
                 @update:model-value="onSingleSoundChange"
               >
-                <template #item="{ props, item }">
+                <template #internalItem="{ props, item }">
                   <v-list-item
                     v-bind="props"
                     @click="previewSound(item.value)"
                   >
                     <template #prepend>
-                      <v-icon>mdi-music-note</v-icon>
+                      <v-icon :icon="ICON.MUSIC_NOTE" />
                     </template>
                     <template #append>
                       <v-btn
@@ -53,7 +59,7 @@
                         variant="text"
                         @click.stop="previewSound(item.value)"
                       >
-                        <v-icon>mdi-play</v-icon>
+                        <v-icon :icon="ICON.PLAY" />
                       </v-btn>
                     </template>
                   </v-list-item>
@@ -66,13 +72,19 @@
                   variant="tonal"
                   @click="previewSound(singleSound)"
                 >
-                  <v-icon left>mdi-play</v-icon>
+                  <v-icon
+                    start
+                    :icon="ICON.PLAY"
+                  />
                   试听
                 </v-btn>
                 <v-btn
                   @click="resetSingleSound"
                 >
-                  <v-icon left>mdi-restore</v-icon>
+                  <v-icon
+                    start
+                    :icon="ICON.RESTORE"
+                  />
                   恢复
                 </v-btn>
               </div>
@@ -83,8 +95,12 @@
         <!-- 持续通知铃声（紧急通知） -->
         <v-col cols="12">
           <v-card border>
-            <v-card-title class="text-subtitle-1">
-              <v-icon left color="error">mdi-bell-alert</v-icon>
+            <v-card-title class="text-body-large">
+              <v-icon
+                start
+                color="error"
+                :icon="ICON.BELL_ALERT"
+              />
               紧急通知铃声
             </v-card-title>
             <v-card-text>
@@ -92,18 +108,18 @@
                 v-model="urgentSound"
                 :items="soundOptions"
                 label="选择铃声"
-                prepend-icon="mdi-music-note"
+                :prepend-icon="ICON.MUSIC_NOTE"
                 variant="outlined"
                 density="comfortable"
                 @update:model-value="onUrgentSoundChange"
               >
-                <template #item="{ props, item }">
+                <template #internalItem="{ props, item }">
                   <v-list-item
                     v-bind="props"
                     @click="previewSound(item.value)"
                   >
                     <template #prepend>
-                      <v-icon>mdi-music-note</v-icon>
+                      <v-icon :icon="ICON.MUSIC_NOTE" />
                     </template>
                     <template #append>
                       <v-btn
@@ -112,7 +128,7 @@
                         variant="text"
                         @click.stop="previewSound(item.value)"
                       >
-                        <v-icon>mdi-play</v-icon>
+                        <v-icon :icon="ICON.PLAY" />
                       </v-btn>
                     </template>
                   </v-list-item>
@@ -125,13 +141,19 @@
                   variant="tonal"
                   @click="previewSound(urgentSound)"
                 >
-                  <v-icon left>mdi-play</v-icon>
+                  <v-icon
+                    start
+                    :icon="ICON.PLAY"
+                  />
                   试听
                 </v-btn>
                 <v-btn
                   @click="resetUrgentSound"
                 >
-                  <v-icon left>mdi-restore</v-icon>
+                  <v-icon
+                    start
+                    :icon="ICON.RESTORE"
+                  />
                   恢复
                 </v-btn>
               </div>
@@ -144,6 +166,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import { getSetting, setSetting } from '@/utils/settings.js';
 import { soundFiles, stopSound } from '@/utils/soundList.js';
 
@@ -151,10 +174,11 @@ export default {
   name: 'NotificationSoundSettings',
   data() {
     return {
+      ICON,
       singleSound: '',
       urgentSound: '',
       currentAudio: null,
-      showAutoplayWarning: true,
+      showAutoplayWarning: false,
     };
   },
   computed: {
@@ -243,7 +267,7 @@ export default {
       if (!filename) return null;
       try {
         // 使用public目录路径，Vite会在构建时将public目录的文件复制到dist根目录
-        // 这样开发和生产环境都能正确加载音频文件
+        // 这样开发和生产环境都能正确播放音频文件
         return `/sounds/${filename}`;
       } catch {
         return null;

@@ -2,7 +2,7 @@
   <settings-card
     :loading="loading"
     border
-    icon="mdi-book-multiple"
+    :icon="ICON.BOOK_MULTIPLE"
     title="科目管理"
   >
     <v-alert
@@ -21,7 +21,7 @@
           :loading="loading"
           class="mr-2"
           color="primary"
-          prepend-icon="mdi-refresh"
+          :prepend-icon="ICON.REFRESH"
           size="large"
           variant="text"
           @click="loadConfig"
@@ -32,7 +32,7 @@
         <v-btn
           :loading="loading"
           color="success"
-          prepend-icon="mdi-content-save"
+          :prepend-icon="ICON.CONTENT_SAVE"
           size="large"
           @click="saveConfig"
         >
@@ -41,7 +41,7 @@
         <v-btn
           :loading="loading"
           class="mr-2"
-          prepend-icon="mdi-restore"
+          :prepend-icon="ICON.RESTORE"
           variant="text"
           @click="resetToDefault"
         >
@@ -58,14 +58,20 @@
     </div>
 
     <!-- 添加新科目 -->
-    <v-card class="mb-4" variant="outlined">
+    <v-card
+      class="mb-4"
+      variant="outlined"
+    >
       <v-card-text>
         <v-row>
-          <v-col cols="12" sm="6">
+          <v-col
+            cols="12"
+            sm="6"
+          >
             <v-text-field
               v-model="newSubjectName"
               :rules="[v => !!v || '科目名称不能为空']"
-              append-inner-icon="mdi-plus"
+              :append-inner-icon="ICON.PLUS"
               density="comfortable"
               label="科目名称"
               variant="outlined"
@@ -85,18 +91,18 @@
             v-for="(subject, index) in subjects"
             :key="subject.order"
           >
-            <template v-slot:prepend>
+            <template #prepend>
               <div class="d-flex flex-column align-center mr-2">
                 <v-btn
                   :disabled="index === 0"
-                  icon="mdi-chevron-up"
+                  :icon="ICON.CHEVRON_UP"
                   size="small"
                   variant="text"
                   @click="moveSubject(index, -1)"
                 />
                 <v-btn
                   :disabled="index === subjects.length - 1"
-                  icon="mdi-chevron-down"
+                  :icon="ICON.CHEVRON_DOWN"
                   size="small"
                   variant="text"
                   @click="moveSubject(index, 1)"
@@ -114,10 +120,10 @@
               />
             </v-list-item-title>
 
-            <template v-slot:append>
+            <template #append>
               <v-btn
                 color="error"
-                icon="mdi-delete"
+                :icon="ICON.DELETE"
                 size="small"
                 variant="text"
                 @click="deleteSubject(subject)"
@@ -127,19 +133,11 @@
         </v-list>
       </v-card-text>
     </v-card>
-
-    <!-- 底部提示 -->
-    <v-snackbar
-      v-model="showSnackbar"
-      :color="snackbarColor"
-      :timeout="3000"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
   </settings-card>
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import SettingsCard from '@/components/SettingsCard.vue';
 import dataProvider from "@/utils/dataProvider.js";
 
@@ -152,14 +150,12 @@ export default {
 
   data() {
     return {
+      ICON,
       loading: false,
       error: null,
       subjects: [],
       originalSubjects: null,
       newSubjectName: '',
-      showSnackbar: false,
-      snackbarText: '',
-      snackbarColor: 'success',
       defaultSubjects: [
         {name: '语文', order: 0},
         {name: '数学', order: 1},
@@ -191,19 +187,20 @@ export default {
       this.loading = true;
       try {
         const response = await dataProvider.loadData("classworks-config-subject");
-        if (response) {
-          // 数据存在且加载成功
+        if (response && response.success !== false) {
           this.subjects = response.map((subject, index) => ({
             name: subject.name,
             order: subject.order ?? index
           })).sort((a, b) => a.order - b.order);
           this.originalSubjects = JSON.parse(JSON.stringify(this.subjects));
           this.showMessage('配置已加载', 'success');
-        } else {
-          // 数据不存在，使用空数组
+        } else if (response?.error?.code === 'NOT_FOUND') {
           this.subjects = [];
           this.originalSubjects = [];
           this.showMessage('使用默认配置', 'info');
+        } else {
+          const errorMsg = response?.error?.message || '加载失败';
+          this.showMessage(`加载失败: ${errorMsg}`, 'warning');
         }
       } catch (error) {
         console.error('Failed to load config:', error);
@@ -230,9 +227,15 @@ export default {
     },
 
     showMessage(text, color = 'success') {
-      this.snackbarText = text;
-      this.snackbarColor = color;
-      this.showSnackbar = true;
+      if (color === 'success') {
+        this.$message?.success(text);
+      } else if (color === 'error') {
+        this.$message?.error(text);
+      } else if (color === 'warning') {
+        this.$message?.warning(text);
+      } else {
+        this.$message?.info(text);
+      }
     },
 
     addSubject() {
@@ -289,7 +292,7 @@ export default {
 
 <style scoped>
 .v-list-item {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .v-list-item:last-child {

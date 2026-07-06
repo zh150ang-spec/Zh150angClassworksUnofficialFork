@@ -6,15 +6,24 @@
   >
     <v-card-item>
       <template #prepend>
-        <v-icon class="mr-2" icon="mdi-account-group" size="large"/>
+        <v-icon
+          class="mr-2"
+          :icon="ICON.ACCOUNT_GROUP"
+          size="large"
+        />
       </template>
-      <v-card-title class="text-h6">学生列表</v-card-title>
+      <v-card-title class="text-headline-small">
+        学生列表
+      </v-card-title>
       <template #append>
-        <unsaved-warning :show="unsavedChanges" message="有未保存的更改"/>
+        <unsaved-warning
+          :show="unsavedChanges"
+          message="有未保存的更改"
+        />
         <v-btn
           :disabled="modelValue.list.length === 0"
           class="mr-2"
-          prepend-icon="mdi-sort-alphabetical-variant"
+          :prepend-icon="ICON.SORT_ALPHABETICAL_VARIANT"
           variant="text"
           @click="sortStudentsByPinyin"
         >
@@ -22,7 +31,7 @@
         </v-btn>
         <v-btn
           :color="modelValue.advanced ? 'primary' : undefined"
-          prepend-icon="mdi-code-braces"
+          :prepend-icon="ICON.CODE_BRACES"
           variant="text"
           @click="toggleAdvanced"
         >
@@ -39,7 +48,13 @@
         indeterminate
       />
 
-      <v-alert v-if="error" class="mb-4" closable type="error" variant="tonal">
+      <v-alert
+        v-if="error"
+        class="mb-4"
+        closable
+        type="error"
+        variant="tonal"
+      >
         {{ error }}
       </v-alert>
 
@@ -47,14 +62,18 @@
         <!-- 普通编辑模式 -->
         <div v-if="!modelValue.advanced">
           <v-row class="mb-6">
-            <v-col cols="12" md="4" sm="6">
+            <v-col
+              cols="12"
+              md="4"
+              sm="6"
+            >
               <v-text-field
                 v-model="newStudentName"
                 class="mb-4"
                 hide-details
                 label="添加学生"
                 placeholder="输入学生姓名后回车添加"
-                prepend-inner-icon="mdi-account-plus"
+                :prepend-inner-icon="ICON.ACCOUNT_PLUS"
                 variant="outlined"
                 @keyup.enter="addStudent"
               >
@@ -62,7 +81,7 @@
                   <v-btn
                     :disabled="!newStudentName.trim()"
                     color="primary"
-                    icon="mdi-plus"
+                    :icon="ICON.PLUS"
                     variant="text"
                     @click="addStudent"
                   />
@@ -88,7 +107,10 @@
                   v-bind="props"
                 >
                   <v-card-text class="d-flex align-center pa-3">
-                    <v-menu :open-on-hover="!isMobile" location="bottom">
+                    <v-menu
+                      :open-on-hover="!isMobile"
+                      location="bottom"
+                    >
                       <template #activator="{ props: menuProps }">
                         <v-btn
                           class="mr-3 font-weight-medium"
@@ -100,25 +122,28 @@
                         </v-btn>
                       </template>
 
-                      <v-list density="compact" nav>
+                      <v-list
+                        density="compact"
+                        nav
+                      >
                         <v-list-item
                           :disabled="index === 0"
-                          prepend-icon="mdi-arrow-up-bold"
+                          :prepend-icon="ICON.ARROW_UP_BOLD"
                           @click="moveStudent(index, 'top')"
                         >
                           置顶
                         </v-list-item>
-                        <v-divider/>
+                        <v-divider />
                         <v-list-item
                           :disabled="index === 0"
-                          prepend-icon="mdi-arrow-up"
+                          :prepend-icon="ICON.ARROW_UP"
                           @click="moveStudent(index, 'up')"
                         >
                           上移
                         </v-list-item>
                         <v-list-item
                           :disabled="index === modelValue.list.length - 1"
-                          prepend-icon="mdi-arrow-down"
+                          :prepend-icon="ICON.ARROW_DOWN"
                           @click="moveStudent(index, 'down')"
                         >
                           下移
@@ -139,26 +164,23 @@
                     />
                     <span
                       v-else
-                      class="text-body-1 flex-grow-1"
+                      class="text-body-large flex-grow-1"
                       @click="handleClick(index, student)"
                     >
                       {{ student.name }}
                     </span>
 
-                    <div
-                      :class="{ 'opacity-100': isHovering || isMobile }"
-                      class="d-flex gap-1 action-buttons"
-                    >
+                    <div class="d-flex gap-1 action-buttons opacity-100">
                       <v-btn
                         color="primary"
-                        icon="mdi-pencil"
+                        :icon="ICON.EDIT"
                         size="small"
                         variant="text"
                         @click="startEdit(index, student)"
                       />
                       <v-btn
                         color="error"
-                        icon="mdi-delete"
+                        :icon="ICON.DELETE"
                         size="small"
                         variant="text"
                         @click="removeStudent(index)"
@@ -172,7 +194,10 @@
         </div>
 
         <!-- 高级编辑模式 -->
-        <div v-else class="pt-2">
+        <div
+          v-else
+          class="pt-2"
+        >
           <v-textarea
             v-model="modelValue.text"
             hint="使用文本编辑模式批量编辑学生名单，保存时会自动去除空行"
@@ -187,12 +212,15 @@
       </v-expand-transition>
 
       <v-row class="mt-6">
-        <v-col class="d-flex gap-2" cols="12">
+        <v-col
+          class="d-flex gap-2"
+          cols="12"
+        >
           <v-btn
             :disabled="loading"
             :loading="loading"
             color="primary"
-            prepend-icon="mdi-content-save"
+            :prepend-icon="ICON.CONTENT_SAVE"
             size="large"
             @click="saveStudents"
           >
@@ -202,7 +230,7 @@
             :disabled="loading"
             :loading="loading"
             color="error"
-            prepend-icon="mdi-refresh"
+            :prepend-icon="ICON.REFRESH"
             size="large"
             variant="outlined"
             @click="loadStudents"
@@ -216,6 +244,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import UnsavedWarning from "../common/UnsavedWarning.vue";
 import "@/styles/warnings.scss";
 import dataProvider from "@/utils/dataProvider";
@@ -241,6 +270,7 @@ export default {
 
   data() {
     return {
+      ICON,
       newStudentName: "",
       editState: {
         index: -1,

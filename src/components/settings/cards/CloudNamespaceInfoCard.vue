@@ -1,16 +1,23 @@
 <template>
-  <v-card :disabled="!hasNamespaceInfo" :loading="loading" class="my-4">
+  <v-card
+    :disabled="!hasNamespaceInfo"
+    :loading="loading"
+    class="my-4"
+  >
     <template #loader>
-      <v-progress-linear v-if="loading" color="primary" indeterminate/>
+      <v-progress-linear
+        v-if="loading"
+        color="primary"
+        indeterminate
+      />
     </template>
 
 
     <v-card-title>
       <v-icon
-        class="me-2"
-      >
-        mdi-cloud-check
-      </v-icon>
+        :icon="ICON.CLOUD_CHECK"
+        start
+      />
       设备信息
     </v-card-title>
 
@@ -29,7 +36,7 @@
           <div>当前设备尚未绑定账号,部分功能可能受限。请前往绑定账号以获得完整体验。</div>
           <v-btn
             :href="getBindAccountUrl()"
-            append-icon="mdi-open-in-new"
+            :append-icon="ICON.OPEN_IN_NEW"
             class="mt-3"
             target="_blank"
             variant="outlined"
@@ -74,21 +81,19 @@
           <div class="d-flex flex-column gap-1">
             <div class="d-flex align-center">
               <v-icon
-                class="me-2"
+                :icon="ICON.TAG"
                 size="small"
-              >
-                mdi-tag
-              </v-icon>
+                start
+              />
               <span class="font-weight-medium me-2">设备名称:</span>
               <span>{{ namespaceInfo.device.name || '未命名设备' }}</span>
             </div>
             <div class="d-flex align-center">
               <v-icon
-                class="me-2"
+                :icon="ICON.IDENTIFIER"
                 size="small"
-              >
-                mdi-identifier
-              </v-icon>
+                start
+              />
               <span class="font-weight-medium me-2">设备 ID:</span>
               <span>{{ namespaceInfo.device.id }}</span>
             </div>
@@ -98,21 +103,19 @@
               class="d-flex align-center"
             >
               <v-icon
-                class="me-2"
+                :icon="ICON.UUID"
                 size="small"
-              >
-                mdi-uuid
-              </v-icon>
+                start
+              />
               <span class="font-weight-medium me-2">UUID:</span>
               <span class="text-truncate">{{ namespaceInfo.device.uuid }}</span>
             </div>
             <div class="d-flex align-center">
               <v-icon
-                class="me-2"
+                :icon="ICON.CALENDAR"
                 size="small"
-              >
-                mdi-calendar
-              </v-icon>
+                start
+              />
               <span class="font-weight-medium me-2">创建时间:</span>
               <span>{{ formatDate(namespaceInfo.device.createdAt) }}</span>
             </div>
@@ -121,11 +124,10 @@
               class="d-flex align-center"
             >
               <v-icon
-                class="me-2"
+                :icon="ICON.CALENDAR_CLOCK"
                 size="small"
-              >
-                mdi-calendar-clock
-              </v-icon>
+                start
+              />
               <span class="font-weight-medium me-2">更新时间:</span>
               <span>{{ formatDate(namespaceInfo.device.updatedAt) }}</span>
             </div>
@@ -154,7 +156,7 @@
         <v-card-actions>
           <v-btn
             :href="defaultAuthServer"
-            append-icon="mdi-open-in-new"
+            :append-icon="ICON.OPEN_IN_NEW"
             class="text-none"
             target="_blank"
           >
@@ -166,16 +168,36 @@
 
     <v-card-text v-else>
       <v-alert
-        type="info"
-        variant="tonal"
+        v-if="!namespaceInfo"
+        color="info"
+        :icon="ICON.INFO"
+        title="未获取到命名空间信息"
+        variant="outlined"
       >
-        <v-alert-title>未获取到设备信息</v-alert-title>
-        <p>您尚未完成云端存储授权或连接失败，请点击下方按钮进行初始化。</p>
+        请检查 Token 是否正确，或等待自动重试
+      </v-alert>
+      <v-alert
+        v-else-if="namespaceInfo.error"
+        color="error"
+        :icon="ICON.WARNING"
+        title="获取命名空间信息失败"
+        variant="outlined"
+      >
+        {{ namespaceInfo.error }}
+      </v-alert>
+      <v-alert
+        v-else
+        color="info"
+        :icon="ICON.INFO"
+        title="未获取到设备信息"
+        variant="outlined"
+      >
+        您尚未完成云端存储授权或连接失败，请点击下方按钮进行初始化。
       </v-alert>
     </v-card-text>
 
     <v-card-actions>
-      <v-spacer/>
+      <v-spacer />
       <v-btn
         :loading="loading"
         color="primary"
@@ -213,7 +235,7 @@
           <p>您确定要重新初始化云端存储吗？</p>
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             variant="text"
             @click="showReinitDialog = false"
@@ -233,6 +255,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import {kvServerProvider} from "@/utils/providers/kvServerProvider";
 import {setSetting, getSetting} from "@/utils/settings";
 
@@ -246,6 +269,7 @@ export default {
   },
   data() {
     return {
+      ICON,
       namespaceInfo: {},
       loading: false,
       hasNamespaceInfo: false,
