@@ -1,6 +1,9 @@
 <template>
   <!-- 纯 CSS 骨架屏，避免使用 VSkeletonLoader 引起的渲染冲突 -->
-  <v-container class="main-window" fluid>
+  <v-container
+    class="main-window"
+    fluid
+  >
     <div class="skeleton-grid">
       <div
         v-for="n in cardCount"
@@ -35,21 +38,21 @@ const cardCount = computed(() => mobile.value ? 3 : 6)
 }
 .skeleton-card {
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity, 0.12));
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 16px;
 }
 .skeleton-heading {
   height: 24px;
   width: 60%;
   background: rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   margin-bottom: 12px;
 }
 .skeleton-line {
   height: 14px;
   width: 100%;
   background: rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   margin-bottom: 8px;
 }
 .skeleton-line--short {
@@ -59,7 +62,7 @@ const cardCount = computed(() => mobile.value ? 3 : 6)
   height: 36px;
   width: 100px;
   background: rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 .skeleton-pulse {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
