@@ -21,7 +21,7 @@
       </v-alert>
     </v-card-text>
     <v-card-actions>
-      <v-spacer/>
+      <v-spacer />
       <v-btn
         v-if="showCancel"
         variant="text"
@@ -44,6 +44,7 @@
 <script setup>
 import {ref} from 'vue'
 import {getSetting, setSetting} from '@/utils/settings'
+import {getEffectiveServerUrl} from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 
 defineProps({
@@ -65,7 +66,7 @@ const saveToken = async () => {
   verifying.value = true
 
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     if (!serverUrl) throw new Error('未配置服务器域名')
 
     await axios.get(`${serverUrl}/kv/_info`, {

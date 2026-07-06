@@ -18,13 +18,12 @@
             class="mb-4"
             color="primary"
             size="80"
-          >
-            mdi-hand-wave
-          </v-icon>
-          <h2 class="text-h4 mb-3">
+            :icon="ICON.HAND_WAVE"
+          />
+          <h2 class="text-headline-large mb-3">
             欢迎使用 Classworks
           </h2>
-          <p class="text-body-1 text-medium-emphasis">
+          <p class="text-body-large text-medium-emphasis">
             适用于班级大屏的作业板小工具
           </p>
         </div>
@@ -35,7 +34,7 @@
         v-show="currentStep === 2"
         class="step-content"
       >
-        <h3 class="text-h5 mb-6 text-center">
+        <h3 class="text-headline-medium mb-6 text-center">
           Classworks 和 Classworks KV 的关系
         </h3>
 
@@ -50,19 +49,18 @@
               <v-card
                 class="pa-4"
                 color="blue-darken-1"
-                elevation="8"
+                elevation="3"
               >
                 <div class="text-center">
                   <v-icon
                     color="white"
                     size="60"
-                  >
-                    mdi-laptop
-                  </v-icon>
-                  <h4 class="text-h6 text-white mt-2">
+                    :icon="ICON.LAPTOP"
+                  />
+                  <h4 class="text-headline-small text-white mt-2">
                     Classworks
                   </h4>
-                  <p class="text-caption text-white mt-1">
+                  <p class="text-body-small text-white mt-1">
                     作业板应用
                   </p>
                 </div>
@@ -71,13 +69,13 @@
               <div class="diagram-description mt-3">
                 <v-chip
                   class="mb-2"
-                  color="blue"
+                  color="primary"
                   size="small"
                   variant="flat"
                 >
                   前端应用
                 </v-chip>
-                <div class="text-body-2">
+                <div class="text-body-medium">
                   • 显示作业内容<br>
                   • 管理班级信息<br>
                   • 提供用户界面
@@ -90,10 +88,9 @@
               <v-icon
                 color="primary"
                 size="40"
-              >
-                mdi-swap-horizontal
-              </v-icon>
-              <div class="text-caption font-weight-bold mt-2">
+                :icon="ICON.SWAP_HORIZONTAL"
+              />
+              <div class="text-body-small font-weight-bold mt-2">
                 数据同步
               </div>
             </div>
@@ -102,20 +99,19 @@
             <div class="diagram-item">
               <v-card
                 class="pa-4"
-                color="green-darken-1"
-                elevation="8"
+                color="success"
+                elevation="3"
               >
                 <div class="text-center">
                   <v-icon
                     color="white"
                     size="60"
-                  >
-                    mdi-cloud-sync
-                  </v-icon>
-                  <h4 class="text-h6 text-white mt-2">
+                    :icon="ICON.CLOUD_SYNC"
+                  />
+                  <h4 class="text-headline-small text-white mt-2">
                     Classworks KV
                   </h4>
-                  <p class="text-caption text-white mt-1">
+                  <p class="text-body-small text-white mt-1">
                     云端数据库
                   </p>
                 </div>
@@ -130,7 +126,7 @@
                 >
                   后端服务
                 </v-chip>
-                <div class="text-body-2">
+                <div class="text-body-medium">
                   • 存储作业数据<br>
                   • 多设备同步<br>
                   • 权限管理
@@ -139,8 +135,6 @@
             </div>
           </div>
         </v-card>
-
-
       </div>
 
       <!-- 步骤 3: 询问使用场景 -->
@@ -148,7 +142,7 @@
         v-show="currentStep === 3"
         class="step-content"
       >
-        <h3 class="text-h5 mb-6 text-center">
+        <h3 class="text-headline-medium mb-6 text-center">
           你需要在多个设备上查看作业吗？
         </h3>
 
@@ -157,7 +151,7 @@
           color="info"
           variant="tonal"
         >
-          <div class="text-body-2">
+          <div class="text-body-medium">
             比如：在家里电脑、手机上查看，或者多个教室设备共享数据
           </div>
         </v-card>
@@ -175,11 +169,10 @@
               <v-icon
                 class="mb-2"
                 size="40"
-              >
-                mdi-cloud-check
-              </v-icon>
-              <span class="text-h6">需要，使用云同步</span>
-              <span class="text-caption mt-1">多设备访问</span>
+                :icon="ICON.CLOUD_CHECK"
+              />
+              <span class="text-headline-small">需要，使用云同步</span>
+              <span class="text-body-small mt-1">多设备访问</span>
             </div>
           </v-btn>
 
@@ -194,11 +187,10 @@
               <v-icon
                 class="mb-2"
                 size="40"
-              >
-                mdi-laptop
-              </v-icon>
-              <span class="text-h6">不需要，只用这台设备</span>
-              <span class="text-caption mt-1">本地存储</span>
+                :icon="ICON.LAPTOP"
+              />
+              <span class="text-headline-small">不需要，只用这台设备</span>
+              <span class="text-body-small mt-1">本地存储</span>
             </div>
           </v-btn>
         </div>
@@ -214,20 +206,19 @@
             class="mb-4"
             color="success"
             size="80"
-          >
-            mdi-check-circle
-          </v-icon>
-          <h3 class="text-h5 mb-4">
+            :icon="ICON.SUCCESS"
+          />
+          <h3 class="text-headline-medium mb-4">
             您可以使用本地模式
           </h3>
           <v-card
             class="pa-4 text-left"
             variant="tonal"
           >
-            <div class="text-body-1 mb-2">
-              此数据将存储在您的浏览器中，如果您的浏览器不支持IndexedDB，可能会出现问题。如果您经常清除浏览器数据，请谨慎使用本地模式。
+            <div class="text-body-large mb-2">
+              数据将存储在浏览器本地。如果浏览器不支持 IndexedDB 或经常清除浏览器数据，建议使用云端模式。
             </div>
-            <div class="text-body-1 mb-2">
+            <div class="text-body-large mb-2">
               在刚才地方点击使用本地模式的按钮使用。
             </div>
           </v-card>
@@ -244,10 +235,9 @@
             class="mb-4"
             color="primary"
             size="80"
-          >
-            mdi-cloud-cog
-          </v-icon>
-          <h3 class="text-h5 mb-4">
+            :icon="ICON.CLOUD_COG"
+          />
+          <h3 class="text-headline-medium mb-4">
             需要先设置云端账号
           </h3>
         </div>
@@ -258,15 +248,15 @@
         >
           <div class="d-flex flex-column flex-sm-row align-center">
             <div class="flex-grow-1">
-              <h4 class="text-h6 font-weight-bold mb-2">
+              <h4 class="text-headline-small font-weight-bold mb-2">
                 自动注册设备
               </h4>
-              <p class="text-body-2 mb-3 text-medium-emphasis">
+              <p class="text-body-medium mb-3 text-medium-emphasis">
                 通过引导式流程自动创建设备、获取令牌并完成初始化。适合首次体验或快速部署多终端。
               </p>
               <v-btn
                 color="primary"
-                prepend-icon="mdi-flash"
+                :prepend-icon="ICON.FLASH"
                 size="large"
                 variant="elevated"
                 @click="goToProgressiveStep"
@@ -288,17 +278,16 @@
           <v-icon
             class="mb-3"
             size="48"
-          >
-            mdi-open-in-new
-          </v-icon>
+            :icon="ICON.OPEN_IN_NEW"
+          />
 
-          <h4 class="text-h6  font-weight-bold">
+          <h4 class="text-headline-small  font-weight-bold">
             请访问 {{ kvserverurl=='https://kv.houlang.cloud'? 'Classworks KV' : '自定义的 Classworks KV 实例 ' }} 控制台
           </h4>
-          <div class="text-h5 mb-6">
+          <div class="text-headline-medium mb-6">
             {{ kvserverurl }}
           </div>
-          <h6 class="text-subtitle-2">
+          <h6 class="text-label-large">
             {{ kvserverurl=='https://kv.houlang.cloud'? '此实例由 Classworks KV 官方提供' : '此链接由您的实例、预配代码或管理员管理，当前可能不是 Classworks KV 官方的实例地址。' }}
           </h6>
         </v-card>
@@ -315,10 +304,9 @@
                 <v-icon
                   class="mr-3"
                   color="warning"
-                >
-                  mdi-help-circle
-                </v-icon>
-                <span class="text-subtitle-1 font-weight-medium">我以前已经使用过 Classworks KV？</span>
+                  :icon="ICON.HELP_CIRCLE"
+                />
+                <span class="text-body-large font-weight-medium">我以前已经使用过 Classworks KV？</span>
               </div>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -327,11 +315,11 @@
                 color="success"
                 variant="tonal"
               >
-                <div class="text-body-2 mb-2">
+                <div class="text-body-medium mb-2">
                   如果您之前已经使用过 Classworks KV，可以直接使用您的 <strong>UUID（命名空间）</strong> 和
                   <strong>设置的密码</strong> 进行认证。
                 </div>
-                <div class="text-body-2">
+                <div class="text-body-medium">
                   返回上一页，点击"已注册"按钮，输入您的认证信息即可登录。
                 </div>
               </v-card>
@@ -344,10 +332,9 @@
                 <v-icon
                   class="mr-3"
                   color="info"
-                >
-                  mdi-help-circle
-                </v-icon>
-                <span class="text-subtitle-1 font-weight-medium">我如何配置不同类型的设备？</span>
+                  :icon="ICON.HELP_CIRCLE"
+                />
+                <span class="text-body-large font-weight-medium">我如何配置不同类型的设备？</span>
               </div>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -356,13 +343,13 @@
                 color="info"
                 variant="tonal"
               >
-                <div class="text-body-2 mb-2">
+                <div class="text-body-medium mb-2">
                   不同的密码对应不同的设备类型，这将由 <strong>管理员管理</strong>。
                 </div>
-                <div class="text-body-2 mb-2">
+                <div class="text-body-medium mb-2">
                   例如：
                 </div>
-                <ul class="text-body-2 ml-4">
+                <ul class="text-body-medium ml-4">
                   <li class="mb-1">
                     班级大屏使用一个密码
                   </li>
@@ -371,7 +358,7 @@
                   </li>
                   <li>学生设备使用不同的密码</li>
                 </ul>
-                <div class="text-body-2 mt-3">
+                <div class="text-body-medium mt-3">
                   请联系您的管理员获取对应设备类型的密码。
                 </div>
               </v-card>
@@ -392,14 +379,15 @@
             size="80"
             variant="tonal"
           >
-            <v-icon size="48">
-              mdi-rocket-launch
-            </v-icon>
+            <v-icon
+              size="48"
+              :icon="ICON.ROCKET_LAUNCH"
+            />
           </v-avatar>
-          <h3 class="text-h5 font-weight-bold mb-2">
+          <h3 class="text-headline-medium font-weight-bold mb-2">
             渐进式注册
           </h3>
-          <p class="text-body-2 text-medium-emphasis">
+          <p class="text-body-medium text-medium-emphasis">
             您可以暂时不配置 Classworks KV
           </p>
         </div>
@@ -430,13 +418,13 @@
                   >
                     {{ statusIcon }}
                   </v-icon>
-                  <div class="text-h6 font-weight-medium">
+                  <div class="text-headline-small font-weight-medium">
                     {{ statusTitle }}
                   </div>
                 </div>
                 <div
                   v-if="deviceInfo"
-                  class="text-body-2 mb-2"
+                  class="text-body-medium mb-2"
                 >
                   <div class="mb-2">
                     <strong>设备名称：</strong>{{ deviceInfo.deviceName }}
@@ -448,7 +436,7 @@
                 </div>
                 <div
                   v-if="progressiveStatus === 'error'"
-                  class="text-body-2 text-error"
+                  class="text-body-medium text-error"
                 >
                   {{ progressiveError }}
                 </div>
@@ -461,20 +449,20 @@
           >
             <v-card variant="outlined">
               <v-card-item>
-                <div class="text-subtitle-2 font-weight-medium mb-3">
+                <div class="text-label-large font-weight-medium mb-3">
                   过程日志
                 </div>
                 <div class="log-box">
                   <div
                     v-for="(log, i) in logs"
                     :key="i"
-                    class="text-caption log-line"
+                    class="text-body-small log-line"
                   >
                     {{ log.time }} · {{ log.message }}
                   </div>
                   <div
                     v-if="!logs.length"
-                    class="text-caption text-medium-emphasis"
+                    class="text-body-small text-medium-emphasis"
                   >
                     等待开始…
                   </div>
@@ -488,7 +476,7 @@
           <v-btn
             v-if="progressiveStatus === 'idle'"
             color="primary"
-            prepend-icon="mdi-play"
+            :prepend-icon="ICON.PLAY"
             size="large"
             @click="startProgressiveRegister"
           >
@@ -498,7 +486,7 @@
           <v-btn
             v-if="progressiveStatus === 'error'"
             color="error"
-            prepend-icon="mdi-refresh"
+            :prepend-icon="ICON.REFRESH"
             variant="outlined"
             @click="retryProgressiveRegister"
           >
@@ -509,7 +497,7 @@
             v-if="progressiveStatus === 'registering'"
             :loading="true"
             color="primary"
-            prepend-icon="mdi-progress-clock"
+            :prepend-icon="ICON.PROGRESS_CLOCK"
             variant="tonal"
           >
             正在执行…
@@ -518,7 +506,7 @@
           <v-btn
             v-if="progressiveStatus === 'success'"
             color="success"
-            prepend-icon="mdi-check-circle"
+            :prepend-icon="ICON.SUCCESS"
             size="large"
             variant="elevated"
             @click="applyTokenAndClose"
@@ -529,7 +517,7 @@
           <v-btn
             v-if="progressiveStatus === 'success'"
             color="primary"
-            prepend-icon="mdi-open-in-new"
+            :prepend-icon="ICON.OPEN_IN_NEW"
             size="large"
             variant="outlined"
             @click="openAuthPage"
@@ -548,12 +536,13 @@
         variant="text"
         @click="prevStep"
       >
-        <v-icon start>
-          mdi-chevron-left
-        </v-icon>
+        <v-icon
+          :icon="ICON.CHEVRON_LEFT"
+          start
+        />
         上一步
       </v-btn>
-      <v-spacer/>
+      <v-spacer />
       <v-btn
         v-if="currentStep < totalSteps && currentStep !== 4"
         :disabled="currentStep === 3 && !storageType"
@@ -563,9 +552,10 @@
         @click="nextStep"
       >
         下一步
-        <v-icon end>
-          mdi-chevron-right
-        </v-icon>
+        <v-icon
+          :icon="ICON.CHEVRON_RIGHT"
+          end
+        />
       </v-btn>
       <v-btn
         v-if="currentStep === totalSteps || currentStep === 4"
@@ -581,8 +571,10 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 import {ref, computed} from 'vue'
 import {getSetting, setSetting} from '@/utils/settings'
+import {getEffectiveServerUrl} from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 import {v4 as uuidv4} from 'uuid'
 
@@ -646,11 +638,11 @@ const statusColor = computed(() => {
 
 const statusIcon = computed(() => {
   return progressiveStatus.value === 'success'
-    ? 'mdi-check-circle'
+    ? ICON.SUCCESS
     : progressiveStatus.value === 'error'
-      ? 'mdi-alert-circle'
+      ? ICON.ERROR
       : progressiveStatus.value === 'registering'
-        ? 'mdi-progress-clock'
+        ? ICON.PROGRESS_CLOCK
         : 'mdi-rocket-launch'
 })
 
@@ -690,7 +682,7 @@ const startProgressiveRegister = async () => {
     addLog('正在生成设备信息…')
     const uuid = uuidv4()
     const deviceName = generateDeviceName()
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     stepStates.value[1] = true
 
     addLog('向服务器注册设备…')
@@ -855,7 +847,7 @@ const applyTokenAndClose = () => {
 }
 
 .progressive-register-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: var(--shadow-raised) !important;
 }
 
 .progressive-register-card .card-icon-wrapper {
@@ -867,18 +859,18 @@ const applyTokenAndClose = () => {
 }
 
 .progressive-register-card code {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-fill);
   padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
 }
 
 /* 渐进式注册页面样式 */
 .log-box {
   height: 140px;
   overflow: auto;
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 8px;
+  background: var(--color-fill-soft);
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
 }
 
@@ -887,10 +879,10 @@ const applyTokenAndClose = () => {
 }
 
 .device-code {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-fill);
   padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
   font-size: 0.875rem;
 }
 </style>

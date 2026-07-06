@@ -3,14 +3,14 @@
     <v-card-title class="d-flex align-center">
       <v-icon
         class="mr-2"
-        icon="mdi-account-plus"
+        :icon="ICON.ACCOUNT_PLUS"
       />
       渐进式注册
     </v-card-title>
 
     <v-card-text>
       <div v-if="!isRegistered && !isRegistering">
-        <p class="text-body-1 mb-4">
+        <p class="text-body-large mb-4">
           快速创建设备并开始使用 Classworks 云端功能
         </p>
 
@@ -20,9 +20,9 @@
           variant="tonal"
         >
           <template #prepend>
-            <v-icon icon="mdi-information"/>
+            <v-icon :icon="ICON.INFO" />
           </template>
-          系统将自动为您创建设备并获取访问令牌，无需手动配置
+          系统将自动创建设备并获取访问令牌
         </v-alert>
       </div>
 
@@ -35,10 +35,10 @@
             indeterminate
             size="48"
           />
-          <p class="text-h6 mb-2">
+          <p class="text-headline-small mb-2">
             正在注册设备...
           </p>
-          <p class="text-body-2 text-medium-emphasis">
+          <p class="text-body-medium text-medium-emphasis">
             {{ registrationStep }}
           </p>
         </div>
@@ -52,7 +52,7 @@
           variant="tonal"
         >
           <template #prepend>
-            <v-icon icon="mdi-check-circle"/>
+            <v-icon :icon="ICON.SUCCESS" />
           </template>
           设备注册成功！已自动获取访问令牌
         </v-alert>
@@ -60,7 +60,7 @@
         <v-list>
           <v-list-item>
             <template #prepend>
-              <v-icon icon="mdi-identifier"/>
+              <v-icon :icon="ICON.IDENTIFIER" />
             </template>
             <v-list-item-title>设备名称</v-list-item-title>
             <v-list-item-subtitle>{{ deviceInfo.deviceName }}</v-list-item-subtitle>
@@ -68,10 +68,10 @@
 
           <v-list-item>
             <template #prepend>
-              <v-icon icon="mdi-key"/>
+              <v-icon :icon="ICON.KEY" />
             </template>
             <v-list-item-title>设备 UUID</v-list-item-title>
-            <v-list-item-subtitle class="font-mono text-caption">
+            <v-list-item-subtitle class="font-mono text-body-small">
               {{ deviceInfo.uuid }}
             </v-list-item-subtitle>
           </v-list-item>
@@ -83,7 +83,7 @@
           variant="tonal"
         >
           <template #prepend>
-            <v-icon icon="mdi-information"/>
+            <v-icon :icon="ICON.INFO" />
           </template>
           您可以点击下方按钮访问云端控制台来设置密码和管理高级功能
         </v-alert>
@@ -97,7 +97,7 @@
           variant="tonal"
         >
           <template #prepend>
-            <v-icon icon="mdi-alert-circle"/>
+            <v-icon :icon="ICON.ERROR" />
           </template>
           {{ errorMessage }}
         </v-alert>
@@ -105,14 +105,14 @@
     </v-card-text>
 
     <v-card-actions>
-      <v-spacer/>
+      <v-spacer />
 
       <!-- 注册按钮 -->
       <v-btn
         v-if="!isRegistered && !isRegistering"
         :loading="isRegistering"
         color="primary"
-        prepend-icon="mdi-plus"
+        :prepend-icon="ICON.PLUS"
         @click="registerDevice"
       >
         注册设备
@@ -122,7 +122,7 @@
       <v-btn
         v-if="isRegistered && deviceInfo"
         color="success"
-        prepend-icon="mdi-open-in-new"
+        :prepend-icon="ICON.OPEN_IN_NEW"
         @click="openConsole"
       >
         访问控制台
@@ -132,7 +132,7 @@
       <v-btn
         v-if="errorMessage"
         color="primary"
-        prepend-icon="mdi-refresh"
+        :prepend-icon="ICON.REFRESH"
         @click="resetAndRetry"
       >
         重试
@@ -149,8 +149,10 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 import {ref} from 'vue'
 import {getSetting, setSetting} from '@/utils/settings'
+import {getEffectiveServerUrl} from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 
 // 事件定义
@@ -208,7 +210,7 @@ const registerDevice = async () => {
   try {
     const uuid = generateUUID()
     const deviceName = generateDeviceName()
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
 
     registrationStep.value = '正在注册设备到服务器...'
     console.log('开始注册设备:', {uuid, deviceName, serverUrl})
@@ -250,7 +252,7 @@ const registerDevice = async () => {
 // 自动登录获取 token
 const autoLogin = async (uuid) => {
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
 
     // 使用设备认证接口获取 token
     const response = await axios.post(`${serverUrl}/apps/auth/token`, {
@@ -268,7 +270,7 @@ const autoLogin = async (uuid) => {
     }
   } catch (error) {
     console.error('自动登录失败:', error)
-    throw new Error('获取访问令牌失败: ' + (error.response?.data?.message || error.message))
+    throw new Error('获取访问令牌失败: ' + (error.response?.data?.message || error.message), { cause: error })
   }
 }
 
@@ -299,6 +301,6 @@ const resetAndRetry = () => {
 
 <style scoped>
 .font-mono {
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 </style>
