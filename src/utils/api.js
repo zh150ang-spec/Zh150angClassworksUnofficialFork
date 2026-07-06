@@ -5,7 +5,7 @@ import {tryWithRotation, isRotationEnabled} from "@/utils/serverRotation";
 // Helper function to check if provider is valid for API calls
 const isValidProvider = () => {
   const provider = getSetting("server.provider");
-  return provider === "kv-server" || provider === "classworkscloud";
+  return provider === "kv-server" || provider === "classworkscloud" || provider === "dual-cloud" || provider === "dual-server";
 };
 
 // Helper function to get request headers with kvtoken
@@ -52,6 +52,6 @@ export const getNamespaceInfo = async () => {
 
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "获取命名空间信息失败");
+    throw new Error(error.response?.data?.message || "获取命名空间信息失败", { cause: error });
   }
 };

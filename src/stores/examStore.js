@@ -15,7 +15,10 @@ export const useExamStore = defineStore('exam', {
       this.loadingList = true
       try {
         const response = await dataProvider.loadData('es_list')
-        if (Array.isArray(response)) {
+        if (response && response.success === false) {
+          console.error('Failed to load exam list:', response.error?.message)
+          this.examList = []
+        } else if (Array.isArray(response)) {
           this.examList = response
         } else {
           this.examList = []
@@ -28,21 +31,29 @@ export const useExamStore = defineStore('exam', {
     },
 
     async fetchExam(id) {
-      if (this.exams[id]) return this.exams[id] // Return cached if available
-      if (this.loadingDetails[id]) return // Prevent duplicate requests
+      if (this.exams[id]) return this.exams[id]
+      if (this.loadingDetails[id]) return
 
       this.loadingDetails[id] = true
       try {
         const response = await dataProvider.loadData(`es_${id}`)
-        if (response) {
+        if (response && response.success !== false) {
           this.exams[id] = response
+          return response
+        } else if (response?.success === false) {
+          console.error(`Failed to load exam details for ${id}:`, response.error?.message)
         }
-        return response
+        return null
       } catch (error) {
         console.error(`Failed to load exam details for ${id}:`, error)
       } finally {
         this.loadingDetails[id] = false
       }
+    },
+
+    // 使指定考试的缓存详情失效，强制下次 fetchExam 重新拉取
+    invalidateExam(id) {
+      delete this.exams[id]
     },
 
     async getUpcomingExams(limit = 25) {

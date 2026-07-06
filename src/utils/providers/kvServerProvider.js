@@ -42,7 +42,8 @@ export const kvServerProvider = {
       // 直接返回新格式 API 数据，包含 device 和 account 信息
       return formatResponse(res.data);
     } catch (error) {
-      console.error("获取命名空间信息失败:", error);
+      // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 x-app-token
+      console.error("获取命名空间信息失败:", error.message, error.response?.status);
       return formatError(
         error.response?.data?.message || "获取命名空间信息失败",
         "NAMESPACE_ERROR"
@@ -58,7 +59,8 @@ export const kvServerProvider = {
           const res = await axios.put(`${serverUrl}/kv/_info`, data, {
             headers: getHeaders(),
           });
-          return res;
+          // 统一返回格式：与其他方法一致使用 formatResponse，避免调用方需要区分成功/失败两种返回结构
+          return formatResponse(res.data);
         });
       }
 
@@ -67,7 +69,7 @@ export const kvServerProvider = {
         headers: getHeaders(),
       });
 
-      return res;
+      return formatResponse(res.data);
     } catch (error) {
       return formatError(
         error.response?.data?.message || "更新命名空间信息失败",
@@ -98,7 +100,8 @@ export const kvServerProvider = {
       if (error.response?.status === 404) {
         return formatError("数据不存在", "NOT_FOUND");
       }
-      console.log(error);
+      // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 x-app-token
+      console.error("loadData 失败:", error.message, error.response?.status);
       return formatError(
         error.response?.data?.message || "服务器连接失败",
         "NETWORK_ERROR"
@@ -124,7 +127,8 @@ export const kvServerProvider = {
       });
       return formatResponse(true);
     } catch (error) {
-      console.log(error);
+      // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 x-app-token
+      console.error("saveData 失败:", error.message, error.response?.status);
       return formatError(
         error.response?.data?.message || "保存失败",
         "SAVE_ERROR"
@@ -197,7 +201,8 @@ export const kvServerProvider = {
       if (error.response?.status === 401) {
         return formatError("认证失败", "UNAUTHORIZED");
       }
-      console.log(error);
+      // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 x-app-token
+      console.error("loadKeys 失败:", error.message, error.response?.status);
       return formatError(
         error.response?.data?.message || "获取键名列表失败",
         "NETWORK_ERROR"
