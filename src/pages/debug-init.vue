@@ -26,7 +26,7 @@
                 label="server.authDomain"
               />
             </v-form>
-            <v-divider class="my-4"/>
+            <v-divider class="my-4" />
 
             <v-btn
               class="me-2"
@@ -49,18 +49,14 @@
               模拟命名空间加载错误
             </v-btn>
 
-            <v-list two-line>
+            <v-list lines="two">
               <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>当前 sessionGuard</v-list-item-title>
-                  <v-list-item-subtitle>{{ guardRaw }}</v-list-item-subtitle>
-                </v-list-item-content>
+                <v-list-item-title>当前 sessionGuard</v-list-item-title>
+                <v-list-item-subtitle>{{ guardRaw }}</v-list-item-subtitle>
               </v-list-item>
               <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>当前 settings</v-list-item-title>
-                  <v-list-item-subtitle>{{ settingsDump }}</v-list-item-subtitle>
-                </v-list-item-content>
+                <v-list-item-title>当前 settings</v-list-item-title>
+                <v-list-item-subtitle>{{ settingsDump }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
           </v-card-text>

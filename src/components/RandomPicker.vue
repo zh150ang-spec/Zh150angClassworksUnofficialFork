@@ -5,38 +5,55 @@
     max-width="600"
     persistent
   >
-    <v-card border class="random-picker-card" rounded="xl">
-      <v-card-title class="text-h5 d-flex align-center">
-        <v-icon class="mr-2" icon="mdi-account-question"/>
+    <v-card
+      border
+      class="random-picker-card"
+      rounded="xl"
+      :style="$vuetify.display.smAndDown ? { borderRadius: 0, border: 'none' } : {}"
+    >
+      <v-card-title class="text-headline-medium d-flex align-center">
+        <v-icon
+          class="mr-2"
+          :icon="ICON.ACCOUNT_QUESTION"
+        />
         随机点名
-        <v-spacer/>
-        <v-btn icon="mdi-close" variant="text" @click="dialog = false"/>
+        <v-spacer />
+        <v-btn
+          :icon="ICON.CLOSE"
+          variant="text"
+          @click="dialog = false"
+        />
       </v-card-title>
 
-      <v-card-text v-if="!isPickingStarted" class="text-center py-6">
-        <div class="text-h6 mb-4">请选择抽取人数</div>
+      <v-card-text
+        v-if="!isPickingStarted"
+        class="text-center py-6"
+      >
+        <div class="text-headline-small mb-4">
+          请选择抽取人数
+        </div>
 
         <div class="d-flex justify-center align-center counter-container">
           <v-btn
             :disabled="count <= 1"
             class="counter-btn"
             color="primary"
-            icon="mdi-minus"
+            :icon="ICON.MINUS"
             size="x-large"
             variant="tonal"
             @click="decrementCount"
           />
 
           <div class="count-display mx-8">
-            <span class="text-h2 font-weight-bold">{{ count }}</span>
-            <span class="text-subtitle-1 ml-2">人</span>
+            <span class="text-display-medium font-weight-bold">{{ count }}</span>
+            <span class="text-body-large ml-2">人</span>
           </div>
 
           <v-btn
             :disabled="count >= maxAllowedCount"
             class="counter-btn"
             color="primary"
-            icon="mdi-plus"
+            :icon="ICON.PLUS"
             size="x-large"
             variant="tonal"
             @click="incrementCount"
@@ -52,14 +69,29 @@
             mandatory
             rounded="pill"
           >
-            <v-btn prepend-icon="mdi-account" value="name">姓名模式</v-btn>
-            <v-btn prepend-icon="mdi-numeric" value="number">学号模式</v-btn>
+            <v-btn
+              :prepend-icon="ICON.ACCOUNT"
+              value="name"
+            >
+              姓名模式
+            </v-btn>
+            <v-btn
+              :prepend-icon="ICON.NUMERIC_ICON"
+              value="number"
+            >
+              学号模式
+            </v-btn>
           </v-btn-toggle>
         </div>
 
         <!-- 学号范围设置 -->
-        <div v-if="pickerMode === 'number'" class="number-range-container mt-4">
-          <div class="text-subtitle-1 mb-2">学号范围设置</div>
+        <div
+          v-if="pickerMode === 'number'"
+          class="number-range-container mt-4"
+        >
+          <div class="text-body-large mb-2">
+            学号范围设置
+          </div>
           <div class="d-flex justify-center align-center gap-4">
             <v-text-field
               v-model.number="minNumber"
@@ -90,7 +122,7 @@
             :disabled="filteredStudents.length === 0"
             class="start-btn"
             color="primary"
-            prepend-icon="mdi-dice-multiple"
+            :prepend-icon="ICON.DICE_MULTIPLE"
             size="x-large"
             @click="startPicking"
           >
@@ -98,7 +130,10 @@
           </v-btn>
         </div>
 
-        <div v-if="filteredStudents.length === 0" class="mt-4 text-error">
+        <div
+          v-if="filteredStudents.length === 0"
+          class="mt-4 text-error"
+        >
           <template v-if="pickerMode === 'name'">
             没有可抽取的学生，请调整过滤选项
           </template>
@@ -107,13 +142,16 @@
           </template>
         </div>
 
-        <div class="mt-4 text-caption">
+        <div class="mt-4 text-body-small">
           当前可抽取学生: {{ filteredStudents.length }}人
-          <v-tooltip v-if="pickerMode === 'name'" location="bottom">
-            <template v-slot:activator="{ props }">
+          <v-tooltip
+            v-if="pickerMode === 'name'"
+            location="bottom"
+          >
+            <template #activator="{ props }">
               <v-icon
                 class="ml-1"
-                icon="mdi-information-outline"
+                :icon="ICON.INFORMATION_OUTLINE"
                 size="small"
                 v-bind="props"
               />
@@ -132,12 +170,15 @@
           </v-tooltip>
 
           <!-- 添加临时过滤选项 -->
-          <div v-if="pickerMode === 'name'" class="d-flex flex-wrap justify-center gap-2 mt-4">
+          <div
+            v-if="pickerMode === 'name'"
+            class="d-flex flex-wrap justify-center gap-2 mt-4"
+          >
             <v-chip
               :color="tempFilters.excludeLate ? 'warning' : 'default'"
               :variant="tempFilters.excludeLate ? 'elevated' : 'text'"
               class="filter-chip"
-              prepend-icon="mdi-clock-alert"
+              :prepend-icon="ICON.CLOCK_ALERT"
               @click="tempFilters.excludeLate = !tempFilters.excludeLate"
             >
               {{ tempFilters.excludeLate ? "排除" : "包含" }}迟到学生
@@ -146,7 +187,7 @@
               :color="tempFilters.excludeAbsent ? 'error' : 'default'"
               :variant="tempFilters.excludeAbsent ? 'elevated' : 'text'"
               class="filter-chip"
-              prepend-icon="mdi-account-off"
+              :prepend-icon="ICON.ACCOUNT_OFF"
               @click="tempFilters.excludeAbsent = !tempFilters.excludeAbsent"
             >
               {{ tempFilters.excludeAbsent ? "排除" : "包含" }}请假学生
@@ -156,7 +197,7 @@
               :color="tempFilters.excludeExcluded ? 'grey' : 'default'"
               :variant="tempFilters.excludeExcluded ? 'elevated' : 'text'"
               class="filter-chip"
-              prepend-icon="mdi-account-cancel"
+              :prepend-icon="ICON.ACCOUNT_CANCEL"
               @click="tempFilters.excludeExcluded = !tempFilters.excludeExcluded"
             >
               {{ tempFilters.excludeExcluded ? "排除" : "包含" }}不参与学生
@@ -165,8 +206,14 @@
         </div>
       </v-card-text>
 
-      <v-card-text v-else class="text-center py-6">
-        <div v-if="isAnimating" class="animation-container">
+      <v-card-text
+        v-else
+        class="text-center py-6"
+      >
+        <div
+          v-if="isAnimating"
+          class="animation-container"
+        >
           <div class="animation-wrapper">
             <transition-group
               class="shuffle-container"
@@ -185,8 +232,13 @@
           </div>
         </div>
 
-        <div v-else class="result-container">
-          <div class="text-h6 mb-4">抽取结果</div>
+        <div
+          v-else
+          class="result-container"
+        >
+          <div class="text-headline-small mb-4">
+            抽取结果
+          </div>
           <v-card
             v-for="(student, index) in pickedStudents"
             :key="index"
@@ -195,7 +247,7 @@
             variant="outlined"
           >
             <v-card-text
-              class="text-h4 text-center py-4 d-flex align-center justify-center"
+              class="text-headline-large text-center py-4 d-flex align-center justify-center"
             >
               {{ student }}
               <v-btn
@@ -206,7 +258,7 @@
                     : '重新抽取此学生'
                 "
                 class="ml-2 refresh-btn"
-                icon="mdi-refresh"
+                :icon="ICON.REFRESH"
                 size="small"
                 variant="text"
                 @click="refreshSingleStudent(index)"
@@ -218,7 +270,7 @@
             <v-btn
               class="mx-2"
               color="primary"
-              prepend-icon="mdi-refresh"
+              :prepend-icon="ICON.REFRESH"
               size="large"
               @click="resetPicker"
             >
@@ -226,7 +278,7 @@
             </v-btn>
             <v-btn
               class="mx-2"
-              color="grey"
+              color="medium-emphasis"
               size="large"
               variant="outlined"
               @click="dialog = false"
@@ -241,6 +293,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import {getSetting, setSetting} from "@/utils/settings";
 
 export default {
@@ -252,12 +305,12 @@ export default {
     },
     attendance: {
       type: Object,
-      required: true,
       default: () => ({absent: [], late: [], exclude: []}),
     },
   },
   data() {
     return {
+      ICON,
       dialog: false,
       count: getSetting("randomPicker.defaultCount"),
       isPickingStarted: false,
@@ -555,7 +608,7 @@ export default {
 .start-btn {
   min-width: 200px;
   height: 64px;
-  border-radius: 32px;
+  border-radius: var(--radius-lg);
   font-size: 1.2rem;
 }
 
@@ -606,7 +659,7 @@ export default {
 .student-item {
   padding: 10px 15px;
   background-color: rgba(var(--v-theme-surface-variant), 0.7);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   transition: all 0.3s ease;
   font-size: 1.2rem;
 
@@ -615,7 +668,7 @@ export default {
     color: rgb(var(--v-theme-on-primary));
     transform: scale(1.1);
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-hover);
   }
 }
 
@@ -650,17 +703,17 @@ export default {
 @keyframes refresh-pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 rgba(var(--v-theme-primary), 0.5);
+    box-shadow: none;
   }
 
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(var(--v-theme-primary), 0.7);
+    box-shadow: var(--shadow-primary-glow);
   }
 
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 rgba(var(--v-theme-primary), 0.5);
+    box-shadow: none;
   }
 }
 
@@ -712,9 +765,9 @@ export default {
 .mode-switch-container {
   .mode-toggle {
     border: 1px solid rgba(var(--v-theme-primary), 0.2);
-    border-radius: 50px;
+    border-radius: var(--radius-full);
     padding: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-hover);
 
     .v-btn {
       min-width: 120px;
@@ -736,15 +789,15 @@ export default {
   margin: 0 auto;
   padding: 16px;
   background: rgba(var(--v-theme-surface-variant), 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid rgba(var(--v-theme-primary), 0.1);
 
   .number-input {
     width: 100px;
 
     :deep(.v-field) {
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
     }
   }
 }

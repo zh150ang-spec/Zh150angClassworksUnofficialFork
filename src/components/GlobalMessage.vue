@@ -1,66 +1,204 @@
 <template>
-  <v-snackbar
-    v-model="snackbar"
-    :color="colors[message?.type] || colors.info"
-    :timeout="2000"
-    location="top right"
-    multi-line
-    variant="tonal"
-  >
-    <div class="d-flex align-center">
-      <v-icon :icon="icons[message?.type] || icons.info" class="mr-2"/>
-      <div>
-        <div class="text-subtitle-2 font-weight-medium">{{ message?.title }}</div>
-        <div v-if="message?.content" class="text-body-2">{{ message?.content }}</div>
-      </div>
+  <Teleport to="body">
+    <div class="message-stack">
+      <TransitionGroup name="message">
+        <div
+          v-for="msg in messages"
+          :key="msg.id"
+          class="message-item"
+          :class="`message-${msg.type}`"
+        >
+          <div class="message-content">
+            <v-icon
+              :icon="icons[msg.type] || icons.info"
+              class="mr-2"
+              size="small"
+            />
+            <div class="message-text">
+              <div class="message-title">
+                {{ msg.title }}
+              </div>
+              <div
+                v-if="msg.content"
+                class="message-body"
+              >
+                {{ msg.content }}
+              </div>
+            </div>
+          </div>
+          <v-btn
+            :icon="ICON.CLOSE"
+            size="x-small"
+            variant="text"
+            class="message-close"
+            @click="removeMessage(msg.id)"
+          />
+        </div>
+      </TransitionGroup>
     </div>
-    <template #actions>
-      <v-btn icon="mdi-close" variant="text" @click="snackbar = false"/>
-    </template>
-  </v-snackbar>
+  </Teleport>
 </template>
 
 <script>
-import {defineComponent, ref, onBeforeUnmount, nextTick} from 'vue';
+import { ICON } from '@/utils/icons'
+import {defineComponent, ref, onBeforeUnmount} from 'vue';
 import messageService from '@/utils/message';
 
 export default defineComponent({
   name: 'GlobalMessage',
   setup() {
-    const snackbar = ref(false);
-    const message = ref(null);
+    const messages = ref([]);
+    const maxMessages = 5;
 
     const icons = {
-      success: 'mdi-check-circle',
-      error: 'mdi-alert-circle',
-      warning: 'mdi-alert',
-      info: 'mdi-information'
+      success: ICON.SUCCESS,
+      error: ICON.ERROR,
+      warning: ICON.WARNING,
+      info: ICON.INFO
     };
 
-    const colors = {
-      success: 'success',
-      error: 'error',
-      warning: 'warning',
-      info: 'info'
-    };
-
-    const unsubscribe = messageService?.onSnackbar?.(async (msg) => {
-      if (!msg) return;
-      if (snackbar.value) {
-        snackbar.value = false;
-        await nextTick();
+    const removeMessage = (id) => {
+      const index = messages.value.findIndex(m => m.id === id);
+      if (index !== -1) {
+        messages.value.splice(index, 1);
       }
-      message.value = msg;
-      snackbar.value = true;
-    });
+    };
+
+    const addMessage = (msg) => {
+      if (!msg) return;
+      
+      messages.value.unshift(msg);
+      
+      if (messages.value.length > maxMessages) {
+        messages.value.pop();
+      }
+
+      if (msg.timeout !== -1) {
+        const timeout = msg.timeout || 3000;
+        setTimeout(() => {
+          removeMessage(msg.id);
+        }, timeout);
+      }
+    };
+
+    const unsubscribe = messageService?.onSnackbar?.(addMessage);
 
     onBeforeUnmount(() => unsubscribe?.());
 
-    return {snackbar, message, icons, colors};
+    return {messages, icons, removeMessage, ICON};
   }
 });
 </script>
 
 <style scoped>
+.message-stack {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 400px;
+  pointer-events: none;
+}
 
+.message-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-hover);
+  pointer-events: auto;
+  min-width: 280px;
+  backdrop-filter: blur(8px);
+}
+
+.message-success {
+  background: rgba(var(--v-theme-success), 0.95);
+  color: white;
+}
+
+.message-error {
+  background: rgba(var(--v-theme-error), 0.95);
+  color: white;
+}
+
+.message-warning {
+  background: rgba(var(--v-theme-warning), 0.95);
+  color: white;
+}
+
+.message-info {
+  background: rgba(var(--v-theme-primary), 0.95);
+  color: white;
+}
+
+.message-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.message-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-title {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message-body {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.message-close {
+  flex-shrink: 0;
+  margin-left: 8px;
+  opacity: 0.8;
+  align-self: center;
+}
+
+.message-close:hover {
+  opacity: 1;
+}
+
+.message-enter-active,
+.message-leave-active {
+  transition: all 0.3s ease;
+}
+
+.message-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.message-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.message-move {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 480px) {
+  .message-stack {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+  }
+
+  .message-item {
+    min-width: auto;
+  }
+}
 </style>

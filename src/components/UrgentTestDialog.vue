@@ -11,14 +11,15 @@
         flat
       >
         <v-toolbar-title>
-          <v-icon class="mr-2">
-            mdi-chat
-          </v-icon>
+          <v-icon
+            start
+            :icon="ICON.CHAT"
+          />
           发送通知
         </v-toolbar-title>
         <v-spacer />
         <v-btn
-          icon="mdi-close"
+          :icon="ICON.CLOSE"
           @click="close"
         />
       </v-toolbar>
@@ -28,8 +29,6 @@
           <v-row>
             <v-col cols="12">
               <v-card>
-
-
                 <v-card-text>
                   <v-form>
                     <v-row>
@@ -42,21 +41,20 @@
                           label="强调通知"
                           color="red"
                           inset
-                        >
-                        </v-switch>
+                        />
                         <v-checkbox
                           v-model="notificationForm.isPersistent"
                           label="常驻展示"
                           color="primary"
                           hide-details
                           class="mt-0"
-                        ></v-checkbox>
+                        />
                       </v-col>
                       <v-col cols="12">
                         <v-textarea
                           v-model="notificationForm.message"
                           label="通知内容"
-                          outlined
+                          variant="outlined"
                           rows="3"
                           placeholder="请输入强调通知的内容..."
                         />
@@ -74,15 +72,13 @@
                     variant="elevated"
                     @click="sendNotification"
                   >
-                    <v-icon left>
+                    <v-icon start>
                       {{ notificationForm.isUrgent ? 'mdi-alert-circle' : 'mdi-information' }}
                     </v-icon>
                     {{ notificationForm.isUrgent ? '发送强调通知' : '发送通知' }}
                   </v-btn>
 
                   <v-spacer />
-
-
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -93,11 +89,16 @@
             <v-col cols="12">
               <v-card>
                 <v-card-title>
-                  <v-icon class="mr-2">mdi-pin</v-icon>
+                  <v-icon class="mr-2">
+                    mdi-pin
+                  </v-icon>
                   常驻通知管理
                 </v-card-title>
                 <v-card-text>
-                  <div v-if="persistentNotifications.length === 0" class="text-center text-grey py-4">
+                  <div
+                    v-if="persistentNotifications.length === 0"
+                    class="text-center text-medium-emphasis py-4"
+                  >
                     暂无常驻通知
                   </div>
                   <v-list v-else>
@@ -108,14 +109,25 @@
                       :subtitle="formatTime(item.timestamp)"
                       lines="two"
                     >
-                      <template v-slot:prepend>
+                      <template #prepend>
                         <v-icon :color="item.isUrgent ? 'error' : 'primary'">
                           {{ item.isUrgent ? 'mdi-alert-circle' : 'mdi-information' }}
                         </v-icon>
                       </template>
-                      <template v-slot:append>
-                        <v-btn icon="mdi-pencil" variant="text" size="small" @click="openEditDialog(item)"></v-btn>
-                        <v-btn icon="mdi-delete" variant="text" color="error" size="small" @click="deletePersistentNotification(item.id)"></v-btn>
+                      <template #append>
+                        <v-btn
+                          :icon="ICON.EDIT"
+                          variant="text"
+                          size="small"
+                          @click="openEditDialog(item)"
+                        />
+                        <v-btn
+                          :icon="ICON.DELETE"
+                          variant="text"
+                          color="error"
+                          size="small"
+                          @click="deletePersistentNotification(item.id)"
+                        />
                       </template>
                     </v-list-item>
                   </v-list>
@@ -138,14 +150,13 @@
                 <v-card-text>
                   <div
                     v-if="sentMessages.length === 0"
-                    class="text-center text-grey py-8"
+                    class="text-center text-medium-emphasis py-8"
                   >
                     <v-icon
                       size="64"
                       color="grey-lighten-2"
-                    >
-                      mdi-message-outline
-                    </v-icon>
+                      :icon="ICON.MESSAGE_OUTLINE"
+                    />
                     <div class="mt-2">
                       暂无发送记录
                     </div>
@@ -169,19 +180,19 @@
                               {{ message.isUrgent ? '强调通知' : '通知' }}
                             </span>
                             <v-spacer />
-                            <span class="text-caption font-weight-medium">
+                            <span class="text-body-small font-weight-medium">
                               {{ getReceiptStatus(message.receipts) }}
                             </span>
                           </div>
 
                           <div
-                            class="text-body-2 mb-3"
+                            class="text-body-medium mb-3"
                             style="max-height: 60px; overflow: hidden;"
                           >
                             {{ message.message }}
                           </div>
 
-                          <div class="text-caption">
+                          <div class="text-body-small">
                             <div>发送时间：{{ formatTime(message.timestamp) }}</div>
                             <div>事件ID：{{ message.id }}</div>
                             <div>通知ID：{{ message.notificationId }}</div>
@@ -201,17 +212,14 @@
                         >
                           <v-card-text class="pa-2">
                             <div class="align-center">
-
-                              <span class="text-body-2 font-weight-medium">{{ device.deviceName }}  </span>
-      <br/>
+                              <span class="text-body-medium font-weight-medium">{{ device.deviceName }}  </span>
+                              <br>
 
                               {{ device.deviceType }}
-
                             </div>
-                            <div class="text-caption mt-1">
+                            <div class="text-body-small mt-1">
                               已读于 {{ formatDeviceTime(device.timestamp) }}
                             </div>
-
                           </v-card-text>
                         </v-card>
 
@@ -226,21 +234,20 @@
                         >
                           <v-card-text class="pa-2">
                             <div class="align-center">
-
-                              <span class="text-body-2 font-weight-medium">{{ device.deviceName }}</span>
+                              <span class="text-body-medium font-weight-medium">{{ device.deviceName }}</span>
                               <v-spacer />
-                              <span class="text-caption text-grey">
+                              <span class="text-body-small text-medium-emphasis">
                                 {{ device.deviceType=="classroom"?"教室设备上的应用":device.deviceType }}
                               </span>
                             </div>
-                            <div class="text-caption text-grey mt-1">
+                            <div class="text-body-small text-medium-emphasis mt-1">
                               已显示于 {{ formatDeviceTime(device.timestamp) }}
                             </div>
                           </v-card-text>
                         </v-card>
-
                       </div>
-                      <div v-else> <v-card
+                      <div v-else>
+                        <v-card
 
                           color="info-lighten-4"
                           variant="outlined"
@@ -249,9 +256,10 @@
                           title="无设备在线"
                         >
                           <v-card-text>
-如果数秒后任然显示这个提示，则可能没有任何设备在线接收通知。
+                            如果数秒后任然显示这个提示，则可能没有任何设备在线接收通知。
                           </v-card-text>
-                        </v-card></div>
+                        </v-card>
+                      </div>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -266,12 +274,22 @@
     <EventSender ref="eventSender" />
 
     <!-- 编辑常驻通知对话框 -->
-    <v-dialog v-model="editDialog" max-width="500" :fullscreen="$vuetify.display.xs">
+    <v-dialog
+      v-model="editDialog"
+      max-width="500"
+      :fullscreen="$vuetify.display.xs"
+    >
       <v-card>
-        <v-toolbar flat density="compact">
+        <v-toolbar
+          flat
+          density="compact"
+        >
           <v-toolbar-title>编辑常驻通知</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon="mdi-close" @click="editDialog = false"></v-btn>
+          <v-spacer />
+          <v-btn
+            :icon="ICON.CLOSE"
+            @click="editDialog = false"
+          />
         </v-toolbar>
         <v-card-text>
           <v-form>
@@ -280,38 +298,66 @@
               label="通知内容"
               rows="3"
               auto-grow
-            ></v-textarea>
+            />
             <v-switch
               v-model="editForm.isUrgent"
               label="强调通知"
               color="error"
               hide-details
-            ></v-switch>
+            />
             <v-checkbox
               v-model="editForm.resend"
               label="保存并重新发送通知"
               hint="勾选后将作为新通知发送给所有在线设备"
               persistent-hint
-            ></v-checkbox>
+            />
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn variant="text" @click="editDialog = false">取消</v-btn>
-          <v-btn color="primary" :loading="savingEdit" @click="saveEdit">保存</v-btn>
+          <v-spacer />
+          <v-btn
+            variant="text"
+            @click="editDialog = false"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="primary"
+            :loading="savingEdit"
+            @click="saveEdit"
+          >
+            保存
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- 删除确认对话框 -->
-    <v-dialog v-model="deleteConfirmDialog" max-width="400">
+    <v-dialog
+      v-model="deleteConfirmDialog"
+      max-width="400"
+    >
       <v-card>
-        <v-card-title class="text-h5">确认删除</v-card-title>
+        <v-card-title class="text-headline-medium">
+          确认删除
+        </v-card-title>
         <v-card-text>确定要删除这条常驻通知吗？此操作无法撤销。</v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="grey-darken-1" variant="text" @click="deleteConfirmDialog = false">取消</v-btn>
-          <v-btn color="error" variant="text" @click="executeDelete">删除</v-btn>
+          <v-spacer />
+          <v-btn
+            color="grey-darken-1"
+            variant="text"
+            @click="deleteConfirmDialog = false"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="text"
+            @click="executeDelete"
+          >
+            删除
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -319,10 +365,12 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import ChatWidget from '@/components/ChatWidget.vue'
 import EventSender from '@/components/EventSender.vue'
 import { on as socketOn } from '@/utils/socketClient'
 import dataProvider from '@/utils/dataProvider'
+import { formatTime } from '@/utils/dateUtils'
 
 export default {
   name: 'UrgentTestDialog',
@@ -339,6 +387,7 @@ export default {
   emits: ['update:modelValue'],
   data() {
     return {
+      ICON,
       sending: false,
       notificationForm: {
         isUrgent: false,
@@ -524,9 +573,7 @@ export default {
       this.receiptCleanup = []
     },
 
-    formatTime(timestamp) {
-      return new Date(timestamp).toLocaleString('zh-CN')
-    },
+    formatTime,
 
     getReceiptStatus(receipts) {
       if (receipts.read.length > 0) return '已读'

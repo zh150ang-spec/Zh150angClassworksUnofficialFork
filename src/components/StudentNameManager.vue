@@ -27,7 +27,7 @@
           />
           <div
             v-if="studentList.length > 0"
-            class="mt-2 text-caption text-medium-emphasis"
+            class="mt-2 text-body-small text-medium-emphasis"
           >
             共 {{ studentList.length }} 位学生
           </div>
@@ -35,7 +35,6 @@
 
         <!-- 教师模式 -->
         <template v-else-if="isTeacherToken">
-
           <!-- 名称输入框 -->
           <v-text-field
             v-model="teacherForm.name"
@@ -48,7 +47,6 @@
 
             class="mt-2 mb-4"
           >
-
             <div class="d-flex flex-wrap gap-2">
               <v-chip
                 v-for="teacher in filteredTeacherSuggestions"
@@ -139,6 +137,7 @@
 <script setup>
 import {ref, computed, watch, onMounted} from 'vue'
 import {getSetting, watchSettings} from '@/utils/settings'
+import {getEffectiveServerUrl} from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 import dataProvider from '@/utils/dataProvider'
 
@@ -165,7 +164,7 @@ const displayName = computed(() => tokenInfo.value?.note || '设置名称')
 const hasToken = computed(() => !!kvToken.value)
 const kvToken = computed(() => getSetting('server.kvToken'))
 const provider = computed(() => getSetting('server.provider'))
-const isKvProvider = computed(() => provider.value === 'kv-server' || provider.value === 'classworkscloud')
+const isKvProvider = computed(() => ['kv-server', 'classworkscloud', 'dual-cloud', 'dual-server'].includes(provider.value))
 const dialogTitle = computed(() => (isStudentToken.value ? '设置学生姓名' : isTeacherToken.value ? '设置教师姓名' : '设置姓名'))
 // 教师建议列表（显示所有教师）
 const filteredTeacherSuggestions = computed(() => teacherList.value)
@@ -177,7 +176,7 @@ const checkStudentNameStatus = async () => {
   }
 
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     if (!serverUrl) return
 
     // 获取 Token 信息
@@ -226,7 +225,8 @@ const checkStudentNameStatus = async () => {
           console.log('教师列表不存在，初始化为空')
           teacherList.value = []
         } else {
-          console.error('加载教师列表失败:', err)
+          // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 Authorization Bearer token
+          console.error('加载教师列表失败:', err.message, err.response?.status)
           teacherList.value = []
         }
       }
@@ -243,7 +243,8 @@ const checkStudentNameStatus = async () => {
     }
 
   } catch (err) {
-    console.error('检查学生姓名状态失败:', err)
+    // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 Authorization Bearer token
+    console.error('检查学生姓名状态失败:', err.message, err.response?.status)
   }
 }
 
@@ -254,7 +255,7 @@ const saveStudentName = async () => {
   saving.value = true
 
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     const token = kvToken.value
 
     const response = await axios.post(
@@ -295,7 +296,7 @@ const saveTeacherName = async () => {
   saving.value = true
 
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     const token = kvToken.value
 
     // 构建教师数据

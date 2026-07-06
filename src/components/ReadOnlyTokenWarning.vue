@@ -9,14 +9,14 @@
     @click:close="dismissed = true"
   >
     <template #prepend>
-      <v-icon icon="mdi-lock-alert"/>
+      <v-icon :icon="ICON.LOCK_ALERT" />
     </template>
     <v-alert-title>当前使用只读 Token</v-alert-title>
-    <div class="text-body-2">
+    <div class="text-body-medium">
       您当前的访问令牌为只读权限，无法修改数据。如需编辑权限，请联系管理员或重新授权。
     </div>
     <template v-if="tokenInfo">
-      <div class="mt-2 text-caption">
+      <div class="mt-2 text-body-small">
         <div>
           <strong>设备类型：</strong>{{ deviceTypeLabel }}
         </div>
@@ -32,8 +32,10 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 import {ref, computed, onMounted, watch} from 'vue'
 import {getSetting} from '@/utils/settings'
+import {getEffectiveServerUrl} from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 
 const props = defineProps({
@@ -63,7 +65,7 @@ const deviceTypeLabel = computed(() => {
 
 const checkTokenPermission = async () => {
   const provider = getSetting('server.provider')
-  const isKvProvider = provider === 'kv-server' || provider === 'classworkscloud'
+  const isKvProvider = ['kv-server', 'classworkscloud', 'dual-cloud', 'dual-server'].includes(provider)
 
   if (!isKvProvider) {
     return
@@ -76,7 +78,7 @@ const checkTokenPermission = async () => {
 
   loading.value = true
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     if (!serverUrl) return
 
     const response = await axios.get(`${serverUrl}/kv/_token`, {

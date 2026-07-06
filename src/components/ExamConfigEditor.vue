@@ -11,7 +11,10 @@
       @click:close="error = ''"
     >
       <div class="d-flex align-center">
-        <v-icon class="mr-2">mdi-alert-circle</v-icon>
+        <v-icon
+          start
+          :icon="ICON.ERROR"
+        />
         {{ error }}
       </div>
     </v-alert>
@@ -27,7 +30,10 @@
       @click:close="success = ''"
     >
       <div class="d-flex align-center">
-        <v-icon class="mr-2">mdi-check-circle</v-icon>
+        <v-icon
+          start
+          :icon="ICON.SUCCESS"
+        />
         {{ success }}
       </div>
     </v-alert>
@@ -43,35 +49,54 @@
       <div class="d-flex align-center">
         <span class="font-weight-bold">配置验证失败，请检查以下问题：</span>
       </div>
-      <v-list class="bg-transparent" density="compact">
+      <v-list
+        class="bg-transparent"
+        density="compact"
+      >
         <v-list-item
-          v-for="(error, index) in validationErrors"
+          v-for="(err, index) in validationErrors"
           :key="index"
           class="px-0 py-0"
         >
-          <template v-slot:prepend>
-            <v-icon color="warning" size="small">mdi-circle-small</v-icon>
+          <template #prepend>
+            <v-icon
+              color="warning"
+              size="small"
+              :icon="ICON.CIRCLE_SMALL"
+            />
           </template>
-          <v-list-item-title class="text-body-2">{{ error }}</v-list-item-title>
+          <v-list-item-title class="text-body-medium">
+            {{ err }}
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-alert>
 
     <!-- 加载状态 -->
-    <v-card v-if="loading" class="my-4" outlined>
+    <v-card
+      v-if="loading"
+      class="my-4"
+      border
+    >
       <v-card-text>
-        <v-skeleton-loader class="mx-auto" type="article"></v-skeleton-loader>
+        <v-skeleton-loader
+          class="mx-auto"
+          type="article"
+        />
       </v-card-text>
     </v-card>
 
     <!-- 模式切换按钮和操作按钮 -->
-    <div v-if="!loading" class="d-flex justify-space-between align-center mb-4">
+    <div
+      v-if="!loading"
+      class="d-flex justify-space-between align-center mb-4"
+    >
       <div class="d-flex align-center gap-2">
         <v-btn
           :disabled="!isValidConfig"
           class="text-none"
           color="success"
-          prepend-icon="mdi-open-in-new"
+          :prepend-icon="ICON.OPEN_IN_NEW"
           variant="elevated"
           @click="openConfig"
         >
@@ -82,7 +107,7 @@
           :disabled="!isValidConfig"
           class="text-none"
           color="primary"
-          prepend-icon="mdi-link-variant"
+          :prepend-icon="ICON.LINK_VARIANT"
           variant="elevated"
           @click="copyConfigUrl"
         >
@@ -93,7 +118,7 @@
           :disabled="!isValidConfig"
           class="text-none"
           color="primary"
-          prepend-icon="mdi-download"
+          :prepend-icon="ICON.DOWNLOAD"
           variant="elevated"
           @click="downloadAsJson"
         >
@@ -104,7 +129,7 @@
           :disabled="!isValidConfig"
           class="text-none"
           color="primary"
-          prepend-icon="mdi-download"
+          :prepend-icon="ICON.DOWNLOAD"
           variant="elevated"
           @click="downloadAsEa2"
         >
@@ -115,7 +140,7 @@
           :disabled="!isValidConfig"
           class="text-none"
           color="secondary"
-          prepend-icon="mdi-play-circle"
+          :prepend-icon="ICON.PLAY_CIRCLE"
           variant="elevated"
           @click="openInEa2Player"
         >
@@ -138,31 +163,50 @@
       >
         <v-btn
           class="text-error"
-          prepend-icon="mdi-delete"
+          :prepend-icon="ICON.DELETE"
           @click="confirmDelete"
-
         >
           删除配置
         </v-btn>
-        <v-btn :value="false" prepend-icon="mdi-eye"> 预览</v-btn>
-        <v-btn :value="true" prepend-icon="mdi-pencil"> 编辑</v-btn>
+        <v-btn
+          :value="false"
+          :prepend-icon="ICON.EYE"
+        >
+          预览
+        </v-btn>
+        <v-btn
+          :value="true"
+          :prepend-icon="ICON.EDIT"
+        >
+          编辑
+        </v-btn>
       </v-btn-toggle>
     </div>
 
     <!-- 预览模式 -->
     <div v-if="!loading && !isEditMode">
       <div class="mb-8">
-        <div class="text-h3 font-weight-bold" style="line-height: 1.2">
+        <div
+          class="text-display-small font-weight-bold"
+          style="line-height: var(--line-height-heading)"
+        >
           {{ localConfig.examName || "未设置考试名称" }}
         </div>
         <div
-          class="text-subtitle-1 text-grey"
-          style="white-space: pre-wrap; line-height: 1.8"
+          class="text-body-large text-medium-emphasis"
+          style="white-space: pre-wrap; line-height: var(--line-height-preformatted)"
         >
           {{ localConfig.message || "未设置考试提示" }}
         </div>
-        <v-chip v-if="localConfig.room" class="px-4 py-2" size="large">
-          <v-icon start>mdi-home</v-icon>
+        <v-chip
+          v-if="localConfig.room"
+          class="px-4 py-2"
+          size="large"
+        >
+          <v-icon
+            start
+            :icon="ICON.HOME"
+          />
           考场：{{ localConfig.room }}
         </v-chip>
       </div>
@@ -178,35 +222,46 @@
             lg="4"
             md="6"
           >
-            <v-card class="h-100" hover variant="tonal">
+            <v-card
+              class="h-100"
+              hover
+              variant="tonal"
+            >
               <v-card-title class="bg-primary-lighten-5 pa-4">
                 <div class="d-flex align-center">
-                  <v-icon class="mr-2">mdi-book-open-page-variant</v-icon>
+                  <v-icon
+                    start
+                    :icon="ICON.BOOK"
+                  />
                   <span class="">{{ examInfo.name || "未设置科目" }}</span>
                 </div>
               </v-card-title>
               <v-card-text class="pa-4">
                 <div class="mb-3">
                   <div class="d-flex align-center mb-1">
-                    <v-icon class="mr-2" color="success" size="small"
-                    >mdi-clock-start
-                    </v-icon
-                    >
-                    <span class="text-body-2 text-grey-darken-1">开始时间</span>
+                    <v-icon
+                      start
+                      color="success"
+                      size="small"
+                      :icon="ICON.CLOCK_START"
+                    />
+                    <span class="text-body-medium text-medium-emphasis">开始时间</span>
                   </div>
-                  <div class="text-h6 font-weight-medium text-success">
+                  <div class="text-headline-small font-weight-medium text-success">
                     {{ examInfo.startFormatted || examInfo.start || "未设置" }}
                   </div>
                 </div>
                 <div>
                   <div class="d-flex align-center mb-1">
-                    <v-icon class="mr-2" color="error" size="small"
-                    >mdi-clock-end
-                    </v-icon
-                    >
-                    <span class="text-body-2 text-grey-darken-1">结束时间</span>
+                    <v-icon
+                      start
+                      color="error"
+                      size="small"
+                      :icon="ICON.CLOCK_END"
+                    />
+                    <span class="text-body-medium text-medium-emphasis">结束时间</span>
                   </div>
-                  <div class="text-h6 font-weight-medium text-error">
+                  <div class="text-headline-small font-weight-medium text-error">
                     {{ examInfo.endFormatted || examInfo.end || "未设置" }}
                   </div>
                 </div>
@@ -215,33 +270,55 @@
           </v-col>
         </v-row>
       </div>
-      <div v-else class="text-center py-12">
-        <v-icon class="mb-4" color="grey-lighten-2" size="80">
-          mdi-calendar-blank
-        </v-icon>
-        <div class="text-h5 text-grey-darken-1 mb-2">暂无考试科目安排</div>
-        <div class="text-body-1 text-grey mb-4">
+      <div
+        v-else
+        class="text-center py-12"
+      >
+        <v-icon
+          class="mb-4"
+          color="grey-lighten-2"
+          size="80"
+          :icon="ICON.CALENDAR_BLANK"
+        />
+        <div class="text-headline-medium text-medium-emphasis mb-2">
+          暂无考试科目安排
+        </div>
+        <div class="text-body-large text-medium-emphasis mb-4">
           点击上方"添加科目"按钮开始配置考试时间表
         </div>
-        <v-btn color="primary" variant="outlined" @click="quickEdit">
-          <v-icon start>mdi-plus</v-icon>
+        <v-btn
+          color="primary"
+          variant="outlined"
+          @click="quickEdit"
+        >
+          <v-icon
+            start
+            :icon="ICON.PLUS"
+          />
           立即添加
         </v-btn>
       </div>
 
       <!-- JSON预览 -->
-      <v-card border class="mb-4" elevation="2">
+      <v-card
+        border
+        class="mb-4"
+        elevation="2"
+      >
         <v-card-title
           class="d-flex align-center text-white cursor-pointer"
           @click="showJsonPreview = !showJsonPreview"
         >
-          <v-icon class="mr-2">mdi-code-json</v-icon>
+          <v-icon
+            start
+            :icon="ICON.CODE_JSON"
+          />
           配置预览
-          <v-spacer></v-spacer>
+          <v-spacer />
 
           <v-btn
             color="white"
-            prepend-icon="mdi-content-copy"
+            :prepend-icon="ICON.CONTENT_COPY"
             size="small"
             variant="outlined"
             @click.stop="copyToClipboard"
@@ -255,12 +332,17 @@
             color="white"
             size="small"
             variant="text"
-          >
-          </v-btn>
+          />
         </v-card-title>
         <v-expand-transition>
-          <v-card-text v-show="showJsonPreview" class="pa-4">
-            <v-card class="pa-4" variant="tonal">
+          <v-card-text
+            v-show="showJsonPreview"
+            class="pa-4"
+          >
+            <v-card
+              class="pa-4"
+              variant="tonal"
+            >
               <pre class="json-preview"><code>{{ formattedStorageJson }}</code></pre>
             </v-card>
           </v-card-text>
@@ -271,14 +353,24 @@
     <!-- 编辑模式 -->
     <div v-if="!loading && isEditMode">
       <!-- 基本信息 -->
-      <v-card border class="mb-4" elevation="1">
+      <v-card
+        border
+        class="mb-4"
+        elevation="1"
+      >
         <v-card-title class="d-flex align-center bg-primary-lighten-5 pa-4">
-          <v-icon class="mr-2">mdi-information</v-icon>
+          <v-icon
+            start
+            :icon="ICON.INFO"
+          />
           <span class="font-weight-bold">基本信息</span>
         </v-card-title>
         <v-card-text class="pa-6">
           <v-row>
-            <v-col cols="12" md="6">
+            <v-col
+              cols="12"
+              md="6"
+            >
               <v-text-field
                 v-model="localConfig.examName"
                 :rules="[
@@ -290,27 +382,34 @@
                 density="comfortable"
                 label="考试名称"
                 placeholder="如：2025年高考模拟考试"
-                prepend-inner-icon="mdi-calendar-text"
+                :prepend-inner-icon="ICON.CALENDAR_TEXT"
                 required
                 variant="outlined"
-              ></v-text-field>
+              />
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col
+              cols="12"
+              md="6"
+            >
               <v-text-field
                 v-model="localConfig.room"
                 clearable
                 density="comfortable"
                 label="考场号（仅 ExamSchedule-Management 支持此配置）"
                 placeholder="如：一号考场"
-                prepend-inner-icon="mdi-home"
+                :prepend-inner-icon="ICON.HOME"
                 variant="outlined"
-              ></v-text-field>
+              />
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
-              <span class="text-subtitle-2 font-weight-bold d-block mb-2">
-                <v-icon size="small" class="mr-1">mdi-message-text</v-icon>
+              <span class="text-label-large font-weight-bold d-block mb-2">
+                <v-icon
+                  size="small"
+                  class="mr-1"
+                  :icon="ICON.MESSAGE_TEXT"
+                />
                 考试提示
               </span>
               <v-textarea
@@ -326,10 +425,13 @@
                 placeholder="例如：请保持卷面整洁，诚信应考。在听到终考铃时立刻停止作答。"
                 rows="3"
                 variant="outlined"
-              ></v-textarea>
+              />
 
               <!-- 默认提示选项 -->
-              <div v-if="!localConfig.message || localConfig.message.trim() === ''" class="mt-3">
+              <div
+                v-if="!localConfig.message || localConfig.message.trim() === ''"
+                class="mt-3"
+              >
                 <v-chip-group
                   class="d-flex gap-2"
                   column
@@ -343,12 +445,20 @@
                     variant="outlined"
                     @click="selectDefaultTip(tip)"
                   >
-                    <v-icon size="small" start>mdi-plus</v-icon>
+                    <v-icon
+                      size="small"
+                      start
+                      :icon="ICON.PLUS"
+                    />
                     {{ tip.substring(0, 20) }}...
                   </v-chip>
                 </v-chip-group>
-                <div class="text-caption text-medium-emphasis mt-2 ml-2">
-                  <v-icon class="mr-1" size="x-small">mdi-lightbulb-outline</v-icon>
+                <div class="text-body-small text-medium-emphasis mt-2 ml-2">
+                  <v-icon
+                    class="mr-1"
+                    size="x-small"
+                    :icon="ICON.LIGHTBULB_OUTLINE"
+                  />
                   点击上方选项快速添加常用考试提示
                 </div>
               </div>
@@ -358,11 +468,18 @@
       </v-card>
 
       <!-- 考试科目安排 -->
-      <v-card border class="mb-4" elevation="1">
+      <v-card
+        border
+        class="mb-4"
+        elevation="1"
+      >
         <v-card-title class="d-flex align-center bg-success-lighten-5 pa-4">
-          <v-icon class="mr-2">mdi-format-list-bulleted</v-icon>
+          <v-icon
+            start
+            :icon="ICON.FORMAT_LIST"
+          />
           <span class="font-weight-bold">考试科目安排</span>
-          <v-spacer></v-spacer>
+          <v-spacer />
 
           <!-- 提醒时间开关 -->
           <div class="d-flex align-center mr-4">
@@ -371,17 +488,17 @@
               color="primary"
               density="compact"
               hide-details
-              @change="toggleAlertTimeMode"
+              @update:model-value="toggleAlertTimeMode"
             >
-              <template v-slot:label>
-                <span class="text-body-2">自定义提醒时间</span>
+              <template #label>
+                <span class="text-body-medium">自定义提醒时间</span>
               </template>
             </v-switch>
           </div>
 
           <v-btn
             color="success"
-            prepend-icon="mdi-plus"
+            :prepend-icon="ICON.PLUS"
             size="small"
             variant="elevated"
             @click="addExamInfo"
@@ -408,49 +525,71 @@
                     variant="tonal"
                     class="mr-3"
                   >
-                    <v-icon start size="small">mdi-numeric-{{ index + 1 }}-circle</v-icon>
+                    <v-icon
+                      start
+                      size="small"
+                      :icon="getNumericCircleIcon(index + 1)"
+                    />
                     第 {{ index + 1 }} 科目
                   </v-chip>
 
                   <!-- 考试时长显示 -->
 
 
-                  <v-spacer></v-spacer>
+                  <v-spacer />
                   <div class="d-flex gap-1">
                     <v-btn
                       v-if="index > 0"
                       color="primary"
-                      icon="mdi-arrow-up"
+                      :icon="ICON.ARROW_UP"
                       size="x-small"
                       variant="text"
                       @click="moveExamInfo(index, -1)"
                     >
-                      <v-tooltip activator="parent" location="bottom">上移</v-tooltip>
+                      <v-tooltip
+                        activator="parent"
+                        location="bottom"
+                      >
+                        上移
+                      </v-tooltip>
                     </v-btn>
                     <v-btn
                       v-if="index < localConfig.examInfos.length - 1"
                       color="primary"
-                      icon="mdi-arrow-down"
+                      :icon="ICON.ARROW_DOWN"
                       size="x-small"
                       variant="text"
                       @click="moveExamInfo(index, 1)"
                     >
-                      <v-tooltip activator="parent" location="bottom">下移</v-tooltip>
+                      <v-tooltip
+                        activator="parent"
+                        location="bottom"
+                      >
+                        下移
+                      </v-tooltip>
                     </v-btn>
                     <v-btn
                       color="error"
-                      icon="mdi-delete"
+                      :icon="ICON.DELETE"
                       size="x-small"
                       variant="text"
                       @click="removeExamInfo(index)"
                     >
-                      <v-tooltip activator="parent" location="bottom">删除</v-tooltip>
+                      <v-tooltip
+                        activator="parent"
+                        location="bottom"
+                      >
+                        删除
+                      </v-tooltip>
                     </v-btn>
                   </div>
                 </div>
 
                 <v-row class="align-start">
-                  <v-col cols="12" md="4">
+                  <v-col
+                    cols="12"
+                    md="4"
+                  >
                     <!-- 科目名称自动完成选择器 -->
                     <v-autocomplete
                       v-model="examInfo.name"
@@ -464,31 +603,34 @@
                       item-title="name"
                       label="科目名称"
                       no-data-text="没有可用科目，请输入自定义名称"
-                      prepend-inner-icon="mdi-book"
+                      :prepend-inner-icon="ICON.BOOK_SIMPLE"
                       variant="outlined"
                     >
-                      <template v-slot:prepend-item>
+                      <template #prepend-item>
                         <v-list-item
                           v-if="customSubjectInput"
                           title="自定义："
                         >
-                          <template v-slot:append>
+                          <template #append>
                             <span class="text-primary font-weight-bold">{{ customSubjectInput }}</span>
                           </template>
                         </v-list-item>
-                        <v-divider v-if="customSubjectInput"></v-divider>
+                        <v-divider v-if="customSubjectInput" />
                       </template>
                     </v-autocomplete>
                   </v-col>
-                  <v-col cols="12" md="3">
+                  <v-col
+                    cols="12"
+                    md="3"
+                  >
                     <v-menu
                       v-model="examInfo.startDateMenu"
                       :close-on-content-click="false"
                       min-width="auto"
-                      offset-y
+                      location="bottom start"
                       transition="scale-transition"
                     >
-                      <template v-slot:activator="{ props }">
+                      <template #activator="{ props }">
                         <v-text-field
                           v-model="examInfo.startFormatted"
                           :rules="[
@@ -499,32 +641,38 @@
                           density="comfortable"
                           label="开始时间"
                           placeholder="2025/01/01 09:00"
-                          prepend-inner-icon="mdi-clock-start"
+                          :prepend-inner-icon="ICON.CLOCK_START"
                           v-bind="props"
                           variant="outlined"
                           @blur="updateStartDateTimeFromInput(index)"
                         >
-                          <template v-slot:append>
-                            <v-icon>mdi-calendar-clock</v-icon>
+                          <template #append>
+                            <v-icon :icon="ICON.CALENDAR_CLOCK" />
                           </template>
                         </v-text-field>
                       </template>
                       <v-card min-width="500">
                         <v-card-title class="text-center py-3 bg-primary-lighten-5">
-                          <v-icon class="mr-2" color="primary">mdi-clock-start</v-icon>
+                          <v-icon
+                            start
+                            color="primary"
+                            :icon="ICON.CLOCK_START"
+                          />
                           选择开始时间
                         </v-card-title>
                         <v-card-text class="pa-0">
                           <v-row no-gutters>
-                            <v-col class="border-e" cols="6">
+                            <v-col
+                              class="border-e"
+                              cols="6"
+                            >
                               <v-date-picker
                                 v-model="examInfo.startDate"
                                 color="primary"
                                 elevation="0"
-                                locale="zh-cn"
                                 show-adjacent-months
                                 @update:model-value="updateStartDateTime(index)"
-                              ></v-date-picker>
+                              />
                             </v-col>
                             <v-col cols="6">
                               <v-time-picker
@@ -534,14 +682,14 @@
                                 format="24hr"
                                 scrollable
                                 @update:model-value="updateStartDateTime(index)"
-                              ></v-time-picker>
+                              />
                             </v-col>
                           </v-row>
                         </v-card-text>
                         <v-card-actions>
-                          <v-spacer></v-spacer>
+                          <v-spacer />
                           <v-btn
-                            color="grey"
+                            color="medium-emphasis"
                             variant="text"
                             @click="examInfo.startDateMenu = false"
                           >
@@ -551,15 +699,18 @@
                       </v-card>
                     </v-menu>
                   </v-col>
-                  <v-col cols="12" md="3">
+                  <v-col
+                    cols="12"
+                    md="3"
+                  >
                     <v-menu
                       v-model="examInfo.endDateMenu"
                       :close-on-content-click="false"
                       min-width="auto"
-                      offset-y
+                      location="bottom start"
                       transition="scale-transition"
                     >
-                      <template v-slot:activator="{ props }">
+                      <template #activator="{ props }">
                         <v-text-field
                           v-model="examInfo.endFormatted"
                           :rules="[
@@ -571,32 +722,38 @@
                           density="comfortable"
                           label="结束时间"
                           placeholder="2025/01/01 11:00"
-                          prepend-inner-icon="mdi-clock-end"
+                          :prepend-inner-icon="ICON.CLOCK_END"
                           v-bind="props"
                           variant="outlined"
                           @blur="updateEndDateTimeFromInput(index)"
                         >
-                          <template v-slot:append>
-                            <v-icon>mdi-calendar-clock</v-icon>
+                          <template #append>
+                            <v-icon :icon="ICON.CALENDAR_CLOCK" />
                           </template>
                         </v-text-field>
                       </template>
                       <v-card min-width="500">
                         <v-card-title class="text-center py-3 bg-error-lighten-5">
-                          <v-icon class="mr-2" color="error">mdi-clock-end</v-icon>
+                          <v-icon
+                            start
+                            color="error"
+                            :icon="ICON.CLOCK_END"
+                          />
                           选择结束时间
                         </v-card-title>
                         <v-card-text class="pa-0">
                           <v-row no-gutters>
-                            <v-col class="border-e" cols="6">
+                            <v-col
+                              class="border-e"
+                              cols="6"
+                            >
                               <v-date-picker
                                 v-model="examInfo.endDate"
                                 color="error"
                                 elevation="0"
-                                locale="zh-cn"
                                 show-adjacent-months
                                 @update:model-value="updateEndDateTime(index)"
-                              ></v-date-picker>
+                              />
                             </v-col>
                             <v-col cols="6">
                               <v-time-picker
@@ -606,14 +763,14 @@
                                 format="24hr"
                                 scrollable
                                 @update:model-value="updateEndDateTime(index)"
-                              ></v-time-picker>
+                              />
                             </v-col>
                           </v-row>
                         </v-card-text>
                         <v-card-actions>
-                          <v-spacer></v-spacer>
+                          <v-spacer />
                           <v-btn
-                            color="grey"
+                            color="medium-emphasis"
                             variant="text"
                             @click="examInfo.endDateMenu = false"
                           >
@@ -623,66 +780,81 @@
                       </v-card>
                     </v-menu>
                   </v-col>
-                    <v-col cols="12" md="2">
-                      <v-text-field
-                        v-model="examInfo.durationMinutes"
-                        :rules="[
-                          (v) => !!v || '时长不能为空',
-                          (v) => !isNaN(v) || '时长必须是数字',
-                          (v) => parseInt(v) > 0 || '时长必须大于0',
-                          (v) => parseInt(v) <= 1440 || '时长不能超过1440分钟（24小时）'
-                        ]"
-                        type="number"
-                        min="1"
-                        max="1440"
-                        density="comfortable"
-                        label="时长（分钟）"
-                        placeholder="例如：120"
-                        prepend-inner-icon="mdi-timer"
-                        variant="outlined"
-                        :hint="durationHint(examInfo)"
-                        persistent-hint
-                        @blur="updateDurationFromInput(index)"
-                      />
-                    </v-col>
+                  <v-col
+                    cols="12"
+                    md="2"
+                  >
+                    <v-text-field
+                      v-model="examInfo.durationMinutes"
+                      :rules="[
+                        (v) => !!v || '时长不能为空',
+                        (v) => !isNaN(v) || '时长必须是数字',
+                        (v) => parseInt(v) > 0 || '时长必须大于0',
+                        (v) => parseInt(v) <= 1440 || '时长不能超过1440分钟（24小时）'
+                      ]"
+                      type="number"
+                      min="1"
+                      max="1440"
+                      density="comfortable"
+                      label="时长（分钟）"
+                      placeholder="例如：120"
+                      :prepend-inner-icon="ICON.TIMER"
+                      variant="outlined"
+                      :hint="durationHint(examInfo)"
+                      persistent-hint
+                      @blur="updateDurationFromInput(index)"
+                    />
+                  </v-col>
 
-                    <!-- 提醒时间输入框（仅在启用自定义时显示） -->
-                    <v-col v-if="enableCustomAlertTime" cols="12" md="2">
-                      <v-text-field
-                        v-model="examInfo.alertTime"
-                        :rules="[
-                          (v) => !!v || '提醒时间不能为空',
-                          (v) => !isNaN(v) || '提醒时间必须是数字',
-                          (v) => parseInt(v) >= 0 || '提醒时间不能为负数',
-                          (v) => parseInt(v) <= 120 || '提醒时间不能超过120分钟'
-                        ]"
-                        type="number"
-                        min="0"
-                        max="120"
-                        density="comfortable"
-                        label="提醒时间（分钟）"
-                        placeholder="例如：15"
-                        prepend-inner-icon="mdi-bell-ring"
-                        variant="outlined"
-                        hint="考试结束前提醒"
-                        persistent-hint
-                      />
-                    </v-col>
+                  <!-- 提醒时间输入框（仅在启用自定义时显示） -->
+                  <v-col
+                    v-if="enableCustomAlertTime"
+                    cols="12"
+                    md="2"
+                  >
+                    <v-text-field
+                      v-model="examInfo.alertTime"
+                      :rules="[
+                        (v) => !!v || '提醒时间不能为空',
+                        (v) => !isNaN(v) || '提醒时间必须是数字',
+                        (v) => parseInt(v) >= 0 || '提醒时间不能为负数',
+                        (v) => parseInt(v) <= 120 || '提醒时间不能超过120分钟'
+                      ]"
+                      type="number"
+                      min="0"
+                      max="120"
+                      density="comfortable"
+                      label="提醒时间（分钟）"
+                      placeholder="例如：15"
+                      :prepend-inner-icon="ICON.BELL_RING"
+                      variant="outlined"
+                      hint="考试结束前提醒"
+                      persistent-hint
+                    />
+                  </v-col>
                 </v-row>
               </div>
             </v-list-item>
           </v-list>
-          <div v-else class="text-center py-12">
-            <v-icon class="mb-4" color="grey-lighten-2" size="80">
-              mdi-calendar-blank
-            </v-icon>
-            <div class="text-h5 text-grey-darken-1 mb-2">暂无考试科目安排</div>
-            <div class="text-body-1 text-grey mb-4">
+          <div
+            v-else
+            class="text-center py-12"
+          >
+            <v-icon
+              class="mb-4"
+              color="grey-lighten-2"
+              size="80"
+              :icon="ICON.CALENDAR_BLANK"
+            />
+            <div class="text-headline-medium text-medium-emphasis mb-2">
+              暂无考试科目安排
+            </div>
+            <div class="text-body-large text-medium-emphasis mb-4">
               点击上方"添加科目"按钮开始配置
             </div>
             <v-btn
               color="success"
-              prepend-icon="mdi-plus"
+              :prepend-icon="ICON.PLUS"
               size="large"
               variant="elevated"
               @click="addExamInfo"
@@ -695,20 +867,27 @@
     </div>
 
     <!-- 删除确认对话框 -->
-    <v-dialog v-model="deleteDialog" max-width="400">
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="400"
+    >
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon class="mr-2" color="error">mdi-delete-alert</v-icon>
+          <v-icon
+            start
+            color="error"
+            :icon="ICON.DELETE_ALERT"
+          />
           确认删除配置
         </v-card-title>
         <v-card-text>
           确定要删除配置 <strong>{{ localConfig.examName || `配置 ${configId}` }}</strong> 吗？
-          <br><small class="text-grey">此操作不可撤销，将会删除所有相关数据</small>
+          <br><small class="text-medium-emphasis">此操作不可撤销，将会删除所有相关数据</small>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn
-            color="grey"
+            color="medium-emphasis"
             variant="text"
             @click="deleteDialog = false"
           >
@@ -729,7 +908,10 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import dataProvider from "@/utils/dataProvider";
+import { formatTimeOnly } from "@/utils/dateUtils";
+import { getNumericCircleIcon as _getNumericCircleIcon } from "@/utils/icons";
 
 export default {
   name: "ExamConfigEditor",
@@ -747,6 +929,7 @@ export default {
   emits: ["saved", "error", "opened", "deleted"],
   data() {
     return {
+      ICON,
       localConfig: {
         examName: "",
         message: "",
@@ -939,6 +1122,9 @@ export default {
     this.loadSubjects();
   },
   methods: {
+    getNumericCircleIcon(n) {
+      return _getNumericCircleIcon(n)
+    },
     /**
      * 加载可用的科目列表
      */
@@ -1042,7 +1228,7 @@ export default {
       if (!value) return true; // 空值由必填验证处理
 
       // 匹配格式: YYYY/MM/DD HH:mm 或 YYYY-MM-DD HH:mm
-      const match = value.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})\s+(\d{1,2}):(\d{1,2})/);
+      const match = value.match(/(\d{4})[-/ ](\d{1,2})[-/ ](\d{1,2})\s+(\d{1,2}):(\d{1,2})/);
       if (!match) {
         return `${fieldName}格式不正确，请使用格式：2025/01/01 09:00`;
       }
@@ -1099,7 +1285,7 @@ export default {
         }
 
         return true;
-      } catch (error) {
+      } catch {
         return true;
       }
     },
@@ -1146,7 +1332,7 @@ export default {
         }
 
         return true;
-      } catch (error) {
+      } catch {
         return true;
       }
     },
@@ -1192,7 +1378,7 @@ export default {
         } else {
           return `${hours}小时${minutes}分钟`;
         }
-      } catch (error) {
+      } catch {
         return '';
       }
     },
@@ -1208,7 +1394,7 @@ export default {
       if (!formatted) return;
 
       // 尝试解析输入格式: 2025/01/01 09:00 或 2025-01-01 09:00
-      const match = formatted.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})\s+(\d{1,2}):(\d{1,2})/);
+      const match = formatted.match(/(\d{4})[-/ ](\d{1,2})[-/ ](\d{1,2})\s+(\d{1,2}):(\d{1,2})/);
       if (!match) return;
 
       const [, year, month, day, hour, minute] = match;
@@ -1233,7 +1419,7 @@ export default {
       if (!formatted) return;
 
       // 尝试解析输入格式: 2025/01/01 11:00 或 2025-01-01 11:00
-      const match = formatted.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})\s+(\d{1,2}):(\d{1,2})/);
+      const match = formatted.match(/(\d{4})[-/ ](\d{1,2})[-/ ](\d{1,2})\s+(\d{1,2}):(\d{1,2})/);
       if (!match) return;
 
       const [, year, month, day, hour, minute] = match;
@@ -1253,7 +1439,7 @@ export default {
       try {
         const response = await dataProvider.loadData(`es_${this.configId}`);
 
-        if (response) {
+        if (response && response.success !== false) {
           this.localConfig = {
             examName: "",
             message: "",
@@ -1262,12 +1448,10 @@ export default {
             ...response,
           };
 
-          // 确保examInfos是数组
           if (!Array.isArray(this.localConfig.examInfos)) {
             this.localConfig.examInfos = [];
           }
 
-          // 转换时间格式并初始化日期选择器数据
           this.localConfig.examInfos.forEach((info) => {
             if (info.start) {
               const startDate = this.parseDateTime(info.start);
@@ -1286,7 +1470,6 @@ export default {
               info.endDateMenu = false;
             }
 
-            // 初始化时长（分钟）- 前端计算
             try {
               if (info.start && info.end) {
                 const s = new Date(info.start);
@@ -1300,27 +1483,27 @@ export default {
               } else {
                 info.durationMinutes = 120;
               }
-            } catch (_) {
+            } catch {
               info.durationMinutes = 120;
             }
 
-            // 初始化提醒时间 - 处理数据迁移
             if (info.alertTime === undefined || info.alertTime === null) {
-              info.alertTime = 15; // 旧数据默认15分钟
+              info.alertTime = 15;
             } else {
               info.alertTime = parseInt(info.alertTime) || 15;
             }
           });
 
-          // 检测是否有自定义提醒时间
           const hasCustomAlertTime = this.localConfig.examInfos.some(
             info => info.alertTime !== 15
           );
           this.enableCustomAlertTime = hasCustomAlertTime;
-        } else {
+        } else if (response && response.success === false) {
           console.error("加载配置失败:", response);
-          this.error =
-            "加载配置失败: " + (response.error?.message || "未知错误");
+          this.error = "加载配置失败: " + (response.error?.message || "未知错误");
+          this.$emit("error", this.error);
+        } else {
+          this.error = "配置不存在";
           this.$emit("error", this.error);
         }
       } catch (err) {
@@ -1451,7 +1634,7 @@ export default {
     async copyToClipboard() {
       try {
         await navigator.clipboard.writeText(this.formattedStorageJson);
-        this.$message.success('配置已复制到剪贴板');
+        this.$message.success('复制成功', '配置已复制到剪贴板');
         } catch (err) {
         this.error = "复制失败: " + err.message;
       }
@@ -1471,7 +1654,7 @@ export default {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        this.$message?.success('已下载 JSON 文件');
+        this.$message?.success('下载成功', 'JSON 文件已下载');
         } catch (err) {
         this.error = '下载失败: ' + err.message;
       }
@@ -1491,7 +1674,7 @@ export default {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-                  this.$message?.success('已下载 ExamAware2 知试 （.ea2）文件');
+                  this.$message?.success('下载成功', 'ExamAware2 知试文件已下载');
 
 
       } catch (err) {
@@ -1505,15 +1688,17 @@ export default {
     async copyConfigUrl() {
       try {
         // 获取配置的云端访问地址
+        // 注意：参数名必须与 dataProvider.getKeyCloudUrl 的解构一致（migrateFromLocal、autoConfigureCloud）
+        // 之前误用 autoMigrate/autoConfig 会被静默忽略，导致选项失效
         const result = await dataProvider.getKeyCloudUrl(`es_${this.configId}`, {
-          autoMigrate: true,
-          autoConfig: true
+          migrateFromLocal: true,
+          autoConfigureCloud: true
         });
 
         if (result.success && result.url) {
           // 直接复制KV地址
           await navigator.clipboard.writeText(result.url);
-          this.$message.success('云端地址已复制到剪贴板');
+          this.$message.success('复制成功', '已复制，链接含访问凭证请勿分享');
         } else {
           throw new Error(result.error || '获取云端地址失败');
         }
@@ -1683,10 +1868,7 @@ export default {
         return "00:00";
       }
 
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-
-      return `${hours}:${minutes}`;
+      return formatTimeOnly(dateTime);
     },
 
     /**
@@ -1724,7 +1906,9 @@ export default {
               durationMinutes = diff;
             }
           }
-        } catch (_) {}
+        } catch {
+          // 忽略日期解析错误
+        }
       }
       if (isNaN(durationMinutes) || durationMinutes <= 0 || durationMinutes > 24 * 60) {
         durationMinutes = 120;
@@ -1745,16 +1929,13 @@ export default {
       const examInfo = this.localConfig.examInfos[index];
       if (!examInfo.endDate || !examInfo.endTime) return;
 
-      // 合并日期和时间
       const date = new Date(examInfo.endDate);
       const [hours, minutes] = examInfo.endTime.split(":");
       date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-      // 更新相关字段
       examInfo.end = this.formatDateTimeLocal(date);
       examInfo.endFormatted = this.formatDisplayDateTime(date);
 
-      // 同步考试时长
       try {
         if (examInfo.startDate && examInfo.startTime) {
           const s = new Date(examInfo.startDate);
@@ -1765,7 +1946,9 @@ export default {
             examInfo.durationMinutes = diff;
           }
         }
-      } catch (_) {}
+      } catch {
+        // 忽略日期解析错误
+      }
     },
 
     /**
@@ -1775,9 +1958,10 @@ export default {
     async openConfig() {
       try {
         // 获取配置的云端访问地址
+        // 注意：参数名必须与 dataProvider.getKeyCloudUrl 的解构一致（migrateFromLocal、autoConfigureCloud）
         const result = await dataProvider.getKeyCloudUrl(`es_${this.configId}`, {
-          autoMigrate: true,
-          autoConfig: true
+          migrateFromLocal: true,
+          autoConfigureCloud: true
         });
 
         if (result.success && result.url) {
@@ -1872,7 +2056,7 @@ export default {
         // 尝试打开
         window.location.href = ea2Url;
 
-        this.$message?.success('正在拉起 ExamAware2 播放器...');
+        this.$message?.success('正在打开', '正在拉起 ExamAware2 播放器...');
       } catch (err) {
         this.error = '拉起播放器失败: ' + err.message;
       }
@@ -1883,7 +2067,7 @@ export default {
 
 <style scoped>
 .border-b {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
 }
 
 .border-b:last-child {
@@ -1891,10 +2075,10 @@ export default {
 }
 
 .json-preview {
-  border-radius: 8px;
-  font-family: "Fira Code", "Courier New", monospace;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
   font-size: 13px;
-  line-height: 1.5;
+  line-height: var(--line-height-code);
   max-height: 400px;
   overflow-y: auto;
   padding: 16px;
@@ -1906,7 +2090,7 @@ export default {
 
 /* 预览模式样式增强 */
 .border-b {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.08);
 }
 
 .border-b:last-child {
@@ -1915,27 +2099,39 @@ export default {
 
 /* 日期时间选择器样式 */
 .border-e {
-  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  border-right: 1px solid var(--color-border);
 }
 
 .datetime-picker-header {
-  background-color: #f5f5f5;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: rgba(var(--v-theme-surface-variant), 0.5);
+  border-bottom: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
 }
 
 /* 预览卡片阴影效果 */
 .v-card--variant-elevated {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: var(--shadow-hover) !important;
 }
 
 /* 模式切换按钮样式 */
 .v-btn-toggle {
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .v-btn-toggle .v-btn {
   border-radius: 0 !important;
+}
+
+.v-btn-toggle .v-btn:first-child {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important;
+}
+
+.v-btn-toggle .v-btn:last-child {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+}
+
+.v-btn-toggle .v-btn:only-child {
+  border-radius: var(--radius-sm) !important;
 }
 
 .cursor-pointer {
@@ -1945,7 +2141,7 @@ export default {
 .v-card.hover:hover {
   transform: translateY(-2px);
   transition: transform 0.2s ease-in-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: var(--shadow-hover) !important;
 }
 
 .bg-primary-lighten-5 {

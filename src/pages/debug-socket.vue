@@ -42,7 +42,7 @@
                 <v-list-item-subtitle>{{ currentDataKey }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
-            <v-divider class="my-4"/>
+            <v-divider class="my-4" />
             <v-row>
               <v-col
                 cols="12"
@@ -83,11 +83,17 @@
                 </v-btn>
               </v-col>
             </v-row>
-            <v-divider class="my-4"/>
+            <v-divider class="my-4" />
             <v-row>
               <v-col cols="12">
-                <v-card border color="primary" variant="tonal">
-                  <v-card-title class="text-subtitle-1">聊天室消息</v-card-title>
+                <v-card
+                  border
+                  color="primary"
+                  variant="tonal"
+                >
+                  <v-card-title class="text-body-large">
+                    聊天室消息
+                  </v-card-title>
                   <v-card-text>
                     <v-textarea
                       v-model="chatInput"
@@ -97,7 +103,7 @@
                       rows="2"
                     />
                     <div class="d-flex">
-                      <v-spacer/>
+                      <v-spacer />
                       <v-btn
                         :disabled="!canSendChat"
                         color="primary"
@@ -163,7 +169,7 @@
             </v-list>
             <div
               v-else
-              class="text-grey"
+              class="text-medium-emphasis"
             >
               暂无数据
             </div>
@@ -178,7 +184,7 @@
         <v-card border>
           <v-card-title class="d-flex align-center">
             事件日志
-            <v-spacer/>
+            <v-spacer />
             <v-btn
               color="error"
               size="small"
@@ -195,7 +201,7 @@
                 :key="idx"
               >
                 <v-list-item-title>
-                  <span class="text-caption text-grey">{{ log.time }}</span>
+                  <span class="text-body-small text-medium-emphasis">{{ log.time }}</span>
                   <span class="ml-2">{{ log.event }}</span>
                 </v-list-item-title>
                 <v-list-item-text>
@@ -225,6 +231,7 @@ import {
   getServerUrl
 } from '@/utils/socketClient'
 import {sendChatMessage, DeviceEventTypes, formatDeviceInfo} from '@/utils/deviceEvents'
+import {formatDateYYYYMMDD} from '@/utils/dateUtils'
 
 const currentToken = ref(getSetting('server.kvToken') || '')
 const manualToken = ref('')
@@ -238,11 +245,7 @@ const chatInput = ref('')
 const serverUrl = computed(() => getServerUrl())
 
 const currentDataKey = computed(() => {
-  const now = new Date()
-  const y = now.getFullYear()
-  const m = String(now.getMonth() + 1).padStart(2, '0')
-  const d = String(now.getDate()).padStart(2, '0')
-  return `classworks-data-${y}${m}${d}`
+  return `classworks-data-${formatDateYYYYMMDD(new Date())}`
 })
 
 function pushLog(event, payload) {

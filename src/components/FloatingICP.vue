@@ -23,7 +23,7 @@ export default {
   position: fixed;
   right: 4px;
   bottom: 0;
-  z-index: 100;
+  z-index: var(--z-float);
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.2px;

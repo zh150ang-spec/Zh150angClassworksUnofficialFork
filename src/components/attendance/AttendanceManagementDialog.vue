@@ -8,25 +8,41 @@
   >
     <v-card>
       <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2" icon="mdi-account-group" />
+        <v-icon
+          start
+          :icon="ICON.ACCOUNT_GROUP"
+        />
         考勤
         <v-spacer />
-        <v-chip v-if="!isMobile" class="ml-2" color="primary" size="small">
-          {{ dateString }}
+        <v-chip
+          v-if="!isMobile"
+          class="ml-2"
+          color="primary"
+          size="small"
+        >
+          {{ formatDateDisplay(dateString) }}
         </v-chip>
-        <v-btn v-if="isMobile" icon="mdi-close" variant="text" @click="$emit('update:modelValue', false)" />
+        <v-btn
+          v-if="isMobile"
+          :icon="ICON.CLOSE"
+          variant="text"
+          @click="$emit('update:modelValue', false)"
+        />
       </v-card-title>
 
       <v-card-text>
         <!-- 批量操作和搜索 -->
         <v-row class="mb-4">
-          <v-col cols="12" md="12">
+          <v-col
+            cols="12"
+            md="12"
+          >
             <v-text-field
               v-model="attendanceSearch"
               clearable
               hint="支持筛选姓氏，如输入'孙'可筛选所有姓孙的学生"
               label="搜索学生"
-              prepend-inner-icon="mdi-magnify"
+              :prepend-inner-icon="ICON.SEARCH"
               variant="outlined"
             />
 
@@ -63,7 +79,7 @@
                 attendanceFilter.includes('present') ? 'elevated' : 'tonal'
               "
               class="px-2 filter-chip"
-              prepend-icon="mdi-account-check"
+              :prepend-icon="ICON.ACCOUNT_CHECK"
               value="present"
               @click="toggleFilter('present')"
             >
@@ -79,7 +95,7 @@
                 attendanceFilter.includes('absent') ? 'elevated' : 'tonal'
               "
               class="px-2 filter-chip"
-              prepend-icon="mdi-account-off"
+              :prepend-icon="ICON.ACCOUNT_OFF"
               value="absent"
               @click="toggleFilter('absent')"
             >
@@ -94,7 +110,7 @@
                 attendanceFilter.includes('late') ? 'elevated' : 'tonal'
               "
               class="px-2 filter-chip"
-              prepend-icon="mdi-clock-alert"
+              :prepend-icon="ICON.CLOCK_ALERT"
               value="late"
               @click="toggleFilter('late')"
             >
@@ -109,7 +125,7 @@
                 attendanceFilter.includes('exclude') ? 'elevated' : 'tonal'
               "
               class="px-2 filter-chip"
-              prepend-icon="mdi-account-cancel"
+              :prepend-icon="ICON.ACCOUNT_CANCEL"
               value="exclude"
               @click="toggleFilter('exclude')"
             >
@@ -128,7 +144,10 @@
             md="6"
             sm="6"
           >
-            <v-card border class="student-card">
+            <v-card
+              border
+              class="student-card"
+            >
               <v-card-text class="d-flex align-center pa-2">
                 <div class="flex-grow-1">
                   <div class="d-flex align-center">
@@ -137,18 +156,20 @@
                       class="mr-2"
                       size="24"
                     >
-                      <v-icon size="small"
-                        >{{ getStudentStatusIcon(student) }}
+                      <v-icon size="small">
+                        {{ getStudentStatusIcon(student) }}
                       </v-icon>
                     </v-avatar>
-                    <div class="text-subtitle-1">{{ student }}</div>
+                    <div class="text-body-large">
+                      {{ student }}
+                    </div>
                   </div>
                 </div>
                 <div class="attendance-actions">
                   <v-btn
                     :color="isPresent(student) ? 'success' : ''"
                     :title="'设为到课'"
-                    icon="mdi-account-check"
+                    :icon="ICON.ACCOUNT_CHECK"
                     :size="isMobile ? 'default' : 'small'"
                     variant="text"
                     @click="setPresent(student)"
@@ -156,7 +177,7 @@
                   <v-btn
                     :color="isAbsent(student) ? 'error' : ''"
                     :title="'设为请假'"
-                    icon="mdi-account-off"
+                    :icon="ICON.ACCOUNT_OFF"
                     :size="isMobile ? 'default' : 'small'"
                     variant="text"
                     @click="setAbsent(student)"
@@ -164,7 +185,7 @@
                   <v-btn
                     :color="isLate(student) ? 'warning' : ''"
                     :title="'设为迟到'"
-                    icon="mdi-clock-alert"
+                    :icon="ICON.CLOCK_ALERT"
                     :size="isMobile ? 'default' : 'small'"
                     variant="text"
                     @click="setLate(student)"
@@ -172,7 +193,7 @@
                   <v-btn
                     :color="isExclude(student) ? 'grey' : ''"
                     :title="'设为不参与'"
-                    icon="mdi-account-cancel"
+                    :icon="ICON.ACCOUNT_CANCEL"
                     :size="isMobile ? 'default' : 'small'"
                     variant="text"
                     @click="setExclude(student)"
@@ -183,15 +204,24 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" md="12">
-            <v-card class="mb-4" color="primary" variant="tonal">
+          <v-col
+            cols="12"
+            md="12"
+          >
+            <v-card
+              class="mb-4"
+              color="primary"
+              variant="tonal"
+            >
               <v-card-text>
-                <div class="text-subtitle-2 mb-2">批量操作</div>
+                <div class="text-label-large mb-2">
+                  批量操作
+                </div>
                 <div class="d-flex flex-wrap gap-2">
                   <v-btn
                     class="flex-grow-1"
                     color="success"
-                    prepend-icon="mdi-account-check"
+                    :prepend-icon="ICON.ACCOUNT_CHECK"
                     @click="setAllPresent"
                   >
                     全部到齐
@@ -199,7 +229,7 @@
                   <v-btn
                     class="flex-grow-1"
                     color="error"
-                    prepend-icon="mdi-account-off"
+                    :prepend-icon="ICON.ACCOUNT_OFF"
                     @click="setAllAbsent"
                   >
                     全部请假
@@ -207,15 +237,15 @@
                   <v-btn
                     class="flex-grow-1"
                     color="warning"
-                    prepend-icon="mdi-clock-alert"
+                    :prepend-icon="ICON.CLOCK_ALERT"
                     @click="setAllLate"
                   >
                     全部迟到
                   </v-btn>
                   <v-btn
                     class="flex-grow-1"
-                    color="grey"
-                    prepend-icon="mdi-account-cancel"
+                    color="medium-emphasis"
+                    :prepend-icon="ICON.ACCOUNT_CANCEL"
                     @click="setAllExclude"
                   >
                     全部不参与
@@ -232,8 +262,14 @@
       <v-card-actions>
         <v-spacer />
 
-        <v-btn color="primary" @click="$emit('save')">
-          <v-icon start>mdi-content-save</v-icon>
+        <v-btn
+          color="primary"
+          @click="$emit('save')"
+        >
+          <v-icon
+            start
+            :icon="ICON.CONTENT_SAVE"
+          />
           保存
         </v-btn>
       </v-card-actions>
@@ -242,8 +278,10 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import { useDisplay } from "vuetify";
 import { getSetting } from "@/utils/settings";
+import { formatDateDisplay8Char } from "@/utils/dateUtils";
 
 export default {
   name: "AttendanceManagementDialog",
@@ -265,10 +303,10 @@ export default {
       default: "",
     },
   },
-  emits: ["update:modelValue", "save", "change"],
+  emits: ["update:modelValue", "update:attendance", "save", "change"],
   setup() {
     const { mobile } = useDisplay();
-    return { mobile };
+    return { mobile, ICON };
   },
   data() {
     return {
@@ -277,6 +315,14 @@ export default {
     };
   },
   computed: {
+    localAttendance: {
+      get() {
+        return this.attendance;
+      },
+      set(value) {
+        this.$emit("update:attendance", value);
+      },
+    },
     isMobile() {
       // 如果启用了强制一体机UI模式，返回false（使用桌面UI）
       const forceDesktopMode = getSetting('display.forceDesktopMode');
@@ -331,6 +377,7 @@ export default {
     },
   },
   methods: {
+    formatDateDisplay: formatDateDisplay8Char,
     toggleFilter(filter) {
       const index = this.attendanceFilter.indexOf(filter);
       if (index === -1) {
@@ -363,59 +410,98 @@ export default {
       return "success";
     },
     getStudentStatusIcon(student) {
-      if (this.attendance.absent.includes(student)) return "mdi-account-off";
-      if (this.attendance.late.includes(student)) return "mdi-clock-alert";
-      if (this.attendance.exclude.includes(student)) return "mdi-account-cancel";
-      return "mdi-account-check";
+      if (this.attendance.absent.includes(student)) return ICON.ACCOUNT_OFF;
+      if (this.attendance.late.includes(student)) return ICON.CLOCK_ALERT;
+      if (this.attendance.exclude.includes(student)) return ICON.ACCOUNT_CANCEL;
+      return ICON.ACCOUNT_CHECK;
     },
     removeFromAll(student) {
-      const idxAbsent = this.attendance.absent.indexOf(student);
-      if (idxAbsent > -1) this.attendance.absent.splice(idxAbsent, 1);
+      const newAbsent = this.attendance.absent.filter((s) => s !== student);
+      const newLate = this.attendance.late.filter((s) => s !== student);
+      const newExclude = this.attendance.exclude.filter((s) => s !== student);
 
-      const idxLate = this.attendance.late.indexOf(student);
-      if (idxLate > -1) this.attendance.late.splice(idxLate, 1);
-
-      const idxExclude = this.attendance.exclude.indexOf(student);
-      if (idxExclude > -1) this.attendance.exclude.splice(idxExclude, 1);
+      if (
+        newAbsent.length !== this.attendance.absent.length ||
+        newLate.length !== this.attendance.late.length ||
+        newExclude.length !== this.attendance.exclude.length
+      ) {
+        this.localAttendance = {
+          absent: newAbsent,
+          late: newLate,
+          exclude: newExclude,
+        };
+      }
     },
     setPresent(student) {
       this.removeFromAll(student);
       this.$emit("change");
     },
     setAbsent(student) {
-      this.removeFromAll(student);
-      this.attendance.absent.push(student);
+      const newAbsent = this.attendance.absent.filter((s) => s !== student);
+      const newLate = this.attendance.late.filter((s) => s !== student);
+      const newExclude = this.attendance.exclude.filter((s) => s !== student);
+
+      this.localAttendance = {
+        absent: [...newAbsent, student],
+        late: newLate,
+        exclude: newExclude,
+      };
       this.$emit("change");
     },
     setLate(student) {
-      this.removeFromAll(student);
-      this.attendance.late.push(student);
+      const newAbsent = this.attendance.absent.filter((s) => s !== student);
+      const newLate = this.attendance.late.filter((s) => s !== student);
+      const newExclude = this.attendance.exclude.filter((s) => s !== student);
+
+      this.localAttendance = {
+        absent: newAbsent,
+        late: [...newLate, student],
+        exclude: newExclude,
+      };
       this.$emit("change");
     },
     setExclude(student) {
-      this.removeFromAll(student);
-      this.attendance.exclude.push(student);
+      const newAbsent = this.attendance.absent.filter((s) => s !== student);
+      const newLate = this.attendance.late.filter((s) => s !== student);
+      const newExclude = this.attendance.exclude.filter((s) => s !== student);
+
+      this.localAttendance = {
+        absent: newAbsent,
+        late: newLate,
+        exclude: [...newExclude, student],
+      };
       this.$emit("change");
     },
     setAllPresent() {
-      this.attendance.absent.splice(0, this.attendance.absent.length);
-      this.attendance.late.splice(0, this.attendance.late.length);
-      this.attendance.exclude.splice(0, this.attendance.exclude.length);
+      this.localAttendance = {
+        absent: [],
+        late: [],
+        exclude: [],
+      };
       this.$emit("change");
     },
     setAllAbsent() {
-      this.setAllPresent(); // Clear first
-      this.attendance.absent.push(...this.studentList);
+      this.localAttendance = {
+        absent: [...this.studentList],
+        late: [],
+        exclude: [],
+      };
       this.$emit("change");
     },
     setAllLate() {
-      this.setAllPresent(); // Clear first
-      this.attendance.late.push(...this.studentList);
+      this.localAttendance = {
+        absent: [],
+        late: [...this.studentList],
+        exclude: [],
+      };
       this.$emit("change");
     },
     setAllExclude() {
-      this.setAllPresent(); // Clear first
-      this.attendance.exclude.push(...this.studentList);
+      this.localAttendance = {
+        absent: [],
+        late: [],
+        exclude: [...this.studentList],
+      };
       this.$emit("change");
     },
   },

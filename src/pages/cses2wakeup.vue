@@ -2,9 +2,16 @@
   <v-container class="fill-height">
     <v-row>
       <v-col cols="12">
-        <v-card class="elevation-12" border>
-          <v-card-title class="d-flex align-center primary lighten-1 white--text py-3 px-4">
-            <v-icon color="white" class="mr-2">mdi-swap-horizontal</v-icon>
+        <v-card
+          class="elevation-5"
+          border
+        >
+          <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
+            <v-icon
+              color="white"
+              start
+              :icon="ICON.SWAP_HORIZONTAL"
+            />
             课程表转换工具
           </v-card-title>
           <v-card-subtitle>
@@ -22,7 +29,10 @@
               @click:close="error = ''"
             >
               <div class="d-flex align-center">
-                <v-icon class="mr-2">mdi-alert-circle</v-icon>
+                <v-icon
+                  start
+                  :icon="ICON.ERROR"
+                />
                 {{ error }}
               </div>
             </v-alert>
@@ -38,38 +48,78 @@
               @click:close="success = ''"
             >
               <div class="d-flex align-center">
-                <v-icon class="mr-2">mdi-check-circle</v-icon>
+                <v-icon
+                  start
+                  :icon="ICON.SUCCESS"
+                />
                 {{ success }}
               </div>
             </v-alert>
 
             <!-- 输入方式选择 -->
-            <v-tabs v-model="activeTab" class="mb-4 mx-2" color="primary" rounded>
-              <v-tab value="text" class="px-5">
-                <v-icon start>mdi-text-box</v-icon>
+            <v-tabs
+              v-model="activeTab"
+              class="mb-4 mx-2"
+              color="primary"
+              rounded
+            >
+              <v-tab
+                value="text"
+                class="px-5"
+              >
+                <v-icon
+                  :icon="ICON.TEXT_BOX"
+                  start
+                />
                 文本粘贴
               </v-tab>
-              <v-tab value="file" class="px-5">
-                <v-icon start>mdi-file-upload</v-icon>
+              <v-tab
+                value="file"
+                class="px-5"
+              >
+                <v-icon
+                  :icon="ICON.FILE_UPLOAD"
+                  start
+                />
                 文件上传
               </v-tab>
             </v-tabs>
 
             <!-- 格式选择 -->
-            <v-btn-toggle v-model="formatMode" color="primary" class="mb-4 mx-2" mandatory density="comfortable" border
-                          rounded>
-              <v-btn value="auto">自动检测</v-btn>
-              <v-btn value="json">JSON</v-btn>
-              <v-btn value="yaml" :disabled="!yamlLibLoaded">
+            <v-btn-toggle
+              v-model="formatMode"
+              color="primary"
+              class="mb-4 mx-2"
+              mandatory
+              density="comfortable"
+              border
+              rounded
+            >
+              <v-btn value="auto">
+                自动检测
+              </v-btn>
+              <v-btn value="json">
+                JSON
+              </v-btn>
+              <v-btn
+                value="yaml"
+                :disabled="!yamlLibLoaded"
+              >
                 YAML
-                <v-tooltip activator="parent" location="bottom">
+                <v-tooltip
+                  activator="parent"
+                  location="bottom"
+                >
                   {{ yamlLibLoaded ? 'YAML解析库已加载' : '正在加载YAML解析库...' }}
                 </v-tooltip>
               </v-btn>
             </v-btn-toggle>
 
             <!-- 添加当前检测到的格式提示 -->
-            <div v-if="jsonText && formatMode === 'auto'" class="text-caption mb-2">
+            <div
+              v-if="jsonText && formatMode === 'auto'"
+              class="text-body-small mb-2"
+            >
               检测到的格式: {{ isYaml(jsonText) ? 'YAML' : 'JSON' }}
             </div>
 
@@ -84,8 +134,8 @@
                     row-height="25"
                     rows="6"
                     placeholder="请在此粘贴CSES格式的数据..."
-                    @input="handleTextChange"
-                  ></v-textarea>
+                    @update:model-value="handleTextChange"
+                  />
                 </div>
               </v-window-item>
               <v-window-item value="file">
@@ -93,16 +143,16 @@
                   v-model="file"
                   accept=".js,.json,.yml,.yaml"
                   label="选择课程表文件"
-                  prepend-icon="mdi-file-upload"
+                  :prepend-icon="ICON.FILE_UPLOAD"
                   :loading="loading"
                   :disabled="loading"
-                  @change="handleFileChange"
                   hint="支持JSON、YAML格式文件"
                   persistent-hint
                   :rules="[
                     v => !v || v.size < 2000000 || '文件大小不能超过 2 MB',
                   ]"
-                ></v-file-input>
+                  @change="handleFileChange"
+                />
 
                 <v-alert
                   v-if="file && formatMode === 'auto'"
@@ -118,17 +168,31 @@
 
             <!-- 设置面板 -->
             <v-col cols="12">
-              <v-card flat class="pa-4  rounded-lg" border>
+              <v-card
+                flat
+                class="pa-4  rounded-lg"
+                border
+              >
                 <div class="d-flex align-center mb-3">
-                  <v-icon color="primary" class="mr-2">mdi-calendar-multiselect</v-icon>
-                  <h3 class="text-subtitle-1 font-weight-medium mr-auto">选择导出天数</h3>
+                  <v-icon
+                    color="primary"
+                    start
+                    :icon="ICON.CALENDAR_MULTISELECT"
+                  />
+                  <h3 class="text-body-large font-weight-medium mr-auto">
+                    选择导出天数
+                  </h3>
                   <v-btn
                     variant="text"
                     color="primary"
                     class="ml-2"
                     @click="selectAllDays"
                   >
-                    <v-icon start size="small">mdi-checkbox-multiple-marked</v-icon>
+                    <v-icon
+                      :icon="ICON.CHECKBOX_MULTIPLE_MARKED"
+                      start
+                      size="small"
+                    />
                     全选
                   </v-btn>
                   <v-btn
@@ -137,19 +201,36 @@
                     class="ml-2"
                     @click="clearSelectedDays"
                   >
-                    <v-icon start size="small">mdi-checkbox-multiple-blank-outline</v-icon>
+                    <v-icon
+                      :icon="ICON.CHECKBOX_MULTIPLE_BLANK_OUTLINE"
+                      start
+                      size="small"
+                    />
                     清除
                   </v-btn>
                 </div>
-                <v-chip-group v-model="selectedDays" multiple class="mb-2" color="primary">
-                  <v-chip v-for="day in 7" :key="day" :value="day" filter variant="tonal" class="filter-chip" label>
+                <v-chip-group
+                  v-model="selectedDays"
+                  multiple
+                  class="mb-2"
+                  color="primary"
+                >
+                  <v-chip
+                    v-for="day in 7"
+                    :key="day"
+                    :value="day"
+                    filter
+                    variant="tonal"
+                    class="filter-chip"
+                    label
+                  >
                     {{ dayNames[day] }}
                     <v-badge
                       v-if="getDaySchedule(day).length > 0"
                       :content="getDaySchedule(day).length"
                       color="primary"
                       inline
-                    ></v-badge>
+                    />
                   </v-chip>
                 </v-chip-group>
               </v-card>
@@ -157,31 +238,50 @@
 
             <!-- 改进设置选项卡，显示为开关组 -->
             <v-col cols="12">
-              <v-card flat class="pa-4  rounded-lg" border>
+              <v-card
+                flat
+                class="pa-4  rounded-lg"
+                border
+              >
                 <div class="d-flex align-center mb-3">
-                  <v-icon color="primary" class="mr-2">mdi-cog</v-icon>
-                  <h3 class="text-subtitle-1 font-weight-medium">显示配置</h3>
+                  <v-icon
+                    color="primary"
+                    start
+                    :icon="ICON.SETTINGS"
+                  />
+                  <h3 class="text-body-large font-weight-medium">
+                    显示配置
+                  </h3>
                 </div>
                 <v-row>
-                  <v-col cols="12" sm="6">
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
                     <v-switch
                       v-model="settings.hideTeacherName"
                       label="不显示教师姓名"
                       color="primary"
                       inset
                       hide-details
-                    ></v-switch>
+                    />
                   </v-col>
-                  <v-col cols="12" sm="6">
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
                     <v-switch
                       v-model="settings.hideRoom"
                       label="不显示教室信息"
                       color="primary"
                       inset
                       hide-details
-                    ></v-switch>
+                    />
                   </v-col>
-                  <v-col cols="12" sm="6">
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
                     <v-text-field
                       v-model.number="settings.totalWeeks"
                       label="总周数"
@@ -191,21 +291,25 @@
                       :rules="[(v) => v > 0 || '周数必须大于0']"
                       density="comfortable"
                       variant="outlined"
-                      prepend-inner-icon="mdi-calendar-week"
+                      :prepend-inner-icon="ICON.CALENDAR_WEEK"
                       class="mt-3"
-                    ></v-text-field>
+                    />
                   </v-col>
                 </v-row>
               </v-card>
             </v-col>
 
             <!-- 添加加载状态的骨架屏 -->
-            <v-card v-if="loading" class="my-4" outlined>
+            <v-card
+              v-if="loading"
+              class="my-4"
+              border
+            >
               <v-card-text>
                 <v-skeleton-loader
                   type="table"
                   class="mx-auto"
-                ></v-skeleton-loader>
+                />
               </v-card-text>
             </v-card>
 
@@ -214,7 +318,7 @@
               v-if="processedData"
               color="primary"
               class="ml-2"
-              prepend-icon="mdi-book-open-variant"
+              :prepend-icon="ICON.BOOK_OPEN_VARIANT"
             >
               {{ processedData.tableData.length }} 节课程
             </v-chip>
@@ -230,12 +334,29 @@
             </v-alert>
 
             <!-- 课程表预览 -->
-            <v-card v-if="processedData" class="my-4" elevation="1">
+            <v-card
+              v-if="processedData"
+              class="my-4"
+              elevation="1"
+            >
               <v-card-title class="d-flex align-center pa-4 bg-primary-lighten-5">
-                <v-icon color="primary" class="mr-2">mdi-table</v-icon>
+                <v-icon
+                  color="primary"
+                  start
+                  :icon="ICON.TABLE_ICON"
+                />
                 <span class="font-weight-bold">课程表</span>
-                <v-chip color="primary" class="ml-3" size="small" pill>
-                  <v-icon start size="x-small">mdi-book-open-variant</v-icon>
+                <v-chip
+                  color="primary"
+                  class="ml-3"
+                  size="small"
+                  pill
+                >
+                  <v-icon
+                    :icon="ICON.BOOK_OPEN_VARIANT"
+                    start
+                    size="x-small"
+                  />
                   {{ processedData.tableData.length }} 节课程
                 </v-chip>
               </v-card-title>
@@ -263,8 +384,15 @@
                     />
                   </template>
 
-                  <template v-for="day in 7" #[`item.${day}`]="{ item }" :key="day">
-                    <div v-if="item[day]" class="course-cell">
+                  <template
+                    v-for="day in 7"
+                    #[`item.${day}`]="{ item }"
+                    :key="day"
+                  >
+                    <div
+                      v-if="item[day]"
+                      class="course-cell"
+                    >
                       <template v-if="Array.isArray(item[day])">
                         <div
                           v-for="(course, index) in item[day]"
@@ -275,12 +403,12 @@
                           <span
                             v-if="!settings.hideTeacherName && course.teacher"
                           >
-                            <br/>{{ course.teacher }}
+                            <br>{{ course.teacher }}
                           </span>
                           <span
                             v-if="!settings.hideRoom && course.room"
                           >
-                            <br/>{{ course.room }}
+                            <br>{{ course.room }}
                           </span>
                           <span
                             v-if="course.weekType"
@@ -295,12 +423,12 @@
                         <span
                           v-if="!settings.hideTeacherName && item[day].teacher"
                         >
-                          <br/>{{ item[day].teacher }}
+                          <br>{{ item[day].teacher }}
                         </span>
                         <span
                           v-if="!settings.hideRoom && item[day].room"
                         >
-                          <br/>{{ item[day].room }}
+                          <br>{{ item[day].room }}
                         </span>
                         <span
                           v-if="item[day].weekType"
@@ -316,18 +444,45 @@
             </v-card>
 
             <!-- 时间表 -->
-            <v-card v-if="hasExportData" class="my-4" elevation="1">
+            <v-card
+              v-if="hasExportData"
+              class="my-4"
+              elevation="1"
+            >
               <v-card-title class="d-flex align-center pa-4 bg-primary-lighten-5">
-                <v-icon color="primary" class="mr-2">mdi-timetable</v-icon>
+                <v-icon
+                  color="primary"
+                  start
+                  :icon="ICON.TIMETABLE"
+                />
                 <span class="font-weight-bold">每日课程时间表</span>
-                <v-chip class="ml-3" size="small" color="primary" pill>
-                  <v-icon start size="x-small">mdi-clock-outline</v-icon>
+                <v-chip
+                  class="ml-3"
+                  size="small"
+                  color="primary"
+                  pill
+                >
+                  <v-icon
+                    :icon="ICON.CLOCK_OUTLINE"
+                    start
+                    size="x-small"
+                  />
                   {{ totalClassHours }} 课时
                 </v-chip>
                 <v-tooltip v-if="exportPeriods.length > 0">
-                  <template v-slot:activator="{ props }">
-                    <v-chip class="ml-2" size="small" color="info" v-bind="props" pill>
-                      <v-icon start size="x-small">mdi-information-outline</v-icon>
+                  <template #activator="{ props }">
+                    <v-chip
+                      class="ml-2"
+                      size="small"
+                      color="info"
+                      v-bind="props"
+                      pill
+                    >
+                      <v-icon
+                        :icon="ICON.INFORMATION_OUTLINE"
+                        start
+                        size="x-small"
+                      />
                       节次已重排
                     </v-chip>
                   </template>
@@ -336,93 +491,163 @@
               </v-card-title>
               <v-card-text>
                 <!-- 美化日期导航标签 -->
-                <v-tabs v-if="daysWithSchedule.length > 0" v-model="activeDay" class="mb-4" color="primary" grow
-                        align-tabs="center">
-                  <v-tab v-for="day in daysWithSchedule" :key="day" :value="day" class="px-2 font-weight-medium">
+                <v-tabs
+                  v-if="daysWithSchedule.length > 0"
+                  v-model="activeDay"
+                  class="mb-4"
+                  color="primary"
+                  grow
+                  align-tabs="center"
+                >
+                  <v-tab
+                    v-for="day in daysWithSchedule"
+                    :key="day"
+                    :value="day"
+                    class="px-2 font-weight-medium"
+                  >
                     {{ dayNames[day] }}
                     <v-badge
                       :content="getDaySchedule(day).length"
                       color="primary"
                       inline
-                    ></v-badge>
+                    />
                   </v-tab>
                 </v-tabs>
 
                 <!-- 当前选中日期的课程表 -->
                 <v-window v-model="activeDay">
-                  <v-window-item v-for="day in daysWithSchedule" :key="day" :value="day">
-                    <v-table density="compact" class="rounded" :headers-length="6" disable-sort>
+                  <v-window-item
+                    v-for="day in daysWithSchedule"
+                    :key="day"
+                    :value="day"
+                  >
+                    <v-table
+                      density="compact"
+                      class="rounded"
+                      :headers-length="6"
+                      disable-sort
+                    >
                       <thead>
-                      <tr>
-                        <th class="text-center">节次</th>
-                        <th>课程</th>
-                        <th>时间</th>
-                        <th>教师</th>
-                        <th>教室</th>
-                        <th>周次</th>
-                      </tr>
+                        <tr>
+                          <th class="text-center">
+                            节次
+                          </th>
+                          <th>课程</th>
+                          <th>时间</th>
+                          <th>教师</th>
+                          <th>教室</th>
+                          <th>周次</th>
+                        </tr>
                       </thead>
                       <tbody>
-                      <template v-for="(group, index) in groupByPeriod(getDaySchedule(day))" :key="index">
-                        <tr>
-                          <td class="text-center font-weight-bold">
-                            {{ group.period }}
-                            <v-tooltip v-if="group.originalPeriod !== group.period">
-                              <template v-slot:activator="{ props }">
-                                <v-icon size="x-small" v-bind="props" color="info" class="ml-1">mdi-sync</v-icon>
+                        <template
+                          v-for="(group, index) in groupByPeriod(getDaySchedule(day))"
+                          :key="index"
+                        >
+                          <tr>
+                            <td class="text-center font-weight-bold">
+                              {{ group.period }}
+                              <v-tooltip v-if="group.originalPeriod !== group.period">
+                                <template #activator="{ props }">
+                                  <v-icon
+                                    :icon="ICON.SYNC"
+                                    size="x-small"
+                                    v-bind="props"
+                                    color="info"
+                                    class="ml-1"
+                                  />
+                                </template>
+                                原节次: {{ group.originalPeriod }}
+                              </v-tooltip>
+                            </td>
+                            <td>
+                              <div
+                                v-for="(item, i) in group.items"
+                                :key="i"
+                                class="mb-1"
+                              >
+                                <v-chip
+                                  size="small"
+                                  :color="getSubjectColor(item.subject)"
+                                  label
+                                  class="mr-1"
+                                >
+                                  {{ item.subject }}
+                                </v-chip>
+                                <v-chip
+                                  v-if="group.items.length > 1"
+                                  size="x-small"
+                                  class="ml-1"
+                                  :color="item.weekType === '单' ? 'warning' : 'success'"
+                                >
+                                  {{ item.weekType }}周
+                                </v-chip>
+                              </div>
+                            </td>
+                            <td>
+                              <div
+                                v-for="(timeSlot, i) in group.uniqueTimeSlots"
+                                :key="i"
+                                class="mb-1"
+                              >
+                                <v-chip
+                                  size="x-small"
+                                  class="time-chip"
+                                >
+                                  {{ formatTime(timeSlot.startTime) }} - {{ formatTime(timeSlot.endTime) }}
+                                </v-chip>
+                              </div>
+                            </td>
+                            <td>
+                              <template v-if="!settings.hideTeacherName">
+                                <div
+                                  v-for="(item, i) in group.items"
+                                  :key="i"
+                                  class="mb-1"
+                                >
+                                  {{ item.teacher || '-' }}
+                                </div>
                               </template>
-                              原节次: {{ group.originalPeriod }}
-                            </v-tooltip>
-                          </td>
-                          <td>
-                            <div v-for="(item, i) in group.items" :key="i" class="mb-1">
-                              <v-chip size="small" :color="getSubjectColor(item.subject)" label text-color="white"
-                                      class="mr-1">
-                                {{ item.subject }}
-                              </v-chip>
-                              <v-chip v-if="group.items.length > 1" size="x-small" class="ml-1"
-                                      :color="item.weekType === '单' ? 'warning' : 'success'">
-                                {{ item.weekType }}周
-                              </v-chip>
-                            </div>
-                          </td>
-                          <td>
-                            <div v-for="(timeSlot, i) in group.uniqueTimeSlots" :key="i" class="mb-1">
-                              <v-chip size="x-small" class="time-chip">
-                                {{ formatTime(timeSlot.startTime) }} - {{ formatTime(timeSlot.endTime) }}
-                              </v-chip>
-                            </div>
-                          </td>
-                          <td>
-                            <template v-if="!settings.hideTeacherName">
-                              <div v-for="(item, i) in group.items" :key="i" class="mb-1">
-                                {{ item.teacher || '-' }}
+                              <template v-else>
+                                -
+                              </template>
+                            </td>
+                            <td>
+                              <template v-if="!settings.hideRoom">
+                                <div
+                                  v-for="(item, i) in group.items"
+                                  :key="i"
+                                  class="mb-1"
+                                >
+                                  {{ item.room || '-' }}
+                                </div>
+                              </template>
+                              <template v-else>
+                                -
+                              </template>
+                            </td>
+                            <td>
+                              <div
+                                v-for="(item, i) in group.items"
+                                :key="i"
+                                class="mb-1"
+                              >
+                                {{ item.weeks }}
                               </div>
-                            </template>
-                            <template v-else>-</template>
-                          </td>
-                          <td>
-                            <template v-if="!settings.hideRoom">
-                              <div v-for="(item, i) in group.items" :key="i" class="mb-1">
-                                {{ item.room || '-' }}
-                              </div>
-                            </template>
-                            <template v-else>-</template>
-                          </td>
-                          <td>
-                            <div v-for="(item, i) in group.items" :key="i" class="mb-1">
-                              {{ item.weeks }}
-                            </div>
-                          </td>
-                        </tr>
-                      </template>
+                            </td>
+                          </tr>
+                        </template>
                       </tbody>
                     </v-table>
                   </v-window-item>
                 </v-window>
 
                 <!-- 无数据提示 -->
-                <v-alert v-if="hasExportData && daysWithSchedule.length === 0" type="info" class="mt-3">
+                <v-alert
+                  v-if="hasExportData && daysWithSchedule.length === 0"
+                  type="info"
+                  class="mt-3"
+                >
                   没有找到任何课程数据
                 </v-alert>
               </v-card-text>
@@ -430,24 +655,24 @@
           </v-card-text>
 
           <v-card-actions class="">
-            <v-spacer></v-spacer>
+            <v-spacer />
             <v-btn
               color="primary"
               variant="outlined"
               :loading="loading"
               :disabled="(!jsonText && !file) || loading"
+              :prepend-icon="ICON.COG_REFRESH"
               @click="processInput"
-              prepend-icon="mdi-cog-refresh"
             >
               处理数据
             </v-btn>
             <v-btn
               color="info"
               :disabled="!hasExportData"
-              @click="showExportPreview"
               class="ml-2"
-              prepend-icon="mdi-eye"
+              :prepend-icon="ICON.EYE"
               border
+              @click="showExportPreview"
             >
               刷新
             </v-btn>
@@ -455,10 +680,10 @@
               color="success"
               variant="outlined"
               :disabled="!hasExportData"
-              @click="downloadCSV"
               class="ml-2"
-              prepend-icon="mdi-download"
+              :prepend-icon="ICON.DOWNLOAD"
               border
+              @click="downloadCSV"
             >
               下载CSV
             </v-btn>
@@ -470,6 +695,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 // 添加外部库的CDN加载
 const loadJsYaml = () => {
   return new Promise((resolve, reject) => {
@@ -574,6 +800,7 @@ export default {
   name: "Cses2Wakeup",
   data() {
     return {
+      ICON,
       activeTab: "text",
       file: null,
       jsonText: "",
@@ -735,6 +962,22 @@ export default {
       return days;
     }
   },
+  async mounted() {
+    // 加载YAML解析库
+    try {
+      await loadJsYaml();
+      this.yamlLibLoaded = true;
+    } catch (error) {
+      this.error = error.message;
+    }
+
+    // 监听daysWithSchedule变化，设置默认选中的日期
+    this.$watch('daysWithSchedule', (newVal) => {
+      if (newVal.length > 0 && !this.activeDay) {
+        this.activeDay = newVal[0];
+      }
+    });
+  },
   methods: {
     async handleFileChange() {
       this.resetData();
@@ -821,7 +1064,7 @@ export default {
             data = JSON.parse(this.jsonText);
           }
         } catch (error) {
-          throw new Error(`格式解析错误: ${error.message}`);
+          throw new Error(`格式解析错误: ${error.message}`, { cause: error });
         }
 
         // 验证CSES格式
@@ -1094,7 +1337,7 @@ export default {
           throw new Error("YAML解析器未加载");
         }
       } catch (error) {
-        throw new Error(`YAML解析错误: ${error.message}`);
+        throw new Error(`YAML解析错误: ${error.message}`, { cause: error });
       }
     },
 
@@ -1241,22 +1484,6 @@ export default {
     clearSelectedDays() {
       this.selectedDays = [];
     }
-  },
-  async mounted() {
-    // 加载YAML解析库
-    try {
-      await loadJsYaml();
-      this.yamlLibLoaded = true;
-    } catch (error) {
-      this.error = error.message;
-    }
-
-    // 监听daysWithSchedule变化，设置默认选中的日期
-    this.$watch('daysWithSchedule', (newVal) => {
-      if (newVal.length > 0 && !this.activeDay) {
-        this.activeDay = newVal[0];
-      }
-    });
   }
 };
 </script>
@@ -1282,7 +1509,7 @@ export default {
 
 .course-item {
   padding: 2px 0;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+  border-bottom: 1px dashed var(--color-border);
 }
 
 .course-item:last-child {
@@ -1291,9 +1518,9 @@ export default {
 
 .week-type {
   font-size: 0.7rem;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(var(--v-theme-surface-variant), 0.5);
   padding: 1px 3px;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   margin-left: 2px;
 }
 
@@ -1311,13 +1538,13 @@ export default {
 
 /* 表格美化 */
 .v-data-table {
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 /* 卡片美化 */
 .v-card {
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -1330,3 +1557,5 @@ export default {
   transform: translateY(-2px);
 }
 </style>
+
+

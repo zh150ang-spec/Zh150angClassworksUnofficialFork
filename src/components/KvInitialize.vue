@@ -7,15 +7,15 @@
     >
       <v-card
         class="kvinit-card"
-        elevation="8"
-        prepend-icon="mdi-cloud-lock"
+        elevation="3"
+        :prepend-icon="ICON.CLOUD_LOCK"
         subtitle="请完成授权以启用云端存储功能"
         title="初始化云端存储授权"
       >
         <v-card-actions class="justify-end">
           <v-btn
             class="me-3"
-            text
+            variant="text"
             @click="useLocalMode"
           >
             使用本地模式
@@ -41,11 +41,11 @@
                 size="20"
                 width="2"
               />
-              <span class="body-2"> 正在检查授权状态… </span>
+              <span class="text-body-medium"> 正在检查授权状态… </span>
             </div>
             <div
               v-else-if="error"
-              class="body-2 text-error"
+              class="text-body-medium text-error"
             >
               检查出错：{{ error }}
             </div>
@@ -57,6 +57,7 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 import {ref, onMounted, onBeforeUnmount} from "vue";
 import {useRoute} from "vue-router";
 import {getSetting, setSetting} from "@/utils/settings";
@@ -76,7 +77,7 @@ const onExternalOpen = () => {
 const REDIRECT_GUARD_KEY = "kvinit.redirecting";
 
 const isKvProvider = (provider) =>
-  provider === "kv-server" || provider === "classworkscloud";
+  provider === "kv-server" || provider === "classworkscloud" || provider === "dual-cloud" || provider === "dual-server";
 
 const shouldInitialize = () => {
   const provider = getSetting("server.provider");
@@ -94,7 +95,8 @@ const goToAuthorize = () => {
 
   const uuid =
     getSetting("device.uuid") || "00000000-0000-4000-8000-000000000000";
-  let authorizeUrl = `${authDomain}/authorize?app_id=${appId}&mode=callback&callback_url=${callbackUrl}&remark=Classworks 自动授权 来自${window.location.hostname} ${new Date().toLocaleString()}`;
+  const remark = encodeURIComponent(`Classworks 自动授权 来自${window.location.hostname} ${new Date().toLocaleString()}`);
+  let authorizeUrl = `${authDomain}/authorize?app_id=${appId}&mode=callback&callback_url=${callbackUrl}&remark=${remark}`;
 
   // 如果UUID不是默认值，附加编码后的 uuid 参数用于迁移
   if (uuid !== "00000000-0000-4000-8000-000000000000") {

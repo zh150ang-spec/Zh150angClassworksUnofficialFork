@@ -15,11 +15,8 @@
         :content="unreadCount || undefined"
         :model-value="unreadCount > 0"
         color="error"
-        overlap
       >
-        <v-icon>
-          mdi-chat
-        </v-icon>
+        <v-icon :icon="ICON.CHAT" />
       </v-badge>
     </v-btn>
   </div>
@@ -33,33 +30,30 @@
     <v-card
       border
       class="chat-card"
-      elevation="8"
+      elevation="3"
+      :width="mobile ? '100%' : 380"
+      :height="mobile ? '100%' : 520"
+      :style="mobile ? { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 0 } : {}"
     >
       <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">
-          mdi-chat-processing
-        </v-icon>
-        <span class="text-subtitle-1">{{ modeTitle }}</span>
+        <v-icon
+          start
+          :icon="ICON.CHAT_PROCESSING"
+        />
+        <span class="text-body-large">{{ modeTitle }}</span>
         <v-spacer />
         <!-- 模式切换按钮 -->
         <v-btn-toggle
           v-model="currentMode"
-          class="mr-2"
+          class="mr-2 mode-toggle"
           mandatory
-          size="small"
           variant="outlined"
         >
-          <v-btn
-            value="chat"
-            size="small"
-          >
-            <v-icon>mdi-chat</v-icon>
+          <v-btn value="chat">
+            <v-icon :icon="ICON.CHAT" />
           </v-btn>
-          <v-btn
-            value="events"
-            size="small"
-          >
-            <v-icon>mdi-format-list-bulleted</v-icon>
+          <v-btn value="events">
+            <v-icon :icon="ICON.FORMAT_LIST" />
           </v-btn>
         </v-btn-toggle>
         <v-tooltip location="top">
@@ -80,7 +74,7 @@
           variant="text"
           @click="close()"
         >
-          <v-icon>mdi-close</v-icon>
+          <v-icon :icon="ICON.CLOSE" />
         </v-btn>
       </v-card-title>
 
@@ -153,7 +147,7 @@
         >
           <!-- 事件统计 -->
           <div class="event-stats mb-3">
-            <v-row dense>
+            <v-row density="compact">
               <v-col cols="4">
                 <v-card
                   color="success"
@@ -161,10 +155,10 @@
                   size="small"
                 >
                   <v-card-text class="text-center pa-2">
-                    <div class="text-h6">
+                    <div class="text-headline-small">
                       {{ eventStats.chat }}
                     </div>
-                    <div class="text-caption">
+                    <div class="text-body-small">
                       聊天
                     </div>
                   </v-card-text>
@@ -177,10 +171,10 @@
                   size="small"
                 >
                   <v-card-text class="text-center pa-2">
-                    <div class="text-h6">
+                    <div class="text-headline-small">
                       {{ eventStats.kvChanged }}
                     </div>
-                    <div class="text-caption">
+                    <div class="text-body-small">
                       KV变化
                     </div>
                   </v-card-text>
@@ -193,10 +187,10 @@
                   size="small"
                 >
                   <v-card-text class="text-center pa-2">
-                    <div class="text-h6">
+                    <div class="text-headline-small">
                       {{ eventStats.other }}
                     </div>
-                    <div class="text-caption">
+                    <div class="text-body-small">
                       其他
                     </div>
                   </v-card-text>
@@ -226,12 +220,12 @@
                       {{ getEventTypeLabel(event.type) }}
                     </v-chip>
                     <v-spacer />
-                    <span class="text-caption">{{ formatTime(event.timestamp || event.at) }}</span>
+                    <span class="text-body-small">{{ formatTime(event.timestamp || event.at) }}</span>
                   </div>
 
                   <div
                     v-if="event.senderInfo"
-                    class="mb-1 text-caption"
+                    class="mb-1 text-body-small"
                   >
                     <strong>发送者:</strong> {{ formatDeviceInfo(event.senderInfo) }}
                   </div>
@@ -243,7 +237,7 @@
                       </div>
                     </template>
                     <template v-else>
-                      <pre class="text-caption event-data">{{ JSON.stringify(event.content || event, null, 1) }}</pre>
+                      <pre class="text-body-small event-data">{{ JSON.stringify(event.content || event, null, 1) }}</pre>
                     </template>
                   </div>
                 </v-card-text>
@@ -252,7 +246,7 @@
 
             <div
               v-if="allEvents.length === 0"
-              class="text-center text-grey pa-4"
+              class="text-center text-medium-emphasis pa-4"
             >
               暂无事件
             </div>
@@ -285,7 +279,7 @@
           variant="text"
           @click="insertEmoji('😄')"
         >
-          <v-icon>mdi-emoticon-outline</v-icon>
+          <v-icon :icon="ICON.EMOTICON_OUTLINE" />
         </v-btn>
         <v-textarea
           ref="inputRef"
@@ -305,9 +299,10 @@
           color="primary"
           @click="send"
         >
-          <v-icon start>
-            mdi-send
-          </v-icon>
+          <v-icon
+            :icon="ICON.SEND"
+            start
+          />
           发送
         </v-btn>
       </v-card-actions>
@@ -319,10 +314,12 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import {getSetting} from '@/utils/settings'
 import {getSocket, joinToken, on as socketOn} from '@/utils/socketClient'
 import {sendChatMessage, createDeviceEventHandler, formatDeviceInfo} from '@/utils/deviceEvents'
 import UrgentNotification from '@/components/UrgentNotification.vue'
+import { formatTimeOnly } from '@/utils/dateUtils'
 
 export default {
   name: 'ChatWidget',
@@ -354,6 +351,7 @@ export default {
   emits: ['update:modelValue'],
   data() {
     return {
+      ICON,
       visible: this.modelValue,
       text: '',
       messages: [], // 聊天消息
@@ -380,6 +378,9 @@ export default {
     }
   },
   computed: {
+    mobile() {
+      return window.innerWidth < 600
+    },
     panelStyle() {
       return {
         right: this.offset + 'px',
@@ -762,17 +763,7 @@ export default {
         console.error('ChatWidget pushMessage 错误:', error)
       }
     },
-    formatTime(iso) {
-      try {
-        const d = new Date(iso)
-        const hh = String(d.getHours()).padStart(2, '0')
-        const mm = String(d.getMinutes()).padStart(2, '0')
-        return `${hh}:${mm}`
-      } catch (e) {
-        void e
-        return ''
-      }
-    },
+    formatTime: formatTimeOnly,
     scrollToBottom() {
       if (this.isDestroying) return
 
@@ -881,12 +872,12 @@ export default {
 <style scoped>
 .chat-toggle {
   position: fixed;
-  z-index: 1100;
+  z-index: var(--z-chat);
 }
 
 .chat-panel {
   position: fixed;
-  z-index: 1101;
+  z-index: var(--z-chat-panel);
 }
 
 .chat-card {
@@ -924,14 +915,14 @@ export default {
 
 .message-row .bubble {
   max-width: 70%;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+  background: var(--color-fill-soft);
+  border-radius: var(--radius-md);
   padding: 6px 10px;
   margin: 0 8px;
 }
 
 .message-row.self .bubble {
-  background: rgba(33, 150, 243, 0.15);
+  background: rgba(var(--v-theme-primary), 0.12);
 }
 
 .bubble .text {
@@ -948,13 +939,13 @@ export default {
 
 .bubble .sender-name {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-secondary);
   margin-bottom: 2px;
   font-weight: 500;
 }
 
 .message-row.self .bubble .sender-name {
-  color: rgba(33, 150, 243, 0.8);
+  color: rgba(var(--v-theme-primary), 0.80);
 }
 
 .device-name {
@@ -964,7 +955,7 @@ export default {
 
 .divider-row {
   text-align: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-tertiary);
   font-size: 12px;
 }
 
@@ -1002,16 +993,16 @@ export default {
 }
 
 .chat-content {
-  background: rgba(0,0,0,0.05);
+  background: var(--color-fill-soft);
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   word-break: break-word;
 }
 
 .event-data {
-  background: rgba(0,0,0,0.05);
+  background: var(--color-fill-soft);
   padding: 4px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   font-size: 10px;
   max-height: 100px;
   overflow-y: auto;
@@ -1026,5 +1017,26 @@ export default {
 
 .event-stats {
   flex-shrink: 0;
+}
+
+.mode-toggle {
+  background: var(--color-fill-weakest);
+}
+
+.mode-toggle .v-btn {
+  min-width: 40px;
+  padding: 0 12px;
+}
+
+.mode-toggle .v-btn.v-btn--active {
+  background: rgba(var(--v-theme-primary), 0.15) !important;
+}
+
+.mode-toggle .v-btn.v-btn--active .v-icon {
+  color: rgb(var(--v-theme-primary));
+}
+
+.mode-toggle .v-btn:not(.v-btn--active):hover {
+  background: var(--color-fill) !important;
 }
 </style>

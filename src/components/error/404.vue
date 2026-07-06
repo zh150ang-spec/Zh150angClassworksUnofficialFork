@@ -1,35 +1,50 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-centerfill-height mx-auto" max-width="900">
-      <v-img class="mb-4" height="150" src="@/assets/logo.svg"/>
+    <v-responsive
+      class="align-centerfill-height mx-auto"
+      max-width="900"
+    >
+      <v-img
+        class="mb-4"
+        height="150"
+        src="@/assets/logo.svg"
+      />
 
       <div class="text-center">
-        <div class="text-body-2 font-weight-light mb-n1">出现了错误</div>
+        <div class="text-body-medium font-weight-light mb-n1">
+          出现了错误
+        </div>
 
-        <h1 class="text-h2 font-weight-bold">404</h1>
+        <h1 class="text-display-medium font-weight-bold">
+          404
+        </h1>
       </div>
 
-      <div class="py-4"/>
+      <div class="py-4" />
 
       <v-row>
         <v-col cols="12">
           <v-card
             class="py-4"
             color="surface-variant"
-            prepend-icon="mdi-help"
+            :prepend-icon="ICON.HELP"
             rounded="lg"
             variant="outlined"
           >
             <template #image>
-              <v-img position="top right"/>
+              <v-img position="top right" />
             </template>
 
             <template #title>
-              <h2 class="text-h5 font-weight-bold">为什么会出现此错误？</h2>
+              <h2 class="text-headline-medium font-weight-bold">
+                为什么会出现此错误？
+              </h2>
             </template>
 
             <template #subtitle>
-              <div class="text-subtitle-1">大概是页面未找到</div>
+              <div class="text-body-large">
+                大概是页面未找到
+              </div>
             </template>
 
             <v-overlay
@@ -46,7 +61,7 @@
           <v-card
             class="py-4"
             color="surface-variant"
-            prepend-icon="mdi-home"
+            :prepend-icon="ICON.HOME"
             rounded="lg"
             title="返回首页"
             to="/"
@@ -66,11 +81,11 @@
           <v-card
             class="py-4"
             color="surface-variant"
-            prepend-icon="mdi-arrow-left-drop-circle"
+            :prepend-icon="ICON.ARROW_LEFT_DROP_CIRCLE"
             rounded="lg"
             title="返回上一页"
             variant="text"
-            @click="this.$router.back()"
+            @click="$router.back()"
           >
             <v-overlay
               contained
@@ -87,5 +102,6 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 //
 </script>

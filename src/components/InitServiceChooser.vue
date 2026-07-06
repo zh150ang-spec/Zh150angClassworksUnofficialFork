@@ -5,7 +5,7 @@
   >
     <div class="init-container">
       <div class="init-header">
-        <div class="title">
+        <div class="text-headline-small">
           欢迎使用 Classworks
         </div>
         <div class="subtitle">
@@ -32,10 +32,10 @@
                 </v-icon>
               </div>
               <div class="card-content">
-                <div class="text-h6 font-weight-bold">
+                <div class="text-headline-small font-weight-bold">
                   初次使用
                 </div>
-                <div class="text-body-2 text-medium-emphasis mt-1">
+                <div class="text-body-medium text-medium-emphasis mt-1">
                   了解 Classworks KV 并开始使用
                 </div>
               </div>
@@ -60,10 +60,10 @@
                 </v-icon>
               </div>
               <div class="card-content">
-                <div class="text-h6 font-weight-bold">
+                <div class="text-headline-small font-weight-bold">
                   已注册
                 </div>
-                <div class="text-body-2 text-medium-emphasis mt-1">
+                <div class="text-body-medium text-medium-emphasis mt-1">
                   使用设备 Namespace 登录
                 </div>
               </div>
@@ -83,15 +83,14 @@
                 <v-icon
                   color="info"
                   size="48"
-                >
-                  mdi-database-cog
-                </v-icon>
+                  :icon="ICON.DATABASE_COG"
+                />
               </div>
               <div class="card-content">
-                <div class="text-h6 font-weight-bold">
+                <div class="text-headline-small font-weight-bold">
                   Classworks KV
                 </div>
-                <div class="text-body-2 text-medium-emphasis mt-1">
+                <div class="text-body-medium text-medium-emphasis mt-1">
                   打开云端控制台管理数据
                 </div>
               </div>
@@ -102,7 +101,7 @@
 
       <div class="options-buttons">
         <v-btn
-          prepend-icon="mdi-laptop"
+          :prepend-icon="ICON.LAPTOP"
           size="small"
           variant="tonal"
           @click="useLocalMode"
@@ -110,7 +109,7 @@
           使用本地模式
         </v-btn>
         <v-btn
-          prepend-icon="mdi-flash"
+          :prepend-icon="ICON.FLASH"
           size="small"
           variant="tonal"
           @click="handleAutoAuthorize"
@@ -118,7 +117,7 @@
           授权码式授权（弃用）
         </v-btn>
         <v-btn
-          prepend-icon="mdi-key"
+          :prepend-icon="ICON.KEY"
           size="small"
           variant="tonal"
           @click="showTokenDialog = true"
@@ -126,7 +125,7 @@
           输入 Token
         </v-btn>
         <v-btn
-          prepend-icon="mdi-code-tags"
+          :prepend-icon="ICON.CODE_TAGS"
           size="small"
           variant="tonal"
           @click="showAlternativeCodeDialog = true"
@@ -190,6 +189,7 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 import {ref, computed, onMounted, watch} from 'vue'
 import {getSetting, setSetting} from '@/utils/settings'
 import DeviceAuthDialog from './auth/DeviceAuthDialog.vue'
@@ -224,7 +224,7 @@ const showAlternativeCodeDialog = ref(false)
 const deviceAuthDialog = ref(null)
 
 const provider = computed(() => getSetting('server.provider'))
-const isKvProvider = computed(() => provider.value === 'kv-server' || provider.value === 'classworkscloud')
+const isKvProvider = computed(() => ['kv-server', 'classworkscloud', 'dual-cloud', 'dual-server'].includes(provider.value))
 const kvToken = computed(() => getSetting('server.kvToken'))
 
 // 设备认证预配置数据
@@ -272,7 +272,8 @@ const handleAutoAuthorize = () => {
   const callbackUrl = encodeURIComponent(`${currentDomain}/authorizecallback`)
   const uuid = getSetting('device.uuid') || '00000000-0000-4000-8000-000000000000'
 
-  let url = `${authDomain}/authorize?app_id=${appId}&mode=callback&callback_url=${callbackUrl}&remark=Classworks 自动授权 来自${window.location.hostname} ${new Date().toLocaleString()}`
+  const remark = encodeURIComponent(`Classworks 自动授权 来自${window.location.hostname} ${new Date().toLocaleString()}`)
+  let url = `${authDomain}/authorize?app_id=${appId}&mode=callback&callback_url=${callbackUrl}&remark=${remark}`
   if (uuid !== '00000000-0000-4000-8000-000000000000') {
     url += `&uuid=${encodeURIComponent(uuid)}`
   }
@@ -364,7 +365,7 @@ const openClassworksKV = () => {
 }
 
 .main-service-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: var(--shadow-hover);
 }
 
 .main-service-card .v-card-item {
@@ -406,7 +407,7 @@ const openClassworksKV = () => {
   margin-top: 40px;
   padding: 20px;
   background: rgba(var(--v-theme-surface-variant), 0.3);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .options-title {

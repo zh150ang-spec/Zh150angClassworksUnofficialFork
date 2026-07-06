@@ -11,12 +11,16 @@
       />
 
       <div class="text-center">
-        <div class="text-body-2 font-weight-light mb-n1">Welcome to</div>
+        <div class="text-body-medium font-weight-light mb-n1">
+          Welcome to
+        </div>
 
-        <h1 class="text-h2 font-weight-bold">Vuetify</h1>
+        <h1 class="text-display-medium font-weight-bold">
+          Vuetify
+        </h1>
       </div>
 
-      <div class="py-4"/>
+      <div class="py-4" />
 
       <v-row>
         <v-col cols="12">
@@ -24,22 +28,25 @@
             class="py-4"
             color="surface-variant"
             image="https://cdn.vuetifyjs.com/docs/images/one/create/feature.png"
-            prepend-icon="mdi-rocket-launch-outline"
+            :prepend-icon="ICON.ROCKET_LAUNCH_OUTLINE"
             rounded="lg"
             variant="outlined"
           >
             <template #image>
-              <v-img position="top right"/>
+              <v-img position="top right" />
             </template>
 
             <template #title>
-              <h2 class="text-h5 font-weight-bold">Get started</h2>
+              <h2 class="text-headline-medium font-weight-bold">
+                Get started
+              </h2>
             </template>
 
             <template #subtitle>
-              <div class="text-subtitle-1">
+              <div class="text-body-large">
                 Replace this page by removing
-                <v-kbd>{{ `
+                <v-kbd>
+                  {{ `
                   <HelloWorld/>
                   ` }}
                 </v-kbd>
@@ -61,11 +68,11 @@
 
         <v-col cols="6">
           <v-card
-            append-icon="mdi-open-in-new"
+            :append-icon="ICON.OPEN_IN_NEW"
             class="py-4"
             color="surface-variant"
             href="https://vuetifyjs.com/"
-            prepend-icon="mdi-text-box-outline"
+            :prepend-icon="ICON.TEXT_BOX_OUTLINE"
             rel="noopener noreferrer"
             rounded="lg"
             subtitle="Learn about all things Vuetify in our documentation."
@@ -85,11 +92,11 @@
 
         <v-col cols="6">
           <v-card
-            append-icon="mdi-open-in-new"
+            :append-icon="ICON.OPEN_IN_NEW"
             class="py-4"
             color="surface-variant"
             href="https://vuetifyjs.com/introduction/why-vuetify/#feature-guides"
-            prepend-icon="mdi-star-circle-outline"
+            :prepend-icon="ICON.STAR_CIRCLE_OUTLINE"
             rel="noopener noreferrer"
             rounded="lg"
             subtitle="Explore available framework Features."
@@ -109,11 +116,11 @@
 
         <v-col cols="6">
           <v-card
-            append-icon="mdi-open-in-new"
+            :append-icon="ICON.OPEN_IN_NEW"
             class="py-4"
             color="surface-variant"
             href="https://vuetifyjs.com/components/all"
-            prepend-icon="mdi-widgets-outline"
+            :prepend-icon="ICON.WIDGETS_OUTLINE"
             rel="noopener noreferrer"
             rounded="lg"
             subtitle="Discover components in the API Explorer."
@@ -133,11 +140,11 @@
 
         <v-col cols="6">
           <v-card
-            append-icon="mdi-open-in-new"
+            :append-icon="ICON.OPEN_IN_NEW"
             class="py-4"
             color="surface-variant"
             href="https://discord.vuetifyjs.com"
-            prepend-icon="mdi-account-group-outline"
+            :prepend-icon="ICON.ACCOUNT_GROUP_OUTLINE"
             rel="noopener noreferrer"
             rounded="lg"
             subtitle="Connect with Vuetify developers."
@@ -160,5 +167,6 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 //
 </script>

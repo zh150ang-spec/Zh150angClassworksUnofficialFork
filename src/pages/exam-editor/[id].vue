@@ -3,19 +3,19 @@
     <v-app-bar elevation="1">
       <template #prepend>
         <v-btn
-          icon="mdi-arrow-left"
+          :icon="ICON.ARROW_LEFT"
           variant="text"
           @click="$router.back()"
         />
       </template>
-      <v-app-bar-title class="text-h6">
+      <v-app-bar-title class="text-headline-small">
         编辑考试配置
       </v-app-bar-title>
-      <v-spacer/>
+      <v-spacer />
       <v-btn
         :loading="saving"
         color="success"
-        prepend-icon="mdi-content-save"
+        :prepend-icon="ICON.CONTENT_SAVE"
         variant="outlined"
         @click="save"
       >
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import ExamConfigEditor from '@/components/ExamConfigEditor.vue'
 
 export default {
@@ -46,6 +47,7 @@ export default {
   components: {ExamConfigEditor},
   data() {
     return {
+      ICON,
       id: this.$route.params.id,
       saving: false,
     }

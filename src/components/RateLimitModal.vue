@@ -1,22 +1,39 @@
 <template>
-  <v-dialog v-model="isVisible" max-width="500" persistent>
+  <v-dialog
+    v-model="isVisible"
+    max-width="500"
+    persistent
+  >
     <v-card class="rate-limit-modal">
       <v-card-title class="text-center pa-4 bg-error text-white">
-        <v-icon class="mr-2" icon="mdi-clock-alert-outline" size="large"/>
+        <v-icon
+          class="mr-2"
+          :icon="ICON.CLOCK_ALERT_OUTLINE"
+          size="large"
+        />
         请求频率超限
       </v-card-title>
 
       <v-card-text class="pa-6">
-        <div class="text-body-1 mb-4">您的请求过于频繁，请稍后再试。</div>
+        <div class="text-body-large mb-4">
+          您的请求过于频繁，请稍后再试。
+        </div>
 
-        <v-card v-if="activeRequests.length > 0" class="mb-4" flat>
+        <v-card
+          v-if="activeRequests.length > 0"
+          class="mb-4"
+          flat
+        >
           <v-card-text>
             <v-list
               v-for="(request, index) in activeRequests"
               :key="index"
               class="mb-4"
             >
-              <v-list-item color="primary" prepend-icon="mdi-web">
+              <v-list-item
+                color="primary"
+                :prepend-icon="ICON.WEB"
+              >
                 <v-list-item-title>
                   等待时间:
                   <span class="text-primary font-weight-bold">{{
@@ -27,29 +44,35 @@
                   {{ request.method }} {{ request.path }}
                 </v-list-item-subtitle>
               </v-list-item>
-            </v-list
-            >
+            </v-list>
             <v-divider
               v-if="index < activeRequests.length - 1"
               class="my-3"
-            ></v-divider>
+            />
           </v-card-text>
         </v-card>
 
-        <div class="text-body-2 text-grey">
+        <div class="text-body-medium text-medium-emphasis">
           请在等待时间后再次尝试，或减少请求频率以避免限制。
         </div>
       </v-card-text>
 
       <v-card-actions class="pa-4 pt-0">
-        <v-spacer></v-spacer>
-        <v-btn color="primary" variant="tonal" @click="close"> 我知道了</v-btn>
+        <v-spacer />
+        <v-btn
+          color="primary"
+          variant="tonal"
+          @click="close"
+        >
+          我知道了
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 // 创建一个全局实例，用于存储和管理限速状态
 let instance = null;
 
@@ -57,6 +80,7 @@ const RateLimitModalComponent = {
   name: "RateLimitModal",
   data() {
     return {
+      ICON,
       isVisible: false,
       activeRequests: [],
     };

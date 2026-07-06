@@ -9,24 +9,35 @@
     <v-card
       class="urgent-notification-card"
       :color="urgencyColor"
-      elevation="24"
+      elevation="5"
     >
       <v-card-text>
         <div class="urgent-title mb-6">
           {{ currentNotification?.content?.message || "无内容" }}
         </div>
- <div class="urgent-subtitle mb-6">
+        <div class="urgent-subtitle mb-6">
           {{ senderName }} {{ deviceType }} {{ formatTime(currentNotification?.timestamp) }}
         </div>
 
 
 
         <!-- 多通知导航 -->
-        <div v-if="hasMultipleNotifications" class="navigation-controls mt-6">
-          <v-card variant="flat" color="rgba(255,255,255,0.1)">
+        <div
+          v-if="hasMultipleNotifications"
+          class="navigation-controls mt-6"
+        >
+          <v-card
+            variant="flat"
+            color="rgba(255,255,255,0.1)"
+            :style="{ background: 'rgba(var(--v-theme-on-error), 0.1)' }"
+          >
             <v-card-text class="text-center">
               <div class="notification-counter mb-3">
-                <v-chip color="white" variant="flat" size="small">
+                <v-chip
+                  color="white"
+                  variant="flat"
+                  size="small"
+                >
                   {{ notificationCountText }}
                 </v-chip>
               </div>
@@ -38,7 +49,7 @@
                   size="small"
                   @click="previousNotification"
                 >
-                  <v-icon> mdi-chevron-left </v-icon>
+                  <v-icon :icon="ICON.CHEVRON_LEFT" />
                   上一个
                 </v-btn>
                 <v-btn
@@ -50,7 +61,7 @@
                   @click="nextNotification"
                 >
                   下一个
-                  <v-icon> mdi-chevron-right </v-icon>
+                  <v-icon :icon="ICON.CHEVRON_RIGHT" />
                 </v-btn>
               </div>
             </v-card-text>
@@ -59,8 +70,15 @@
 
         <!-- 操作按钮 -->
         <div class="mt-8">
-          <v-btn color="white" size="large" variant="flat" @click="close">
-            <v-icon left> mdi-check </v-icon>
+          <v-btn
+            color="white"
+            size="large"
+            variant="flat"
+            @click="close"
+          >
+            <v-icon start>
+              mdi-check
+            </v-icon>
             我知道了
           </v-btn>
         </div>
@@ -73,6 +91,7 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import EventSender from "@/components/EventSender.vue";
 import { getSetting } from "@/utils/settings.js";
 import { playSound, stopSound } from "@/utils/soundList.js";
@@ -84,6 +103,7 @@ export default {
   },
   data() {
     return {
+      ICON,
       visible: false,
       notificationQueue: [], // 通知队列
       currentIndex: 0, // 当前显示的通知索引
@@ -114,19 +134,17 @@ export default {
       return this.currentNotification?.content?.isUrgent || false;
     },
     urgencyColor() {
-      return this.isUrgent ? "red darken-2" : "blue darken-2";
+      return this.isUrgent ? "error" : "info";
     },
     iconColor() {
       return "white";
     },
     urgencyIcon() {
       return this.isUrgent
-        ? "mdi-alert-circle-outline"
+        ? ICON.ALERT_CIRCLE_OUTLINE
         : "mdi-information-outline";
     },
-    urgencyTitle() {
-      return this.isUrgent ? "🚨 紧急通知" : "📢 通知消息";
-    },
+    // 已移除：使用 urgencyIcon (MDI) 而非 emoji
     senderName() {
       const senderInfo =
         this.currentNotification?.senderInfo ||
@@ -463,7 +481,7 @@ export default {
 
         // 创建浏览器通知
         const notification = new Notification(
-          isUrgent ? '🚨 紧急通知' : '📢 通知消息',
+          isUrgent ? '[紧急] 紧急通知' : '[通知] 通知消息',
           {
             body: `${message}\n\n来自: ${senderName}`,
             icon: '/pwa/image/icon-192.png', // 使用应用图标
@@ -509,14 +527,14 @@ export default {
 .urgent-notification-card {
   position: relative;
   animation: urgentPulse 2s infinite, slideIn 0.5s ease-out;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(var(--v-theme-on-error), 0.3);
 }
 
 .close-btn {
   position: absolute;
   top: 16px;
   right: 16px;
-  z-index: 1;
+  z-index: var(--z-inner);
 }
 
 .urgency-icon {
@@ -527,20 +545,20 @@ export default {
 .urgent-title {
   font-size: 2.5rem;
   font-weight: bold;
-  color: white;
-  line-height: 1.2;
+  color: rgb(var(--v-theme-on-error));
+  line-height: var(--line-height-heading);
 }
 
 .urgent-subtitle {
   font-size: 2rem;
   font-weight: bold;
   color: white;
-  line-height: 1.2;
+  line-height: var(--line-height-heading);
 }
 .notification-content {
   font-size: 1.4rem;
   color: rgba(255, 255, 255, 0.95);
-  line-height: 1.6;
+  line-height: var(--line-height-body);
   padding: 0 20px;
 }
 
@@ -550,7 +568,7 @@ export default {
   color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-wide);
 }
 
 .sender-details,
@@ -571,7 +589,7 @@ export default {
 }
 
 .notification-counter {
-  color: white;
+  color: rgb(var(--v-theme-on-error));
   font-weight: 600;
 }
 
@@ -585,10 +603,10 @@ export default {
 @keyframes urgentPulse {
   0%,
   100% {
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-glow-sm);
   }
   50% {
-    box-shadow: 0 0 50px rgba(255, 255, 255, 0.6);
+    box-shadow: var(--shadow-glow-lg);
   }
 }
 

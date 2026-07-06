@@ -7,12 +7,16 @@
     height="100%"
     style="cursor: pointer"
     @click="showFullscreen = true"
+    @touchmove="handleTouchMove"
   >
     <v-card-text
       class="pa-6 d-flex flex-column"
       style="height: 100%"
     >
-      <div class="d-flex align-center" style="gap: 16px;">
+      <div
+        class="d-flex align-center"
+        style="gap: 16px;"
+      >
         <!-- 左侧：时间显示 -->
         <div class="flex-grow-1">
           <div
@@ -22,7 +26,11 @@
             {{ timeString }}<span
               class="seconds-text"
               :style="secondsStyle"
-            >{{ secondsString }}</span>
+            >{{ secondsString }}</span><span
+              v-if="use12hClock"
+              class="ampm-text"
+              :style="secondsStyle"
+            > {{ amPmString }}</span>
           </div>
           <div
             class="date-line mt-3"
@@ -31,214 +39,8 @@
             {{ dateString }}  {{ weekdayString }}  {{ periodOfDay }}
           </div>
         </div>
-
-        <!-- 右侧：环境噪音状态 -->
-        <div
-          v-if="noiseEnabled"
-          class="d-flex flex-column align-center justify-center"
-          style="min-width: 80px;"
-          @click.stop="onNoiseClick"
-        >
-          <!-- 无麦克风权限提示 -->
-          <template v-if="micPermissionState === 'denied'">
-            <v-icon
-              color="error"
-              size="24"
-            >
-              mdi-microphone-off
-            </v-icon>
-            <div
-              class="text-caption text-error mt-1"
-              style="white-space: nowrap; font-size: 10px;"
-            >
-              权限被拒绝
-            </div>
-          </template>
-          <template v-else-if="micPermissionState === 'unavailable'">
-            <v-icon
-              color="warning"
-              size="24"
-            >
-              mdi-microphone-question
-            </v-icon>
-            <div
-              class="text-caption text-warning mt-1"
-              style="white-space: nowrap; font-size: 10px;"
-            >
-              无麦克风
-            </div>
-          </template>
-          <template v-else>
-            <div
-              class="noise-side-db font-weight-bold"
-              :class="`text-${noiseDbColor}`"
-              :style="{ fontSize: `${fontSize * 0.9}px`, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }"
-            >
-              {{ noiseDisplayDb }}
-            </div>
-            <div
-              class="text-caption mt-1"
-              :class="`text-${noiseDbColor}`"
-              style="white-space: nowrap; font-size: 11px;"
-            >
-              {{ noiseStatusText }}
-            </div>
-            <div
-              v-if="!noiseMonitoring"
-              class="text-caption text-medium-emphasis mt-1"
-              style="font-size: 10px; cursor: pointer;"
-            >
-              点击开启
-            </div>
-          </template>
-        </div>
       </div>
     </v-card-text>
-
-    <!-- 噪音详情对话框 -->
-    <noise-monitor-detail
-      v-if="noiseEnabled"
-      v-model="showNoiseDetail"
-      :status="noiseStatus"
-      :current-db="noiseDisplayDb"
-      :current-dbfs="noiseCurrentDbfs"
-      :noise-level="noiseStatusText"
-      :db-color="noiseDbColor"
-      :current-score="noiseScore"
-      :score-detail="noiseScoreDetail"
-      :ring-buffer="noiseRingBuffer"
-      :last-slice="noiseLastSlice"
-      :history="noiseHistory"
-      :is-monitoring="noiseMonitoring"
-      :mic-permission-state="micPermissionState"
-      :session-active="noiseSessionActive"
-      :session-data="noiseSessionData"
-      :report-meta="noiseReportMeta"
-      :selected-date="noiseSelectedDate"
-      :date-reports="noiseCurrentDateReports"
-      @start="startNoise"
-      @stop="stopNoise"
-      @clear-history="clearNoiseHistory"
-      @select-date="onSelectReportDate"
-      @clear-date-reports="onClearDateReports"
-      @clear-all-reports="onClearAllReports"
-    />
-
-    <!-- 麦克风权限引导弹框 -->
-    <v-dialog
-      v-model="showMicPermissionDialog"
-      max-width="480"
-      persistent
-    >
-      <v-card rounded="xl">
-        <div class="text-center pt-8 pb-2">
-          <v-avatar
-            color="primary"
-            size="72"
-          >
-            <v-icon
-              icon="mdi-microphone-outline"
-              size="36"
-            />
-          </v-avatar>
-        </div>
-
-        <v-card-title class="text-center text-h6 pt-4">
-          开启环境噪音监测
-        </v-card-title>
-
-        <v-card-text class="text-body-2 text-medium-emphasis px-6">
-          <p class="mb-3">
-            该功能可以实时监测教室环境噪音，帮助营造安静的学习氛围：
-          </p>
-          <div class="d-flex align-start mb-2">
-            <v-icon
-              icon="mdi-chart-line"
-              size="18"
-              color="primary"
-              class="mr-2 mt-1 flex-shrink-0"
-            />
-            <span>实时显示环境分贝数与噪音等级评估</span>
-          </div>
-          <div class="d-flex align-start mb-2">
-            <v-icon
-              icon="mdi-clock-check-outline"
-              size="18"
-              color="primary"
-              class="mr-2 mt-1 flex-shrink-0"
-            />
-            <span>在晚自习时段自动记录并生成统计报告</span>
-          </div>
-          <div class="d-flex align-start mb-4">
-            <v-icon
-              icon="mdi-shield-check-outline"
-              size="18"
-              color="primary"
-              class="mr-2 mt-1 flex-shrink-0"
-            />
-            <span>音频数据仅在本地处理，不会上传或存储录音</span>
-          </div>
-
-          <v-alert
-            type="info"
-            variant="tonal"
-            density="compact"
-            class="mb-2"
-          >
-            需要授予麦克风权限才能使用此功能。浏览器将弹出权限请求，请点击「允许」。
-          </v-alert>
-        </v-card-text>
-
-        <v-divider />
-
-        <v-card-text class="px-6 py-3">
-          <v-list
-            density="compact"
-            class="pa-0"
-          >
-            <v-list-item class="px-0">
-              <template #prepend>
-                <v-icon
-                  icon="mdi-microphone"
-                  class="mr-3"
-                />
-              </template>
-              <v-list-item-title>启用噪音监测</v-list-item-title>
-              <v-list-item-subtitle class="text-caption">
-                关闭后将不再提醒
-              </v-list-item-subtitle>
-              <template #append>
-                <v-switch
-                  :model-value="noiseEnabled"
-                  hide-details
-                  density="comfortable"
-                  @update:model-value="onPermissionDialogToggle"
-                />
-              </template>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-
-        <v-card-actions class="px-6 pb-5">
-          <v-btn
-            variant="text"
-            @click="dismissMicPermission"
-          >
-            暂不开启
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            variant="elevated"
-            prepend-icon="mdi-microphone"
-            :disabled="!noiseEnabled"
-            @click="grantMicPermission"
-          >
-            授权并开始
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-card>
 
   <!-- 全屏时间弹框 -->
@@ -270,21 +72,21 @@
             <v-tab value="clock">
               <v-icon
                 start
-                icon="mdi-clock-outline"
+                :icon="ICON.CLOCK_OUTLINE"
               />
               时钟
             </v-tab>
             <v-tab value="countdown">
               <v-icon
                 start
-                icon="mdi-timer-sand"
+                :icon="ICON.TIMER_SAND"
               />
               倒计时
             </v-tab>
             <v-tab value="stopwatch">
               <v-icon
                 start
-                icon="mdi-timer-outline"
+                :icon="ICON.TIMER_OUTLINE"
               />
               秒表
             </v-tab>
@@ -302,13 +104,16 @@
           <v-tabs-window-item value="clock">
             <div class="d-flex flex-column align-center justify-center">
               <div class="fullscreen-time-display">
-                {{ timeString }}<span class="fullscreen-seconds">{{ secondsString }}</span>
+                {{ timeString }}<span class="fullscreen-seconds">{{ secondsString }}</span><span
+                  v-if="use12hClock"
+                  class="fullscreen-seconds"
+                > {{ amPmString }}</span>
               </div>
               <div class="fullscreen-date-line mt-6">
                 {{ dateString }}  {{ weekdayString }}  {{ periodOfDay }}
               </div>
               <div class="fullscreen-progress mt-10">
-                <div class="text-caption text-medium-emphasis mb-1">
+                <div class="text-body-small text-medium-emphasis mb-1">
                   今日已过 {{ dayProgressPercent }}%
                 </div>
                 <v-progress-linear
@@ -356,7 +161,7 @@
                 <div class="countdown-setup d-flex align-center ga-4">
                   <div class="text-center">
                     <v-btn
-                      icon="mdi-chevron-up"
+                      :icon="ICON.CHEVRON_UP"
                       variant="text"
                       size="small"
                       @click="countdownHours = Math.min(countdownHours + 1, 99)"
@@ -365,12 +170,12 @@
                       {{ String(countdownHours).padStart(2, '0') }}
                     </div>
                     <v-btn
-                      icon="mdi-chevron-down"
+                      :icon="ICON.CHEVRON_DOWN"
                       variant="text"
                       size="small"
                       @click="countdownHours = Math.max(countdownHours - 1, 0)"
                     />
-                    <div class="text-caption text-medium-emphasis">
+                    <div class="text-body-small text-medium-emphasis">
                       时
                     </div>
                   </div>
@@ -379,7 +184,7 @@
                   </div>
                   <div class="text-center">
                     <v-btn
-                      icon="mdi-chevron-up"
+                      :icon="ICON.CHEVRON_UP"
                       variant="text"
                       size="small"
                       @click="countdownMinutes = Math.min(countdownMinutes + 1, 59)"
@@ -388,12 +193,12 @@
                       {{ String(countdownMinutes).padStart(2, '0') }}
                     </div>
                     <v-btn
-                      icon="mdi-chevron-down"
+                      :icon="ICON.CHEVRON_DOWN"
                       variant="text"
                       size="small"
                       @click="countdownMinutes = Math.max(countdownMinutes - 1, 0)"
                     />
-                    <div class="text-caption text-medium-emphasis">
+                    <div class="text-body-small text-medium-emphasis">
                       分
                     </div>
                   </div>
@@ -402,7 +207,7 @@
                   </div>
                   <div class="text-center">
                     <v-btn
-                      icon="mdi-chevron-up"
+                      :icon="ICON.CHEVRON_UP"
                       variant="text"
                       size="small"
                       @click="countdownSeconds = Math.min(countdownSeconds + 1, 59)"
@@ -411,12 +216,12 @@
                       {{ String(countdownSeconds).padStart(2, '0') }}
                     </div>
                     <v-btn
-                      icon="mdi-chevron-down"
+                      :icon="ICON.CHEVRON_DOWN"
                       variant="text"
                       size="small"
                       @click="countdownSeconds = Math.max(countdownSeconds - 1, 0)"
                     />
-                    <div class="text-caption text-medium-emphasis">
+                    <div class="text-body-small text-medium-emphasis">
                       秒
                     </div>
                   </div>
@@ -439,7 +244,7 @@
                     size="x-large"
                     rounded="xl"
                     :disabled="countdownTotalSetSeconds <= 0"
-                    prepend-icon="mdi-play"
+                    :prepend-icon="ICON.PLAY"
                     @click="startCountdown"
                   >
                     开始
@@ -477,7 +282,7 @@
                     @click="toggleCountdown"
                   />
                   <v-btn
-                    icon="mdi-stop"
+                    :icon="ICON.STOP"
                     color="error"
                     size="x-large"
                     variant="tonal"
@@ -507,7 +312,7 @@
                 />
                 <v-btn
                   v-if="stopwatchRunning"
-                  icon="mdi-flag"
+                  :icon="ICON.FLAG"
                   color="info"
                   size="x-large"
                   variant="tonal"
@@ -515,7 +320,7 @@
                 />
                 <v-btn
                   v-if="!stopwatchRunning && stopwatchElapsed > 0"
-                  icon="mdi-stop"
+                  :icon="ICON.STOP"
                   color="error"
                   size="x-large"
                   variant="tonal"
@@ -572,13 +377,13 @@
       <!-- 右下角按钮组 -->
       <div class="fullscreen-actions">
         <v-btn
-          icon="mdi-cog"
+          :icon="ICON.SETTINGS"
           variant="text"
           size="large"
           @click.stop="showSettings = true"
         />
         <v-btn
-          icon="mdi-close"
+          :icon="ICON.CLOSE"
           variant="text"
           size="large"
           class="ml-2"
@@ -600,18 +405,18 @@
           color="error"
           size="32"
           class="mr-2"
-          icon="mdi-alarm"
+          :icon="ICON.ALARM"
         />
         时间到！
       </v-card-title>
       <v-card-text class="text-center pb-2">
         <div
-          class="text-h4 font-weight-bold my-4"
+          class="text-headline-large font-weight-bold my-4"
           style="font-variant-numeric: tabular-nums;"
         >
           {{ formatCountdownTotal(countdownTotal) }}
         </div>
-        <div class="text-body-1 text-medium-emphasis">
+        <div class="text-body-large text-medium-emphasis">
           设定的倒计时已结束
         </div>
         <div
@@ -622,7 +427,7 @@
             color="error"
             variant="tonal"
             size="large"
-            prepend-icon="mdi-clock-alert-outline"
+            :prepend-icon="ICON.CLOCK_ALERT_OUTLINE"
           >
             已超时 {{ overtimeDisplay }}
           </v-chip>
@@ -634,7 +439,7 @@
           variant="tonal"
           size="large"
           rounded="xl"
-          prepend-icon="mdi-check"
+          :prepend-icon="ICON.CHECK"
           @click="dismissCountdownDialog"
         >
           知道了
@@ -653,7 +458,7 @@
       <v-card-title class="d-flex align-center">
         <v-icon
           class="mr-2"
-          icon="mdi-cog"
+          :icon="ICON.SETTINGS"
         />
         时间卡片设置
       </v-card-title>
@@ -663,7 +468,7 @@
             <template #prepend>
               <v-icon
                 class="mr-3"
-                icon="mdi-clock-outline"
+                :icon="ICON.CLOCK_OUTLINE"
               />
             </template>
             <v-list-item-title>显示时间卡片</v-list-item-title>
@@ -674,6 +479,24 @@
                 hide-details
                 density="comfortable"
                 @update:model-value="setTimeCardEnabled"
+              />
+            </template>
+          </v-list-item>
+          <v-list-item>
+            <template #prepend>
+              <v-icon
+                class="mr-3"
+                :icon="ICON.CLOCK_TIME_SIX_OUTLINE"
+              />
+            </template>
+            <v-list-item-title>12 小时制</v-list-item-title>
+            <v-list-item-subtitle>以 12 小时制（AM/PM）显示时间。</v-list-item-subtitle>
+            <template #append>
+              <v-switch
+                :model-value="use12hClock"
+                hide-details
+                density="comfortable"
+                @update:model-value="setUse12hClock"
               />
             </template>
           </v-list-item>
@@ -693,26 +516,20 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import { SettingsManager, watchSettings, getSetting, setSetting } from '@/utils/settings'
 import { playSound, defaultSingleSound } from '@/utils/soundList'
-import { noiseService } from '@wydev/noise-core'
-import { defineAsyncComponent } from 'vue'
-import dataProvider from '@/utils/dataProvider'
+import { formatDateChinese } from '@/utils/dateUtils'
 
-const NoiseMonitorDetail = defineAsyncComponent(() =>
-  import('@/components/NoiseMonitorDetail.vue')
-)
-
-// 时间字体大小比例（卡片场景）
 const TIME_FONT_RATIO = 2.0
 const SECONDS_FONT_RATIO = 0.9
 const DATE_FONT_RATIO = 0.6
 
 export default {
   name: 'TimeCard',
-  components: { NoiseMonitorDetail },
   data() {
     return {
+      ICON,
       now: new Date(),
       timer: null,
       unwatch: null,
@@ -720,18 +537,16 @@ export default {
       showFullscreen: false,
       showSettings: false,
       timeCardEnabled: true,
-      // 全屏模式切换
+      use12hClock: false,
       fullscreenMode: 'clock',
-      // 工具栏自动隐藏
       toolbarVisible: true,
       toolbarTimer: null,
-      // 倒计时
       countdownHours: 0,
       countdownMinutes: 5,
       countdownSeconds: 0,
       countdownRunning: false,
-      countdownRemaining: 0, // 剩余毫秒
-      countdownTotal: 0,     // 总毫秒
+      countdownRemaining: 0,
+      countdownTotal: 0,
       countdownTimer: null,
       countdownLastTick: null,
       countdownPresets: [
@@ -743,60 +558,39 @@ export default {
         { label: '30 分钟', h: 0, m: 30, s: 0 },
         { label: '1 小时', h: 1, m: 0, s: 0 },
       ],
-      // 倒计时结束弹框
       countdownEndedDialog: false,
       overtimeElapsed: 0,
       overtimeTimer: null,
       overtimeLastTick: null,
-      // 秒表
       stopwatchRunning: false,
-      stopwatchElapsed: 0,  // 已走毫秒
+      stopwatchElapsed: 0,
       stopwatchTimer: null,
       stopwatchLastTick: null,
       laps: [],
       lastLapElapsed: 0,
-      // 噪音监测
-      noiseEnabled: false,
-      noiseMonitoring: false,
-      noiseStatus: 'initializing',
-      noiseCurrentDbfs: -100,
-      noiseCurrentDisplayDb: 0,
-      noiseSmoothedDb: 0, // 防抖后的平滑值
-      noiseScore: null,
-      noiseScoreDetail: null,
-      noiseRingBuffer: [],
-      noiseLastSlice: null,
-      noiseHistory: [],
-      noiseUnsubscribe: null,
-      showNoiseDetail: false,
-      // 晚自习会话
-      noiseSessionConfig: null, // KV存储的配置
-      noiseSessionActive: false,
-      noiseSessionData: null, // 当前会话数据
-      noiseSessionCheckTimer: null,
-      // 按日期存储的报告系统
-      noiseReportMeta: {}, // { dates: { '2026-03-07': { count, avgScore, sessions } } }
-      noiseSelectedDate: '', // 当前查看的日期 YYYY-MM-DD
-      noiseCurrentDateReports: [], // 当前日期的报告列表
-      // 麦克风权限引导
-      showMicPermissionDialog: false,
-      micPermissionState: '', // 'granted' | 'prompt' | 'denied' | 'unavailable'
+      cachedTimeStyle: null,
+      cachedSecondsStyle: null,
+      cachedDateStyle: null,
     }
   },
   computed: {
     timeString() {
-      const h = String(this.now.getHours()).padStart(2, '0')
+      const hours = this.now.getHours()
       const m = String(this.now.getMinutes()).padStart(2, '0')
-      return `${h}:${m}`
+      if (this.use12hClock) {
+        const h12 = hours % 12 || 12
+        return `${h12}:${m}`
+      }
+      return `${String(hours).padStart(2, '0')}:${m}`
+    },
+    amPmString() {
+      return this.now.getHours() < 12 ? 'AM' : 'PM'
     },
     secondsString() {
       return `:${String(this.now.getSeconds()).padStart(2, '0')}`
     },
     dateString() {
-      const y = this.now.getFullYear()
-      const m = this.now.getMonth() + 1
-      const d = this.now.getDate()
-      return `${y}年${m}月${d}日`
+      return formatDateChinese(this.now)
     },
     weekdayString() {
       const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
@@ -822,28 +616,13 @@ export default {
     },
 
     timeStyle() {
-      return {
-        'font-size': `${this.fontSize * TIME_FONT_RATIO}px`,
-        'font-weight': '700',
-        'line-height': '1',
-        'letter-spacing': '4px',
-        'font-variant-numeric': 'tabular-nums',
-      }
+      return this.cachedTimeStyle
     },
     secondsStyle() {
-      return {
-        'font-size': `${this.fontSize * SECONDS_FONT_RATIO}px`,
-        'font-variant-numeric': 'tabular-nums',
-        'vertical-align': 'baseline',
-        'margin-left': '4px',
-        'opacity': '0.6',
-      }
+      return this.cachedSecondsStyle
     },
     dateStyle() {
-      return {
-        'font-size': `${this.fontSize * DATE_FONT_RATIO}px`,
-        'letter-spacing': '1px',
-      }
+      return this.cachedDateStyle
     },
     // 倒计时 computed
     countdownTotalSetSeconds() {
@@ -889,37 +668,34 @@ export default {
       }
       return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(centis).padStart(2, '0')}`
     },
-    // ===== 噪音监测 computed =====
-    noiseDisplayDb() {
-      if (!this.noiseMonitoring || this.noiseStatus !== 'active') return '--'
-      return Math.round(this.noiseSmoothedDb)
-    },
-    noiseDbColor() {
-      const db = typeof this.noiseDisplayDb === 'number' ? this.noiseDisplayDb : 0
-      if (db < 40) return 'success'
-      if (db < 55) return 'light-green'
-      if (db < 70) return 'warning'
-      if (db < 85) return 'orange'
-      return 'error'
-    },
-    noiseIconColor() {
-      if (!this.noiseMonitoring) return 'grey'
-      return this.noiseDbColor
-    },
-    noiseStatusText() {
-      if (!this.noiseMonitoring || this.noiseStatus !== 'active') return '未监测'
-      const db = typeof this.noiseDisplayDb === 'number' ? this.noiseDisplayDb : 0
-      if (db < 30) return '极其安静'
-      if (db < 40) return '非常安静'
-      if (db < 50) return '安静'
-      if (db < 60) return '正常交谈'
-      if (db < 70) return '较为嘈杂'
-      if (db < 80) return '嘈杂'
-      if (db < 90) return '非常嘈杂'
-      return '极度嘈杂'
-    },
   },
   watch: {
+    fontSize: {
+      immediate: true,
+      handler(newSize) {
+        this.cachedTimeStyle = {
+          fontSize: `${newSize * TIME_FONT_RATIO}px`,
+          fontWeight: '700',
+          lineHeight: '1',
+          letterSpacing: '4px',
+          fontVariantNumeric: 'tabular-nums',
+          fontSize_: newSize,
+        }
+        this.cachedSecondsStyle = {
+          fontSize: `${newSize * SECONDS_FONT_RATIO}px`,
+          fontVariantNumeric: 'tabular-nums',
+          verticalAlign: 'baseline',
+          marginLeft: '4px',
+          opacity: '0.6',
+          fontSize_: newSize,
+        }
+        this.cachedDateStyle = {
+          fontSize: `${newSize * DATE_FONT_RATIO}px`,
+          letterSpacing: '1px',
+          fontSize_: newSize,
+        }
+      },
+    },
     showFullscreen(val) {
       if (val) {
         this.handleKeydown = (e) => {
@@ -951,29 +727,6 @@ export default {
     this.unwatch = watchSettings(() => {
       this.loadSettings()
     })
-    // 噪音: 加载历史 & 自动启动（带权限检测）
-    this.noiseEnabled = getSetting('noiseMonitor.enabled')
-    if (this.noiseEnabled) {
-      this.noiseHistory = noiseService.getHistory()
-      // 检查麦克风权限状态
-      const micState = await this.checkMicPermission()
-      this.micPermissionState = micState
-      if (micState === 'granted') {
-        // 已授权 → 正常流程
-        this.loadNoiseSessionConfig().then(() => {
-          this.startSessionCheck()
-          if (getSetting('noiseMonitor.autoStart') && !this.noiseMonitoring) {
-            this.startNoise()
-          }
-        })
-      } else if (micState === 'prompt') {
-        // 未授权也未拒绝 → 看是否已跳过引导
-        if (!getSetting('noiseMonitor.permissionDismissed')) {
-          this.showMicPermissionDialog = true
-        }
-      }
-      // denied / unavailable → 不自动启动，micPermissionState 已记录
-    }
   },
   beforeUnmount() {
     this.stopTimer()
@@ -981,8 +734,6 @@ export default {
     this.clearStopwatchTimer()
     this.clearToolbarTimer()
     this.dismissCountdownDialog()
-    this.stopNoise()
-    this.stopSessionCheck()
     if (this.unwatch) {
       this.unwatch()
     }
@@ -994,11 +745,15 @@ export default {
     loadSettings() {
       this.fontSize = SettingsManager.getSetting('font.size')
       this.timeCardEnabled = getSetting('timeCard.enabled')
-      this.noiseEnabled = getSetting('noiseMonitor.enabled')
+      this.use12hClock = getSetting('timeCard.use12h')
     },
     setTimeCardEnabled(val) {
       this.timeCardEnabled = val
       setSetting('timeCard.enabled', val)
+    },
+    setUse12hClock(val) {
+      this.use12hClock = val
+      setSetting('timeCard.use12h', val)
     },
     startTimer() {
       this.timer = setInterval(() => {
@@ -1154,387 +909,24 @@ export default {
       const centis = Math.floor((ms % 1000) / 10)
       return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(centis).padStart(2, '0')}`
     },
-    // ===== 麦克风权限引导 =====
-    async checkMicPermission() {
-      try {
-        // 先检查是否有麦克风硬件
-        if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-          const devices = await navigator.mediaDevices.enumerateDevices()
-          const hasMic = devices.some(d => d.kind === 'audioinput')
-          if (!hasMic) return 'unavailable'
-        }
-        if (!navigator.permissions || !navigator.permissions.query) return 'granted'
-        const result = await navigator.permissions.query({ name: 'microphone' })
-        return result.state // 'granted' | 'prompt' | 'denied'
-      } catch {
-        // Firefox 等部分浏览器不支持 query microphone，视为 prompt
-        return 'prompt'
-      }
+    handleMouseMove(e) {
+      const card = e.currentTarget
+      const rect = card.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width) * 100
+      const y = ((e.clientY - rect.top) / rect.height) * 100
+      card.style.setProperty("--x", `${x}%`)
+      card.style.setProperty("--y", `${y}%`)
     },
-    async grantMicPermission() {
-      this.showMicPermissionDialog = false
-      // 先加载配置和会话
-      await this.loadNoiseSessionConfig()
-      this.startSessionCheck()
-      // 调用 startNoise 触发浏览器权限弹框
-      await this.startNoise()
-      // 重新检查状态
-      this.micPermissionState = await this.checkMicPermission()
-    },
-    dismissMicPermission() {
-      this.showMicPermissionDialog = false
-      setSetting('noiseMonitor.permissionDismissed', true)
-    },
-    onPermissionDialogToggle(val) {
-      this.noiseEnabled = val
-      setSetting('noiseMonitor.enabled', val)
-      if (!val) {
-        // 用户在弹框中关闭了功能
-        this.showMicPermissionDialog = false
-        setSetting('noiseMonitor.permissionDismissed', true)
+    handleTouchMove(e) {
+      if (e.touches.length === 1) {
+        const touch = e.touches[0]
+        const card = e.currentTarget
+        const rect = card.getBoundingClientRect()
+        const x = ((touch.clientX - rect.left) / rect.width) * 100
+        const y = ((touch.clientY - rect.top) / rect.height) * 100
+        card.style.setProperty("--x", `${x}%`)
+        card.style.setProperty("--y", `${y}%`)
       }
-    },
-    // ===== 噪音监测 methods =====
-    async startNoise() {
-      try {
-        await noiseService.start()
-        this.noiseMonitoring = true
-        this.noiseUnsubscribe = noiseService.subscribe((snapshot) => {
-          this.noiseStatus = snapshot.status
-          this.noiseCurrentDbfs = snapshot.currentDbfs
-          this.noiseCurrentDisplayDb = snapshot.currentDisplayDb
-          // 防抖平滑: 指数移动平均
-          const alpha = 0.25
-          const rawDb = snapshot.currentDisplayDb
-          this.noiseSmoothedDb = this.noiseSmoothedDb === 0
-            ? rawDb
-            : this.noiseSmoothedDb * (1 - alpha) + rawDb * alpha
-          this.noiseRingBuffer = snapshot.ringBuffer || []
-          this.noiseLastSlice = snapshot.lastSlice || null
-          this.noiseScore = snapshot.currentScore ?? null
-          this.noiseScoreDetail = snapshot.currentScoreDetail ?? null
-          this.noiseHistory = noiseService.getHistory()
-          // 会话数据采集
-          if (this.noiseSessionActive && this.noiseSessionData) {
-            this.collectSessionSample(snapshot)
-          }
-        })
-      } catch (e) {
-        console.error('噪音监测启动失败:', e)
-        this.noiseStatus = 'error'
-      }
-    },
-    stopNoise() {
-      if (this.noiseUnsubscribe) {
-        this.noiseUnsubscribe()
-        this.noiseUnsubscribe = null
-      }
-      if (this.noiseMonitoring) {
-        noiseService.stop()
-      }
-      this.noiseMonitoring = false
-      this.noiseStatus = 'initializing'
-      this.noiseSmoothedDb = 0
-      this.noiseScore = null
-      this.noiseScoreDetail = null
-    },
-    clearNoiseHistory() {
-      noiseService.clearHistory()
-      this.noiseHistory = []
-    },
-    onNoiseClick() {
-      if (this.micPermissionState === 'denied' || this.micPermissionState === 'unavailable') {
-        this.showNoiseDetail = true
-        return
-      }
-      if (!this.noiseMonitoring) {
-        this.startNoise()
-      } else {
-        this.showNoiseDetail = true
-      }
-    },
-
-    // ===== 晚自习会话管理 =====
-    async loadNoiseSessionConfig() {
-      try {
-        const res = await dataProvider.loadData('noise-session-config')
-        const data = res?.data || res
-        if (data && data.sessions) {
-          this.noiseSessionConfig = data
-        } else {
-          // 默认配置
-          this.noiseSessionConfig = {
-            sessions: [
-              { name: '第1节晚自习', start: '19:20', duration: 70, enabled: true },
-              { name: '第2节晚自习', start: '20:20', duration: 110, enabled: true },
-            ],
-            alertThresholdDb: 55,
-          }
-        }
-        // 加载报告
-        await this.loadSessionReports()
-      } catch (e) {
-        console.error('加载噪音会话配置失败:', e)
-        this.noiseSessionConfig = {
-          sessions: [
-            { name: '第1节晚自习', start: '19:20', duration: 70, enabled: true },
-            { name: '第2节晚自习', start: '20:20', duration: 110, enabled: true },
-          ],
-          alertThresholdDb: 55,
-        }
-      }
-    },
-    async saveNoiseSessionConfig() {
-      try {
-        await dataProvider.saveData('noise-session-config', this.noiseSessionConfig)
-      } catch (e) {
-        console.error('保存噪音会话配置失败:', e)
-      }
-    },
-    // ===== 按日期的报告存储 =====
-    formatDateKey(ts) {
-      const d = new Date(ts)
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-    },
-    async loadReportMeta() {
-      try {
-        const res = await dataProvider.loadData('noise-reports-meta')
-        const data = res?.data || res
-        if (data && data.dates) {
-          // 清理超过 30 天的元数据
-          const cutoffDate = new Date()
-          cutoffDate.setDate(cutoffDate.getDate() - 30)
-          const cutoffKey = this.formatDateKey(cutoffDate.getTime())
-          const cleaned = {}
-          for (const [key, val] of Object.entries(data.dates)) {
-            if (key >= cutoffKey) cleaned[key] = val
-          }
-          this.noiseReportMeta = { dates: cleaned }
-        } else {
-          this.noiseReportMeta = { dates: {} }
-        }
-      } catch {
-        this.noiseReportMeta = { dates: {} }
-      }
-    },
-    async saveReportMeta() {
-      try {
-        await dataProvider.saveData('noise-reports-meta', this.noiseReportMeta)
-      } catch {
-        console.error('保存报告元数据失败')
-      }
-    },
-    async loadReportsForDate(dateStr) {
-      this.noiseSelectedDate = dateStr
-      try {
-        const res = await dataProvider.loadData(`noise-reports-${dateStr}`)
-        const data = res?.data || res
-        this.noiseCurrentDateReports = Array.isArray(data) ? data : []
-      } catch {
-        this.noiseCurrentDateReports = []
-      }
-    },
-    async saveReportToDate(report) {
-      const dateStr = this.formatDateKey(report.startTime)
-      // 加载当天已有报告
-      let existing = []
-      try {
-        const res = await dataProvider.loadData(`noise-reports-${dateStr}`)
-        const data = res?.data || res
-        if (Array.isArray(data)) existing = data
-      } catch { /* empty */ }
-      existing.push(report)
-      await dataProvider.saveData(`noise-reports-${dateStr}`, existing)
-      // 更新元数据
-      if (!this.noiseReportMeta.dates) this.noiseReportMeta.dates = {}
-      const scores = existing.map(r => r.score)
-      this.noiseReportMeta.dates[dateStr] = {
-        count: existing.length,
-        avgScore: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
-        sessions: existing.map(r => r.sessionName),
-        lastUpdated: Date.now(),
-      }
-      await this.saveReportMeta()
-      // 如果当前正在查看该日期，刷新
-      if (this.noiseSelectedDate === dateStr) {
-        this.noiseCurrentDateReports = existing
-      }
-    },
-    async loadSessionReports() {
-      await this.loadReportMeta()
-      // 默认加载今天的报告
-      const today = this.formatDateKey(Date.now())
-      await this.loadReportsForDate(today)
-    },
-    startSessionCheck() {
-      // 每 30 秒检查是否在晚自习时间段
-      this.checkSessionTime()
-      this.noiseSessionCheckTimer = setInterval(() => {
-        this.checkSessionTime()
-      }, 30000)
-    },
-    stopSessionCheck() {
-      if (this.noiseSessionCheckTimer) {
-        clearInterval(this.noiseSessionCheckTimer)
-        this.noiseSessionCheckTimer = null
-      }
-    },
-    checkSessionTime() {
-      if (!this.noiseSessionConfig?.sessions) return
-      const now = new Date()
-      const nowMinutes = now.getHours() * 60 + now.getMinutes()
-      const activeSession = this.noiseSessionConfig.sessions.find(s => {
-        if (!s.enabled) return false
-        const [h, m] = s.start.split(':').map(Number)
-        const startMin = h * 60 + m
-        const endMin = startMin + (s.duration || 70)
-        return nowMinutes >= startMin && nowMinutes < endMin
-      })
-      if (activeSession && !this.noiseSessionActive) {
-        // 进入晚自习时段，自动开始
-        this.beginSession(activeSession)
-      } else if (!activeSession && this.noiseSessionActive) {
-        // 离开晚自习时段，自动结束并保存
-        this.endSession()
-      }
-    },
-    beginSession(session) {
-      this.noiseSessionActive = true
-      this.noiseSessionData = {
-        sessionName: session.name,
-        startTime: Date.now(),
-        endTime: null,
-        samples: [], // { t, db }
-        slices: [],
-        alertThresholdDb: this.noiseSessionConfig.alertThresholdDb || 55,
-      }
-      // 如果还没在监测，自动开始
-      if (!this.noiseMonitoring) {
-        this.startNoise()
-      }
-    },
-    endSession() {
-      if (!this.noiseSessionData) {
-        this.noiseSessionActive = false
-        return
-      }
-      this.noiseSessionData.endTime = Date.now()
-      this.noiseSessionData.slices = [...this.noiseHistory]
-      // 生成报告并按日期保存
-      const report = this.generateSessionReport(this.noiseSessionData)
-      this.saveReportToDate(report)
-      this.noiseSessionActive = false
-      this.noiseSessionData = null
-    },
-    collectSessionSample(snapshot) {
-      if (!this.noiseSessionData) return
-      const db = snapshot.currentDisplayDb
-      if (typeof db === 'number' && db > 0) {
-        // 每 2 秒采样一次（通过间隔控制）
-        const samples = this.noiseSessionData.samples
-        const lastT = samples.length > 0 ? samples[samples.length - 1].t : 0
-        if (Date.now() - lastT >= 2000) {
-          samples.push({ t: Date.now(), db: Math.round(db * 10) / 10 })
-        }
-      }
-    },
-    generateSessionReport(data) {
-      const samples = data.samples
-      const dbs = samples.map(s => s.db)
-      const threshold = data.alertThresholdDb
-      const duration = data.endTime - data.startTime
-
-      if (dbs.length === 0) {
-        return {
-          sessionName: data.sessionName,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          duration,
-          avgDb: 0, maxDb: 0, score: 100,
-          overThresholdDuration: 0, overThresholdRatio: 0,
-          segmentCount: 0, samples: [],
-          scorePenalties: { sustained: 0, time: 0, segment: 0 },
-        }
-      }
-
-      // 统计
-      const avgDb = Math.round(dbs.reduce((a, b) => a + b, 0) / dbs.length * 10) / 10
-      const maxDb = Math.round(Math.max(...dbs) * 10) / 10
-
-      // 超阈时长
-      let overCount = 0
-      dbs.forEach(d => { if (d > threshold) overCount++ })
-      const overThresholdRatio = overCount / dbs.length
-      const overThresholdDuration = Math.round(overThresholdRatio * duration / 1000)
-
-      // 打断次数（超阈片段）
-      let segmentCount = 0
-      let inSegment = false
-      dbs.forEach(d => {
-        if (d > threshold && !inSegment) { segmentCount++; inSegment = true }
-        if (d <= threshold) inSegment = false
-      })
-
-      // 评分
-      const sustainedPenalty = Math.min(40, Math.max(0, (avgDb - threshold) / 30 * 40))
-      const timePenalty = Math.min(30, overThresholdRatio * 30)
-      const segmentPenalty = Math.min(30, (segmentCount / Math.max(1, duration / 60000) / 6) * 30)
-      const score = Math.max(0, Math.round(100 - sustainedPenalty - timePenalty - segmentPenalty))
-
-      return {
-        sessionName: data.sessionName,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        duration,
-        avgDb, maxDb, score,
-        overThresholdDuration,
-        overThresholdRatio: Math.round(overThresholdRatio * 1000) / 10,
-        segmentCount,
-        samples: samples.length > 500 ? this.downsampleArray(samples, 500) : samples,
-        scorePenalties: {
-          sustained: Math.round(sustainedPenalty),
-          time: Math.round(timePenalty),
-          segment: Math.round(segmentPenalty),
-        },
-        alertThresholdDb: threshold,
-      }
-    },
-    downsampleArray(arr, targetLen) {
-      const step = arr.length / targetLen
-      const result = []
-      for (let i = 0; i < targetLen; i++) {
-        result.push(arr[Math.floor(i * step)])
-      }
-      return result
-    },
-    async onSelectReportDate(dateStr) {
-      await this.loadReportsForDate(dateStr)
-    },
-    async onClearDateReports(dateStr) {
-      try {
-        await dataProvider.saveData(`noise-reports-${dateStr}`, [])
-      } catch { /* empty */ }
-      // 更新元数据
-      if (this.noiseReportMeta.dates) {
-        delete this.noiseReportMeta.dates[dateStr]
-        await this.saveReportMeta()
-      }
-      if (this.noiseSelectedDate === dateStr) {
-        this.noiseCurrentDateReports = []
-      }
-    },
-    async onClearAllReports() {
-      // 清空所有日期的报告
-      if (this.noiseReportMeta.dates) {
-        for (const dateStr of Object.keys(this.noiseReportMeta.dates)) {
-          try {
-            await dataProvider.saveData(`noise-reports-${dateStr}`, [])
-          } catch { /* empty */ }
-        }
-      }
-      this.noiseReportMeta = { dates: {} }
-      await this.saveReportMeta()
-      this.noiseCurrentDateReports = []
     },
   },
 }
@@ -1551,33 +943,17 @@ export default {
 }
 
 .time-display {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-family: var(--font-mono);
   white-space: nowrap;
 }
 
 .seconds-text {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-family: var(--font-mono);
 }
 
 .date-line {
   opacity: 0.75;
-  letter-spacing: 1px;
-}
-
-/* 噪音侧栏 */
-.noise-side {
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(var(--v-theme-surface-variant), 0.25);
-  transition: background 0.2s ease;
-  cursor: pointer;
-}
-.noise-side:hover {
-  background: rgba(var(--v-theme-surface-variant), 0.5);
-}
-.noise-side-db {
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-wide);
 }
 
 /* 全屏样式 */
@@ -1594,7 +970,7 @@ export default {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: var(--z-toolbar);
   display: flex;
   justify-content: center;
   padding-top: 16px;
@@ -1602,7 +978,7 @@ export default {
 
 .fullscreen-tabs {
   background: transparent;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
 }
 
 .toolbar-fade-enter-active,
@@ -1626,17 +1002,20 @@ export default {
 }
 
 .fullscreen-time-display {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-  font-size: clamp(4rem, 15vw, 12rem);
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: 8px;
+  letter-spacing: var(--tracking-display);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  font-size: clamp(2rem, 12vw, 8rem);
+}
+
+@media (min-width: 768px) {
+  .fullscreen-time-display {
+    font-size: clamp(4rem, 15vw, 12rem);
+  }
 }
 
 .fullscreen-seconds {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
   font-size: 0.45em;
   vertical-align: baseline;
   margin-left: 4px;
@@ -1646,7 +1025,7 @@ export default {
 .fullscreen-date-line {
   font-size: clamp(1rem, 3vw, 2.2rem);
   opacity: 0.7;
-  letter-spacing: 2px;
+  letter-spacing: var(--tracking-wide);
 }
 
 .fullscreen-progress {
@@ -1679,7 +1058,6 @@ export default {
 }
 
 .countdown-digit {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
   font-size: clamp(3rem, 10vw, 8rem);
   font-weight: 700;
   line-height: 1;
@@ -1689,7 +1067,6 @@ export default {
 }
 
 .countdown-sep {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
   font-size: clamp(3rem, 10vw, 8rem);
   font-weight: 300;
   line-height: 1;
@@ -1719,7 +1096,7 @@ export default {
 
 .stopwatch-laps-table {
   background: transparent !important;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 </style>

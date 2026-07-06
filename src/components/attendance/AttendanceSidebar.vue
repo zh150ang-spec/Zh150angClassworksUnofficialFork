@@ -13,27 +13,29 @@
     cols="1"
     @click="handleClick"
   >
-    <h1>出勤</h1>
-    <h2>
+    <h1 class="text-body-large font-weight-bold mb-1">
+      出勤
+    </h1>
+    <h2 class="text-body-medium mb-0">
       <span style="white-space: nowrap"> 应到</span>
       :
       <span style="white-space: nowrap">
         {{ studentList.length - attendance.exclude.length }}人
       </span>
     </h2>
-    <h2>
+    <h2 class="text-body-medium mb-0">
       <span style="white-space: nowrap"> 实到</span>
       :
       <span style="white-space: nowrap">
         {{
           studentList.length -
-          attendance.absent.length -
-          (!getSetting("display.lateStudentsArePresent")) * attendance.late.length -
-          attendance.exclude.length
+            attendance.absent.length -
+            (!getSetting("display.lateStudentsArePresent")) * attendance.late.length -
+            attendance.exclude.length
         }}人
       </span>
     </h2>
-    <h2>
+    <h2 class="text-body-medium mb-0">
       <span style="white-space: nowrap"> 请假</span>
       :
       <span style="white-space: nowrap">
@@ -43,12 +45,11 @@
     <h3
       v-for="(name, index) in attendance.absent"
       :key="'absent-' + index"
-      class="gray-text"
+      class="text-body-small gray-text"
     >
-      <span v-if="display.lgAndUp.value">{{ `${index + 1}. ` }}</span
-      ><span style="white-space: nowrap">{{ name }}</span>
+      <span v-if="display.lgAndUp.value">{{ `${index + 1}. ` }}</span><span style="white-space: nowrap">{{ name }}</span>
     </h3>
-    <h2>
+    <h2 class="text-body-medium mb-0">
       <span style="white-space: nowrap">迟到</span>
       :
       <span style="white-space: nowrap">
@@ -58,12 +59,11 @@
     <h3
       v-for="(name, index) in attendance.late"
       :key="'late-' + index"
-      class="gray-text"
+      class="text-body-small gray-text"
     >
-      <span v-if="display.lgAndUp.value">{{ `${index + 1}. ` }}</span
-      ><span style="white-space: nowrap">{{ name }}</span>
+      <span v-if="display.lgAndUp.value">{{ `${index + 1}. ` }}</span><span style="white-space: nowrap">{{ name }}</span>
     </h3>
-    <h2>
+    <h2 class="text-body-medium mb-0">
       <span style="white-space: nowrap">不参与</span>
       :
       <span style="white-space: nowrap">
@@ -73,10 +73,9 @@
     <h3
       v-for="(name, index) in attendance.exclude"
       :key="'exclude-' + index"
-      class="gray-text"
+      class="text-body-small gray-text"
     >
-      <span v-if="display.lgAndUp.value">{{ `${index + 1}. ` }}</span
-      ><span style="white-space: nowrap">{{ name }}</span>
+      <span v-if="display.lgAndUp.value">{{ `${index + 1}. ` }}</span><span style="white-space: nowrap">{{ name }}</span>
     </h3>
   </v-col>
 </template>
