@@ -1,81 +1,36 @@
 /**
  * src/styles/settings.scss
  *
- * Configures SASS variables and Vuetify overwrites
+ * Vuetify SASS configuration — Apple Design System overrides.
+ * This file is loaded by vite-plugin-vuetify (configFile) BEFORE Vuetify compiles.
+ * All !default variables here win over Vuetify's built-in defaults.
+ *
+ * https://vuetifyjs.com/features/sass-variables/
  */
 
-// https://vuetifyjs.com/features/sass-variables/`
-// @use 'vuetify/settings' with (
-//   $color-pack: false
-// );
+@use 'vuetify/settings' with (
+  // ── Border Radius (Apple: 1.2rem = 19.2px) ─────────────
+  // Unify all rounded-* variants to 19.2px;
+  // only 0 / pill / circle keep their special meanings.
+  $border-radius-root: 19.2px,
+  $rounded: (
+    0: 0,
+    'sm': 19.2px,
+    null: 19.2px,
+    'md': 19.2px,
+    'lg': 19.2px,
+    'xl': 19.2px,
+    'pill': 9999px,
+    'circle': 50%,
+  ),
 
-.student-card {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  // ── Typography (Apple: DM Sans + JetBrains Mono) ────────
+  $body-font-family: ('DM Sans', ui-sans-serif, sans-serif, system-ui),
+  $heading-font-family: ('DM Sans', ui-sans-serif, sans-serif, system-ui),
 
-.bg-primary-subtle {
-  background-color: rgb(var(--v-theme-primary), 0.05);
-}
-
-.action-buttons {
-  transition: opacity 0.2s ease;
-  opacity: 0;
-}
-
-.gap-1 {
-  gap: 4px;
-}
-
-.gap-2 {
-  gap: 8px;
-}
-
-.student-card .v-text-field {
-  margin: 0;
-  padding: 0;
-}
-
-@media (max-width: 600px) {
-  .v-container {
-    padding: 12px;
-  }
-
-  .v-col {
-    padding: 8px;
-  }
-}
-
-.student-card.mobile {
-  margin-bottom: 8px;
-}
-
-.student-card.mobile .v-btn {
-  min-width: 40px;
-  min-height: 40px;
-}
-
-.student-card.mobile .v-text-field {
-  font-size: 16px;
-}
-
-@media (max-width: 600px) {
-  .v-col {
-    padding: 6px !important;
-  }
-
-  .student-card {
-    margin-bottom: 4px;
-  }
-
-  .action-buttons {
-    opacity: 1;
-  }
-}
-
-.student-card {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.student-card:active {
-  background-color: rgb(var(--v-theme-primary), 0.05);
-}
+  // ── Motion (Apple: cubic-bezier(0.32, 0.72, 0, 1)) ────
+  $standard-easing: cubic-bezier(0.32, 0.72, 0, 1),
+  $decelerated-easing: cubic-bezier(0.32, 0.72, 0, 1),
+  $accelerated-easing: cubic-bezier(0.32, 0.72, 0, 1),
+  $transition-duration-root: 0.25s,
+);

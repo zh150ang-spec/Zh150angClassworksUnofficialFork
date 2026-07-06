@@ -1,0 +1,45 @@
+/* ═══════════════════════════════════════════════════════════
+   radius.scss — Vuetify hard-coded defaults that settings.scss
+   CANNOT override (component-level SASS variables, not global).
+
+   Everything else (cards, dialogs, inputs, menus, chips,
+   avatars, switches, sliders, pickers, snackbars, alerts,
+   sheets, tables, expansion-panels, tabs, skeleton, etc.)
+   is handled at compile time by settings.scss:
+     $border-radius-root: 19.2px (→ 80+ components)
+     $rounded map (→ pill, circle, 0)
+
+   This file covers only the gaps — list items use --radius-md.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Buttons: Apple full pill (SASS var cannot be overridden) */
+.v-btn {
+  border-radius: 999px !important;
+}
+.v-btn--rounded { border-radius: 999px !important; }
+.v-btn--block   { border-radius: 999px !important; }
+
+.v-btn-group                            { border-radius: 999px !important; }
+.v-btn-group .v-btn                     { border-radius: 0 !important; }
+.v-btn-group .v-btn:first-child { border-radius: 999px 0 0 999px !important; }
+.v-btn-group .v-btn:last-child  { border-radius: 0 999px 999px 0 !important; }
+.v-btn-group .v-btn:only-child  { border-radius: 999px !important; }
+
+/* ── List / List-item: $list-border-radius & $list-item-border-radius default to 0 */
+.v-list,
+.v-list.rounded-0,
+.v-list.rounded-sm,
+.v-list.rounded-md,
+.v-list.rounded-lg,
+.v-list.rounded-xl {
+  border-radius: var(--radius-md) !important;
+}
+
+.v-list-item,
+.v-list-item.rounded-0,
+.v-list-item.rounded-sm,
+.v-list-item.rounded-md,
+.v-list-item.rounded-lg,
+.v-list-item.rounded-xl {
+  border-radius: var(--radius-md) !important;
+}
