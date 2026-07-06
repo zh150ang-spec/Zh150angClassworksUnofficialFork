@@ -1,7 +1,7 @@
 /**
  * Sentry 异步初始化模块
  *
- * 从 main.js 中抽离，在 Vue app 挂载后异步加载，
+ * 从 main.js 中异步加载，在 app.mount() 之前完成初始化，
  * 避免 @sentry/vue (~60KB gzip) 阻塞首屏渲染。
  */
 import * as Sentry from '@sentry/vue'
@@ -11,16 +11,19 @@ import { getVisitorId } from './visitorId'
 let feedbackIntegration = null
 
 /**
- * 异步初始化 Sentry（在 app mount 后调用）
+ * 异步初始化 Sentry（在 app mount 前调用）
  * @param {import('vue').App} app - Vue app 实例
  * @param {import('vue-router').Router} router - Vue Router 实例
  */
 export function initSentry(app, router) {
+  const isDev = import.meta.env.DEV;
+
   Sentry.init({
     app,
-    dsn: 'https://dc34ab47426f49c0925445f0d87b7007@report.houlang.cloud/6',
-    sendDefaultPii: true,
-    integrations: [
+    dsn: isDev ? undefined : 'https://dc34ab47426f49c0925445f0d87b7007@report.houlang.cloud/6',
+    enabled: !isDev,
+    sendDefaultPii: !isDev,
+    integrations: isDev ? [] : [
       Sentry.browserTracingIntegration({ router }),
       Sentry.replayIntegration({
         maskAllText: false,
@@ -57,6 +60,64 @@ export function initSentry(app, router) {
     replaysOnErrorSampleRate: 0,
     enableLogs: true,
     beforeSend(event) {
+      // 安全脱敏：移除请求头、URL、breadcrumb 中的敏感凭证（x-app-token、Authorization、x-site-key、?token=）
+      // 避免 axios 异常把 error.config.headers 中的 kvToken 上报到远程错误追踪服务
+      try {
+        // 1. 脱敏 request.headers
+        if (event.request?.headers) {
+          const sensitiveHeaders = ['x-app-token', 'authorization', 'x-site-key', 'cookie']
+          for (const key of Object.keys(event.request.headers)) {
+            if (sensitiveHeaders.includes(key.toLowerCase())) {
+              event.request.headers[key] = '[Filtered]'
+            }
+          }
+        }
+        // 2. 脱敏 request.url 和 request.query_string 中的 token 参数
+        if (event.request?.url) {
+          event.request.url = event.request.url.replace(/([?&]token=)[^&]*/gi, '$1[Filtered]')
+        }
+        if (event.request?.query_string) {
+          event.request.query_string = event.request.query_string.replace(/([?&]token=)[^&]*/gi, '$1[Filtered]')
+        }
+        // 3. 脱敏 breadcrumbs 中的 http 请求
+        if (Array.isArray(event.breadcrumbs)) {
+          for (const crumb of event.breadcrumbs) {
+            if (crumb?.type === 'http' && crumb?.data) {
+              if (crumb.data.headers) {
+                const sensitiveHeaders = ['x-app-token', 'authorization', 'x-site-key', 'cookie']
+                for (const key of Object.keys(crumb.data.headers)) {
+                  if (sensitiveHeaders.includes(key.toLowerCase())) {
+                    crumb.data.headers[key] = '[Filtered]'
+                  }
+                }
+              }
+              if (crumb.data.url) {
+                crumb.data.url = crumb.data.url.replace(/([?&]token=)[^&]*/gi, '$1[Filtered]')
+              }
+            }
+          }
+        }
+        // 4. 脱敏 exception stacktrace frames 中的 vars（可能包含 error.config 中的 headers）
+        if (event.exception?.values) {
+          for (const ex of event.exception.values) {
+            if (ex.stacktrace?.frames) {
+              for (const frame of ex.stacktrace.frames) {
+                if (frame.vars) {
+                  const sensitiveVarKeys = ['headers', 'config', 'error', 'err', 'request']
+                  for (const key of Object.keys(frame.vars)) {
+                    if (sensitiveVarKeys.includes(key)) {
+                      frame.vars[key] = '[Filtered]'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // 脱敏失败不应阻塞事件上报
+        console.warn('Sentry 事件脱敏失败:', e)
+      }
       return event
     },
   })
