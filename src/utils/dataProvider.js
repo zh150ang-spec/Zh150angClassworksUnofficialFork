@@ -15,6 +15,50 @@ export const formatError = (message, code = "UNKNOWN_ERROR") => ({
 const DEFAULT_RETRY_ATTEMPTS = 2;
 const RETRY_DELAY_BASE = 100;
 
+const RMW_MAX_RETRIES = 2;
+
+function unionByIdentity(server, local) {
+  const seen = new Set()
+  const result = []
+  const identify = (item) => {
+    if (typeof item !== 'object' || item === null) return JSON.stringify(item)
+    if ('id' in item) return item.id
+    if ('name' in item && typeof item.name === 'string') return item.name
+    return JSON.stringify(item)
+  }
+  for (const item of server) {
+    const id = identify(item)
+    seen.add(id)
+    result.push(item)
+  }
+  for (const item of local) {
+    const id = identify(item)
+    if (!seen.has(id)) {
+      result.push(item)
+    }
+  }
+  return result
+}
+
+function additiveMerge(server, local) {
+  if (Array.isArray(server) && Array.isArray(local)) return unionByIdentity(server, local)
+  if (local === null || server === null) return local ?? server ?? null
+  if (typeof server === 'object' && typeof local === 'object') return { ...server, ...local }
+  return local
+}
+
+async function rmwWriteServer(key, data) {
+  let attempt = 0
+  while (attempt <= RMW_MAX_RETRIES) {
+    const current = await kvServerProvider.loadData(key)
+    const merged = (current && current.success !== false) ? additiveMerge(current, data) : data
+    const result = await kvServerProvider.saveData(key, merged)
+    if (result && result.success !== false) return result
+    attempt++
+  }
+  return formatError("云端保存失败", "SERVER_SAVE_ERROR")
+}
+
 async function retryOperation(operation, maxRetries = DEFAULT_RETRY_ATTEMPTS) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -289,7 +333,7 @@ export default {
         return formatError("网络不可用", "NETWORK_OFFLINE");
       }
       try {
-        const result = await retryOperation(() => kvServerProvider.saveData(key, data));
+        const result = await rmwWriteServer(key, data);
         if (result && result.success !== false) {
           return { success: true, source: "cloud" };
         }
@@ -305,7 +349,7 @@ export default {
         try {
           const [localResult, serverResult] = await Promise.all([
             kvLocalProvider.saveData(key, data),
-            retryOperation(() => kvServerProvider.saveData(key, data))
+            rmwWriteServer(key, data)
           ]);
 
           const localOk = localResult && localResult.success !== false;
