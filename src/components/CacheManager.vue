@@ -2,49 +2,86 @@
   <v-card>
     <v-card-title class="d-flex align-center">
       <span>缓存管理</span>
-      <v-spacer></v-spacer>
-      <v-btn :loading="loading" color="error" @click="clearAllCaches">
+      <v-spacer />
+      <v-btn
+        :loading="loading"
+        color="error"
+        @click="clearAllCaches"
+      >
         清除所有缓存
       </v-btn>
-      <v-btn class="ml-2" icon @click="refreshCaches">
-        <v-icon>mdi-refresh</v-icon>
+      <v-btn
+        class="ml-2"
+        icon
+        @click="refreshCaches"
+      >
+        <v-icon :icon="ICON.REFRESH" />
       </v-btn>
     </v-card-title>
 
     <v-card-text>
-      <v-alert v-if="!serviceWorkerActive" class="mb-4" type="warning">
+      <v-alert
+        v-if="!serviceWorkerActive"
+        class="mb-4"
+        type="warning"
+      >
         Service Worker 未激活，缓存管理功能不可用。
       </v-alert>
 
-      <v-alert v-if="message" :type="messageType" class="mb-4">
+      <v-alert
+        v-if="message"
+        :type="messageType"
+        class="mb-4"
+      >
         {{ message }}
       </v-alert>
 
       <v-expansion-panels v-if="caches.length > 0">
-        <v-expansion-panel v-for="cache in caches" :key="cache.name">
+        <v-expansion-panel
+          v-for="cache in caches"
+          :key="cache.name"
+        >
           <v-expansion-panel-title>
             <div class="d-flex align-center">
               <span>{{ formatCacheName(cache.name) }}</span>
-              <v-chip class="ml-2" size="small">{{ cache.urls.length }} 个文件</v-chip>
+              <v-chip
+                class="ml-2"
+                size="small"
+              >
+                {{ cache.urls.length }} 个文件
+              </v-chip>
             </div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <div class="d-flex justify-end mb-2">
-              <v-btn :loading="loading" color="error" size="small" @click="clearCache(cache.name)">
+              <v-btn
+                :loading="loading"
+                color="error"
+                size="small"
+                @click="clearCache(cache.name)"
+              >
                 清除此缓存
               </v-btn>
             </div>
             <v-list lines="two">
-              <v-list-item v-for="(url, index) in cache.urls" :key="index">
+              <v-list-item
+                v-for="(url, index) in cache.urls"
+                :key="index"
+              >
                 <v-list-item-title class="text-truncate">
                   {{ getFileName(url) }}
                 </v-list-item-title>
                 <v-list-item-subtitle class="text-truncate">
                   {{ url }}
                 </v-list-item-subtitle>
-                <template v-slot:append>
-                  <v-btn color="error" icon size="small" @click="clearUrl(cache.name, url)">
-                    <v-icon>mdi-delete</v-icon>
+                <template #append>
+                  <v-btn
+                    color="error"
+                    icon
+                    size="small"
+                    @click="clearUrl(cache.name, url)"
+                  >
+                    <v-icon :icon="ICON.DELETE" />
                   </v-btn>
                 </template>
               </v-list-item>
@@ -53,9 +90,15 @@
         </v-expansion-panel>
       </v-expansion-panels>
 
-      <v-skeleton-loader v-else-if="loading" type="article"/>
+      <v-skeleton-loader
+        v-else-if="loading"
+        type="article"
+      />
 
-      <v-alert v-else type="info">
+      <v-alert
+        v-else
+        type="info"
+      >
         没有找到缓存数据。
       </v-alert>
     </v-card-text>
@@ -63,19 +106,34 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 export default {
   name: 'CacheManager',
   data() {
     return {
+      ICON,
       caches: [],
       loading: false,
       serviceWorkerActive: false,
       message: '',
       messageType: 'info',
+      // 保存定时器 ID 以便卸载时清理，避免在已卸载组件上修改 this.message 触发 Vue 警告
+      messageTimerId: null,
+      swTimeoutTimerId: null,
     }
   },
   mounted() {
     this.checkServiceWorker();
+  },
+  beforeUnmount() {
+    if (this.messageTimerId !== null) {
+      clearTimeout(this.messageTimerId);
+      this.messageTimerId = null;
+    }
+    if (this.swTimeoutTimerId !== null) {
+      clearTimeout(this.swTimeoutTimerId);
+      this.swTimeoutTimerId = null;
+    }
   },
   methods: {
     checkServiceWorker() {
@@ -196,7 +254,8 @@ export default {
         navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
 
         // 设置超时
-        setTimeout(() => {
+        this.swTimeoutTimerId = setTimeout(() => {
+          this.swTimeoutTimerId = null;
           reject(new Error('Service Worker 响应超时'));
         }, 5000);
       });
@@ -227,8 +286,13 @@ export default {
       this.message = message;
       this.messageType = type;
 
+      // 清理上一次的消息定时器，避免重复设置
+      if (this.messageTimerId !== null) {
+        clearTimeout(this.messageTimerId);
+      }
       // 5秒后自动清除消息
-      setTimeout(() => {
+      this.messageTimerId = setTimeout(() => {
+        this.messageTimerId = null;
         if (this.message === message) {
           this.message = '';
         }

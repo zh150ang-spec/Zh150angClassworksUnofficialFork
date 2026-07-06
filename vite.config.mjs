@@ -4,7 +4,7 @@ import Components from 'unplugin-vue-components/vite'
 import Fonts from 'unplugin-fonts/vite'
 import Layouts from 'vite-plugin-vue-layouts'
 import Vue from '@vitejs/plugin-vue'
-import VueRouter from 'unplugin-vue-router/vite'
+import VueRouter from 'vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import { VitePWA } from 'vite-plugin-pwa'
 //import { TDesignResolver } from 'unplugin-vue-components/resolvers'
@@ -32,80 +32,22 @@ export default defineConfig({
         suppressWarnings: true,
       },
 
-      lang: 'zh-CN',
       injectRegister: 'auto',
-      strategies: 'generateSW',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
 
 
       workbox: {
-        globPatterns: ['*'],
-        navigateFallback: 'index.html',
-        runtimeCaching: [
-          {
-            urlPattern: ({ url, sameOrigin }) => {
-              return sameOrigin && url.pathname.endsWith('/assets/');
-            },
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'assets-cache',
-              expiration: {
-                maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 60 // 60 天
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: ({ url, sameOrigin }) => {
-              return sameOrigin && url.pathname.startsWith('/pwa/');
-            },
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'pwa-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 天
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            // 匹配当前域名下除了上述规则外的所有请求
-            urlPattern: ({ url, sameOrigin }) => {
-              if (!sameOrigin) return false;
-              const path = url.pathname;
-              // 排除已经由其他规则处理的路径
-              return !(path.includes('/assets/') || path.includes('/pwa/'));
-            },
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'other-resources',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 1 天
-              },
-              networkTimeoutSeconds: 10,
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-        ],
-        additionalManifestEntries: [],
-        clientsClaim: true,
-        skipWaiting: true,
-        importScripts: ['/sw-cache-manager.js']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,woff,ttf,eot,webmanifest}'],
       },
       manifest: {
+        lang: 'zh-CN',
         name: 'Classworks作业板',
         short_name: 'Classworks',
         description: '记录，查看并同步作业',
-        theme_color: '#212121',
-        background_color: '#212121',
+        theme_color: '#000000',
+        background_color: '#000000',
         display: 'standalone',
         start_url: './',
         edge_side_panel: {
@@ -158,19 +100,15 @@ export default defineConfig({
       },
     }),
     Components({
-      // 排除已在 index.vue 中通过 defineAsyncComponent 手动懒加载的组件
-      // 避免 unplugin-vue-components 生成冲突的静态 import
       directoryAsNamespace: false,
       globs: ['src/components/**/[A-Z]*.vue'],
       exclude: [/pages\/index\.vue$/],
     }),
     Fonts({
-      google: {
-        families: [{
-          name: 'Roboto',
-          styles: 'wght@100;300;400;500;700;900',
-        }],
-      },
+      preload: false,
+      display: 'swap',
+      google: false,
+      custom: [],
     }),
     AutoImport({
       imports: [

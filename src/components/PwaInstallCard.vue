@@ -7,7 +7,7 @@
   >
     <div class="d-flex flex-no-wrap justify-space-between">
       <div class="pe-4">
-        <v-card-title class="text-h6">
+        <v-card-title class="text-headline-small">
           安装应用与授权
         </v-card-title>
 
@@ -16,7 +16,10 @@
         </v-card-subtitle>
 
         <v-card-text class="pt-0 pb-1">
-          <v-list density="comfortable" lines="two">
+          <v-list
+            density="comfortable"
+            lines="two"
+          >
             <v-list-item
               v-for="item in chipList"
               :key="item.key"
@@ -24,8 +27,12 @@
               @click="() => handleSingleRequest(item.key)"
             >
               <template #prepend>
-                <v-avatar :color="chipColors[item.status]" size="32" variant="tonal">
-                  <v-icon :icon="statusIcons[item.status]"></v-icon>
+                <v-avatar
+                  :color="chipColors[item.status]"
+                  size="32"
+                  variant="tonal"
+                >
+                  <v-icon :icon="statusIcons[item.status]" />
                 </v-avatar>
               </template>
 
@@ -33,16 +40,21 @@
               <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
 
               <template #append>
-                <v-chip :color="chipColors[item.status]" size="small" variant="tonal" class="me-2">
+                <v-chip
+                  :color="chipColors[item.status]"
+                  size="small"
+                  variant="tonal"
+                  class="me-2"
+                >
                   {{ statusText[item.status] }}
                 </v-chip>
                 <v-btn
                   variant="text"
-                  icon="mdi-information"
+                  :icon="ICON.INFO"
                   size="small"
                   :disabled="isRequesting"
                   @click.stop="() => openHelp(item.key)"
-                ></v-btn>
+                />
               </template>
             </v-list-item>
           </v-list>
@@ -74,17 +86,27 @@
       <v-avatar
         class="ma-3"
         size="100"
-        rounded="0"
+        rounded="lg"
       >
-        <v-icon icon="mdi-monitor-cellphone" size="80"></v-icon>
+        <v-icon
+          :icon="ICON.MONITOR_CELLPHONE"
+          size="80"
+        />
       </v-avatar>
     </div>
 
-    <v-dialog v-model="helpDialog" max-width="520">
+    <v-dialog
+      v-model="helpDialog"
+      max-width="520"
+    >
       <v-card>
-        <v-card-title class="text-h6">{{ helpContent.title }}</v-card-title>
+        <v-card-title class="text-headline-small">
+          {{ helpContent.title }}
+        </v-card-title>
         <v-card-text>
-          <p class="mb-3">{{ helpContent.message }}</p>
+          <p class="mb-3">
+            {{ helpContent.message }}
+          </p>
           <v-list density="comfortable">
             <v-list-item
               v-for="(link, index) in helpContent.links"
@@ -99,8 +121,13 @@
           </v-list>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn variant="text" @click="helpDialog = false">我知道了</v-btn>
+          <v-spacer />
+          <v-btn
+            variant="text"
+            @click="helpDialog = false"
+          >
+            我知道了
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -108,6 +135,7 @@
 </template>
 
 <script setup>
+import { ICON } from '@/utils/icons'
 import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue';
 import { getSetting, setSetting, requestNotificationPermission, requestPersistentStorage } from "@/utils/settings";
 
@@ -128,9 +156,9 @@ const statusText = {
 };
 
 const statusIcons = {
-  pending: "mdi-progress-clock",
-  granted: "mdi-check-circle",
-  denied: "mdi-close-circle",
+  pending: ICON.PROGRESS_CLOCK,
+  granted: ICON.SUCCESS,
+  denied: ICON.CLOSE_CIRCLE,
   unavailable: "mdi-help-circle",
 };
 

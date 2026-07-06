@@ -1,7 +1,9 @@
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
+import vuetify from 'eslint-plugin-vuetify'
 
 export default [
+  ...vuetify.configs['flat/recommended-v4'],
   {
     name: 'app/files-to-lint',
     files: ['**/*.{js,mjs,jsx,vue}'],
@@ -21,9 +23,14 @@ export default [
     },
   },
   {
+    files: ['**/*.vue'],
+    rules: {
+      'no-unused-vars': 'off',
+    },
+  },
+  {
     languageOptions: {
       globals: {
-        // Browser globals
         window: 'readonly',
         document: 'readonly',
         navigator: 'readonly',
@@ -43,25 +50,39 @@ export default [
         URLSearchParams: 'readonly',
         atob: 'readonly',
         btoa: 'readonly',
-        // Vite globals
         import: 'readonly',
         process: 'readonly',
-        // Service Worker globals
         self: 'readonly',
         caches: 'readonly',
-        // Web API
         Notification: 'readonly',
         ServiceWorker: 'readonly',
         PushManager: 'readonly',
         PushSubscription: 'readonly',
-        // Web Storage API
         Storage: 'readonly',
         StorageEvent: 'readonly',
-        // Web Socket
         WebSocket: 'readonly',
-        // Web Workers
         Worker: 'readonly',
         SharedWorker: 'readonly',
+        AbortController: 'readonly',
+        Event: 'readonly',
+        location: 'readonly',
+        screen: 'readonly',
+        Blob: 'readonly',
+        FileReader: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+        MessageChannel: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        indexedDB: 'readonly',
+        Response: 'readonly',
+        Headers: 'readonly',
+        Request: 'readonly',
+        clients: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        structuredClone: 'readonly',
+        AbortSignal: 'readonly',
       },
     },
   }
