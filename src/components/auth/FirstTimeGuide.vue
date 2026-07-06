@@ -402,9 +402,7 @@
 
 
         <v-row>
-          <v-col
-            cols="12"
-          >
+          <v-col cols="12">
             <v-card
               :color="statusColor"
               variant="tonal"
@@ -444,9 +442,7 @@
             </v-card>
           </v-col>
 
-          <v-col
-            cols="12"
-          >
+          <v-col cols="12">
             <v-card variant="outlined">
               <v-card-item>
                 <div class="text-label-large font-weight-medium mb-3">

@@ -10,9 +10,7 @@
       <v-card-text>
         <!-- 学生模式 -->
         <template v-if="isStudentToken">
-          <div
-            class="mb-2"
-          >
+          <div class="mb-2">
             请从列表中选择您的姓名：
           </div>
           <v-autocomplete
@@ -43,10 +41,7 @@
             clearable
           />
           <!-- 建议列表 -->
-          <div
-
-            class="mt-2 mb-4"
-          >
+          <div class="mt-2 mb-4">
             <div class="d-flex flex-wrap gap-2">
               <v-chip
                 v-for="teacher in filteredTeacherSuggestions"

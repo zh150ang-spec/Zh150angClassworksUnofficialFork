@@ -1,7 +1,5 @@
 <template>
-  <div
-    :class="['setting-item-wrapper', { 'setting-item-developer': isDeveloperMode }]"
-  >
+  <div :class="['setting-item-wrapper', { 'setting-item-developer': isDeveloperMode }]">
     <v-list-item
       :disabled="disabled"
       class="setting-item"
@@ -13,9 +11,7 @@
         />
       </template>
 
-      <v-list-item-title
-        :class="['text-wrap', 'setting-title-row', { 'text-body-1': !isDeveloperMode }]"
-      >
+      <v-list-item-title :class="['text-wrap', 'setting-title-row', { 'text-body-1': !isDeveloperMode }]">
         <span>{{ displayTitle }}</span>
         <v-menu
           location="bottom"
@@ -91,9 +87,7 @@
 
       <template #append>
         <div class="d-flex flex-column flex-sm-row align-center">
-          <div
-            v-if="type !== 'string' || hasOptions"
-          >
+          <div v-if="type !== 'string' || hasOptions">
             <v-switch
               v-if="type === 'boolean'"
               v-model="localValue"

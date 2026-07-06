@@ -122,11 +122,6 @@
 import { ICON } from '@/utils/icons'
 export default {
   name: "HomeActions",
-  data() {
-    return {
-      ICON,
-    };
-  },
   props: {
     synced: Boolean,
     loadingUpload: Boolean,
@@ -146,5 +141,10 @@ export default {
     "add-test-card",
     "add-exam-card",
   ],
+  data() {
+    return {
+      ICON,
+    };
+  },
 };
 </script>

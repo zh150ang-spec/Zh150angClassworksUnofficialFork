@@ -5,9 +5,7 @@
     elevation="0"
     @click="$emit('click')"
   >
-    <v-card-title
-      class="d-flex align-center py-2 px-3 bg-primary-lighten-5 text-body-large font-weight-bold"
-    >
+    <v-card-title class="d-flex align-center py-2 px-3 bg-primary-lighten-5 text-body-large font-weight-bold">
       <span class="text-truncate">{{ exam?.examName || "加载中..." }}</span>
     </v-card-title>
 

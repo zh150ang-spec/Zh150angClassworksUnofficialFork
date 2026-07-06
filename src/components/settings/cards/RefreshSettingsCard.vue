@@ -39,9 +39,7 @@
           当前不是双存储模式，后台同步功能已自动关闭
         </v-alert>
         
-        <v-list-item
-          :disabled="!isDualMode"
-        >
+        <v-list-item :disabled="!isDualMode">
           <template #prepend>
             <v-icon
               :color="isDualMode ? 'primary' : 'grey'"

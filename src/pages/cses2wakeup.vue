@@ -400,14 +400,10 @@
                           class="course-item"
                         >
                           {{ course.name }}
-                          <span
-                            v-if="!settings.hideTeacherName && course.teacher"
-                          >
+                          <span v-if="!settings.hideTeacherName && course.teacher">
                             <br>{{ course.teacher }}
                           </span>
-                          <span
-                            v-if="!settings.hideRoom && course.room"
-                          >
+                          <span v-if="!settings.hideRoom && course.room">
                             <br>{{ course.room }}
                           </span>
                           <span
@@ -420,14 +416,10 @@
                       </template>
                       <template v-else>
                         {{ item[day].name }}
-                        <span
-                          v-if="!settings.hideTeacherName && item[day].teacher"
-                        >
+                        <span v-if="!settings.hideTeacherName && item[day].teacher">
                           <br>{{ item[day].teacher }}
                         </span>
-                        <span
-                          v-if="!settings.hideRoom && item[day].room"
-                        >
+                        <span v-if="!settings.hideRoom && item[day].room">
                           <br>{{ item[day].room }}
                         </span>
                         <span

@@ -228,9 +228,7 @@
                         </div>
                       </div>
 
-                      <div
-                        class="d-flex gap-1 action-buttons ml-2 opacity-100"
-                      >
+                      <div class="d-flex gap-1 action-buttons ml-2 opacity-100">
                         <v-btn
                           v-if="editState.index === index"
                           color="success"

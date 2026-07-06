@@ -3,9 +3,7 @@
     class="fill-height"
     fluid
   >
-    <v-row
-      class="align-center justify-center"
-    >
+    <v-row class="align-center justify-center">
       <v-col
         cols="12"
         md="6"

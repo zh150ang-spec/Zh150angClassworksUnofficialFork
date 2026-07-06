@@ -227,9 +227,7 @@
     persistent
   >
     <v-card>
-      <v-card-title
-        class="text-headline-small d-flex align-center"
-      >
+      <v-card-title class="text-headline-small d-flex align-center">
         <v-icon
           color="warning"
           class="mr-2"

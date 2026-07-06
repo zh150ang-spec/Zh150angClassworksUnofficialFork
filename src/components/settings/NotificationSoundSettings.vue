@@ -78,9 +78,7 @@
                   />
                   试听
                 </v-btn>
-                <v-btn
-                  @click="resetSingleSound"
-                >
+                <v-btn @click="resetSingleSound">
                   <v-icon
                     start
                     :icon="ICON.RESTORE"
@@ -147,9 +145,7 @@
                   />
                   试听
                 </v-btn>
-                <v-btn
-                  @click="resetUrgentSound"
-                >
+                <v-btn @click="resetUrgentSound">
                   <v-icon
                     start
                     :icon="ICON.RESTORE"

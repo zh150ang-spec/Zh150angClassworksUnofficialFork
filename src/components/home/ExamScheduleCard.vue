@@ -118,11 +118,6 @@ import { mapState, mapActions } from 'pinia'
 
 export default {
   name: 'ExamScheduleCard',
-  data() {
-    return {
-      ICON,
-    };
-  },
   props: {
     examId: {
       type: String,
@@ -134,6 +129,11 @@ export default {
     }
   },
   emits: ['close'],
+  data() {
+    return {
+      ICON,
+    };
+  },
   computed: {
     ...mapState(useExamStore, ['exams', 'loadingDetails']),
     exam() {

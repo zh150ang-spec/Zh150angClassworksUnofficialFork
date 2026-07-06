@@ -246,9 +246,7 @@
             color="primary"
             variant="outlined"
           >
-            <v-card-text
-              class="text-headline-large text-center py-4 d-flex align-center justify-center"
-            >
+            <v-card-text class="text-headline-large text-center py-4 d-flex align-center justify-center">
               {{ student }}
               <v-btn
                 :disabled="remainingStudents.length === 0"

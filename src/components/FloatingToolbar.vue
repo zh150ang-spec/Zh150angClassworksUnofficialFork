@@ -7,9 +7,7 @@
         elevation="4"
         rounded="xl"
       >
-        <div
-          class="toolbar-buttons"
-        >
+        <div class="toolbar-buttons">
           <v-btn
             v-ripple
             :title="'查看昨天'"
