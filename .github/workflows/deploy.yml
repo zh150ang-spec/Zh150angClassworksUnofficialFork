@@ -25,11 +25,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-        uses: actions/setup-node@v3
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "pnpm"
 
       - name: Build
         env:
@@ -37,8 +42,8 @@ jobs:
           VITE_DEFAULT_KV_SERVER: https://kv-service.houlang.cloud
           VITE_DEFAULT_AUTH_SERVER: https://kv.houlang.cloud
         run: |
-          npm install
-          npm run build
+          pnpm install
+          pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
