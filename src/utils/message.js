@@ -45,7 +45,10 @@ async function createMessage(type, title, content = '', options = {}) {
     type,
     title,
     content: content.substring(0, 500),
-    timestamp: new Date()
+    timestamp: new Date(),
+    timeout: msgOptions.timeout,
+    closable: msgOptions.closable !== false,
+    actions: msgOptions.actions || null,
   };
 
   if (msgOptions.addToLog) {

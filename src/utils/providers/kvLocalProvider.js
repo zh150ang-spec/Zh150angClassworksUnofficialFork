@@ -427,12 +427,15 @@ export const kvLocalProvider = {
   async removeKeyFromOfflineQueue(key) {
     try {
       const db = await getDB();
-      const items = await db.getAll("offline-queue");
-      const item = items.find(i => i.key === key);
+      const tx = db.transaction("offline-queue", "readwrite");
+      const index = tx.store.index("key");
+      const item = await index.get(key);
       if (item) {
-        await db.delete("offline-queue", item.id);
+        await tx.store.delete(item.id);
+        await tx.done;
         return formatResponse({ removed: true });
       }
+      await tx.done;
       return formatResponse({ removed: false, reason: "not_found" });
     } catch (error) {
       console.error("从离线队列移除键失败:", error);
