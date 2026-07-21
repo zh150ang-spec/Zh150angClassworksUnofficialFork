@@ -333,13 +333,13 @@ const openClassworksKV = () => {
 
 .init-container {
   max-width: 900px;
-  margin: 24px auto;
-  padding: 8px 16px;
+  margin: var(--space-6) auto;
+  padding: var(--space-2) var(--space-4);
 }
 
 .init-header .title {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   text-align: left;
   margin-bottom: 8px;
 }
@@ -354,14 +354,14 @@ const openClassworksKV = () => {
 .main-card-row {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
   margin-top: 32px;
 }
 
 .main-service-card {
   min-height: 100px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .main-service-card:hover {
@@ -369,13 +369,13 @@ const openClassworksKV = () => {
 }
 
 .main-service-card .v-card-item {
-  padding: 20px 24px;
+  padding: var(--space-5) var(--space-6);
 }
 
 .card-horizontal-layout {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .card-icon-wrapper {
@@ -405,14 +405,14 @@ const openClassworksKV = () => {
 /* 其他选项 */
 .alternative-options {
   margin-top: 40px;
-  padding: 20px;
+  padding: var(--space-5);
   background: rgba(var(--v-theme-surface-variant), 0.3);
   border-radius: var(--radius-md);
 }
 
 .options-title {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--font-weight-label);
   opacity: 0.8;
   margin-bottom: 12px;
   text-align: left;
@@ -421,7 +421,7 @@ const openClassworksKV = () => {
 .options-buttons {
   margin-top: 24px;
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: flex-start;
 }
@@ -439,7 +439,7 @@ const openClassworksKV = () => {
 
 @media (max-width: 768px) {
   .card-horizontal-layout {
-    gap: 16px;
+    gap: var(--space-4);
   }
 
   .card-icon-wrapper .v-icon {

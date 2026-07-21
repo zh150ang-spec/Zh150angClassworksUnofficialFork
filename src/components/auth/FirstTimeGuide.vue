@@ -802,7 +802,7 @@ const applyTokenAndClose = () => {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
-  gap: 20px;
+  gap: var(--space-5);
   flex-wrap: wrap;
 }
 
@@ -832,13 +832,13 @@ const applyTokenAndClose = () => {
 
   .diagram-connector {
     transform: rotate(90deg);
-    margin: 20px 0;
+    margin: var(--space-5) 0;
   }
 }
 
 /* 渐进式注册卡片样式 */
 .progressive-register-card {
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   border: 2px solid transparent !important;
 }
 
@@ -856,7 +856,7 @@ const applyTokenAndClose = () => {
 
 .progressive-register-card code {
   background: var(--color-fill);
-  padding: 2px 6px;
+  padding: var(--space-compat-2px) var(--space-compat-6px);
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
 }
@@ -867,7 +867,7 @@ const applyTokenAndClose = () => {
   overflow: auto;
   background: var(--color-fill-soft);
   border-radius: var(--radius-sm);
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
 }
 
 .log-line + .log-line {
@@ -876,7 +876,7 @@ const applyTokenAndClose = () => {
 
 .device-code {
   background: var(--color-fill);
-  padding: 2px 6px;
+  padding: var(--space-compat-2px) var(--space-compat-6px);
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
   font-size: 0.875rem;

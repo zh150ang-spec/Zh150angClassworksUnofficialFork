@@ -28,13 +28,24 @@
       >
         取消
       </v-btn>
-      <v-btn
-        :disabled="!code"
-        color="primary"
-        @click="submit"
+      <v-tooltip
+        location="top"
+        text="即将推出"
       >
-        提交
-      </v-btn>
+        <template #activator="{ props }">
+          <span
+            v-bind="props"
+            class="d-inline-block"
+          >
+            <v-btn
+              color="primary"
+              disabled
+            >
+              提交
+            </v-btn>
+          </span>
+        </template>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>

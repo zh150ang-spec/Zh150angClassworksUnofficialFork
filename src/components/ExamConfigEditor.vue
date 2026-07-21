@@ -2081,11 +2081,11 @@ export default {
   line-height: var(--line-height-code);
   max-height: 400px;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--space-4);
 }
 
 .json-preview code {
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
 }
 
 /* 预览模式样式增强 */
@@ -2140,7 +2140,7 @@ export default {
 
 .v-card.hover:hover {
   transform: translateY(-2px);
-  transition: transform 0.2s ease-in-out;
+  transition: transform var(--duration-fast) var(--var(--ease-apple)-apple);
   box-shadow: var(--shadow-hover) !important;
 }
 
@@ -2158,7 +2158,7 @@ export default {
 
 /* 科目编辑项悬停效果 */
 .hover-highlight {
-  transition: background-color 0.2s ease;
+  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .hover-highlight:hover {

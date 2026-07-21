@@ -494,12 +494,12 @@ export default {
 
 <style lang="scss" scoped>
 .student-card {
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .action-buttons {
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .unsaved-changes {

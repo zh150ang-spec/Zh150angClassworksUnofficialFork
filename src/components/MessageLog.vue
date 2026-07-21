@@ -109,9 +109,9 @@ export default defineComponent({
 }
 
 .v-list-item {
-  margin: 4px 8px;
+  margin: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm) !important;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .v-list-item:hover {

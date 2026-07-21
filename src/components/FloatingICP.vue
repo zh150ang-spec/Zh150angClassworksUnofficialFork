@@ -21,13 +21,13 @@ export default {
 <style scoped>
 .floating-icp-link {
   position: fixed;
-  right: 4px;
+  right: var(--space-1);
   bottom: 0;
   z-index: var(--z-float);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: var(--font-weight-emphasis);
   letter-spacing: 0.2px;
-  color: rgb(107, 107, 107);
+  color: var(--text-quaternary);
   text-decoration: none;
   background: transparent;
   border: none;
@@ -38,14 +38,14 @@ export default {
 .floating-icp-link:hover,
 .floating-icp-link:focus,
 .floating-icp-link:active {
-  color: rgb(65, 65, 65);
+  color: var(--text-tertiary);
   text-decoration: none;
   outline: none;
 }
 
 @media (max-width: 600px) {
   .floating-icp-link {
-    right: 16px;
+    right: var(--space-4);
     bottom: 0;
     font-size: 14px;
   }

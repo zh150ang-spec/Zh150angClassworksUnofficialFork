@@ -67,7 +67,6 @@
             class="mode-toggle"
             color="primary"
             mandatory
-            rounded="pill"
           >
             <v-btn
               :prepend-icon="ICON.ACCOUNT"
@@ -595,7 +594,7 @@ export default {
 .counter-btn {
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
 }
 
 .count-display {
@@ -618,7 +617,7 @@ export default {
 
 .filter-chip {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
 
   &:active {
     transform: scale(0.95);
@@ -651,14 +650,14 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: var(--space-compat-10px);
 }
 
 .student-item {
-  padding: 10px 15px;
+  padding: var(--space-compat-10px) var(--space-compat-15px);
   background-color: rgba(var(--v-theme-surface-variant), 0.7);
   border-radius: var(--radius-sm);
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   font-size: 1.2rem;
 
   &.highlighted {
@@ -677,7 +676,7 @@ export default {
 .result-card {
   max-width: 400px;
   margin: 0 auto;
-  transition: transform 0.3s ease;
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple);
 
   &:hover {
     transform: translateY(-4px);
@@ -690,7 +689,7 @@ export default {
 
 .refresh-btn {
   opacity: 0.7;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple);
 
   &:hover {
     opacity: 1;
@@ -722,7 +721,7 @@ export default {
 // 动画效果
 .shuffle-enter-active,
 .shuffle-leave-active {
-  transition: all 0.5s ease;
+  transition: all var(--duration-slow) var(--var(--ease-apple)-apple);
 }
 
 .shuffle-enter-from,
@@ -732,7 +731,7 @@ export default {
 }
 
 .shuffle-move {
-  transition: transform 0.5s ease;
+  transition: transform var(--duration-slow) var(--ease-apple);
 }
 
 // 触摸屏优化
@@ -743,7 +742,7 @@ export default {
   }
 
   .student-item {
-    padding: 12px 20px;
+    padding: var(--space-3) var(--space-5);
     font-size: 1.4rem;
   }
 
@@ -764,18 +763,18 @@ export default {
   .mode-toggle {
     border: 1px solid rgba(var(--v-theme-primary), 0.2);
     border-radius: var(--radius-full);
-    padding: 4px;
+    padding: var(--space-1);
     box-shadow: var(--shadow-hover);
 
     .v-btn {
       min-width: 120px;
       height: 40px;
-      font-weight: 500;
+      font-weight: var(--font-weight-emphasis);
       letter-spacing: 0.5px;
 
       &.v-btn--active {
         transform: scale(1.02);
-        font-weight: 600;
+        font-weight: var(--font-weight-label);
       }
     }
   }
@@ -785,7 +784,7 @@ export default {
 .number-range-container {
   max-width: 300px;
   margin: 0 auto;
-  padding: 16px;
+  padding: var(--space-4);
   background: rgba(var(--v-theme-surface-variant), 0.1);
   border-radius: var(--radius-md);
   border: 1px solid rgba(var(--v-theme-primary), 0.1);

@@ -526,7 +526,7 @@ export default {
 
 .setting-item {
   border-radius: var(--radius-sm);
-  transition: background-color 0.2s;
+  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .setting-item-developer .setting-item {
@@ -536,7 +536,7 @@ export default {
 .setting-title-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .setting-text-field,
@@ -553,7 +553,7 @@ export default {
 }
 
 .setting-menu-btn {
-  transition: opacity 0.15s ease;
+  transition: opacity var(--duration-fast) var(--ease-apple);
 }
 
 /* 桌面端（支持悬停的设备） */

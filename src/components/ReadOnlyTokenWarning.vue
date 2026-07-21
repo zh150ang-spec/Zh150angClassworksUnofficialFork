@@ -121,7 +121,7 @@ defineExpose({
 
 <style scoped>
 .readonly-warning {
-  margin: 16px;
+  margin: var(--space-4);
   border-left: 4px solid rgb(var(--v-theme-warning));
 }
 </style>

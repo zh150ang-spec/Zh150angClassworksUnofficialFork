@@ -1308,7 +1308,7 @@ export default {
 
 code {
   background-color: rgba(var(--v-theme-surface-variant), 0.5);
-  padding: 2px 4px;
+  padding: var(--space-compat-2px) var(--space-1);
   border-radius: var(--radius-xs);
   font-size: 0.875em;
 }

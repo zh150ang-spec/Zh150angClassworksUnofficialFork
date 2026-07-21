@@ -1494,13 +1494,13 @@ export default {
 }
 
 .course-cell {
-  padding: 4px;
+  padding: var(--space-1);
   font-size: 0.85rem;
   white-space: pre-line;
 }
 
 .course-item {
-  padding: 2px 0;
+  padding: var(--space-compat-2px) 0;
   border-bottom: 1px dashed var(--color-border);
 }
 
@@ -1511,7 +1511,7 @@ export default {
 .week-type {
   font-size: 0.7rem;
   background-color: rgba(var(--v-theme-surface-variant), 0.5);
-  padding: 1px 3px;
+  padding: var(--space-compat-1px) var(--space-compat-3px);
   border-radius: var(--radius-xs);
   margin-left: 2px;
 }
@@ -1520,7 +1520,7 @@ export default {
 .filter-chip {
   min-width: 60px;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .filter-chip.v-chip--selected {
@@ -1542,7 +1542,7 @@ export default {
 
 /* 美化按钮悬浮效果 */
 .v-btn {
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .v-btn:not(:disabled):hover {

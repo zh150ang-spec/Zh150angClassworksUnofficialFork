@@ -833,12 +833,12 @@ onUnmounted(() => {
   overflow-y: auto;
   background: rgb(var(--v-theme-surface));
   border-radius: var(--radius-xs);
-  padding: 12px;
+  padding: var(--space-3);
 }
 
 .log-entry {
   margin-bottom: 8px;
-  padding: 4px 8px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-xs);
 }
 
@@ -879,7 +879,7 @@ onUnmounted(() => {
 .log-data {
   margin-top: 4px;
   margin-left: 24px;
-  padding: 8px;
+  padding: var(--space-2);
   background: rgba(var(--v-theme-surface-variant), 0.5);
   border-radius: var(--radius-xs);
   color: rgba(var(--v-theme-on-surface), 0.7);
@@ -888,6 +888,6 @@ onUnmounted(() => {
 }
 
 .gap-2 {
-  gap: 8px;
+  gap: var(--space-2);
 }
 </style>

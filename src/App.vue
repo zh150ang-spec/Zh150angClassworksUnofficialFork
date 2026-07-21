@@ -16,7 +16,7 @@
       v-if="bgEnabled"
       class="app-background-overlay"
       :style="{
-        background: `rgba(0, 0, 0, ${bgOpacity / 100})`,
+        background: `rgba(var(--v-theme-on-surface), ${bgOpacity / 100})`,
       }"
     />
 
@@ -133,7 +133,7 @@ onUnmounted(() => {
 /* Apple-style page transitions */
 .md3-enter-active,
 .md3-leave-active {
-  transition: opacity var(--duration-normal) var(--ease-apple),
+  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple),
     transform var(--duration-normal) var(--ease-apple);
 }
 

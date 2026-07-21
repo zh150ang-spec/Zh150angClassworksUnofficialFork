@@ -177,7 +177,7 @@ export default {
   left: 50%;
   transform: translateX(-50%);
 
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   background: rgba(var(--v-theme-surface-container), 0.75) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -190,7 +190,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px;
+  padding: var(--space-1);
   pointer-events: auto;
   will-change: transform;
   border-radius: var(--radius-xl) !important;
@@ -208,8 +208,8 @@ export default {
 }
 
 .toolbar-btn {
-  margin: 0 2px;
-  border-radius: 50% !important;
+  margin: 0 var(--space-compat-2px);
+  border-radius: var(--radius-circle) !important;
   overflow: hidden !important;
   width: 40px !important;
   height: 40px !important;
@@ -217,7 +217,7 @@ export default {
   min-height: 40px !important;
   max-width: 40px !important;
   max-height: 40px !important;
-  transition: background-color var(--duration-fast) var(--ease-apple),
+  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple),
               box-shadow var(--duration-fast) var(--ease-apple) !important;
 }
 
@@ -256,13 +256,13 @@ export default {
     bottom: 16px;
     width: auto;
     max-width: 95%;
-    padding: 2px;
+    padding: var(--space-compat-2px);
   }
 
   .toolbar-buttons {
     width: 100%;
     justify-content: space-around;
-    padding: 4px;
+    padding: var(--space-1);
   }
 
   .toolbar-btn {

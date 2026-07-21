@@ -47,7 +47,7 @@
       />
 
       <homework-grid
-        :sorted-items="sortedItems"
+        :sorted-items="optimizedItems"
         :unused-subjects="unusedSubjects"
         :empty-subject-display="emptySubjectDisplay"
         :is-mobile="isMobile"
@@ -342,6 +342,7 @@ const PwaInstallCard = defineAsyncComponent({
   delay: 200,
 });
 import dataProvider from "@/utils/dataProvider";
+import { optimizeGridLayout } from "@/utils/gridLayout";
 import { kvLocalProvider } from "@/utils/providers/kvLocalProvider";
 import { useExamStore } from "@/stores/examStore";
 import {
@@ -372,7 +373,7 @@ import {
 import { getEffectiveServerUrl } from "@/utils/serverRotation";
 import { kvServerProvider } from "@/utils/providers/kvServerProvider";
 import { useDisplay } from "vuetify";
-import { debounce, throttle } from "@/utils/debounce";
+import { debounce } from "@/utils/debounce";
 import { leaveAll } from "@/utils/socketClient";
 import { useFullscreen } from "@/composables/useFullscreen";
 import { usePreconfig } from "@/composables/usePreconfig";
@@ -417,7 +418,7 @@ export default {
     AddExamDialog,
   },
   setup() {
-    const { mobile } = useDisplay();
+    const { mobile, width } = useDisplay();
     const examStore = useExamStore();
     const fullscreen = useFullscreen();
     const preconfig = usePreconfig();
@@ -430,6 +431,7 @@ export default {
     const confirmDialog = useConfirmDialog();
     return {
       mobile,
+      width,
       examStore,
       ICON,
       ...fullscreen,
@@ -507,7 +509,6 @@ export default {
       dataReady: false,
       debouncedUpload: null,
       debouncedAttendanceSave: null,
-      throttledReflow: null,
       urlConfigDialog: {
         show: false,
         config: null,
@@ -591,7 +592,8 @@ export default {
             absent: this.state.boardData.attendance.absent,
             late: this.state.boardData.attendance.late,
             exclude: this.state.boardData.attendance.exclude
-          }
+          },
+          rowSpan: 250, // 出勤卡片高度估计值，用于布局均衡
         });
       }
 
@@ -677,6 +679,13 @@ export default {
       items.sort((a, b) => a.order - b.order);
 
       return items;
+    },
+    // 经 optimizeGridLayout 均衡各列高度后的排序结果，传递给 homework-grid 渲染
+    optimizedItems() {
+      const items = this.sortedItems;
+      if (!items || items.length === 0) return [];
+      const maxColumns = this.width > 1199 ? 3 : this.width > 799 ? 2 : 1;
+      return optimizeGridLayout(items, maxColumns);
     },
     unusedSubjects() {
       const usedKeys = Object.keys(this.state.boardData.homework).filter(
@@ -805,11 +814,6 @@ export default {
   },
 
   watch: {
-    "$vuetify.display.width": {
-      handler() {
-        this.throttledReflow();
-      },
-    },
     "state.attendanceDialog": {
       handler(newValue) {
         this.handleAttendanceDialogClose(newValue);
@@ -824,11 +828,6 @@ export default {
         await this.trySave(true);
       }
     }, 2000);
-    this.throttledReflow = throttle(() => {
-      if (this.$refs.gridContainer) {
-        this.optimizeGridLayout(this.sortedItems);
-      }
-    }, 200);
   },
 
   async mounted() {
@@ -861,8 +860,6 @@ export default {
       this.updateBackendUrl();
       await this.initializeData();
       this.dataReady = true;
-      // 拉取设备/命名空间信息用于标题显示
-      await this.loadDeviceInfo();
       this.setupAutoRefresh();
       this.unwatchSettings = watchSettings(() => {
         this.updateSettings();
@@ -878,31 +875,36 @@ export default {
 
       window.addEventListener("hashchange", this.checkHashForRandomPicker);
 
-      // 实时频道：加入设备房间并监听键变化
-      this.setupRealtimeChannel();
+      // 并行执行彼此独立的初始化请求，减少页面加载总时间
+      await Promise.all([
+        this.loadDeviceInfo(),
+        this.loadTokenInfo(),
+        this.setupRealtimeChannel(),
+        this.checkNamespaceSwitch(),
+        this.loadPersistentNotifications(),
+      ]);
 
       // 初始化 Token 显示信息
       this.$nextTick(() => {
         this.updateTokenDisplayInfo();
       });
-
-      // 获取令牌信息
-      await this.loadTokenInfo();
-
-      // 检测命名空间切换（device.uuid 与上次记录不一致时弹框，让用户选择处理方式）
-      await this.checkNamespaceSwitch();
-
-      // 加载常驻通知
-      this.loadPersistentNotifications();
     } catch (err) {
       console.error("初始化失败:", err);
-      this.showError("初始化失败，请刷新页面重试");
+      this.$message.error("初始化失败", "请刷新页面重试");
     }
   },
 
   beforeUnmount() {
     if (this.unwatchSettings) {
       this.unwatchSettings();
+    }
+
+    // 清理 debounce/throttle 定时器，避免组件卸载后回调仍访问已销毁实例
+    if (this.debouncedUpload) {
+      this.debouncedUpload.cancel();
+    }
+    if (this.debouncedAttendanceSave) {
+      this.debouncedAttendanceSave.cancel();
     }
 
     window.removeEventListener("hashchange", this.checkHashForRandomPicker);

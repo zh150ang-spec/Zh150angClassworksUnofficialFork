@@ -695,25 +695,6 @@ export default {
       }
     },
 
-    async deleteNotification(notificationId) {
-      const confirmed = confirm('确定要删除这个通知吗？')
-      if (!confirmed) return
-
-      try {
-        // 从 sentMessages 中删除
-        this.sentMessages = this.sentMessages.filter(msg => msg.id !== notificationId)
-
-        // 从常驻通知列表中删除
-        this.persistentNotifications = this.persistentNotifications.filter(notif => notif.id !== notificationId)
-
-        // TODO: 调用接口删除通知（如果有的话）
-
-        console.log('通知已删除，通知ID:', notificationId)
-      } catch (error) {
-        console.error('删除通知失败:', error)
-      }
-    },
-
     deletePersistentNotification(id) {
       this.itemToDelete = id
       this.deleteConfirmDialog = true
@@ -743,10 +724,10 @@ export default {
 
 <style scoped>
 .gap-1 {
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .message-history-card .v-chip {
-  margin: 1px;
+  margin: var(--space-compat-1px);
 }
 </style>

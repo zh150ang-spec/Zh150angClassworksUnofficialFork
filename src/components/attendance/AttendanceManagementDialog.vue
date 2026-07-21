@@ -510,9 +510,9 @@ export default {
 
 <style scoped>
 .gap-1 {
-  gap: 4px;
+  gap: var(--space-1);
 }
 .gap-2 {
-  gap: 8px;
+  gap: var(--space-2);
 }
 </style>

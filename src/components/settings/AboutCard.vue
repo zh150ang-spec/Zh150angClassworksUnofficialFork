@@ -101,7 +101,7 @@
                 QQ 群
               </v-btn>
               <v-btn
-                href="https://github.com/ClassworksDev/Classworks"
+                href="https://github.com/Moonrend/Classworks"
                 :prepend-icon="ICON.GITHUB"
                 target="_blank"
                 variant="text"
@@ -109,7 +109,7 @@
                 前端
               </v-btn>
               <v-btn
-                href="https://github.com/ClassworksDev/ClassworksServer"
+                href="https://github.com/Moonrend/ClassworksServer"
                 :prepend-icon="ICON.GITHUB"
                 target="_blank"
                 variant="text"
@@ -327,7 +327,7 @@
                       :prepend-icon="ICON.GITHUB"
                     >
                       <v-list-item-title>GitHub Issue</v-list-item-title>
-                      <v-list-item-subtitle>ZeroCatDev/Classworks</v-list-item-subtitle>
+                      <v-list-item-subtitle>Moonrend/Classworks</v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item
                       :href="mailtoLink"
@@ -484,7 +484,7 @@ export default {
     });
 
     const githubIssueUrl = computed(() => {
-      const base = 'https://github.com/ZeroCatDev/Classworks/issues/new';
+      const base = 'https://github.com/Moonrend/Classworks/issues/new';
       const title = encodeURIComponent('问题报告');
       const body = encodeURIComponent(reportBody.value);
       return `${base}?title=${title}&body=${body}`;
@@ -543,7 +543,7 @@ export default {
 .gradient-donation {
   background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.12), rgba(var(--v-theme-primary), 0.04) 60%);
   border: 2px solid rgba(var(--v-theme-primary), 0.2);
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   cursor: pointer;
 }
 

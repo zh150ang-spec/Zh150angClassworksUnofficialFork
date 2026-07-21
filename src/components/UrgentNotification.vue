@@ -28,7 +28,6 @@
         >
           <v-card
             variant="flat"
-            color="rgba(255,255,255,0.1)"
             :style="{ background: 'rgba(var(--v-theme-on-error), 0.1)' }"
           >
             <v-card-text class="text-center">
@@ -521,7 +520,7 @@ export default {
 }
 
 :deep(.v-overlay__scrim) {
-  background: rgba(0, 0, 0, 0.8) !important;
+  background: rgba(var(--v-theme-on-surface), 0.8) !important;
 }
 
 .urgent-notification-card {
@@ -532,14 +531,14 @@ export default {
 
 .close-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: var(--space-4);
+  right: var(--space-4);
   z-index: var(--z-inner);
 }
 
 .urgency-icon {
   animation: iconPulse 1.5s infinite;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  filter: drop-shadow(0 0 10px rgba(var(--v-theme-on-error), 0.5));
 }
 
 .urgent-title {
@@ -552,21 +551,21 @@ export default {
 .urgent-subtitle {
   font-size: 2rem;
   font-weight: bold;
-  color: white;
+  color: rgb(var(--v-theme-on-error));
   line-height: var(--line-height-heading);
 }
 .notification-content {
   font-size: 1.4rem;
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(var(--v-theme-on-error), 0.95);
   line-height: var(--line-height-body);
-  padding: 0 20px;
+  padding: 0 var(--space-5);
 }
 
 .sender-label,
 .target-label {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 600;
+  color: rgba(var(--v-theme-on-error), 0.8);
+  font-weight: var(--font-weight-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
 }
@@ -575,13 +574,13 @@ export default {
 .target-devices {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .actions {
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .navigation-controls {
@@ -590,13 +589,13 @@ export default {
 
 .notification-counter {
   color: rgb(var(--v-theme-on-error));
-  font-weight: 600;
+  font-weight: var(--font-weight-label);
 }
 
 .navigation-buttons {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 /* 动画效果 */
@@ -639,12 +638,12 @@ export default {
 
   .notification-content {
     font-size: 1.2rem;
-    padding: 0 10px;
+    padding: 0 var(--space-compat-10px);
   }
 
   .urgent-notification-card {
     width: 95% !important;
-    margin: 20px;
+    margin: var(--space-5);
   }
 }
 </style>

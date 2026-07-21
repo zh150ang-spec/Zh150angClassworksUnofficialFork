@@ -351,7 +351,7 @@ export default {
       return {
         position: 'absolute',
         inset: '0',
-        background: `rgba(0, 0, 0, ${this.localOpacity / 100})`,
+        background: `rgba(var(--v-theme-on-surface), ${this.localOpacity / 100})`,
       };
     },
   },
@@ -465,7 +465,7 @@ export default {
 
 <style scoped>
 .preview-area {
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .preview-text {
@@ -476,7 +476,7 @@ export default {
   justify-content: center;
   color: white;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-label);
   text-shadow: var(--shadow-text);
   z-index: var(--z-inner);
   pointer-events: none;
@@ -485,7 +485,7 @@ export default {
 .upload-area {
   border: 2px dashed var(--color-border-strong);
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-apple);
+  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
   background: var(--color-fill-weakest);
 }
 
@@ -496,6 +496,6 @@ export default {
 }
 
 .gap-2 {
-  gap: 8px;
+  gap: var(--space-2);
 }
 </style>

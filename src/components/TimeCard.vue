@@ -15,7 +15,7 @@
     >
       <div
         class="d-flex align-center"
-        style="gap: 16px;"
+        style="gap: var(--space-4);"
       >
         <!-- 左侧：时间显示 -->
         <div class="flex-grow-1">
@@ -934,7 +934,7 @@ export default {
 
 <style scoped>
 .time-card {
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   overflow: hidden;
 }
 
@@ -983,7 +983,7 @@ export default {
 
 .toolbar-fade-enter-active,
 .toolbar-fade-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity var(--duration-slow) var(--var(--ease-apple)-apple), transform var(--duration-slow) var(--ease-apple);
 }
 
 .toolbar-fade-enter-from,
@@ -998,11 +998,11 @@ export default {
 
 .fullscreen-time-body {
   user-select: none;
-  padding: 0 24px;
+  padding: 0 var(--space-6);
 }
 
 .fullscreen-time-display {
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   letter-spacing: var(--tracking-display);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -1045,7 +1045,7 @@ export default {
   display: flex;
   align-items: center;
   opacity: 0.5;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .fullscreen-actions:hover {
@@ -1059,7 +1059,7 @@ export default {
 
 .countdown-digit {
   font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   line-height: 1;
   font-variant-numeric: tabular-nums;
   min-width: 1.2em;
@@ -1068,7 +1068,7 @@ export default {
 
 .countdown-sep {
   font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: 300;
+  font-weight: var(--font-weight-light);
   line-height: 1;
   opacity: 0.4;
   padding-bottom: 1.8em;

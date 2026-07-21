@@ -34,12 +34,12 @@ const cardCount = computed(() => mobile.value ? 3 : 6)
 .skeleton-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 .skeleton-card {
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity, 0.12));
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: var(--space-4);
 }
 .skeleton-heading {
   height: 24px;

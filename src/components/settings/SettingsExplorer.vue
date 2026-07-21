@@ -149,12 +149,12 @@ export default {
 
 <style scoped>
 .settings-explorer {
-  padding: 8px 0;
+  padding: var(--space-2) 0;
 }
 
 .settings-json {
   background-color: var(--color-fill-soft);
-  padding: 12px;
+  padding: var(--space-3);
   border-radius: var(--radius-xs);
   overflow-x: auto;
   font-family: var(--font-mono);

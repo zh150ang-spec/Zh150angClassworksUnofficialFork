@@ -888,7 +888,7 @@ export default {
 }
 
 .chat-body {
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   height: calc(100% - 120px);
 }
 
@@ -900,7 +900,7 @@ export default {
 .message-row {
   display: flex;
   align-items: flex-end;
-  margin: 8px 0;
+  margin: var(--space-2) 0;
 }
 
 .message-row.self {
@@ -917,8 +917,8 @@ export default {
   max-width: 70%;
   background: var(--color-fill-soft);
   border-radius: var(--radius-md);
-  padding: 6px 10px;
-  margin: 0 8px;
+  padding: var(--space-compat-6px) var(--space-compat-10px);
+  margin: 0 var(--space-2);
 }
 
 .message-row.self .bubble {
@@ -941,7 +941,7 @@ export default {
   font-size: 11px;
   color: var(--text-secondary);
   margin-bottom: 2px;
-  font-weight: 500;
+  font-weight: var(--font-weight-emphasis);
 }
 
 .message-row.self .bubble .sender-name {
@@ -949,7 +949,7 @@ export default {
 }
 
 .device-name {
-  font-weight: 500;
+  font-weight: var(--font-weight-emphasis);
   opacity: 0.8;
 }
 
@@ -960,11 +960,11 @@ export default {
 }
 
 .divider-text {
-  margin: 4px 0;
+  margin: var(--space-1) 0;
 }
 
 .chat-input {
-  padding: 8px;
+  padding: var(--space-2);
 }
 
 /* 事件相关样式 */
@@ -981,7 +981,7 @@ export default {
 }
 
 .event-item {
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
 }
 
 .event-item:hover {
@@ -994,14 +994,14 @@ export default {
 
 .chat-content {
   background: var(--color-fill-soft);
-  padding: 4px 8px;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-xs);
   word-break: break-word;
 }
 
 .event-data {
   background: var(--color-fill-soft);
-  padding: 4px;
+  padding: var(--space-1);
   border-radius: var(--radius-xs);
   font-size: 10px;
   max-height: 100px;
@@ -1025,7 +1025,7 @@ export default {
 
 .mode-toggle .v-btn {
   min-width: 40px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
 }
 
 .mode-toggle .v-btn.v-btn--active {

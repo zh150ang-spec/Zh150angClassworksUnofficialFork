@@ -250,7 +250,7 @@ export default {
 <style scoped>
 .hitokoto-card {
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 .hitokoto-card:hover {
   transform: translateY(-2px);

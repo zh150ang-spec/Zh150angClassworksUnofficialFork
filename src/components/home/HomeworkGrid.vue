@@ -82,7 +82,7 @@
               </div>
               <div
                 class="d-flex flex-wrap"
-                style="gap: 4px"
+                style="gap: var(--space-1)"
               >
                 <v-chip
                   v-for="name in item.data.absent"
@@ -105,7 +105,7 @@
               </div>
               <div
                 class="d-flex flex-wrap"
-                style="gap: 4px"
+                style="gap: var(--space-1)"
               >
                 <v-chip
                   v-for="name in item.data.late"
@@ -128,7 +128,7 @@
               </div>
               <div
                 class="d-flex flex-wrap"
-                style="gap: 4px"
+                style="gap: var(--space-1)"
               >
                 <v-chip
                   v-for="name in item.data.exclude"
@@ -336,13 +336,14 @@ export default {
     return {
       ICON,
       isReadOnlyToken: false,
+      gridMetrics: null,
+      observedContents: new Set(),
+      resizeFrame: null,
     }
   },
   async mounted() {
     /* eslint-disable no-undef */
-    this.resizeObserver = new ResizeObserver(() => {
-      this.resizeAllGridItems();
-    });
+    this.resizeObserver = new ResizeObserver(() => this.scheduleResize());
     /* eslint-enable no-undef */
 
     // Observe the grid container for width changes
@@ -350,43 +351,64 @@ export default {
       this.resizeObserver.observe(this.$refs.gridContainer);
     }
 
-    // Initial resize
+    // Initial resize and observe
     this.$nextTick(() => {
-      this.resizeAllGridItems();
-      // Observe all items
-      if (this.$refs.items) {
-        this.$refs.items.forEach(item => {
-          // Observe the content inside the grid item
-          if (item.firstElementChild) {
-            this.resizeObserver.observe(item.firstElementChild);
-          }
-        });
-      }
+      this.observeItems();
+      this.scheduleResize();
     });
 
     // 检查只读状态
     await this.checkReadOnlyStatus();
   },
   updated() {
-    // When items change, re-observe new items
+    // When items change, re-observe new items and schedule resize
     this.$nextTick(() => {
-      this.resizeAllGridItems();
-      if (this.$refs.items) {
-        this.$refs.items.forEach(item => {
-          if (item.firstElementChild) {
-            this.resizeObserver.observe(item.firstElementChild);
-          }
-        });
-      }
+      this.observeItems();
+      this.scheduleResize();
     });
   },
   beforeUnmount() {
+    if (this.resizeFrame) {
+      cancelAnimationFrame(this.resizeFrame);
+      this.resizeFrame = null;
+    }
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
+      this.observedContents.clear();
     }
   },
   methods: {
     getSetting,
+    getGridMetrics() {
+      if (this.gridMetrics) return this.gridMetrics;
+      const grid = this.$refs.gridContainer;
+      if (!grid) return null;
+      const style = window.getComputedStyle(grid);
+      this.gridMetrics = {
+        rowHeight: parseInt(style.getPropertyValue('grid-auto-rows')) || 1,
+        rowGap: parseInt(style.getPropertyValue('gap')) || 0,
+      };
+      return this.gridMetrics;
+    },
+    scheduleResize() {
+      if (this.resizeFrame) return;
+      // 每次调度时失效 gridMetrics 缓存，确保下次 resize 时读取最新的 CSS 值
+      this.gridMetrics = null;
+      this.resizeFrame = requestAnimationFrame(() => {
+        this.resizeFrame = null;
+        this.resizeAllGridItems();
+      });
+    },
+    observeItems() {
+      if (!this.$refs.items) return;
+      this.$refs.items.forEach(item => {
+        const content = item.firstElementChild;
+        if (content && !this.observedContents.has(content)) {
+          this.observedContents.add(content);
+          this.resizeObserver.observe(content);
+        }
+      });
+    },
     escapeHtml(text) {
       const map = {
         '&': '&amp;',
@@ -444,31 +466,34 @@ export default {
       }
     },
     resizeGridItem(item) {
-      const grid = this.$refs.gridContainer;
-      if (!grid) return;
-
-      const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-      const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('gap'));
+      const metrics = this.getGridMetrics();
+      if (!metrics) return;
 
       // Find the content element (v-card or div)
       const content = item.firstElementChild;
       if (!content) return;
 
       // Calculate required span
-      // We use scrollHeight to get the full height of content
-      // Add a small buffer to prevent scrollbars
       const contentHeight = content.getBoundingClientRect().height;
 
       // Formula: span = ceil((contentHeight + gap) / (rowHeight + gap))
-      const rowSpan = Math.ceil((contentHeight + rowGap) / (rowHeight + rowGap));
+      const rowSpan = Math.ceil((contentHeight + metrics.rowGap) / (metrics.rowHeight + metrics.rowGap));
 
       item.style.gridRowEnd = `span ${rowSpan}`;
     },
     resizeAllGridItems() {
       const items = this.$refs.items;
-      if (items) {
-        items.forEach(item => this.resizeGridItem(item));
-      }
+      if (!items || items.length === 0) return;
+      // Batch read layout metrics first, then write styles to avoid layout thrashing
+      const metrics = this.getGridMetrics();
+      if (!metrics) return;
+      items.forEach(item => {
+        const content = item.firstElementChild;
+        if (!content) return;
+        const contentHeight = content.getBoundingClientRect().height;
+        const rowSpan = Math.ceil((contentHeight + metrics.rowGap) / (metrics.rowHeight + metrics.rowGap));
+        item.style.gridRowEnd = `span ${rowSpan}`;
+      });
     },
     handleCardClick(type, key) {
       if (this.isEditingDisabled) {
@@ -619,7 +644,7 @@ export default {
 }
 
 .homework-content :deep(.hw-line) {
-  padding: 2px 0;
+  padding: var(--space-compat-2px) 0;
 }
 
 .homework-content :deep(.hw-empty-line) {
@@ -629,7 +654,7 @@ export default {
 .homework-content :deep(.hw-h2) {
   font-size: 1.2em;
   font-weight: bold;
-  margin: 8px 0 4px 0;
+  margin: var(--space-2) 0 var(--space-1) 0;
   padding-bottom: 2px;
   border-bottom: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.15);
 }
@@ -637,11 +662,11 @@ export default {
 .homework-content :deep(.hw-h3) {
   font-size: 1.1em;
   font-weight: bold;
-  margin: 6px 0 2px 0;
+  margin: var(--space-compat-6px) 0 var(--space-compat-2px) 0;
 }
 
 .homework-content :deep(.hw-list-item) {
-  padding: 2px 0 2px 4px;
+  padding: var(--space-compat-2px) 0 var(--space-compat-2px) var(--space-1);
   display: flex;
   align-items: flex-start;
 }
@@ -663,7 +688,7 @@ export default {
   color: rgb(var(--v-theme-on-primary));
   font-weight: bold;
   font-size: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
 }
 
 .homework-content :deep(strong) {
@@ -680,35 +705,35 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
-  margin: 4px 0;
+  gap: var(--space-1);
+  padding: var(--space-compat-6px) var(--space-2);
+  margin: var(--space-1) 0;
   background: rgba(var(--v-theme-primary), 0.06);
   border-radius: var(--radius-sm);
   border-left: 3px solid rgb(var(--v-theme-primary));
 }
 
 .homework-content :deep(.hw-notebook-name) {
-  font-weight: 600;
+  font-weight: var(--font-weight-label);
   color: rgb(var(--v-theme-primary));
 }
 
 .homework-content :deep(.hw-notebook-page) {
   background: rgba(var(--v-theme-info), 0.15);
   color: rgb(var(--v-theme-info));
-  padding: 2px 8px;
+  padding: var(--space-compat-2px) var(--space-2);
   border-radius: var(--radius-xs);
   font-size: 0.9em;
-  font-weight: 500;
+  font-weight: var(--font-weight-emphasis);
 }
 
 .homework-content :deep(.hw-notebook-question) {
   background: rgba(var(--v-theme-success), 0.15);
   color: rgb(var(--v-theme-success));
-  padding: 2px 8px;
+  padding: var(--space-compat-2px) var(--space-2);
   border-radius: var(--radius-xs);
   font-size: 0.9em;
-  font-weight: 500;
+  font-weight: var(--font-weight-emphasis);
 }
 
 .homework-content :deep(.hw-notebook-desc) {
@@ -718,6 +743,6 @@ export default {
 
 .homework-content :deep(.hw-notebook-sep) {
   color: rgba(var(--v-theme-on-surface), 0.3);
-  font-weight: 300;
+  font-weight: var(--font-weight-light);
 }
 </style>

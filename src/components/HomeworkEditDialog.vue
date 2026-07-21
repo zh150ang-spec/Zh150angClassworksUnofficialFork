@@ -791,8 +791,8 @@ export default {
 .md-toolbar {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
   border-radius: var(--radius-sm);
   background-color: rgba(var(--v-theme-on-surface), 0.02);
@@ -800,7 +800,7 @@ export default {
 
 .md-tool-btn {
   min-width: auto !important;
-  padding: 4px 10px !important;
+  padding: var(--space-1) var(--space-compat-10px)!important;
   font-size: 13px;
   border-radius: var(--radius-xs);
 }
@@ -810,21 +810,21 @@ export default {
 }
 
 .notebook-btn {
-  font-weight: 500;
+  font-weight: var(--font-weight-emphasis);
 }
 
 .template-books {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .button-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
+  gap: var(--space-1);
+  padding: var(--space-compat-6px) var(--space-compat-10px);
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
   border-radius: var(--radius-sm);
   background-color: rgba(var(--v-theme-on-surface), 0.02);
@@ -836,7 +836,7 @@ export default {
 .pages-container {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--space-1);
   margin-left: 8px;
   padding-left: 8px;
   border-left: 2px solid rgba(var(--v-theme-primary), 0.3);
@@ -846,8 +846,8 @@ export default {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
+  gap: var(--space-1);
+  padding: var(--space-compat-6px) var(--space-compat-10px);
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
   border-radius: var(--radius-sm);
   background-color: rgba(var(--v-theme-primary), 0.05);
@@ -872,21 +872,21 @@ export default {
 }
 
 .gap-1 {
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .numeric-keypad {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px;
+  gap: var(--space-1);
+  padding: var(--space-2);
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
    border-radius: var(--radius-xs);
 }
 
 .keypad-row {
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .keypad-btn {

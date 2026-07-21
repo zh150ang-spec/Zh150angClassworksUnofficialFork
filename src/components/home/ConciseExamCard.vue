@@ -152,7 +152,7 @@ export default {
 
 <style scoped>
 .gap-1 {
-  gap: 0px;
+  gap: var(--space-compat-0px);
 }
 .border-b-sm {
   border-bottom: 1px solid var(--color-border-weak);
@@ -161,7 +161,7 @@ export default {
   border-bottom: none;
 }
 .hover-elevation {
-  transition: box-shadow var(--duration-normal) var(--ease-apple);
+  transition: box-shadow var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 .hover-elevation:hover {
   box-shadow: var(--shadow-hover) !important;

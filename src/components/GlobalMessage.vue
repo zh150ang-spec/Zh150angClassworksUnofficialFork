@@ -24,9 +24,26 @@
               >
                 {{ msg.content }}
               </div>
+              <div
+                v-if="msg.actions && msg.actions.length > 0"
+                class="message-actions"
+              >
+                <v-btn
+                  v-for="(action, idx) in msg.actions"
+                  :key="idx"
+                  :color="action.color || 'primary'"
+                  :variant="action.variant || 'text'"
+                  size="small"
+                  class="mr-2"
+                  @click="handleAction(msg.id, action)"
+                >
+                  {{ action.label }}
+                </v-btn>
+              </div>
             </div>
           </div>
           <v-btn
+            v-if="msg.closable !== false"
             :icon="ICON.CLOSE"
             size="x-small"
             variant="text"
@@ -93,12 +110,12 @@ export default defineComponent({
 <style scoped>
 .message-stack {
   position: fixed;
-  top: 16px;
-  right: 16px;
+  top: var(--space-4);
+  right: var(--space-4);
   z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
   max-width: 400px;
   pointer-events: none;
 }
@@ -107,8 +124,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-hover);
   pointer-events: auto;
   min-width: 280px;
@@ -148,7 +165,7 @@ export default defineComponent({
 }
 
 .message-title {
-  font-weight: 500;
+  font-weight: var(--font-weight-emphasis);
   font-size: 14px;
   line-height: 1.4;
 }
@@ -173,7 +190,7 @@ export default defineComponent({
 
 .message-enter-active,
 .message-leave-active {
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .message-enter-from {
@@ -187,13 +204,13 @@ export default defineComponent({
 }
 
 .message-move {
-  transition: transform 0.3s ease;
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 @media (max-width: 480px) {
   .message-stack {
-    left: 16px;
-    right: 16px;
+    left: var(--space-4);
+    right: var(--space-4);
     max-width: none;
   }
 
