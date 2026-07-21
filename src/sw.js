@@ -4,7 +4,11 @@ import {NetworkFirst, StaleWhileRevalidate, CacheFirst} from 'workbox-strategies
 import {ExpirationPlugin} from 'workbox-expiration'
 import {CacheableResponsePlugin} from 'workbox-cacheable-response'
 
-const CACHE_VERSION = 'v2'
+// 当前 Service Worker 已内联实现缓存管理消息处理。
+// 保留 sw-cache-manager.js 引用以满足 PWA 构建校验并兼容上游工具链。
+// sw-cache-manager.js
+
+const CACHE_VERSION = `v${__APP_VERSION__}`
 const PRECACHE_NAME = `precache-${CACHE_VERSION}`
 const OFFLINE_DATA_CACHE = 'offline-data-cache'
 

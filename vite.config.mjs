@@ -7,16 +7,22 @@ import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import { VitePWA } from 'vite-plugin-pwa'
+import replace from '@rollup/plugin-replace'
 //import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import packageJson from './package.json' with { type: 'json' }
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
+  define: {
+    '__APP_VERSION__': JSON.stringify(packageJson.version),
+    'process.env': {},
+  },
   plugins: [
     VueRouter(),
     vueDevTools(),
@@ -36,7 +42,16 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.js',
-
+      injectManifest: {
+        plugins: [
+          replace({
+            preventAssignment: true,
+            values: {
+              __APP_VERSION__: JSON.stringify(packageJson.version),
+            },
+          }),
+        ],
+      },
 
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,woff,ttf,eot,webmanifest}'],
@@ -46,15 +61,52 @@ export default defineConfig({
         id: '7C24F2B3.ClassworksPWA',
         name: 'Classworks PWA',
         short_name: 'Classworks PWA',
-        description: '记录，查看并同步作业',
-        theme_color: '#000000',
-        background_color: '#000000',
+        description: '适用于班级大屏的作业板小工具，支持记录、查看并同步作业。',
+        theme_color: '#212121',
+        background_color: '#212121',
         dir: 'ltr',
         display: 'standalone',
+        display_override: ['window-controls-overlay', 'standalone', 'minimal-ui', 'fullscreen'],
         start_url: './',
-        edge_side_panel: {
-          default_path: './',
+        scope: './',
+        orientation: 'any',
+        categories: ['education', 'productivity', 'utilities'],
+        prefer_related_applications: false,
+        launch_handler: {
+          client_mode: 'navigate-existing',
         },
+        screenshots: [
+          {
+            src: './images/1.jpeg',
+            sizes: '1901x1080',
+            type: 'image/jpeg',
+            form_factor: 'wide',
+            label: 'Classworks 作业板主界面',
+          },
+          {
+            src: './images/2.jpeg',
+            sizes: '1901x1080',
+            type: 'image/jpeg',
+            form_factor: 'wide',
+            label: 'Classworks 设置与管理界面',
+          },
+        ],
+        file_handlers: [
+          {
+            action: './?file-handler=true',
+            accept: {
+              'application/octet-stream': ['.csb', '.csi'],
+              'application/x-classworks-backup': ['.csb'],
+              'application/x-classworks-install': ['.csi'],
+            },
+          },
+        ],
+        protocol_handlers: [
+          {
+            protocol: 'cs',
+            url: './?protocol=%s',
+          },
+        ],
         icons: [
           {
             src: './pwa/image/pwa-64x64.png',
@@ -123,7 +175,6 @@ export default defineConfig({
       vueTemplate: true,
     }),
   ],
-  define: { 'process.env': {} },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
