@@ -4,6 +4,8 @@ import {getSetting, setSetting} from "./settings";
 import {getEffectiveServerUrl} from "./serverRotation";
 import {networkStatus} from "./networkStatus";
 import backgroundSync from "./backgroundSync";
+import {rmwWriteServer, computeDataHash} from "./rmw";
+import messageService from "./message";
 
 export const formatResponse = (data) => data;
 
@@ -14,50 +16,6 @@ export const formatError = (message, code = "UNKNOWN_ERROR") => ({
 
 const DEFAULT_RETRY_ATTEMPTS = 2;
 const RETRY_DELAY_BASE = 100;
-
-const RMW_MAX_RETRIES = 2;
-
-function unionByIdentity(server, local) {
-  const seen = new Set()
-  const result = []
-  const identify = (item) => {
-    if (typeof item !== 'object' || item === null) return JSON.stringify(item)
-    if ('id' in item) return item.id
-    if ('name' in item && typeof item.name === 'string') return item.name
-    return JSON.stringify(item)
-  }
-  for (const item of server) {
-    const id = identify(item)
-    seen.add(id)
-    result.push(item)
-  }
-  for (const item of local) {
-    const id = identify(item)
-    if (!seen.has(id)) {
-      result.push(item)
-    }
-  }
-  return result
-}
-
-function additiveMerge(server, local) {
-  if (Array.isArray(server) && Array.isArray(local)) return unionByIdentity(server, local)
-  if (local === null || server === null) return local ?? server ?? null
-  if (typeof server === 'object' && typeof local === 'object') return { ...server, ...local }
-  return local
-}
-
-async function rmwWriteServer(key, data) {
-  let attempt = 0
-  while (attempt <= RMW_MAX_RETRIES) {
-    const current = await kvServerProvider.loadData(key)
-    const merged = (current && current.success !== false) ? additiveMerge(current, data) : data
-    const result = await kvServerProvider.saveData(key, merged)
-    if (result && result.success !== false) return result
-    attempt++
-  }
-  return formatError("云端保存失败", "SERVER_SAVE_ERROR")
-}
 
 async function retryOperation(operation, maxRetries = DEFAULT_RETRY_ATTEMPTS) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -85,6 +43,93 @@ let _isReadOnly = false;
 
 function isEmptyArray(value) {
   return Array.isArray(value) && value.length === 0;
+}
+
+/**
+ * 通知用户 RMW 合并冲突
+ * @param {string} key - 数据键名
+ * @param {Array} conflicts - 冲突列表
+ * @param {*} localData - 本地原始数据
+ * @param {*} serverData - 云端当前数据（合并前的）
+ */
+function notifyRmwConflict(key, conflicts, localData, serverData) {
+  if (!conflicts || conflicts.length === 0) return;
+
+  const conflictDescriptions = conflicts.map(c => {
+    if (c.id !== undefined) {
+      // 数组项冲突
+      const serverDisplay = extractHumanDescription(c.serverValue);
+      const localDisplay = extractHumanDescription(c.localValue);
+      return `ID "${c.id}": 云端为 "${serverDisplay}",你的为 "${localDisplay}"`;
+    } else {
+      // 对象字段冲突
+      const serverDisplay = extractHumanDescription(c.serverValue);
+      const localDisplay = extractHumanDescription(c.localValue);
+      return `字段 "${c.path}": 云端为 "${serverDisplay}",你的为 "${localDisplay}"`;
+    }
+  }).join("; ");
+
+  // 创建操作按钮
+  const actions = [
+    {
+      label: "使用云端",
+      color: "primary",
+      variant: "flat",
+      onClick: async () => {
+        try {
+          // 用云端数据覆盖本地
+          await kvLocalProvider.saveData(key, serverData);
+          messageService.success("已使用云端数据", "本地数据已更新为云端版本");
+        } catch (error) {
+          messageService.error("操作失败", "无法更新本地数据: " + error.message);
+        }
+      }
+    },
+    {
+      label: "换用我的修改",
+      color: "warning",
+      variant: "flat",
+      onClick: async () => {
+        try {
+          // 用本地数据覆盖云端
+          const result = await kvServerProvider.saveData(key, localData);
+          if (result && result.success !== false) {
+            messageService.success("已使用你的修改", "云端数据已更新为你的版本");
+          } else {
+            messageService.error("操作失败", "无法更新云端数据");
+          }
+        } catch (error) {
+          messageService.error("操作失败", "无法更新云端数据: " + error.message);
+        }
+      }
+    }
+  ];
+
+  messageService.warning(
+    "数据冲突",
+    `你刚才修改的内容已被他人先修改过。${conflictDescriptions}`,
+    { timeout: 15000, closable: false, actions }
+  );
+}
+
+/**
+ * 提取人类可读的描述
+ * @param {*} value - 要描述的值
+ * @returns {string} - 人类可读的描述
+ */
+function extractHumanDescription(value) {
+  if (value === null || value === undefined) return "空";
+  if (typeof value === "string") return value.length > 50 ? value.substring(0, 50) + "..." : value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) return `数组(${value.length}项)`;
+  if (typeof value === "object") {
+    // 尝试提取有意义的字段
+    if (value.name) return value.name;
+    if (value.title) return value.title;
+    if (value.id) return `ID:${value.id}`;
+    return "对象";
+  }
+  return "未知";
 }
 
 function mergeData(local, cloud, isReadOnly) {
@@ -258,7 +303,9 @@ export default {
 
           if (serverOk && localOk) {
             const merged = mergeData(localResult, serverResult, _isReadOnly);
-            await kvLocalProvider.saveData(key, merged).catch(() => {});
+            if (computeDataHash(merged) !== computeDataHash(localResult)) {
+              await kvLocalProvider.saveData(key, merged).catch(() => {});
+            }
             return merged;
           }
 
@@ -335,6 +382,10 @@ export default {
       try {
         const result = await rmwWriteServer(key, data);
         if (result && result.success !== false) {
+          // 检查并通知冲突
+          if (result.conflicts && result.conflicts.length > 0) {
+            notifyRmwConflict(key, result.conflicts, data, result.serverOriginal);
+          }
           return { success: true, source: "cloud" };
         }
         return formatError("云端保存失败", "SERVER_SAVE_ERROR");
@@ -357,10 +408,18 @@ export default {
 
           if (serverOk && localOk) {
             await kvLocalProvider.removeKeyFromOfflineQueue(key).catch(() => {});
+            // 检查并通知冲突
+            if (serverResult.conflicts && serverResult.conflicts.length > 0) {
+              notifyRmwConflict(key, serverResult.conflicts, data, serverResult.serverOriginal);
+            }
             return { success: true, source: "dual" };
           }
 
           if (serverOk) {
+            // 检查并通知冲突
+            if (serverResult.conflicts && serverResult.conflicts.length > 0) {
+              notifyRmwConflict(key, serverResult.conflicts, data, serverResult.serverOriginal);
+            }
             return { success: true, source: "cloud", localFailed: true };
           }
 
@@ -545,6 +604,10 @@ export default {
       try {
         const data = await kvServerProvider.loadData(key);
         if (data && data.success !== false) {
+          const localData = await kvLocalProvider.loadData(key).catch(() => null);
+          if (localData && localData.success !== false && computeDataHash(localData) === computeDataHash(data)) {
+            return;
+          }
           await kvLocalProvider.saveData(key, data);
           synced++;
         } else {

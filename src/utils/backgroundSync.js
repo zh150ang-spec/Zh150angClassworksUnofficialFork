@@ -2,6 +2,7 @@ import {getSetting} from "./settings";
 import {kvLocalProvider} from "./providers/kvLocalProvider";
 import {kvServerProvider} from "./providers/kvServerProvider";
 import {networkStatus} from "./networkStatus";
+import {rmwWriteServer} from "./rmw";
 
 const SYNC_CONCURRENCY = 5
 const KEYS_PAGE_SIZE = 1000
@@ -168,8 +169,8 @@ const BackgroundSyncService = {
           const localData = await kvLocalProvider.loadData(item.key);
           if (localData && localData.success !== false) {
             const saveResult = await this._retryWithBackoff(
-              () => kvServerProvider.saveData(item.key, localData),
-              this._maxRetryAttempts
+              () => rmwWriteServer(item.key, localData),
+              1
             );
             if (saveResult && saveResult.success !== false) {
               await kvLocalProvider.removeFromOfflineQueue(item.id);
@@ -208,8 +209,8 @@ const BackgroundSyncService = {
           const localData = await kvLocalProvider.loadData(key);
           if (localData && localData.success !== false) {
             const saveResult = await this._retryWithBackoff(
-              () => kvServerProvider.saveData(key, localData),
-              this._maxRetryAttempts
+              () => rmwWriteServer(key, localData),
+              1
             );
             if (saveResult && saveResult.success !== false) {
               return 1;
