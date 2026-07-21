@@ -6,24 +6,24 @@
 
 /* ── Grid item enter/leave ────────────────────────────────── */
 .grid-item {
-  transition: transform var(--duration-slow) var(--ease-apple),
+  transition: transform var(--duration-slow) var(--var(--ease-apple)-apple),
               opacity var(--duration-normal) var(--ease-apple);
   will-change: transform, opacity;
   backface-visibility: hidden;
 
   &.v-enter-active {
-    transition: transform var(--duration-slow) var(--ease-apple),
+    transition: transform var(--duration-slow) var(--var(--ease-apple)-apple),
                 opacity var(--duration-normal) var(--ease-apple);
   }
 
   &.v-move {
-    transition: transform var(--duration-slow) var(--ease-apple);
+    transition: transform var(--duration-slow) var(--var(--ease-apple)-apple);
     z-index: var(--z-move);
   }
 
   &.v-leave-active {
     position: absolute !important;
-    transition: transform var(--duration-normal) var(--ease-apple),
+    transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
                 opacity var(--duration-fast) var(--ease-apple);
   }
 
@@ -35,7 +35,7 @@
 
 /* ── Empty subject card ───────────────────────────────────── */
 .empty-subject-card {
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               opacity var(--duration-normal) var(--ease-apple);
 
   &:hover {
@@ -46,11 +46,11 @@
 
 /* ── List item transitions ────────────────────────────────── */
 .v-list-enter-active {
-  transition: all var(--duration-slow) var(--ease-apple);
+  transition: all var(--duration-slow) var(--var(--ease-apple)-apple);
 }
 
 .v-list-leave-active {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .v-list-enter-from,
@@ -62,7 +62,7 @@
 /* ── Attendance data change ───────────────────────────────── */
 .attendance-area {
   h2, h3 {
-    transition: color var(--duration-normal) var(--ease-apple);
+    transition: color var(--duration-normal) var(--var(--ease-apple)-apple);
   }
 }
 
@@ -98,12 +98,12 @@
 }
 
 .v-dialog-transition-enter-active {
-  transition: transform var(--duration-slow) var(--ease-apple),
+  transition: transform var(--duration-slow) var(--var(--ease-apple)-apple),
               opacity var(--duration-normal) var(--ease-apple);
 }
 
 .v-dialog-transition-leave-active {
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               opacity var(--duration-fast) var(--ease-apple);
 }
 
@@ -135,7 +135,7 @@
 /* ── Grid transitions ─────────────────────────────────────── */
 .grid-enter-active,
 .grid-leave-active {
-  transition: all var(--duration-slow) var(--ease-apple);
+  transition: all var(--duration-slow) var(--var(--ease-apple)-apple);
 }
 
 .grid-enter-from {
@@ -151,7 +151,7 @@
 /* ── List transitions ─────────────────────────────────────── */
 .v-list-enter-active,
 .v-list-leave-active {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .v-list-enter-from {
@@ -167,7 +167,7 @@
 /* ── Page transitions ─────────────────────────────────────── */
 .page-enter-active,
 .page-leave-active {
-  transition: opacity var(--duration-normal) var(--ease-apple),
+  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple),
               transform var(--duration-normal) var(--ease-apple);
 }
 
@@ -184,7 +184,7 @@
 /* ── Fade ─────────────────────────────────────────────────── */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .fade-enter-from,
@@ -195,7 +195,7 @@
 /* ── Scale ────────────────────────────────────────────────── */
 .scale-enter-active,
 .scale-leave-active {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
 }
 
 .scale-enter-from,

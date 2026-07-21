@@ -32,7 +32,7 @@ html {
 
 /* ── Card hover (clean, border-based) ─────────────────────── */
 .hover-card {
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               box-shadow var(--duration-normal) var(--ease-apple);
   will-change: transform;
 
@@ -47,7 +47,7 @@ html {
 .touch-button {
   min-height: var(--space-touch-min);
   min-width: var(--space-touch-min);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: var(--space-3) var(--space-6);       /* 12px 24px */
 
   &.v-btn--icon {

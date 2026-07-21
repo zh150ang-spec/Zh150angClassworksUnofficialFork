@@ -8,7 +8,7 @@
 
 /* ── Card Hover (Apple-style: subtle lift, no glow) ───────── */
 .grid-item .v-card {
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               box-shadow var(--duration-normal) var(--ease-apple);
 
   &:hover {
@@ -23,7 +23,7 @@
 
 /* ── Empty Subject Card ───────────────────────────────────── */
 .empty-subject-card {
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               opacity var(--duration-normal) var(--ease-apple);
   opacity: 0.85;
 
@@ -35,7 +35,7 @@
 
 /* ── Anti-burn card ───────────────────────────────────────── */
 .anti-burn-card {
-  transition: box-shadow var(--duration-normal) var(--ease-apple);
+  transition: box-shadow var(--duration-normal) var(--var(--ease-apple)-apple);
 
   &:hover {
     box-shadow: var(--shadow-hover);
@@ -49,9 +49,9 @@
 
 /* ── Search suggestion buttons ────────────────────────────── */
 .suggestion-btn {
-  margin: 2px;
+  margin: var(--space-compat-2px);
   min-width: 0;
-  padding: 0 6px;
+  padding: 0 var(--space-compat-6px);
 
   &:active {
     transform: scale(0.97);
@@ -68,7 +68,7 @@
 @media (max-width: 600px) {
   .student-card {
     .attendance-actions .v-btn {
-      margin: 0 1px;
+      margin: 0 var(--space-compat-1px);
       min-width: 28px;
       width: 28px;
       height: 28px;
@@ -79,7 +79,7 @@
 /* ── Filter chips ─────────────────────────────────────────── */
 .filter-chip {
   cursor: pointer;
-  margin: 2px;
+  margin: var(--space-compat-2px);
 
   &:active {
     transform: scale(0.97);
@@ -99,7 +99,7 @@
 
 .grid-item {
   width: 100%;
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               opacity var(--duration-normal) var(--ease-apple);
 }
 
@@ -146,7 +146,7 @@
 
 .main-window::-webkit-scrollbar-thumb {
   background-color: var(--color-scrollbar);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 
 .main-window::-webkit-scrollbar-thumb:hover {
@@ -181,7 +181,7 @@
 
 .attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb) {
   background-color: var(--color-scrollbar);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 
 .attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb:hover) {
@@ -236,7 +236,7 @@
 
 .empty-subject-card {
   cursor: pointer;
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               opacity var(--duration-normal) var(--ease-apple);
   opacity: 0.85;
 }

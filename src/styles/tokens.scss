@@ -17,13 +17,15 @@
   --line-height-preformatted: 1.8;
 
   /* Font-weight */
-  --font-weight-heading: 700;
-  --font-weight-label: 600;
+  --font-weight-light:   300;
+  --font-weight-regular: 400;
   --font-weight-emphasis: 500;
+  --font-weight-label:   600;
+  --font-weight-heading: 700;
 
   /* Letter-spacing */
   --tracking-normal: 0em;
-  --tracking-tight: 0em;
+  --tracking-tight: -0.02em;  /* Slightly tighter for headings / large numerals */
   --tracking-wide: 0.05em;    /* ~1px at 16px, for uppercase labels / dates */
   --tracking-display: 0.25em; /* ~8px at 32px, for large time numerals */
 
@@ -38,9 +40,10 @@
   --radius-xs: 0.5rem;     /* 8px   — inline code, small tags, badges       */
   --radius-sm: 0.75rem;     /* 12px  — inner panels, chips, message bubbles   */
   --radius-md: 1.2rem;      /* 19.2px — cards, dialogs (Vuetify root)         */
-  --radius-lg: 1.2rem;      /* 19.2px — floating surfaces (shared with md)    */
-  --radius-xl: 1.2rem;      /* 19.2px — toolbar bar (shared with md)         */
+  --radius-lg: 1.4rem;      /* 22.4px — floating surfaces, expanded panels    */
+  --radius-xl: 1.6rem;      /* 25.6px — toolbar bars, large floating surfaces */
   --radius-full: 9999px;    /* pill  — buttons, chips */
+  --radius-circle: 50%;     /* perfect circle — avatars, icon buttons */
 
   /* ── Text Color Hierarchy ───────────────────────────────── */
   /* Semantic text levels based on on-surface opacity.
@@ -103,6 +106,20 @@
   --space-10: calc(var(--space) * 10);         /* 40px  */
   --space-12: calc(var(--space) * 12);         /* 48px  */
   --space-16: calc(var(--space) * 16);         /* 64px  */
+
+  /* ── Spacing: Backward-Compatible Non-Standard Values ────
+     These tokens exist solely to eliminate hardcoded px values
+     in legacy components. They are NOT part of the standard
+     4px-grid spacing system and should not be used in new code.
+     该部分是为了向后兼容，实现统一所有间距使用token系统，
+     该间距不属于标准间隙系统。 */
+  --space-compat-0px:  0;
+  --space-compat-1px:  1px;
+  --space-compat-2px:  2px;
+  --space-compat-3px:  3px;
+  --space-compat-6px:  6px;
+  --space-compat-10px: 10px;
+  --space-compat-15px: 15px;
 
   /* ── Spacing semantics (consume numeric tokens above) ──── */
   --space-element:         var(--space-1);     /* 4px   icon↔text tight gap          */
@@ -178,7 +195,7 @@
   --z-overlay:   1;     /* Background overlay (App.vue) */
   --z-content:   2;     /* Main page content (App.vue) */
   --z-move:      3;     /* FLIP transition moving item */
-  --z-inner:     1;     /* Local stacking context internal use */
+  --z-inner:     2;     /* Local stacking context internal use */
   --z-toolbar:   10;    /* Fullscreen toolbar overlay (TimeCard) */
   --z-float:     100;   /* Floating elements (FloatingToolbar, FloatingICP) */
   --z-float-top: 101;   /* Floating element above siblings (side-action-btn) */

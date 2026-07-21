@@ -12,18 +12,18 @@
    This file covers only the gaps — list items use --radius-md.
    ═══════════════════════════════════════════════════════════ */
 
-/* ── Buttons: Apple full pill (SASS var cannot be overridden) */
+/* ── Buttons: medium rounded (SASS var cannot be overridden) */
 .v-btn {
-  border-radius: 999px !important;
+  border-radius: var(--radius-xl) !important;
 }
-.v-btn--rounded { border-radius: 999px !important; }
-.v-btn--block   { border-radius: 999px !important; }
+.v-btn--rounded { border-radius: var(--radius-xl) !important; }
+.v-btn--block   { border-radius: var(--radius-xl) !important; }
 
-.v-btn-group                            { border-radius: 999px !important; }
-.v-btn-group .v-btn                     { border-radius: 0 !important; }
-.v-btn-group .v-btn:first-child { border-radius: 999px 0 0 999px !important; }
-.v-btn-group .v-btn:last-child  { border-radius: 0 999px 999px 0 !important; }
-.v-btn-group .v-btn:only-child  { border-radius: 999px !important; }
+.v-btn-group                                   { border-radius: var(--radius-xl) !important; }
+.v-btn-group .v-btn                            { border-radius: 0 !important; }
+.v-btn-group .v-btn:first-child  { border-radius: var(--radius-xl) 0 0 var(--radius-xl) !important; }
+.v-btn-group .v-btn:last-child   { border-radius: 0 var(--radius-xl) var(--radius-xl) 0 !important; }
+.v-btn-group .v-btn:only-child   { border-radius: var(--radius-xl) !important; }
 
 /* ── List / List-item: $list-border-radius & $list-item-border-radius default to 0 */
 .v-list,

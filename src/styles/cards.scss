@@ -7,7 +7,7 @@
 .touch-card {
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: transform var(--duration-normal) var(--ease-apple),
+  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
               box-shadow var(--duration-normal) var(--ease-apple);
 
   .v-card-title {
