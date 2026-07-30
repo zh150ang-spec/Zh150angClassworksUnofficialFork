@@ -73,6 +73,9 @@
       <setting-item :setting-key="'display.cardHoverEffect'" />
 
       <v-divider class="my-2" />
+      <setting-item :setting-key="'display.showUafTransfer'" />
+
+      <v-divider class="my-2" />
 
       <v-list-subheader class="font-weight-bold text-primary">
         交互

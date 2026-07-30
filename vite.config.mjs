@@ -54,7 +54,90 @@ export default defineConfig({
       },
 
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,woff,ttf,eot,webmanifest}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,svg,webmanifest,txt,json,woff2,ttf,mp3}',
+        ],
+        navigateFallback: 'index.html',
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /^\/socket\.io\//,
+        ],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url, sameOrigin }) => {
+              return sameOrigin && url.pathname.startsWith('/assets/');
+            },
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'assets-cache',
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 60 // 60 天
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: ({ url, sameOrigin }) => {
+              return sameOrigin && url.pathname.startsWith('/sounds/');
+            },
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'sound-cache',
+              expiration: {
+                maxEntries: 80,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 天
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: ({ url, sameOrigin }) => {
+              return sameOrigin && url.pathname.startsWith('/pwa/');
+            },
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'pwa-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 天
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            // 匹配当前域名下除了上述规则外的所有请求
+            urlPattern: ({ url, sameOrigin }) => {
+              if (!sameOrigin) return false;
+              const path = url.pathname;
+              // 排除已经由其他规则处理的路径
+              return !(path.includes('/assets/') || path.includes('/pwa/') || path.includes('/sounds/'));
+            },
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'other-resources',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 // 1 天
+              },
+              networkTimeoutSeconds: 10,
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+        ],
+        additionalManifestEntries: [],
+        clientsClaim: true,
+        skipWaiting: true,
+        importScripts: ['sw-cache-manager.js']
       },
       manifest: {
         lang: 'zh-CN',

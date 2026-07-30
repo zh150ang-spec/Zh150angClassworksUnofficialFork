@@ -172,6 +172,12 @@ const settingsDefinitions = {
     description: "考试看板",
     icon: ICON.CALENDAR_CHECK,
   },
+  "display.showUafTransfer": {
+    type: "boolean",
+    default: true,
+    description: "是否显示UAF作业导入导出",
+    icon: "mdi-swap-vertical-bold",
+  },
   "display.showQuickTools": {
     type: "boolean",
     default: true,
