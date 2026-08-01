@@ -179,14 +179,20 @@
         <!-- 普通作业卡片 -->
         <v-card
           v-else
-          :class="{ 'cursor-not-allowed': isEditingDisabled, 'cursor-pointer': !isEditingDisabled }"
+          :class="{ 'cursor-not-allowed': isEditingDisabled, 'cursor-pointer': !isEditingDisabled, 'homework-card': true }"
           border
           height="100%"
           rounded="xl"
           @click="handleCardClick('dialog', item.key)"
         >
-          <v-card-title>{{ item.name }}</v-card-title>
-          <v-card-text :style="contentStyle">
+          <v-card-title class="homework-card-title">
+            <span class="subject-indicator" />
+            {{ item.name }}
+          </v-card-title>
+          <v-card-text
+            class="homework-card-text"
+            :style="contentStyle"
+          >
             <!-- eslint-disable vue/no-v-html -- 内容已通过 escapeHtml 进行 XSS 防护 -->
             <div
               class="homework-content"
@@ -201,7 +207,7 @@
 
   <!-- 单独显示空科目 -->
   <div class="empty-subjects mt-4">
-    <!-- 移动端优化视图 -->
+    <!-- 移动端优化视图：紧凑 chips -->
     <div
       v-if="isMobile"
       class="d-flex flex-wrap justify-center"
@@ -209,7 +215,7 @@
       <v-chip
         v-for="subject in unusedSubjects"
         :key="subject.name"
-        class="ma-1"
+        class="ma-1 empty-subject-chip"
         color="primary"
         variant="tonal"
         @click="handleCardClick('dialog', subject.name)"
@@ -218,29 +224,39 @@
           start
           size="small"
         >
-          {{ isReadOnlyToken ? 'mdi-cancel' : 'mdi-plus' }}
+          {{ isReadOnlyToken ? ICON.CANCEL : ICON.PLUS }}
         </v-icon>
         {{ subject.name }}
       </v-chip>
     </div>
 
+    <!-- 按钮模式：统一为卡片式按钮 -->
     <template v-else-if="emptySubjectDisplay === 'button'">
-      <v-btn-group
-        divided
-        variant="tonal"
-      >
-        <v-btn
-          v-for="subject in unusedSubjects"
-          :key="subject.name"
-          @click="handleCardClick('dialog', subject.name)"
-        >
-          <v-icon start>
-            {{ isReadOnlyToken ? 'mdi-cancel' : 'mdi-plus' }}
-          </v-icon>
-          {{ subject.name }}
-        </v-btn>
-      </v-btn-group>
+      <div class="empty-subjects-grid">
+        <TransitionGroup name="v-list">
+          <v-card
+            v-for="subject in unusedSubjects"
+            :key="subject.name"
+            border
+            rounded="xl"
+            class="empty-subject-card empty-subject-card--button"
+            @click="handleCardClick('dialog', subject.name)"
+          >
+            <v-card-text class="d-flex align-center justify-center py-3">
+              <v-icon
+                size="small"
+                start
+              >
+                {{ isReadOnlyToken ? ICON.CANCEL : ICON.PLUS }}
+              </v-icon>
+              <span class="text-body-large">{{ subject.name }}</span>
+            </v-card-text>
+          </v-card>
+        </TransitionGroup>
+      </div>
     </template>
+
+    <!-- 卡片模式：与主网格卡片视觉统一 -->
     <div
       v-else
       class="empty-subjects-grid"
@@ -262,9 +278,8 @@
               <v-icon
                 color="medium-emphasis"
                 size="small"
-              >
-                mdi-cancel
-              </v-icon>
+                :icon="ICON.CANCEL"
+              />
               <div class="text-body-small text-medium-emphasis">
                 当日无作业
               </div>

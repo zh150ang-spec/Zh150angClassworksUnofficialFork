@@ -65,10 +65,12 @@ html {
 
 /* ── v-card tonal text contrast (global) ──────────────────── */
 /* Same rationale as v-alert: tonal cards with color="primary" etc.
-   cause text to inherit the semantic color, reducing contrast
-   against the tinted background. Force text containers to on-surface. */
-.v-card--variant-tonal .v-card-text,
-.v-card--variant-tonal .v-card-item {
+   cause text to inherit the semantic color (via Vuetify's text-primary
+   class on the card root), reducing contrast against the tinted
+   background. Force the card root to on-surface so ALL descendants
+   (including arbitrary divs, text-variant buttons, etc.) inherit
+   readable contrast. */
+.v-card--variant-tonal {
   color: rgb(var(--v-theme-on-surface));
 }
 
@@ -77,6 +79,32 @@ html {
    etc. cause text to inherit the semantic color, reducing contrast
    against the tinted background. Force content text to on-surface. */
 .v-snackbar--variant-tonal .v-snackbar__content {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-btn tonal text contrast (global) ───────────────────── */
+/* Tonal buttons with color="primary" etc. cause text to inherit
+   the semantic color. Force content to on-surface for readability. */
+.v-btn--variant-tonal .v-btn__content {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-chip tonal text contrast (global) ──────────────────── */
+/* Same rationale as v-btn tonal: force chip content text to
+   on-surface for readability against the tinted background. */
+.v-chip--variant-tonal .v-chip__content {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-icon contrast in tonal variants (global) ──────────── */
+/* Same rationale as .v-btn__content: icons (prepend, append,
+   standalone) inside tonal components inherit the semantic color,
+   reducing contrast against the tinted background. Force to
+   on-surface for readability. */
+.v-btn--variant-tonal .v-icon,
+.v-chip--variant-tonal .v-icon,
+.v-alert--variant-tonal .v-icon,
+.v-snackbar--variant-tonal .v-icon {
   color: rgb(var(--v-theme-on-surface));
 }
 

@@ -31,26 +31,37 @@
         {{ tokenDisplayInfo.text }}
       </v-chip>
 
-      <v-btn
-        v-if="shouldShowUrgentTestButton"
-        :prepend-icon="ICON.CHAT"
-        variant="tonal"
-        @click="$emit('open-urgent-test')"
-      >
-        发送通知
-      </v-btn>
-      <v-btn
-        :icon="ICON.CHAT"
-        variant="text"
-        @click="$emit('open-chat')"
-      />
-      <v-btn
-        :badge="unreadCount || undefined"
-        :badge-color="unreadCount ? 'error' : undefined"
-        :icon="ICON.BELL"
-        variant="text"
-        @click="$emit('open-messages')"
-      />
+      <!-- 通讯菜单：合并消息与设备聊天 -->
+      <v-menu location="bottom end">
+        <template #activator="{ props: menuProps }">
+          <v-badge
+            :content="unreadCount"
+            :model-value="unreadCount > 0"
+            color="error"
+            offset-x="6"
+            offset-y="6"
+          >
+            <v-btn
+              v-bind="menuProps"
+              :icon="ICON.MESSAGE_TEXT"
+              variant="text"
+            />
+          </v-badge>
+        </template>
+        <v-list density="comfortable">
+          <v-list-item
+            :prepend-icon="ICON.BELL"
+            title="消息记录"
+            @click="$emit('open-messages')"
+          />
+          <v-list-item
+            :prepend-icon="ICON.CHAT"
+            title="设备聊天"
+            @click="$emit('open-chat')"
+          />
+        </v-list>
+      </v-menu>
+
       <v-btn
         :icon="ICON.SETTINGS"
         variant="text"
@@ -79,7 +90,6 @@ defineProps({
       icon: ICON.ACCOUNT,
     }),
   },
-  shouldShowUrgentTestButton: Boolean,
   unreadCount: {
     type: Number,
     default: 0,
@@ -88,7 +98,6 @@ defineProps({
 
 defineEmits([
   "token-chip-click",
-  "open-urgent-test",
   "open-chat",
   "open-messages",
   "open-settings",

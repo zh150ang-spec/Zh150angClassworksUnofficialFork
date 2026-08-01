@@ -1,21 +1,49 @@
 <template>
   <v-card
     v-if="showCard"
-    class="mb-4"
-    color="surface-variant"
+    class="mb-4 pwa-install-card"
+    color="primary"
     variant="tonal"
+    border
+    rounded="xl"
   >
-    <div class="d-flex flex-no-wrap justify-space-between">
-      <div class="pe-4">
-        <v-card-title class="text-headline-small">
-          安装应用与授权
-        </v-card-title>
+    <!-- 标题行：始终显示，折叠/展开状态顺承 -->
+    <div class="d-flex align-center">
+      <v-card-title class="text-headline-small d-flex align-center flex-grow-1 min-width-0">
+        <v-icon
+          :icon="ICON.MONITOR_CELLPHONE"
+          class="mr-2"
+          color="primary"
+        />
+        <span class="mr-2">安装应用与授权</span>
+        <span class="text-body-medium text-medium-emphasis text-truncate hidden-sm-and-down">
+          将网站安装为应用，开启通知与离线存储
+        </span>
+      </v-card-title>
+      <v-card-actions class="flex-shrink-0">
+        <v-btn
+          variant="text"
+          size="small"
+          :prepend-icon="expanded ? ICON.CHEVRON_UP : ICON.CHEVRON_DOWN"
+          @click="expanded = !expanded"
+        >
+          {{ expanded ? "收起" : "查看" }}
+        </v-btn>
+        <v-btn
+          variant="text"
+          size="small"
+          :icon="ICON.CLOSE"
+          @click="dismiss"
+        />
+      </v-card-actions>
+    </div>
 
-        <v-card-subtitle class="pb-1">
-          手动点选下方项目请求安装和权限，也可以直接关闭
-        </v-card-subtitle>
+    <!-- 可展开内容：平滑过渡 -->
+    <v-expand-transition>
+      <div v-show="expanded">
+        <v-divider />
 
-        <v-card-text class="pt-0 pb-1">
+        <v-card-text class="pb-1">
           <v-list
             density="comfortable"
             lines="two"
@@ -63,43 +91,24 @@
         <v-card-actions>
           <v-btn
             class="ms-2"
-            variant="outlined"
-            size="small"
-            @click="dismiss"
-          >
-            关闭
-          </v-btn>
-          <v-btn
-            class="ms-2"
             variant="elevated"
             color="primary"
             size="small"
-            :prepend-icon="isRequesting ? 'mdi-timer-sand' : 'mdi-shield-check'"
+            :prepend-icon="isRequesting ? ICON.PROGRESS_CLOCK : ICON.SHIELD_CHECK"
             :disabled="!hasPendingRequests || isRequesting"
             @click="handleRequest"
           >
-            {{ isRequesting ? "处理中" : "一次处理全部" }}
+            {{ isRequesting ? "处理中" : "一键授权" }}
           </v-btn>
         </v-card-actions>
       </div>
-
-      <v-avatar
-        class="ma-3"
-        size="100"
-        rounded="lg"
-      >
-        <v-icon
-          :icon="ICON.MONITOR_CELLPHONE"
-          size="80"
-        />
-      </v-avatar>
-    </div>
+    </v-expand-transition>
 
     <v-dialog
       v-model="helpDialog"
       max-width="520"
     >
-      <v-card>
+      <v-card rounded="xl">
         <v-card-title class="text-headline-small">
           {{ helpContent.title }}
         </v-card-title>
@@ -140,6 +149,7 @@ import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue';
 import { getSetting, setSetting, requestNotificationPermission, requestPersistentStorage } from "@/utils/settings";
 
 const showCard = ref(false);
+const expanded = ref(false);
 const isRequesting = ref(false);
 const helpDialog = ref(false);
 const helpContent = reactive({
@@ -166,7 +176,7 @@ const chipColors = {
   pending: "primary",
   granted: "success",
   denied: "error",
-  unavailable: "surface-variant",
+  unavailable: "info",
 };
 
 const permissionStates = reactive({
@@ -376,3 +386,9 @@ onBeforeUnmount(() => {
   }
 });
 </script>
+
+<style scoped>
+.min-width-0 {
+  min-width: 0;
+}
+</style>

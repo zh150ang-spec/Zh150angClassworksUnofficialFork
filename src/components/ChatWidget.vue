@@ -43,19 +43,32 @@
         <span class="text-body-large">{{ modeTitle }}</span>
         <v-spacer />
         <!-- 模式切换按钮 -->
-        <v-btn-toggle
-          v-model="currentMode"
-          class="mr-2 mode-toggle"
-          mandatory
-          variant="outlined"
+        <v-btn
+          :color="currentMode === 'chat' ? 'primary' : 'default'"
+          class="mode-btn"
+          size="small"
+          variant="text"
+          @click="currentMode = 'chat'"
         >
-          <v-btn value="chat">
-            <v-icon :icon="ICON.CHAT" />
-          </v-btn>
-          <v-btn value="events">
-            <v-icon :icon="ICON.FORMAT_LIST" />
-          </v-btn>
-        </v-btn-toggle>
+          <v-icon
+            :icon="ICON.CHAT"
+            start
+          />
+          聊天
+        </v-btn>
+        <v-btn
+          :color="currentMode === 'events' ? 'primary' : 'default'"
+          class="mode-btn mr-2"
+          size="small"
+          variant="text"
+          @click="currentMode = 'events'"
+        >
+          <v-icon
+            :icon="ICON.FORMAT_LIST"
+            start
+          />
+          事件
+        </v-btn>
         <v-tooltip location="top">
           <template #activator="{ props }">
             <v-chip
@@ -1019,24 +1032,11 @@ export default {
   flex-shrink: 0;
 }
 
-.mode-toggle {
-  background: var(--color-fill-weakest);
-}
-
-.mode-toggle .v-btn {
-  min-width: 40px;
-  padding: 0 var(--space-3);
-}
-
-.mode-toggle .v-btn.v-btn--active {
-  background: rgba(var(--v-theme-primary), 0.15) !important;
-}
-
-.mode-toggle .v-btn.v-btn--active .v-icon {
-  color: rgb(var(--v-theme-primary));
-}
-
-.mode-toggle .v-btn:not(.v-btn--active):hover {
-  background: var(--color-fill) !important;
+/* 模式切换按钮样式 */
+.mode-btn {
+  min-width: 0;
+  padding: 0 var(--space-2);
+  font-weight: var(--font-weight-emphasis);
+  transition: color var(--duration-fast) var(--ease-apple);
 }
 </style>

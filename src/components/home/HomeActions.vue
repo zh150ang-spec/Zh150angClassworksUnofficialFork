@@ -1,122 +1,156 @@
 <template>
-  <div class="d-flex flex-wrap align-center mt-4">
-    <v-btn
-      v-if="!synced"
-      :loading="loadingUpload"
-      class="ml-2"
-      color="error"
-      size="large"
-      rounded="xl"
-      @click="$emit('upload')"
-    >
-      上传
-    </v-btn>
-    <v-btn
-      v-else
-      color="success"
-      size="large"
-      rounded="xl"
-      @click="$emit('show-sync-message')"
-    >
-      同步完成
-    </v-btn><v-menu
-      v-if="showUafTransferButton"
-      location="bottom end"
-    >
-      <template #activator="{ props: menuProps }">
-        <v-btn
-          v-bind="menuProps"
-          :disabled="uafTransferLoading"
-          :loading="uafTransferLoading"
-          class="ml-2"
-          color="indigo"
-
-          size="large"
-          rounded="xl"
-        >
-          <v-icon icon="mdi-swap-vertical-bold" />
-        </v-btn>
-      </template>
-      <v-list density="comfortable">
-        <v-list-item
-          prepend-icon="mdi-file-export-outline"
-          title="导出 UAF"
-          @click="$emit('open-uaf-export')"
-        />
-        <v-list-item
-          prepend-icon="mdi-file-import-outline"
-          title="导入 UAF"
-          @click="$emit('open-uaf-import')"
-        />
-      </v-list>
-    </v-menu>    <v-btn
-      v-if="showFullscreenButton"
-      :color="isFullscreen ? 'blue-grey' : 'blue'"
-      :prepend-icon="
-        isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'
-      "
-      rounded="xl"
-      class="ml-2"
-      size="large"
-      @click="$emit('toggle-fullscreen')"
-    >
-      {{ isFullscreen ? "退出全屏" : "全屏" }}
-    </v-btn>
-    <v-btn
-      v-if="showRandomPickerButton"
-      :append-icon="ICON.DICE_MULTIPLE"
-      class="ml-2"
-      color="amber"
-      :prepend-icon="ICON.ACCOUNT_QUESTION"
-      rounded="xl"
-      size="large"
-      @click="$emit('open-random-picker')"
-    >
-      随机点名
-    </v-btn>
-
-    <v-btn-group
-      v-if="showExamScheduleButton"
-      class="ml-2"
-      rounded="xl"
-    >
+  <div class="home-actions d-flex flex-wrap align-center mt-4">
+    <!-- 数据同步组 -->
+    <div class="action-group sync-group d-flex align-center">
       <v-btn
-        :prepend-icon="ICON.CALENDAR_CHECK"
-        color="green"
+        v-if="!synced"
+        :loading="loadingUpload"
+        color="error"
         size="large"
-        @click="$router.push('/examschedule')"
+        rounded="xl"
+        variant="tonal"
+        :prepend-icon="ICON.UPLOAD"
+        @click="$emit('upload')"
       >
-        考试看板
+        上传
       </v-btn>
       <v-btn
-        :icon="ICON.PLUS"
-        color="green"
+        v-else
+        color="success"
         size="large"
-        @click="$emit('add-exam-card')"
-      />
-    </v-btn-group>
-    <v-btn
-      v-if="showListCardButton"
-      class="ml-2"
-      color="primary-darken-1"
-      :prepend-icon="ICON.LIST_BOX"
-      rounded="xl"
-      size="large"
-      @click="$router.push('/list')"
-    >
-      列表
-    </v-btn>
-    <v-btn
-      v-if="showTestCardButton"
-      class="ml-2"
-      color="purple"
-      :prepend-icon="ICON.TEST_TUBE"
-      rounded="xl"
-      size="large"
-      @click="$emit('add-test-card')"
-    >
-      添加测试卡片
-    </v-btn>
+        rounded="xl"
+        variant="tonal"
+        :prepend-icon="ICON.CHECK"
+        @click="$emit('show-sync-message')"
+      >
+        同步完成
+      </v-btn>
+
+      <v-menu
+        v-if="showUafTransferButton"
+        location="bottom end"
+      >
+        <template #activator="{ props: menuProps }">
+          <v-btn
+            v-bind="menuProps"
+            :disabled="uafTransferLoading"
+            :loading="uafTransferLoading"
+            class="ml-2"
+            color="primary"
+            rounded="xl"
+            size="large"
+            variant="tonal"
+            :prepend-icon="ICON.SWAP_HORIZONTAL"
+          >
+            传输
+          </v-btn>
+        </template>
+        <v-list density="comfortable">
+          <v-list-item
+            :prepend-icon="ICON.EXPORT_ICON"
+            title="导出 UAF"
+            @click="$emit('open-uaf-export')"
+          />
+          <v-list-item
+            :prepend-icon="ICON.IMPORT_ICON"
+            title="导入 UAF"
+            @click="$emit('open-uaf-import')"
+          />
+        </v-list>
+      </v-menu>
+    </div>
+
+    <!-- 工具组 -->
+    <div class="action-group tools-group d-flex align-center ml-2">
+      <v-btn
+        v-if="showFullscreenButton"
+        color="primary"
+        :prepend-icon="isFullscreen ? ICON.FULLSCREEN_EXIT : ICON.FULLSCREEN"
+        rounded="xl"
+        size="large"
+        variant="tonal"
+        @click="$emit('toggle-fullscreen')"
+      >
+        {{ isFullscreen ? "退出全屏" : "全屏" }}
+      </v-btn>
+
+      <v-btn
+        v-if="showRandomPickerButton"
+        class="ml-2"
+        color="primary"
+        :prepend-icon="ICON.DICE_MULTIPLE"
+        rounded="xl"
+        size="large"
+        variant="tonal"
+        @click="$emit('open-random-picker')"
+      >
+        随机点名
+      </v-btn>
+    </div>
+
+    <!-- 导航组 -->
+    <div class="action-group nav-group d-flex align-center ml-2">
+      <v-btn-group
+        v-if="showExamScheduleButton"
+        rounded="xl"
+        variant="tonal"
+      >
+        <v-btn
+          :prepend-icon="ICON.CALENDAR_CHECK"
+          color="primary"
+          size="large"
+          @click="$router.push('/examschedule')"
+        >
+          考试看板
+        </v-btn>
+        <v-btn
+          :icon="ICON.PLUS"
+          color="primary"
+          size="large"
+          @click="$emit('add-exam-card')"
+        />
+      </v-btn-group>
+
+      <v-btn
+        v-if="showListCardButton"
+        class="ml-2"
+        color="primary"
+        :prepend-icon="ICON.LIST_BOX"
+        rounded="xl"
+        size="large"
+        variant="tonal"
+        @click="$router.push('/list')"
+      >
+        列表
+      </v-btn>
+    </div>
+
+    <!-- 管理/调试 -->
+    <div class="action-group admin-group d-flex align-center ml-2">
+      <v-btn
+        v-if="shouldShowUrgentTestButton"
+        color="warning"
+        rounded="xl"
+        size="large"
+        variant="tonal"
+        :prepend-icon="ICON.MESSAGE_ALERT"
+        @click="$emit('open-urgent-test')"
+      >
+        发送通知
+      </v-btn>
+      <v-btn
+        v-if="showTestCardButton"
+        class="ml-2"
+        color="primary"
+        :prepend-icon="ICON.TEST_TUBE"
+        rounded="xl"
+        size="large"
+        variant="tonal"
+        @click="$emit('add-test-card')"
+      >
+        测试卡片
+      </v-btn>
+    </div>
   </div>
 
   <v-card
@@ -164,6 +198,7 @@ export default {
     showTestCardButton: Boolean,
     showUafTransferButton: Boolean,
     uafTransferLoading: Boolean,
+    shouldShowUrgentTestButton: Boolean,
   },
   emits: [
     "upload",
@@ -174,6 +209,7 @@ export default {
     "add-exam-card",
     "open-uaf-export",
     "open-uaf-import",
+    "open-urgent-test",
   ],
   data() {
     return {
@@ -182,3 +218,24 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.home-actions {
+  gap: var(--space-2);
+}
+
+.action-group {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .home-actions {
+    gap: var(--space-2);
+  }
+
+  .action-group {
+    margin-left: 0 !important;
+  }
+}
+</style>

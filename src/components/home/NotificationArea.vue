@@ -5,20 +5,37 @@
   >
     <v-col cols="12">
       <v-card
-        v-for="notification in notifications"
-        :key="notification.id"
-        :color="notification.isUrgent ? 'error' : 'primary'"
-        class="mb-2 cursor-pointer"
+        class="notification-list-card"
+        color="primary"
         variant="tonal"
-        @click="$emit('show-detail', notification)"
+        border
+        rounded="xl"
       >
-        <v-card-text class="d-flex align-center py-3">
-          <span class="text-headline-small text-truncate font-weight-bold">{{ notification.message }}</span>
-          <v-spacer />
-          <v-btn
-            :icon="ICON.CHEVRON_RIGHT"
-            variant="text"
-          />
+        <v-card-text class="pa-3">
+          <div
+            v-for="notification in notifications"
+            :key="notification.id"
+            class="notification-item d-flex align-center py-2 px-3 rounded-lg"
+            :class="{ 'notification-item--urgent': notification.isUrgent }"
+            @click="$emit('show-detail', notification)"
+          >
+            <v-icon
+              :color="notification.isUrgent ? 'error' : 'primary'"
+              size="small"
+              class="mr-3 flex-shrink-0"
+              :icon="notification.isUrgent ? ICON.ALERT_CIRCLE_OUTLINE : ICON.INFORMATION_OUTLINE"
+            />
+            <span class="text-body-large text-truncate flex-grow-1">
+              {{ notification.message }}
+            </span>
+            <v-btn
+              :icon="ICON.CHEVRON_RIGHT"
+              variant="text"
+              density="comfortable"
+              size="small"
+              class="flex-shrink-0"
+            />
+          </div>
         </v-card-text>
       </v-card>
     </v-col>
@@ -112,3 +129,28 @@ defineProps({
 
 defineEmits(["update:modelValue", "show-detail", "remove"]);
 </script>
+
+<style scoped>
+.notification-list-card {
+  overflow: hidden;
+}
+
+.notification-item {
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-apple);
+  border-left: 3px solid transparent;
+}
+
+.notification-item:hover {
+  background: rgba(var(--v-theme-primary), 0.08);
+}
+
+.notification-item--urgent {
+  border-left-color: rgb(var(--v-theme-error));
+  background: rgba(var(--v-theme-error), 0.06);
+}
+
+.notification-item--urgent:hover {
+  background: rgba(var(--v-theme-error), 0.12);
+}
+</style>

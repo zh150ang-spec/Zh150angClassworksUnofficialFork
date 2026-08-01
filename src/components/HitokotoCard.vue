@@ -255,6 +255,6 @@ export default {
   font-family: var(--font-serif);
 }
 .author-font {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
 }
 </style>

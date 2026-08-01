@@ -2,89 +2,135 @@
   <div class="floating-toolbar-container">
     <v-slide-y-transition>
       <v-card
-        :class="{ 'toolbar-expanded': isExpanded }"
         class="floating-toolbar"
         elevation="4"
         rounded="xl"
       >
-        <div class="toolbar-buttons">
-          <v-btn
-            v-ripple
-            :title="'查看昨天'"
-            class="toolbar-btn"
-            :icon="ICON.CHEVRON_LEFT"
-            size="40"
-            variant="text"
-            @click="$emit('prev-day')"
-          />
-          <v-btn
-            v-ripple
-            :title="'缩小字体'"
-            class="toolbar-btn"
-            :icon="ICON.FORMAT_FONT_SIZE_DECREASE"
-            size="40"
-            variant="text"
-            @click="$emit('zoom', 'out')"
-          />
-          <v-btn
-            v-ripple
-            :title="'放大字体'"
-            class="toolbar-btn"
-            :icon="ICON.FORMAT_FONT_SIZE_INCREASE"
-            size="40"
-            variant="text"
-            @click="$emit('zoom', 'up')"
-          />
-          <v-menu
-            :close-on-content-click="false"
-            location="top"
-          >
-            <template #activator="{ props }">
-              <v-btn
-                v-ripple
-                :title="'选择日期'"
-                class="toolbar-btn"
-                :icon="ICON.CALENDAR"
-                size="40"
-                v-bind="props"
-                variant="text"
-              />
-            </template>
-            <v-card
-              border
-              class="date-picker-card"
-            >
-              <v-date-picker
-                :model-value="selectedDate"
-                color="primary"
-                elevation="0"
-                show-adjacent-months
-                @update:model-value="onDateChange"
-              />
-            </v-card>
-          </v-menu>
-          <v-btn
-            v-ripple
-            :loading="loading"
-            :title="'刷新数据'"
-            class="toolbar-btn"
-            :icon="ICON.REFRESH"
-            size="40"
-            variant="text"
-            @click="$emit('refresh')"
-          />
+        <v-btn
+          :title="'查看昨天'"
+          class="toolbar-btn"
+          rounded="lg"
+          variant="text"
+          @click="$emit('prev-day')"
+        >
+          <div class="toolbar-btn-inner">
+            <v-icon
+              :icon="ICON.CHEVRON_LEFT"
+              size="x-large"
+            />
+            <span class="btn-label">昨天</span>
+          </div>
+        </v-btn>
 
-          <v-btn
-            v-if="!isToday"
-            v-ripple
-            :title="'查看明天'"
-            class="toolbar-btn"
-            :icon="ICON.CHEVRON_RIGHT"
-            size="40"
-            variant="text"
-            @click="$emit('next-day')"
-          />
-        </div>
+        <v-menu
+          :close-on-content-click="false"
+          location="top"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              :title="'选择日期'"
+              class="toolbar-btn"
+              rounded="lg"
+              variant="text"
+            >
+              <div class="toolbar-btn-inner">
+                <v-icon
+                  :icon="ICON.CALENDAR"
+                  size="x-large"
+                />
+                <span class="btn-label">日期</span>
+              </div>
+            </v-btn>
+          </template>
+          <v-card
+            border
+            class="date-picker-card"
+          >
+            <v-date-picker
+              :model-value="selectedDate"
+              color="primary"
+              elevation="0"
+              show-adjacent-months
+              @update:model-value="onDateChange"
+            />
+          </v-card>
+        </v-menu>
+
+        <v-btn
+          :title="'查看明天'"
+          class="toolbar-btn"
+          rounded="lg"
+          variant="text"
+          @click="$emit('next-day')"
+        >
+          <div class="toolbar-btn-inner">
+            <v-icon
+              :icon="ICON.CHEVRON_RIGHT"
+              size="x-large"
+            />
+            <span class="btn-label">明天</span>
+          </div>
+        </v-btn>
+
+        <v-divider
+          vertical
+          class="toolbar-divider"
+        />
+
+        <v-btn
+          :title="'缩小字体'"
+          class="toolbar-btn"
+          rounded="lg"
+          variant="text"
+          @click="$emit('zoom', 'out')"
+        >
+          <div class="toolbar-btn-inner">
+            <v-icon
+              :icon="ICON.FORMAT_FONT_SIZE_DECREASE"
+              size="x-large"
+            />
+            <span class="btn-label">缩小</span>
+          </div>
+        </v-btn>
+
+        <v-btn
+          :title="'放大字体'"
+          class="toolbar-btn"
+          rounded="lg"
+          variant="text"
+          @click="$emit('zoom', 'up')"
+        >
+          <div class="toolbar-btn-inner">
+            <v-icon
+              :icon="ICON.FORMAT_FONT_SIZE_INCREASE"
+              size="x-large"
+            />
+            <span class="btn-label">放大</span>
+          </div>
+        </v-btn>
+
+        <v-divider
+          vertical
+          class="toolbar-divider"
+        />
+
+        <v-btn
+          :loading="loading"
+          :title="'刷新数据'"
+          class="toolbar-btn"
+          rounded="lg"
+          variant="text"
+          @click="$emit('refresh')"
+        >
+          <div class="toolbar-btn-inner">
+            <v-icon
+              :icon="ICON.REFRESH"
+              size="x-large"
+            />
+            <span class="btn-label">刷新</span>
+          </div>
+        </v-btn>
       </v-card>
     </v-slide-y-transition>
 
@@ -100,7 +146,6 @@
         :prepend-icon="ICON.CONTENT_COPY"
         rounded="xl"
         size="large"
-        text="复制作业内容到今天"
         @click="$emit('copy-to-today')"
       >
         复制到今天
@@ -147,11 +192,13 @@ export default {
   data() {
     return {
       ICON,
-      isExpanded: false,
     };
   },
   methods: {
     handleDateSelect(newDate) {
+      this.$emit("date-select", newDate);
+    },
+    onDateChange(newDate) {
       this.$emit("date-select", newDate);
     },
   },
@@ -174,11 +221,9 @@ export default {
 .floating-toolbar {
   position: absolute;
   bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
 
   transition: all var(--duration-normal) var(--ease-apple);
-  background: rgba(var(--v-theme-surface-container), 0.75) !important;
+  background: rgba(var(--v-theme-surface-container), 0.85) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -187,47 +232,51 @@ export default {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-1);
   pointer-events: auto;
   will-change: transform;
   border-radius: var(--radius-xl) !important;
-}
 
-.floating-toolbar:hover {
-  transform: translateX(-50%) translateY(-4px);
-  background: rgba(var(--v-theme-surface-container), 0.88) !important;
-  box-shadow: var(--shadow-overlay) !important;
-}
-
-.toolbar-buttons {
   display: flex;
   align-items: center;
+  gap: 0;
+  padding: 6px 8px;
+  width: fit-content;
 }
 
 .toolbar-btn {
-  margin: 0 var(--space-compat-2px);
-  border-radius: var(--radius-circle) !important;
-  overflow: hidden !important;
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  min-height: 40px !important;
-  max-width: 40px !important;
-  max-height: 40px !important;
-  transition: background-color var(--duration-fast) var(--ease-apple),
-              box-shadow var(--duration-fast) var(--ease-apple) !important;
+  min-width: auto !important;
+  height: auto !important;
+  padding: 6px 10px !important;
+  transition: background-color var(--duration-fast) var(--ease-apple) !important;
 }
 
 .toolbar-btn:hover {
-  background: rgba(var(--v-theme-primary), 0.12) !important;
-  box-shadow: var(--shadow-ring) !important;
+  background: rgba(var(--v-theme-primary), 0.10) !important;
 }
 
 .toolbar-btn:active {
-  background: rgba(var(--v-theme-primary), 0.20) !important;
+  background: rgba(var(--v-theme-primary), 0.18) !important;
+}
+
+.toolbar-btn-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+
+.btn-label {
+  font-size: 0.6875rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.toolbar-divider {
+  height: 48px;
+  align-self: center;
+  opacity: 0.3;
+  margin: 0 4px;
 }
 
 .side-action-btn {
@@ -254,25 +303,28 @@ export default {
 @media (max-width: 600px) {
   .floating-toolbar {
     bottom: 16px;
-    width: auto;
-    max-width: 95%;
-    padding: var(--space-compat-2px);
-  }
-
-  .toolbar-buttons {
-    width: 100%;
-    justify-content: space-around;
-    padding: var(--space-1);
+    padding: 4px 4px;
   }
 
   .toolbar-btn {
-    margin: 0;
-    min-width: 40px;
-    min-height: 40px;
+    padding: 4px 6px !important;
+  }
+
+  .toolbar-btn-inner {
+    gap: 1px;
+  }
+
+  .btn-label {
+    font-size: 0.625rem;
+  }
+
+  .toolbar-divider {
+    height: 40px;
+    margin: 0 2px;
   }
 
   .side-action-btn {
-    bottom: 80px; /* Move above toolbar on mobile */
+    bottom: 80px;
     right: 16px;
   }
 }

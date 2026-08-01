@@ -215,7 +215,7 @@ const settingsDefinitions = {
   },
   "server.classNumber": {
     type: "string",
-    default: "高三八班",
+    default: "Classworks for Classroom 01",
     validate: (value) => /.*/.test(value),
     description: "班级编号",
     icon: ICON.ACCOUNT_GROUP,

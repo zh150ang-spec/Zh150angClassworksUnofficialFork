@@ -242,10 +242,18 @@ export default defineConfig(({ mode }) => ({
       exclude: [/pages\/index\.vue$/],
     }),
     Fonts({
-      preload: false,
+      preload: true,
       display: 'swap',
-      google: false,
-      custom: [],
+      google: {
+        preconnect: true,
+        families: [
+          {
+            name: 'Noto Serif SC',
+            styles: 'wght@300;400;500;600;700',
+            defer: true,
+          },
+        ],
+      },
     }),
     AutoImport({
       imports: [

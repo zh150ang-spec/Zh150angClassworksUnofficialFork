@@ -209,81 +209,88 @@
         v-else
         class="text-center py-6"
       >
-        <div
-          v-if="isAnimating"
-          class="animation-container"
+        <transition
+          mode="out-in"
+          name="result-fade"
         >
-          <div class="animation-wrapper">
-            <transition-group
-              class="shuffle-container"
-              name="shuffle"
-              tag="div"
-            >
-              <div
-                v-for="(student, index) in animationStudents"
-                :key="student.id"
-                :class="{ highlighted: highlightedIndices.includes(index) }"
-                class="student-item"
-              >
-                {{ student.name }}
-              </div>
-            </transition-group>
-          </div>
-        </div>
-
-        <div
-          v-else
-          class="result-container"
-        >
-          <div class="text-headline-small mb-4">
-            抽取结果
-          </div>
-          <v-card
-            v-for="(student, index) in pickedStudents"
-            :key="index"
-            class="mb-2 result-card"
-            color="primary"
-            variant="outlined"
+          <div
+            v-if="isAnimating"
+            key="animation"
+            class="animation-container"
           >
-            <v-card-text class="text-headline-large text-center py-4 d-flex align-center justify-center">
-              {{ student }}
-              <v-btn
-                :disabled="remainingStudents.length === 0"
-                :title="
-                  remainingStudents.length === 0
-                    ? '没有更多可用学生'
-                    : '重新抽取此学生'
-                "
-                class="ml-2 refresh-btn"
-                :icon="ICON.REFRESH"
-                size="small"
-                variant="text"
-                @click="refreshSingleStudent(index)"
-              />
-            </v-card-text>
-          </v-card>
-
-          <div class="mt-8 d-flex justify-center">
-            <v-btn
-              class="mx-2"
-              color="primary"
-              :prepend-icon="ICON.REFRESH"
-              size="large"
-              @click="resetPicker"
-            >
-              重新抽取
-            </v-btn>
-            <v-btn
-              class="mx-2"
-              color="medium-emphasis"
-              size="large"
-              variant="outlined"
-              @click="dialog = false"
-            >
-              关闭
-            </v-btn>
+            <div class="animation-wrapper">
+              <transition-group
+                class="shuffle-container"
+                name="shuffle"
+                tag="div"
+              >
+                <div
+                  v-for="(student, index) in animationStudents"
+                  :key="student.id"
+                  :class="{ highlighted: highlightedIndices.includes(index) }"
+                  class="student-item"
+                >
+                  {{ student.name }}
+                </div>
+              </transition-group>
+            </div>
           </div>
-        </div>
+
+          <div
+            v-else
+            key="result"
+            class="result-container"
+          >
+            <div class="text-headline-small mb-4">
+              抽取结果
+            </div>
+            <v-card
+              v-for="(student, index) in pickedStudents"
+              :key="index"
+              class="mb-2 result-card"
+              color="primary"
+              variant="outlined"
+            >
+              <v-card-text class="text-headline-large text-center py-4 d-flex align-center justify-center">
+                {{ student }}
+                <v-btn
+                  :disabled="remainingStudents.length === 0"
+                  :title="
+                    remainingStudents.length === 0
+                      ? '没有更多可用学生'
+                      : '重新抽取此学生'
+                  "
+                  class="ml-2 refresh-btn"
+                  :icon="ICON.REFRESH"
+                  size="small"
+                  variant="text"
+                  @click="refreshSingleStudent(index)"
+                />
+              </v-card-text>
+            </v-card>
+
+            <div class="mt-8 d-flex justify-center">
+              <v-btn
+                class="mx-2"
+                color="primary"
+                :prepend-icon="ICON.REFRESH"
+                size="large"
+                @click="resetPicker"
+              >
+                重新抽取
+              </v-btn>
+              <v-btn
+                class="mx-2"
+                color="medium-emphasis"
+                size="large"
+                variant="outlined"
+                @click="dialog = false"
+              >
+                关闭
+              </v-btn>
+            </div>
+          </div>
+        </transition>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -313,6 +320,7 @@ export default {
       isPickingStarted: false,
       isAnimating: false,
       pickedStudents: [],
+      preSelectedStudents: [], // 预先确定的真实结果，用于最后一步诚实展示
       animationStudents: [],
       highlightedIndices: [],
       animationTimer: null,
@@ -405,6 +413,7 @@ export default {
         this.isPickingStarted = false;
         this.isAnimating = false;
         this.pickedStudents = [];
+        this.preSelectedStudents = [];
 
         // 重置临时过滤选项为设置中的值
         this.tempFilters = {
@@ -498,59 +507,76 @@ export default {
       this.animateHighlight();
     },
     animateHighlight() {
-      const totalSteps = 5; // 动画总步数
+      const totalSteps = 22;
       let currentStep = 0;
-      const intervalTime = 50; // 初始间隔时间
+      const baseInterval = 30;
+
+      // 预先确定最终被选中的学生，最后一步展示真实结果，消除作弊疑虑
+      const shuffled = [...this.filteredStudents].sort(() => 0.5 - Math.random());
+      this.preSelectedStudents = shuffled.slice(0, this.count);
+
+      // 计算最终选中学生在 animationStudents 中的索引
+      const finalIndices = this.preSelectedStudents.map((name) =>
+        this.animationStudents.findIndex((s) => s.name === name)
+      );
 
       const animate = () => {
-        // 清除之前的高亮
         this.highlightedIndices = [];
-
-        // 随机选择要高亮的索引
         const indices = [];
-        for (let i = 0; i < this.count; i++) {
-          let randomIndex;
-          do {
-            randomIndex = Math.floor(
-              Math.random() * this.animationStudents.length
-            );
-          } while (indices.includes(randomIndex));
-          indices.push(randomIndex);
+
+        if (currentStep < totalSteps - 1) {
+          // 前 21 步：随机高亮，营造滚动效果
+          for (let i = 0; i < this.count; i++) {
+            let randomIndex;
+            do {
+              randomIndex = Math.floor(
+                Math.random() * this.animationStudents.length
+              );
+            } while (indices.includes(randomIndex));
+            indices.push(randomIndex);
+          }
+        } else {
+          // 最后 1 步：展示真实被选中的学生
+          indices.push(...finalIndices);
         }
 
         this.highlightedIndices = indices;
-
         currentStep++;
 
-        // 逐渐增加间隔时间，使动画变慢
-        const nextInterval = intervalTime + currentStep * 20;
+        const nextInterval = baseInterval * Math.pow(1.2, currentStep);
 
         if (currentStep < totalSteps) {
           this.animationTimer = setTimeout(animate, nextInterval);
         } else {
-          // 动画结束，显示最终结果
-          setTimeout(() => {
+          // 短暂停顿（约 300ms，刚好够视觉捕捉），让用户看到真实结果后再揭示
+          this.animationTimer = setTimeout(() => {
             this.finishPicking();
-          }, 500);
+          }, 300);
         }
       };
 
-      // 开始动画
       animate();
     },
     finishPicking() {
       this.isAnimating = false;
 
-      // 随机选择学生
-      const shuffled = [...this.filteredStudents].sort(
-        () => 0.5 - Math.random()
-      );
-      this.pickedStudents = shuffled.slice(0, this.count);
+      // 使用动画最后一步已展示的真实结果，与用户看到的一致
+      if (this.preSelectedStudents.length > 0) {
+        this.pickedStudents = this.preSelectedStudents;
+        this.preSelectedStudents = [];
+      } else {
+        // 无动画模式下的兜底
+        const shuffled = [...this.filteredStudents].sort(
+          () => 0.5 - Math.random()
+        );
+        this.pickedStudents = shuffled.slice(0, this.count);
+      }
     },
     resetPicker() {
       this.isPickingStarted = false;
       this.isAnimating = false;
       this.pickedStudents = [];
+      this.preSelectedStudents = [];
       if (this.animationTimer) {
         clearTimeout(this.animationTimer);
         this.animationTimer = null;
@@ -566,17 +592,8 @@ export default {
       );
       const newStudent = this.remainingStudents[randomIndex];
 
-      // 替换指定位置的学生
+      // 直接替换，不使用动画
       this.pickedStudents[index] = newStudent;
-
-      // 添加动画效果
-      const resultCards = document.querySelectorAll(".result-card");
-      if (resultCards[index]) {
-        resultCards[index].classList.add("refresh-animation");
-        setTimeout(() => {
-          resultCards[index].classList.remove("refresh-animation");
-        }, 500);
-      }
     },
   },
 };
@@ -663,9 +680,26 @@ export default {
   &.highlighted {
     background-color: rgb(var(--v-theme-primary));
     color: rgb(var(--v-theme-on-primary));
-    transform: scale(1.1);
+    transform: scale(1.15);
     font-weight: bold;
-    box-shadow: var(--shadow-hover);
+    box-shadow: 0 0 24px rgba(var(--v-theme-primary), 0.45);
+    animation: highlight-pop 0.25s ease-out;
+  }
+}
+
+// 高亮弹跳脉冲动画
+@keyframes highlight-pop {
+  0% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  40% {
+    transform: scale(1.22);
+    box-shadow: 0 0 32px rgba(var(--v-theme-primary), 0.6);
+  }
+  100% {
+    transform: scale(1.15);
+    box-shadow: 0 0 24px rgba(var(--v-theme-primary), 0.45);
   }
 }
 
@@ -676,6 +710,30 @@ export default {
 .result-card {
   max-width: 400px;
   margin: 0 auto;
+  animation: result-appear 0.45s ease-out both;
+}
+
+.result-card:nth-child(1) { animation-delay: 0.05s; }
+.result-card:nth-child(2) { animation-delay: 0.13s; }
+.result-card:nth-child(3) { animation-delay: 0.21s; }
+.result-card:nth-child(4) { animation-delay: 0.29s; }
+.result-card:nth-child(5) { animation-delay: 0.37s; }
+.result-card:nth-child(6) { animation-delay: 0.45s; }
+.result-card:nth-child(7) { animation-delay: 0.53s; }
+.result-card:nth-child(8) { animation-delay: 0.61s; }
+.result-card:nth-child(9) { animation-delay: 0.69s; }
+.result-card:nth-child(10) { animation-delay: 0.77s; }
+
+// 结果卡片入场动画
+@keyframes result-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .result-card:hover .refresh-btn {
@@ -691,26 +749,23 @@ export default {
   }
 }
 
-// 刷新动画
-@keyframes refresh-pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: none;
-  }
-
-  50% {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-primary-glow);
-  }
-
-  100% {
-    transform: scale(1);
-    box-shadow: none;
-  }
+// 动画与结果之间的过渡
+.result-fade-enter-active {
+  transition: all 0.35s ease-out;
 }
 
-.refresh-animation {
-  animation: refresh-pulse 0.5s ease;
+.result-fade-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.result-fade-enter-from {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.result-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 // 动画效果

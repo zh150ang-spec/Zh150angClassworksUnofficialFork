@@ -2,10 +2,8 @@
   <HomeAppBar
     :title="titleText"
     :token-display-info="tokenDisplayInfo"
-    :should-show-urgent-test-button="shouldShowUrgentTestButton"
     :unread-count="unreadCount"
     @token-chip-click="handleTokenChipClick"
-    @open-urgent-test="urgentTestDialog = true"
     @open-chat="isChatOpen = true"
     @open-messages="$refs.messageLog.drawer = true"
     @open-settings="$router.push('/settings')"
@@ -73,6 +71,7 @@
         :show-test-card-button="showTestCardButton"
         :show-uaf-transfer-button="showUafTransferButton"
         :uaf-transfer-loading="loading.exportUaf"
+        :should-show-urgent-test-button="shouldShowUrgentTestButton"
         @upload="manualUpload"
         @show-sync-message="showSyncMessage"
         @open-random-picker="openRandomPicker"
@@ -81,6 +80,7 @@
         @add-exam-card="showAddExamDialog = true"
         @open-uaf-export="openUafTransfer('export')"
         @open-uaf-import="openUafTransfer('import')"
+        @open-urgent-test="urgentTestDialog = true"
       />
 
       <uaf-transfer-dialog
@@ -292,6 +292,53 @@
           @click="handleNamespaceCancelSwitch"
         >
           暂不处理
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- 首次使用：班级编号提示 -->
+  <v-dialog
+    v-model="classNumberDialog.show"
+    max-width="420"
+    persistent
+  >
+    <v-card>
+      <v-card-title class="d-flex align-center">
+        <v-icon
+          class="mr-2"
+          :icon="ICON.ACCOUNT_GROUP"
+        />
+        设置班级编号
+      </v-card-title>
+      <v-card-text>
+        <div class="mb-3 text-body-medium">
+          请为当前设备设置一个班级编号，便于识别和管理。
+        </div>
+        <v-text-field
+          v-model="classNumberDialog.value"
+          hide-details
+          label="班级编号"
+          placeholder="例如：高三一班"
+          variant="outlined"
+          @keydown.enter.prevent="confirmClassNumber"
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          color="primary"
+          variant="text"
+          @click="confirmClassNumber"
+        >
+          确认
+        </v-btn>
+        <v-btn
+          color="medium-emphasis"
+          variant="text"
+          @click="cancelClassNumber"
+        >
+          取消
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -552,6 +599,12 @@ export default {
         exporting: false,
       },
 
+      // 首次使用：班级编号提示
+      classNumberDialog: {
+        show: false,
+        value: "Classworks for Classroom 01",
+      },
+
       // 当前正在编辑的科目（custom- 前缀表示自定义卡片）
       currentEditSubject: null,
     };
@@ -577,9 +630,9 @@ export default {
           this.state.namespaceInfo?.name ||
           this.state.namespaceInfo?.device?.name ||
           this.state.classNumber ||
-          "高三八班";
+          "Classworks for Classroom 01";
       } else {
-        displayName = this.state.classNumber || "高三八班";
+        displayName = this.state.classNumber || "Classworks for Classroom 01";
       }
 
       const today = new Date();
@@ -914,6 +967,15 @@ export default {
       this.$nextTick(() => {
         this.updateTokenDisplayInfo();
       });
+
+      // 首次打开主界面时提示修改班级编号
+      this.$nextTick(() => {
+        const CLASS_NUMBER_PROMPT_KEY = "classNumberPromptShown";
+        if (!localStorage.getItem(CLASS_NUMBER_PROMPT_KEY)) {
+          this.classNumberDialog.value = getSetting("server.classNumber");
+          this.classNumberDialog.show = true;
+        }
+      });
     } catch (err) {
       console.error("初始化失败:", err);
       this.$message.error("初始化失败", "请刷新页面重试");
@@ -944,6 +1006,23 @@ export default {
   },
 
   methods: {
+    // 确认班级编号
+    confirmClassNumber() {
+      const value = this.classNumberDialog.value.trim() || "Classworks for Classroom 01";
+      setSetting("server.classNumber", value);
+      this.state.classNumber = value;
+      this.classNumberDialog.show = false;
+      localStorage.setItem("classNumberPromptShown", "true");
+    },
+
+    // 取消班级编号设置（使用默认值）
+    cancelClassNumber() {
+      setSetting("server.classNumber", "Classworks for Classroom 01");
+      this.state.classNumber = "Classworks for Classroom 01";
+      this.classNumberDialog.show = false;
+      localStorage.setItem("classNumberPromptShown", "true");
+    },
+
     // 检测命名空间（device.uuid）是否发生变化，若变化则弹框让用户选择处理方式
     async checkNamespaceSwitch() {
       try {

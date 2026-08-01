@@ -68,6 +68,7 @@ export const ICON = {
   INFO: 'mdi-information',
   ALERT_CIRCLE_OUTLINE: 'mdi-alert-circle-outline',
   CLOSE_CIRCLE: 'mdi-close-circle',
+  CANCEL: 'mdi-cancel',
   STAR_CIRCLE_OUTLINE: 'mdi-star-circle-outline',
   CHECK_CIRCLE_OUTLINE: 'mdi-check-circle-outline',
   DELETE_ALERT: 'mdi-delete-alert',
@@ -171,6 +172,7 @@ export const ICON = {
   SELECT_ALL: 'mdi-select-all',
   SELECT_REMOVE: 'mdi-select-remove',
   COMPARE: 'mdi-compare',
+  FILTER: 'mdi-filter',
   LIST_BOX: 'mdi-list-box',
   LIST_STATUS: 'mdi-list-status',
 
@@ -234,6 +236,8 @@ export const ICON = {
   BRIGHTNESS_2: 'mdi-brightness-2',
   FORMAT_FONT_SIZE_DECREASE: 'mdi-format-font-size-decrease',
   FORMAT_FONT_SIZE_INCREASE: 'mdi-format-font-size-increase',
+  FULLSCREEN: 'mdi-fullscreen',
+  FULLSCREEN_EXIT: 'mdi-fullscreen-exit',
   WIDGETS_OUTLINE: 'mdi-widgets-outline',
 
   // ============ 多媒体 ============
