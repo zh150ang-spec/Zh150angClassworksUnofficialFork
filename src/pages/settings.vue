@@ -21,32 +21,33 @@
       </v-app-bar-title>
     </v-app-bar>
 
-    <v-container fluid>
-      <v-navigation-drawer
-        v-model="drawer"
-        :permanent="!isMobile"
-        :temporary="isMobile"
-      >
-        <v-list>
-          <v-list-item
-            v-for="tab in settingsTabs"
-            :key="tab.value"
-            :active="settingsTab === tab.value"
-            :color="settingsTab === tab.value ? 'primary' : 'default'"
-            class="settings-nav-item"
-            @click="settingsTab = tab.value"
-          >
-            <template #prepend>
-              <v-icon
-                :icon="tab.icon"
-                :color="settingsTab === tab.value ? 'primary' : tab.color"
-              />
-            </template>
-            <v-list-item-title>{{ tab.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
+    <v-navigation-drawer
+      v-model="drawer"
+      :permanent="!isMobile"
+      :temporary="isMobile"
+      class="settings-drawer"
+    >
+      <v-list>
+        <v-list-item
+          v-for="tab in settingsTabs"
+          :key="tab.value"
+          :active="settingsTab === tab.value"
+          :color="settingsTab === tab.value ? 'primary' : 'default'"
+          class="settings-nav-item"
+          @click="settingsTab = tab.value"
+        >
+          <template #prepend>
+            <v-icon
+              :icon="tab.icon"
+              :color="settingsTab === tab.value ? 'primary' : tab.color"
+            />
+          </template>
+          <v-list-item-title>{{ tab.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
 
+    <v-container fluid>
       <v-tabs-window
         v-model="settingsTab"
         direction="vertical"
@@ -59,7 +60,6 @@
             class="service-card gradient-right clickable mb-4"
             color="primary"
             elevation="3"
-            hover
             rounded="xl"
             variant="tonal"
             @click="openClassworksKV"
@@ -103,12 +103,12 @@
                 :icon="ICON.ERROR"
                 variant="tonal"
               >
-                Classworks
+                <span>Classworks
                 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在
                 <a
                   href="https://github.com/Moonrend/Classworks"
                   target="_blank"
-                >https://github.com/Moonrend/Classworks</a>。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。
+                >https://github.com/Moonrend/Classworks</a>。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。</span>
               </v-alert>
               <v-alert
                 class="mt-4 rounded-xl"
@@ -116,7 +116,7 @@
                 :icon="ICON.INFO"
                 variant="tonal"
               >
-                请不要使用浏览器清除缓存功能，否则会导致配置丢失。
+                <span>请不要使用浏览器清除缓存功能，否则会导致配置丢失。</span>
               </v-alert>
               <v-alert
                 class="mt-4 rounded-xl"
@@ -188,10 +188,7 @@
             @saved="onSettingsSaved"
           />
           <refresh-settings-card
-            :loading="loading.refresh"
-            border
             class="mt-4"
-            @saved="onSettingsSaved"
           />
           <edit-settings-card
             :loading="loading.edit"
@@ -262,12 +259,6 @@
               </v-list-item>
             </v-list>
           </settings-card>
-          <developer-settings-card
-            :loading="loading.developer"
-            border
-            @saved="onSettingsSaved"
-            @show-settings-explorer="scrollToSettingsExplorer"
-          />
           <v-card
             v-if="settings.developer.enabled"
             ref="settingsExplorerCard"
@@ -326,7 +317,6 @@ import HitokotoSettings from "@/components/HitokotoSettings.vue";
 import NotificationSoundSettings from "@/components/settings/NotificationSoundSettings.vue";
 import AutoAttendanceCard from "@/components/settings/cards/AutoAttendanceCard.vue";
 import BackgroundSettingsCard from "@/components/settings/cards/BackgroundSettingsCard.vue";
-import DeveloperSettingsCard from "@/components/settings/cards/DeveloperSettingsCard.vue";
 
 export default {
   name: "Settings",
@@ -352,15 +342,12 @@ export default {
     NotificationSoundSettings,
     AutoAttendanceCard,
     BackgroundSettingsCard,
-    DeveloperSettingsCard,
   },
   setup() {
     const {mobile} = useDisplay();
     return {isMobile: mobile, ICON};
   },
   data() {
-    const provider = getSetting("server.provider");
-
     const settings = {
       server: {
         domain: getSetting("server.domain"),
@@ -720,22 +707,37 @@ export default {
 
 <style lang="scss">
 .settings-page {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 48px);
+
+  /* 抽屉和内容左右并排，抽屉为大王 */
+  .settings-drawer {
+    flex-shrink: 0;
+  }
+
+  > .v-container {
+    flex: 1;
+    min-width: 0;
+  }
+
   .v-card {
     transition: transform var(--duration-fast), box-shadow var(--duration-fast);
-
-    &:hover {
-      box-shadow: var(--shadow-hover) !important;
-    }
   }
 
   .settings-nav-item {
     border-radius: var(--radius-xs) !important;
     margin: var(--space-compat-2px) var(--space-1);
-    transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
+    transition: all var(--duration-fast) var(--ease-apple);
 
     &.v-list-item--active {
       background: rgba(var(--v-theme-primary), 0.1);
     }
+  }
+
+  /* expansion panel 覆盖层圆角，与卡片风格统一 */
+  .v-expansion-panel-title__overlay {
+    border-radius: inherit;
   }
 }
 </style>

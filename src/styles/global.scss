@@ -30,17 +30,9 @@ html {
   line-height: var(--line-height-heading);
 }
 
-/* ── Card hover (clean, border-based) ─────────────────────── */
+/* ── Card hover (design rule: cards remain static on hover) ─ */
 .hover-card {
-  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
-              box-shadow var(--duration-normal) var(--ease-apple);
-  will-change: transform;
-
-  &:hover,
-  &:focus {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-hover);
-  }
+  /* Cards must NOT float, transform, or change elevation on hover. */
 }
 
 /* ── Touch-friendly button ────────────────────────────────── */
@@ -59,6 +51,33 @@ html {
 /* ── App bar (fixed) ──────────────────────────────────────── */
 .v-app-bar {
   position: fixed !important;
+}
+
+/* ── v-alert text contrast (global) ───────────────────────── */
+/* Vuetify tonal alerts set text color to the semantic color
+   (info/warning/error/success), which often fails WCAG 4.5:1
+   against the tinted background. Force content text to on-surface
+   for high contrast, while preserving the semantic icon and
+   background tint. */
+.v-alert .v-alert__content {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-card tonal text contrast (global) ──────────────────── */
+/* Same rationale as v-alert: tonal cards with color="primary" etc.
+   cause text to inherit the semantic color, reducing contrast
+   against the tinted background. Force text containers to on-surface. */
+.v-card--variant-tonal .v-card-text,
+.v-card--variant-tonal .v-card-item {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-snackbar tonal text contrast (global) ──────────────── */
+/* Same rationale as v-alert/v-card: tonal snackbars with color="warning"
+   etc. cause text to inherit the semantic color, reducing contrast
+   against the tinted background. Force content text to on-surface. */
+.v-snackbar--variant-tonal .v-snackbar__content {
+  color: rgb(var(--v-theme-on-surface));
 }
 
 /* ── Touch-friendly list ──────────────────────────────────── */

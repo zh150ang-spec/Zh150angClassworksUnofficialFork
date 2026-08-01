@@ -195,8 +195,8 @@ export default {
           this.originalSubjects = JSON.parse(JSON.stringify(this.subjects));
           this.showMessage('配置已加载', 'success');
         } else if (response?.error?.code === 'NOT_FOUND') {
-          this.subjects = [];
-          this.originalSubjects = [];
+          this.subjects = JSON.parse(JSON.stringify(this.defaultSubjects));
+          this.originalSubjects = JSON.parse(JSON.stringify(this.defaultSubjects));
           this.showMessage('使用默认配置', 'info');
         } else {
           const errorMsg = response?.error?.message || '加载失败';

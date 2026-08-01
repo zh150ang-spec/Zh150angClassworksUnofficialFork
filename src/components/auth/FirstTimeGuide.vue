@@ -838,12 +838,7 @@ const applyTokenAndClose = () => {
 
 /* 渐进式注册卡片样式 */
 .progressive-register-card {
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   border: 2px solid transparent !important;
-}
-
-.progressive-register-card:hover {
-  box-shadow: var(--shadow-raised) !important;
 }
 
 .progressive-register-card .card-icon-wrapper {

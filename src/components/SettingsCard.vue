@@ -2,7 +2,6 @@
   <v-card
     class="settings-card"
     elevation="2"
-    hover
     rounded="xl"
   >
     <v-card-item>

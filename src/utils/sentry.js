@@ -17,13 +17,19 @@ let feedbackIntegration = null
  */
 export function initSentry(app, router) {
   const isDev = import.meta.env.DEV;
+  const monitoringEnabled = import.meta.env.VITE_ENABLE_MONITORING === 'true';
+  const sentryDsn = import.meta.env.VITE_SENTRY_DSN || 'https://dc34ab47426f49c0925445f0d87b7007@report.houlang.cloud/6';
+
+  if (isDev || !monitoringEnabled) {
+    return;
+  }
 
   Sentry.init({
     app,
-    dsn: isDev ? undefined : 'https://dc34ab47426f49c0925445f0d87b7007@report.houlang.cloud/6',
-    enabled: !isDev,
-    sendDefaultPii: !isDev,
-    integrations: isDev ? [] : [
+    dsn: sentryDsn,
+    enabled: true,
+    sendDefaultPii: true,
+    integrations: [
       Sentry.browserTracingIntegration({ router }),
       Sentry.replayIntegration({
         maskAllText: false,

@@ -460,9 +460,9 @@ export default {
       this.saveRules();
       const after = this.rules.length;
       if (before !== after) {
-        alert(`已清理 ${before - after} 条无效规则`);
+        this.$message?.success(`已清理 ${before - after} 条无效规则`);
       } else {
-        alert('没有发现无效规则');
+        this.$message?.info('没有发现无效规则');
       }
     },
     saveRule() {

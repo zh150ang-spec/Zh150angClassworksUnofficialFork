@@ -1405,7 +1405,7 @@ this.$message.success('创建成功', '新配置已创建');
         setTimeout(() => {
           this.copied = false
         }, 3000)
-      } catch (err) {
+      } catch {
         // 如果剪贴板API不可用，使用备用方案
         const textArea = document.createElement('textarea')
         textArea.value = this.aiPrompt
@@ -1419,7 +1419,7 @@ this.$message.success('创建成功', '新配置已创建');
           setTimeout(() => {
             this.copied = false
           }, 3000)
-        } catch (err) {
+        } catch {
           this.error = '复制失败，请手动复制'
         }
         document.body.removeChild(textArea)

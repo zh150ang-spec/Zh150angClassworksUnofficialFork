@@ -56903,14 +56903,14 @@ var cachedFontBytes;
 async function loadBrowserFont(options) {
   if (options.fontBytes) return options.fontBytes;
   if (cachedFontBytes) return cachedFontBytes;
-  const url = options.fontUrl ?? new URL("../assets/NotoSansSC-Regular.otf", import.meta.url);
+  const url = options.fontUrl ?? new URL(/* @vite-ignore */ "../assets/NotoSansSC-Regular.otf", import.meta.url);
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to load UAF font: ${response.status}`);
   cachedFontBytes = new Uint8Array(await response.arrayBuffer());
   return cachedFontBytes;
 }
 async function createUafPdf(document, options = {}) {
-  const wasmUrl = options.wasmUrl ?? new URL("../assets/hb-subset.wasm", import.meta.url);
+  const wasmUrl = options.wasmUrl ?? new URL(/* @vite-ignore */ "../assets/hb-subset.wasm", import.meta.url);
   const text = collectDocumentText(document);
   const [fontBytes, fontLightBytes, fontBoldBytes] = await Promise.all([
     loadBrowserFont(options),

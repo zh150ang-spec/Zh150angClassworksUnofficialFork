@@ -235,14 +235,7 @@
             <v-expansion-panels variant="accordion">
               <v-expansion-panel>
                 <v-expansion-panel-title>
-                  <template #default="{ expanded }">
-                    <div class="d-flex align-center">
-                      <v-icon class="mr-2">
-                        {{ expanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                      </v-icon>
-                      显示设置列表详情
-                    </div>
-                  </template>
+                  显示设置列表详情
                 </v-expansion-panel-title>
 
                 <v-expansion-panel-text>
@@ -429,11 +422,6 @@
           variant="tonal"
         >
           <div class="d-flex align-center mb-2">
-            <v-icon
-              :icon="ICON.WARNING"
-              color="warning"
-              start
-            />
             <span>安全提醒</span>
           </div>
           <ul class="text-body-medium pl-4">

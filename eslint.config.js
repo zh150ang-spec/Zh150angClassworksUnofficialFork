@@ -1,9 +1,7 @@
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
-import vuetify from 'eslint-plugin-vuetify'
 
 export default [
-  ...vuetify.configs['flat/recommended-v4'],
   {
     name: 'app/files-to-lint',
     files: ['**/*.{js,mjs,jsx,vue}'],
@@ -11,7 +9,7 @@ export default [
 
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '**/vendor/**'],
   },
 
   js.configs.recommended,
@@ -20,17 +18,6 @@ export default [
   {
     rules: {
       'vue/multi-word-component-names': 'off',
-    },
-  },
-  {
-    files: ['**/*.vue'],
-    rules: {
-      'no-unused-vars': 'off',
-      // Vue template formatting — align with upstream project convention
-      'vue/html-closing-bracket-spacing': ['error', { selfClosingTag: 'always' }],
-      'vue/first-attribute-linebreak': ['error', { multiline: 'below', singleline: 'beside' }],
-      'vue/html-closing-bracket-newline': ['error', { multiline: 'always' }],
-      'vue/singleline-html-element-content-newline': 'error',
     },
   },
   {

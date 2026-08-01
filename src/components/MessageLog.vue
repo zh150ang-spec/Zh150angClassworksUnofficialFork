@@ -111,7 +111,7 @@ export default defineComponent({
 .v-list-item {
   margin: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm) !important;
-  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: background-color var(--duration-fast) var(--ease-apple);
 }
 
 .v-list-item:hover {

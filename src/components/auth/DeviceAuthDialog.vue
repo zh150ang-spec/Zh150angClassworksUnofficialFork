@@ -97,7 +97,7 @@
 <script setup>
 import { ICON } from '@/utils/icons'
 import {ref, watch, onBeforeUnmount} from 'vue'
-import {getSetting, setSetting} from '@/utils/settings'
+import {setSetting} from '@/utils/settings'
 import {getEffectiveServerUrl} from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 

@@ -60,15 +60,7 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['submit', 'cancel'])
-
 const code = ref('')
-
-const submit = () => {
-  if (!code.value) return
-  // TODO: 实现替代代码逻辑
-  emit('submit', code.value)
-}
 
 // 暴露清空表单的方法
 defineExpose({

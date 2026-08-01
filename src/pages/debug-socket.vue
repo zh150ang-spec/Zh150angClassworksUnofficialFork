@@ -230,7 +230,7 @@ import {
   leaveAll,
   getServerUrl
 } from '@/utils/socketClient'
-import {sendChatMessage, DeviceEventTypes, formatDeviceInfo} from '@/utils/deviceEvents'
+import {sendChatMessage, DeviceEventTypes} from '@/utils/deviceEvents'
 import {formatDateYYYYMMDD} from '@/utils/dateUtils'
 
 const currentToken = ref(getSetting('server.kvToken') || '')

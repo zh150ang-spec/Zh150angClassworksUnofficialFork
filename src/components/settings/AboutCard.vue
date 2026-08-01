@@ -1,7 +1,6 @@
 <template>
   <v-card
     border
-    hover
     rounded="xl"
   >
     <v-card-item>
@@ -30,7 +29,6 @@
             class="donation-card gradient-donation clickable mb-6"
             color="primary"
             elevation="3"
-            hover
             rounded="xl"
             variant="tonal"
             @click="openDonationLink"
@@ -101,18 +99,18 @@
                 QQ 群
               </v-btn>
               <v-btn
-                href="https://github.com/Moonrend/Classworks"
                 :prepend-icon="ICON.GITHUB"
+                href="https://github.com/Moonrend/Classworks"
                 target="_blank"
-                variant="text"
+                variant="outlined"
               >
                 前端
               </v-btn>
               <v-btn
-                href="https://github.com/Moonrend/ClassworksServer"
                 :prepend-icon="ICON.GITHUB"
+                href="https://github.com/Moonrend/ClassworksServer"
                 target="_blank"
-                variant="text"
+                variant="outlined"
               >
                 后端
               </v-btn>
@@ -543,17 +541,7 @@ export default {
 .gradient-donation {
   background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.12), rgba(var(--v-theme-primary), 0.04) 60%);
   border: 2px solid rgba(var(--v-theme-primary), 0.2);
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   cursor: pointer;
-}
-
-.gradient-donation:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-raised) !important;
-}
-
-.gradient-donation:active {
-  transform: translateY(-2px);
 }
 
 .card-content {

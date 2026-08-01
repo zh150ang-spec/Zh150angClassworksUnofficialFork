@@ -379,18 +379,14 @@ import {
 import {
   formatDateYYYYMMDD,
   formatDateDisplay8Char,
-  formatTime,
   ensureDate,
 } from "@/utils/dateUtils";
 import {
   getUrlParam,
-  cleanupUrlParams,
-  parseBoolean,
 } from "@/utils/urlParams";
 import {
   decodeConfigFromBase64Url,
 } from "@/utils/urlConfigCodec";
-import { getEffectiveServerUrl } from "@/utils/serverRotation";
 import { kvServerProvider } from "@/utils/providers/kvServerProvider";
 import { useDisplay } from "vuetify";
 import { debounce } from "@/utils/debounce";
@@ -410,8 +406,6 @@ import ConfirmDialog from "@/components/home/ConfirmDialog.vue";
 import UrlConfigDialog from "@/components/home/UrlConfigDialog.vue";
 import ExamDetailDialog from "@/components/home/ExamDetailDialog.vue";
 import AddExamDialog from "@/components/home/AddExamDialog.vue";
-import axios from "@/axios/axios";
-
 export default {
   name: "ClassworksBoard",
   components: {

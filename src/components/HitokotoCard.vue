@@ -250,10 +250,6 @@ export default {
 <style scoped>
 .hitokoto-card {
   cursor: pointer;
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
-}
-.hitokoto-card:hover {
-  transform: translateY(-2px);
 }
 .serif-font {
   font-family: var(--font-serif);

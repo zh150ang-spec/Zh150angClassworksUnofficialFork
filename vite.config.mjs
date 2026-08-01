@@ -2,7 +2,7 @@
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import Fonts from 'unplugin-fonts/vite'
-import Layouts from 'vite-plugin-vue-layouts'
+import Layouts from 'vite-plugin-vue-layouts-next'
 import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
@@ -17,7 +17,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import packageJson from './package.json' with { type: 'json' }
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: './',
   define: {
     '__APP_VERSION__': JSON.stringify(packageJson.version),
@@ -25,7 +25,7 @@ export default defineConfig({
   },
   plugins: [
     VueRouter(),
-    vueDevTools(),
+    mode === 'development' && vueDevTools(),
     Layouts(),
     Vue({
       template: { transformAssetUrls }
@@ -275,19 +275,21 @@ export default defineConfig({
   build: {
     // ===== Chunk 分割优化 =====
     chunkSizeWarningLimit: 500,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          // 核心框架（极少变动，长缓存）
-          'vendor-vue': ['vue', 'vue-router', 'pinia'],
-          // UI 框架
-          'vendor-vuetify': ['vuetify'],
-          // 监控（异步加载，独立 chunk）
-          'vendor-sentry': ['@sentry/vue'],
-          // 实时通信
-          'vendor-socket': ['socket.io-client'],
-          // 通用工具库
-          'vendor-utils': ['axios', 'uuid', 'js-base64'],
+        codeSplitting: {
+          groups: [
+            // 核心框架（极少变动，长缓存）
+            { test: /[\\/]node_modules[\\/](vue|vue-router|pinia)[\\/]/, name: 'vendor-vue' },
+            // UI 框架
+            { test: /[\\/]node_modules[\\/]vuetify[\\/]/, name: 'vendor-vuetify' },
+            // 监控（异步加载，独立 chunk）
+            { test: /[\\/]node_modules[\\/]@sentry[\\/]vue[\\/]/, name: 'vendor-sentry' },
+            // 实时通信
+            { test: /[\\/]node_modules[\\/]socket\.io-client[\\/]/, name: 'vendor-socket' },
+            // 通用工具库
+            { test: /[\\/]node_modules[\\/](axios|uuid|js-base64)[\\/]/, name: 'vendor-utils' },
+          ],
         },
       },
     },
@@ -302,4 +304,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

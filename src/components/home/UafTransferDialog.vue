@@ -78,9 +78,9 @@
                   :indeterminate="someValidSelected && !allValidSelected"
                   @click="toggleAll"
                 />
-                <span class="text-body-2">选择全部有效作业</span>
+                <span class="text-body-medium">选择全部有效作业</span>
                 <v-spacer />
-                <span class="text-caption text-medium-emphasis">
+                <span class="text-body-small text-medium-emphasis">
                   已选择 {{ selectedAssignments.length }} / {{ previewRows.length }} 项
                 </span>
               </div>
@@ -124,7 +124,7 @@
                       </v-chip>
                       <span
                         v-if="row.issues.length"
-                        class="text-caption text-error"
+                        class="text-body-small text-error"
                       >
                         {{ row.issues.join("；") }}
                       </span>
@@ -187,7 +187,7 @@
                       class="mb-3"
                     >
                       <div class="d-flex align-center ga-3">
-                        <span class="text-caption label-min-width">{{ field.label }}</span>
+                        <span class="text-body-small label-min-width">{{ field.label }}</span>
                         <v-slider
                           v-model="globalStyle[field.key].fontSize"
                           :min="field.min"
@@ -210,7 +210,7 @@
                         />
                       </div>
                       <div class="d-flex align-center ga-3 mt-2">
-                        <span class="text-caption label-min-width">字重</span>
+                        <span class="text-body-small label-min-width">字重</span>
                         <v-select
                           v-model="globalStyle[field.key].fontWeight"
                           :items="fontWeightOptions"
@@ -266,7 +266,7 @@
           </v-alert>
 
           <template v-if="importPlan">
-            <div class="text-body-2 mb-3">
+            <div class="text-body-medium mb-3">
               共 {{ importPlan.rows.length }} 项作业，分布在 {{ groupedRows.length }} 个日期。
               冲突项默认保留现有内容。
             </div>
@@ -332,7 +332,7 @@
 
       <v-divider />
       <v-card-actions>
-        <span class="text-caption text-medium-emphasis ml-2">
+        <span class="text-body-small text-medium-emphasis ml-2">
           {{ footerText }}
         </span>
         <v-spacer />

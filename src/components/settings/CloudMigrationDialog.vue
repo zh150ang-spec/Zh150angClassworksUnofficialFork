@@ -133,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { kvLocalProvider } from '@/utils/providers/kvLocalProvider';
 import { getSetting } from '@/utils/settings';
 import { getEffectiveServerUrl } from '@/utils/serverRotation';

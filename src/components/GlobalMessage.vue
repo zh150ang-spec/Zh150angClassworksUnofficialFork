@@ -190,7 +190,7 @@ export default defineComponent({
 
 .message-enter-active,
 .message-leave-active {
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-normal) var(--ease-apple);
 }
 
 .message-enter-from {
@@ -204,7 +204,7 @@ export default defineComponent({
 }
 
 .message-move {
-  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple);
+  transition: transform var(--duration-normal) var(--ease-apple);
 }
 
 @media (max-width: 480px) {

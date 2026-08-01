@@ -1,11 +1,11 @@
 <template>
-  <settings-card
-    :icon="ICON.SYNC"
-    title="同步与刷新"
-  >
-    <v-form>
+  <div class="refresh-settings-group">
+    <!-- 自动刷新卡片 -->
+    <settings-card
+      :icon="ICON.REFRESH"
+      title="自动刷新"
+    >
       <v-list>
-        <v-list-subheader>自动刷新</v-list-subheader>
         <setting-item
           setting-key="refresh.auto"
           title="自动刷新"
@@ -14,31 +14,27 @@
           setting-key="refresh.interval"
           title="刷新间隔（秒）"
         />
-        
-        <v-divider class="my-2" />
-        
-        <v-list-subheader>双存储后台同步</v-list-subheader>
-        <v-list-item>
-          <template #prepend>
-            <v-icon :icon="ICON.INFORMATION_OUTLINE" />
-          </template>
-          <v-list-item-title class="text-body-small text-medium-emphasis">
-            自动将本地独有数据同步到云端，确保双存储数据一致性
-          </v-list-item-title>
-        </v-list-item>
-        
+      </v-list>
+    </settings-card>
+
+    <!-- 双存储同步卡片 -->
+    <settings-card
+      :icon="ICON.SYNC_CIRCLE"
+      title="双存储同步"
+      class="mt-4"
+    >
+      <v-list>
         <!-- 非双存储模式提示 -->
         <v-alert
           v-if="!isDualMode"
           class="mb-2"
           color="warning"
           density="compact"
-          :icon="ICON.ERROR"
           variant="tonal"
         >
           当前不是双存储模式，后台同步功能已自动关闭
         </v-alert>
-        
+
         <v-list-item :disabled="!isDualMode">
           <template #prepend>
             <v-icon
@@ -55,12 +51,12 @@
               v-model="syncEnabled"
               :disabled="!isDualMode"
               color="primary"
-              density="compact"
+              density="comfortable"
               hide-details
             />
           </template>
         </v-list-item>
-        
+
         <setting-item
           setting-key="sync.minInterval"
           title="最小间隔（秒）"
@@ -71,10 +67,10 @@
           title="最大间隔（秒）"
           :disabled="!isDualMode || !syncEnabled"
         />
-        
+
         <v-divider class="my-2" />
 
-        <v-list-subheader>在线状态</v-list-subheader>
+        <!-- 在线状态 -->
         <v-list-item v-if="syncStatus">
           <template #prepend>
             <v-icon
@@ -83,24 +79,18 @@
             />
           </template>
           <v-list-item-title>
-            {{ syncStatus.browserOnline && syncStatus.serverReachable ? '在线' : syncStatus.browserOnline ? '云端服务器不可达' : '网络已断开' }}
+            {{ onlineLabel }}
           </v-list-item-title>
-          <v-list-item-subtitle v-if="!syncStatus.browserOnline">
-            浏览器检测到网络断开
-          </v-list-item-subtitle>
-          <v-list-item-subtitle v-else-if="!syncStatus.serverReachable">
-            服务器连接失败，数据暂存本地
-          </v-list-item-subtitle>
         </v-list-item>
 
         <v-divider class="my-2" />
 
-        <v-list-subheader>同步状态</v-list-subheader>
+        <!-- 同步状态 -->
         <v-list-item v-if="isDualMode && syncStatus">
           <template #prepend>
             <v-icon
               :color="syncStatus.isRunning ? 'success' : 'grey'"
-              :icon="ICON.CLOUD_SYNC"
+              :icon="syncStatus.isRunning ? ICON.CLOUD_SYNC : ICON.CLOUD_OFF"
             />
           </template>
           <v-list-item-title>
@@ -110,19 +100,8 @@
             上次同步: {{ formatTime(syncStatus.lastSyncTime) }}
           </v-list-item-subtitle>
         </v-list-item>
-        <v-list-item v-else>
-          <template #prepend>
-            <v-icon
-              color="medium-emphasis"
-              :icon="ICON.CLOUD_OFF"
-            />
-          </template>
-          <v-list-item-title>同步服务未启用</v-list-item-title>
-          <v-list-item-subtitle>
-            需要切换到双存储模式才能使用
-          </v-list-item-subtitle>
-        </v-list-item>
 
+        <!-- 离线队列 -->
         <v-list-item v-if="isDualMode && syncStatus">
           <template #prepend>
             <v-icon
@@ -133,11 +112,8 @@
           <v-list-item-title>
             离线队列: {{ offlineQueueItems.length }} 项
           </v-list-item-title>
-          <v-list-item-subtitle v-if="offlineQueueItems.length > 0">
-            等待同步到云端
-          </v-list-item-subtitle>
-          <v-list-item-subtitle v-else>
-            所有数据已同步
+          <v-list-item-subtitle>
+            {{ offlineQueueItems.length > 0 ? '等待同步到云端' : '所有数据已同步' }}
           </v-list-item-subtitle>
           <template #append>
             <v-btn
@@ -163,7 +139,7 @@
           </template>
         </v-list-item>
 
-        <!-- 队列内容展开区：显示每条记录的 key 和添加时间 -->
+        <!-- 队列展开区 -->
         <v-expand-transition>
           <div v-show="queueExpanded && offlineQueueItems.length > 0">
             <v-divider class="my-1" />
@@ -216,6 +192,7 @@
             累计已同步: {{ syncStatus.syncedCount }} 项
           </v-list-item-title>
         </v-list-item>
+
         <v-list-item>
           <v-btn
             :disabled="!isDualMode"
@@ -228,8 +205,8 @@
           </v-btn>
         </v-list-item>
       </v-list>
-    </v-form>
-  </settings-card>
+    </settings-card>
+  </div>
 </template>
 
 <script>
@@ -251,8 +228,8 @@ export default {
       statusInterval: null,
       unwatchSettings: null,
       internalSyncEnabled: null,
-      currentProviderValue: null,
-      // 离线队列真实内容（直接从 IndexedDB 读取，不依赖 backgroundSync 缓存计数）
+      settingsRevision: 0,
+      lastProvider: null,
       offlineQueueItems: [],
       queueExpanded: false,
       queueLoading: false
@@ -260,7 +237,9 @@ export default {
   },
   computed: {
     isDualMode() {
-      return this.currentProviderValue === 'dual-cloud' || this.currentProviderValue === 'dual-server';
+      this.settingsRevision;
+      const provider = getSetting('server.provider');
+      return provider === 'dual-cloud' || provider === 'dual-server';
     },
     syncEnabled: {
       get() {
@@ -279,17 +258,27 @@ export default {
         }
         this.updateSyncStatus();
       }
+    },
+    onlineLabel() {
+      if (!this.syncStatus) return '检测中...';
+      if (this.syncStatus.browserOnline && this.syncStatus.serverReachable) return '在线';
+      if (this.syncStatus.browserOnline) return '云端服务器不可达';
+      return '网络已断开';
     }
   },
   mounted() {
-    this.currentProviderValue = getSetting('server.provider');
-    this.lastProvider = this.currentProviderValue;
+    this.lastProvider = getSetting('server.provider');
     this.internalSyncEnabled = getSetting('sync.enabled') !== false;
     this.updateSyncStatus();
     this.loadOfflineQueue();
     this.statusInterval = setInterval(this.updateSyncStatus, 5000);
     this.unwatchSettings = watchSettings(() => {
-      this.currentProviderValue = getSetting('server.provider');
+      this.settingsRevision++;
+      if (this.providerChanged()) {
+        if (!this.isDualMode && this.syncEnabled) {
+          this.internalSyncEnabled = false;
+        }
+      }
       this.updateSyncStatus();
     });
   },
@@ -305,16 +294,13 @@ export default {
     updateSyncStatus() {
       this.syncStatus = BackgroundSyncService.getStatus();
       this.internalSyncEnabled = getSetting('sync.enabled') !== false;
-      // 同步刷新离线队列真实内容（不 await，避免阻塞状态轮询）
       this.loadOfflineQueue();
     },
-    // 直接从 IndexedDB 读取离线队列真实内容，避免 backgroundSync 缓存计数不准
     async loadOfflineQueue() {
       this.queueLoading = true;
       try {
         const result = await kvLocalProvider.getOfflineQueue();
         if (result && result.success !== false && Array.isArray(result.data)) {
-          // 按 addedAt 升序排列（先入队的在前）
           this.offlineQueueItems = result.data.slice().sort((a, b) => {
             return (a.addedAt || 0) - (b.addedAt || 0);
           });
@@ -328,7 +314,6 @@ export default {
         this.queueLoading = false;
       }
     },
-    // 从队列移除单项（仅移除队列记录，不删除本地 kv 数据）
     async removeQueueItem(id) {
       try {
         await kvLocalProvider.removeFromOfflineQueue(id);
@@ -338,6 +323,14 @@ export default {
         console.warn('移除队列项失败:', e);
         this.$message.error('移除失败', e.message || '请重试');
       }
+    },
+    providerChanged() {
+      const current = getSetting('server.provider');
+      if (current !== this.lastProvider) {
+        this.lastProvider = current;
+        return true;
+      }
+      return false;
     },
     formatTime(timestamp) {
       if (!timestamp) return '从未';
@@ -352,3 +345,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.refresh-settings-group {
+  width: 100%;
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
   <v-card
     border
-    class="fill-height d-flex flex-column cursor-pointer hover-elevation"
+    class="fill-height d-flex flex-column cursor-pointer"
     elevation="0"
     @click="$emit('click')"
   >
@@ -159,11 +159,5 @@ export default {
 }
 .border-none {
   border-bottom: none;
-}
-.hover-elevation {
-  transition: box-shadow var(--duration-normal) var(--var(--ease-apple)-apple);
-}
-.hover-elevation:hover {
-  box-shadow: var(--shadow-hover) !important;
 }
 </style>

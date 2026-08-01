@@ -1,10 +1,10 @@
 # AGENTS.md
 
-This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
+This file provides guidance to AI when working with code in this repository.
 
 ## Project Overview
 
-Classworks (作业板) is a homework board widget for classroom large screens. It's a Vue 3 + Vuetify 3 PWA with real-time sync via Socket.IO. The UI is in Chinese.
+Classworks is a homework board widget for classroom large screens. It's a Vue 3 + Vuetify 4 PWA with real-time sync via Socket.IO. The UI is in Chinese.
 
 ## Commands
 
@@ -19,10 +19,10 @@ pnpm run lint         # ESLint with auto-fix
 ## Tech Stack
 
 - **Framework**: Vue 3 (Composition API + Options API mixed), JavaScript (no TypeScript)
-- **UI**: Vuetify 3 (Material Design 3), `@mdi/font` icons, SCSS
-- **State**: Pinia 3
-- **Routing**: Vue Router 4 with file-based routes (`unplugin-vue-router` + `vite-plugin-vue-layouts`)
-- **Build**: Vite 5, pnpm
+- **UI**: Vuetify 4, `@mdi/font` icons, SCSS
+- **State**: Pinia 5
+- **Routing**: Vue Router 5 with file-based routes (`unplugin-vue-router` + `vite-plugin-vue-layouts`)
+- **Build**: Vite 8, pnpm
 - **Real-time**: Socket.IO client (singleton in `src/utils/socketClient.js`)
 - **Data**: Pluggable KV provider abstraction (`src/utils/dataProvider.js`) with IndexedDB local and HTTP server backends
 - **PWA**: `vite-plugin-pwa` with Workbox service worker
@@ -67,6 +67,17 @@ Components are organized by feature:
 
 - 2-space indent, trim trailing whitespace (`.editorconfig`)
 - Path alias: `@/` maps to `src/` (`jsconfig.json`)
-- ESLint flat config (ESLint 9) with Vue recommended rules (`eslint.config.js`)
+- ESLint flat config with Vue recommended rules (`eslint.config.js`)
 - Mixed Composition API and Options API usage
 - No TypeScript
+
+## Design Rules
+
+### Card hover effects
+Cards must NOT float upward, change elevation, or transform when hovered. No translateY, no elevation change, no shadow addition on hover. Cards should remain visually static when the cursor is over them.
+
+### Auto-save notification
+Settings that are saved automatically (e.g. via SettingItem's setSetting) must NOT trigger any in-app notification ($message). Only explicit user-initiated save actions (e.g. clicking a "保存" button) may show confirmation popups.
+
+### Input border-radius
+All input fields must have symmetric border-radius on left and right sides. Asymmetric corner rounding must not occur.

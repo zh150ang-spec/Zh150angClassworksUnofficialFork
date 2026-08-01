@@ -43,7 +43,7 @@
 
 <script setup>
 import {ref} from 'vue'
-import {getSetting, setSetting} from '@/utils/settings'
+import {setSetting} from '@/utils/settings'
 import {getEffectiveServerUrl} from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 

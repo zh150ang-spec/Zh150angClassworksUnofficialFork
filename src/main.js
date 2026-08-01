@@ -53,9 +53,16 @@ import('./utils/sentry').then(({ initSentry }) => {
 // 异步加载 Clarity（在页面完全加载后）
 const loadClarity = async () => {
   try {
+    const monitoringEnabled = import.meta.env.VITE_ENABLE_MONITORING === 'true'
+    const clarityId = import.meta.env.VITE_CLARITY_ID || 'rhp8uqoc3l'
+
+    if (!monitoringEnabled) {
+      return
+    }
+
     const { getVisitorId } = await import('./utils/visitorId')
     const Clarity = (await import('@microsoft/clarity')).default
-    Clarity.init('rhp8uqoc3l')
+    Clarity.init(clarityId)
 
     const visitorId = await getVisitorId()
     console.log('Visitor ID:', visitorId)

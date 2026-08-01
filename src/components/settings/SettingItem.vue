@@ -138,7 +138,8 @@
                 style="width: 80px"
                 type="number"
                 variant="outlined"
-                @update:model-value="updateSetting"
+                @update:model-value="onNumberInput"
+                @blur="onNumberBlur"
               />
 
               <v-btn
@@ -244,6 +245,7 @@ export default {
       stepValue: 1,
       isDeveloperMode: false,
       unwatchSettings: null,
+      numberInputTimer: null,
       fontFamilies: [
         {title: "Arial", value: "Arial, sans-serif"},
         {title: "Calibri", value: "Calibri, sans-serif"},
@@ -469,6 +471,25 @@ export default {
       }
     },
 
+    // 数字输入防抖：用户停止输入后自动保存
+    onNumberInput() {
+      if (this.numberInputTimer) {
+        clearTimeout(this.numberInputTimer);
+      }
+      this.numberInputTimer = setTimeout(() => {
+        this.updateSetting(this.localValue);
+      }, 500);
+    },
+
+    // 输入框失去焦点时立即保存
+    onNumberBlur() {
+      if (this.numberInputTimer) {
+        clearTimeout(this.numberInputTimer);
+        this.numberInputTimer = null;
+      }
+      this.updateSetting(this.localValue);
+    },
+
     // 复制设置ID到剪贴板
     copySettingId() {
       navigator.clipboard
@@ -526,7 +547,7 @@ export default {
 
 .setting-item {
   border-radius: var(--radius-sm);
-  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: background-color var(--duration-fast) var(--ease-apple);
 }
 
 .setting-item-developer .setting-item {

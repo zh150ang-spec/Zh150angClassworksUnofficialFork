@@ -1,3 +1,4 @@
+/* global __APP_VERSION__ */
 import {precacheAndRoute, cleanupOutdatedCaches} from 'workbox-precaching'
 import {registerRoute, setCatchHandler, NavigationRoute} from 'workbox-routing'
 import {NetworkFirst, StaleWhileRevalidate, CacheFirst} from 'workbox-strategies'

@@ -2,10 +2,11 @@
   <settings-card
     :loading="loading"
     border
+    :class="['homework-template-card', { 'has-unsaved-changes': hasChanges }]"
     :icon="ICON.BOOK_EDIT"
     title="作业模板配置"
   >
-    <!-- 顶部操作按钮 -->
+    <!-- 顶部操作栏 -->
     <v-alert
       v-if="error"
       class="mb-4"
@@ -15,37 +16,6 @@
     >
       {{ error }}
     </v-alert>
-
-    <div class="d-flex justify-space-between align-center mb-6">
-      <div>
-        <v-btn
-          :loading="loading"
-          class="mr-2"
-          color="primary"
-          :prepend-icon="ICON.REFRESH"
-          size="large"
-          @click="loadConfig"
-        >
-          重新加载配置
-        </v-btn>
-        <v-btn
-          :loading="loading"
-          color="success"
-          :prepend-icon="ICON.CONTENT_SAVE"
-          size="large"
-          @click="saveConfig"
-        >
-          保存所有更改
-        </v-btn>
-      </div>
-      <v-chip
-        v-if="hasChanges"
-        color="warning"
-        variant="elevated"
-      >
-        有未保存的更改
-      </v-chip>
-    </div>
 
     <v-row>
       <v-col
@@ -476,6 +446,36 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- 底部操作栏：终点清算 -->
+    <div class="d-flex justify-end ga-2 mt-4">
+      <v-chip
+        v-if="hasChanges"
+        color="warning"
+        variant="elevated"
+        class="mr-auto"
+      >
+        <v-icon start>mdi-alert</v-icon>
+        有未保存的更改
+      </v-chip>
+      <v-btn
+        :loading="loading"
+        color="medium-emphasis"
+        :prepend-icon="ICON.REFRESH"
+        variant="outlined"
+        @click="loadConfig"
+      >
+        重新加载
+      </v-btn>
+      <v-btn
+        :loading="loading"
+        color="primary"
+        :prepend-icon="ICON.CONTENT_SAVE"
+        @click="saveConfig"
+      >
+        保存
+      </v-btn>
+    </div>
   </settings-card>
 </template>
 
@@ -913,5 +913,9 @@ export default {
 <style scoped>
 .v-card-text {
   padding-top: 0;
+}
+
+.homework-template-card.has-unsaved-changes {
+  border-color: rgb(var(--v-theme-warning)) !important;
 }
 </style>

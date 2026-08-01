@@ -934,12 +934,7 @@ export default {
 
 <style scoped>
 .time-card {
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
   overflow: hidden;
-}
-
-.time-card:hover {
-  transform: translateY(-2px);
 }
 
 .time-display {
@@ -983,7 +978,7 @@ export default {
 
 .toolbar-fade-enter-active,
 .toolbar-fade-leave-active {
-  transition: opacity var(--duration-slow) var(--var(--ease-apple)-apple), transform var(--duration-slow) var(--ease-apple);
+  transition: opacity var(--duration-slow) var(--ease-apple), transform var(--duration-slow) var(--ease-apple);
 }
 
 .toolbar-fade-enter-from,
@@ -1045,7 +1040,7 @@ export default {
   display: flex;
   align-items: center;
   opacity: 0.5;
-  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple);
+  transition: opacity var(--duration-normal) var(--ease-apple);
 }
 
 .fullscreen-actions:hover {

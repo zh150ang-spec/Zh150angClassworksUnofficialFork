@@ -57,7 +57,6 @@
           :title="namespaceInfo.account.name || '未命名用户'"
           border
           class="w-100"
-          hover
           variant="tonal"
         >
           <v-card-text>
@@ -71,7 +70,6 @@
         v-if="namespaceInfo.device"
         border
         class="mb-4"
-        hover
         variant="tonal"
       >
         <v-card-title class="pb-1">
@@ -137,7 +135,6 @@
 
       <v-card
         border
-        hover
         subtitle="文档形键值数据库"
         title="Classworks KV"
       >

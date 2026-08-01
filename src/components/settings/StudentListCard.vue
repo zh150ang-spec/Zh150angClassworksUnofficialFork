@@ -90,7 +90,15 @@
             </v-col>
           </v-row>
 
-          <v-row>
+          <!-- 空状态提示 -->
+          <v-empty-state
+            v-if="modelValue.list.length === 0"
+            :icon="ICON.ACCOUNT_OFF"
+            title="暂无学生"
+            text="还没有添加学生，请在上方添加"
+          />
+
+          <v-row v-if="modelValue.list.length > 0">
             <v-col
               v-for="(student, index) in modelValue.list"
               :key="index"
@@ -99,96 +107,93 @@
               md="4"
               sm="6"
             >
-              <v-hover v-slot="{ isHovering, props }">
-                <v-card
-                  :elevation="isMobile ? 1 : isHovering ? 4 : 1"
-                  border
-                  class="student-card"
-                  v-bind="props"
-                >
-                  <v-card-text class="d-flex align-center pa-3">
-                    <v-menu
-                      :open-on-hover="!isMobile"
-                      location="bottom"
-                    >
-                      <template #activator="{ props: menuProps }">
-                        <v-btn
-                          class="mr-3 font-weight-medium"
-                          size="small"
-                          v-bind="menuProps"
-                          variant="tonal"
-                        >
-                          {{ index + 1 }}
-                        </v-btn>
-                      </template>
-
-                      <v-list
-                        density="compact"
-                        nav
+              <v-card
+                elevation="1"
+                border
+                class="student-card"
+              >
+                <v-card-text class="d-flex align-center pa-3">
+                  <v-menu
+                    :open-on-hover="!isMobile"
+                    location="bottom"
+                  >
+                    <template #activator="{ props: menuProps }">
+                      <v-btn
+                        class="mr-3 font-weight-medium"
+                        size="small"
+                        v-bind="menuProps"
+                        variant="tonal"
                       >
-                        <v-list-item
-                          :disabled="index === 0"
-                          :prepend-icon="ICON.ARROW_UP_BOLD"
-                          @click="moveStudent(index, 'top')"
-                        >
-                          置顶
-                        </v-list-item>
-                        <v-divider />
-                        <v-list-item
-                          :disabled="index === 0"
-                          :prepend-icon="ICON.ARROW_UP"
-                          @click="moveStudent(index, 'up')"
-                        >
-                          上移
-                        </v-list-item>
-                        <v-list-item
-                          :disabled="index === modelValue.list.length - 1"
-                          :prepend-icon="ICON.ARROW_DOWN"
-                          @click="moveStudent(index, 'down')"
-                        >
-                          下移
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                        {{ index + 1 }}
+                      </v-btn>
+                    </template>
 
-                    <v-text-field
-                      v-if="editState.index === index"
-                      v-model="editState.name"
-                      autofocus
-                      class="flex-grow-1"
+                    <v-list
                       density="compact"
-                      hide-details
-                      variant="underlined"
-                      @blur="saveEdit"
-                      @keyup.enter="saveEdit"
-                    />
-                    <span
-                      v-else
-                      class="text-body-large flex-grow-1"
-                      @click="handleClick(index, student)"
+                      nav
                     >
-                      {{ student.name }}
-                    </span>
+                      <v-list-item
+                        :disabled="index === 0"
+                        :prepend-icon="ICON.ARROW_UP_BOLD"
+                        @click="moveStudent(index, 'top')"
+                      >
+                        置顶
+                      </v-list-item>
+                      <v-divider />
+                      <v-list-item
+                        :disabled="index === 0"
+                        :prepend-icon="ICON.ARROW_UP"
+                        @click="moveStudent(index, 'up')"
+                      >
+                        上移
+                      </v-list-item>
+                      <v-list-item
+                        :disabled="index === modelValue.list.length - 1"
+                        :prepend-icon="ICON.ARROW_DOWN"
+                        @click="moveStudent(index, 'down')"
+                      >
+                        下移
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
 
-                    <div class="d-flex gap-1 action-buttons opacity-100">
-                      <v-btn
-                        color="primary"
-                        :icon="ICON.EDIT"
-                        size="small"
-                        variant="text"
-                        @click="startEdit(index, student)"
-                      />
-                      <v-btn
-                        color="error"
-                        :icon="ICON.DELETE"
-                        size="small"
-                        variant="text"
-                        @click="removeStudent(index)"
-                      />
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-hover>
+                  <v-text-field
+                    v-if="editState.index === index"
+                    v-model="editState.name"
+                    autofocus
+                    class="flex-grow-1"
+                    density="compact"
+                    hide-details
+                    variant="underlined"
+                    @blur="saveEdit"
+                    @keyup.enter="saveEdit"
+                  />
+                  <span
+                    v-else
+                    class="text-body-large flex-grow-1"
+                    @click="handleClick(index, student)"
+                  >
+                    {{ student.name }}
+                  </span>
+
+                  <div class="d-flex gap-1 action-buttons opacity-100">
+                    <v-btn
+                      color="primary"
+                      :icon="ICON.EDIT"
+                      size="small"
+                      variant="text"
+                      @click="startEdit(index, student)"
+                    />
+                    <v-btn
+                      color="error"
+                      :icon="ICON.DELETE"
+                      size="small"
+                      variant="text"
+                      @click="removeStudent(index)"
+                    />
+                  </div>
+                </v-card-text>
+              </v-card>
             </v-col>
           </v-row>
         </div>
@@ -198,6 +203,15 @@
           v-else
           class="pt-2"
         >
+          <v-alert
+            v-if="!modelValue.text"
+            class="mb-4"
+            icon="mdi-information-outline"
+            type="info"
+            variant="tonal"
+          >
+            在此粘贴学生名单，每行一个
+          </v-alert>
           <v-textarea
             v-model="modelValue.text"
             hint="使用文本编辑模式批量编辑学生名单，保存时会自动去除空行"
@@ -346,6 +360,7 @@ export default {
             "Failed to load student list from dedicated key, falling back to config",
             error
           );
+          this.modelValue.list = [];
         }
       } catch (error) {
         console.error("加载学生列表失败:", error);
@@ -494,12 +509,12 @@ export default {
 
 <style lang="scss" scoped>
 .student-card {
-  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-fast) var(--ease-apple);
 }
 
 .action-buttons {
   opacity: 0;
-  transition: opacity var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: opacity var(--duration-fast) var(--ease-apple);
 }
 
 .unsaved-changes {

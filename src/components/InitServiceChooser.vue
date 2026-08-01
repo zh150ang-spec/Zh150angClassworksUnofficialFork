@@ -361,11 +361,6 @@ const openClassworksKV = () => {
 .main-service-card {
   min-height: 100px;
   cursor: pointer;
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
-}
-
-.main-service-card:hover {
-  box-shadow: var(--shadow-hover);
 }
 
 .main-service-card .v-card-item {

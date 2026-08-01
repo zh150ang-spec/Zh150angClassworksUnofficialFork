@@ -118,16 +118,12 @@
           </v-card>
 
           <!-- 教师列表 -->
-          <v-row v-if="modelValue.list.length === 0">
-            <v-col cols="12">
-              <v-alert
-                type="info"
-                variant="tonal"
-              >
-                暂无教师信息，请添加教师
-              </v-alert>
-            </v-col>
-          </v-row>
+          <v-empty-state
+            v-if="modelValue.list.length === 0"
+            :icon="ICON.ACCOUNT_TIE"
+            title="暂无教师"
+            text="还没有添加教师，请添加教师"
+          />
 
           <v-row v-else>
             <v-col
@@ -137,135 +133,132 @@
               lg="6"
               xl="4"
             >
-              <v-hover v-slot="{ isHovering, props }">
-                <v-card
-                  :elevation="isMobile ? 1 : isHovering ? 4 : 1"
-                  border
-                  class="teacher-card"
-                  v-bind="props"
-                >
-                  <v-card-text class="pa-4">
-                    <div class="d-flex align-start mb-3">
-                      <v-avatar
-                        :color="teacher.isHeadTeacher ? 'primary' : 'grey-lighten-1'"
-                        class="mr-3"
-                        size="48"
-                      >
-                        <v-icon
-                          :icon="teacher.isHeadTeacher ? 'mdi-star' : 'mdi-account'"
-                          size="28"
-                        />
-                      </v-avatar>
+              <v-card
+                elevation="1"
+                border
+                class="teacher-card"
+              >
+                <v-card-text class="pa-4">
+                  <div class="d-flex align-start mb-3">
+                    <v-avatar
+                      :color="teacher.isHeadTeacher ? 'primary' : 'grey-lighten-1'"
+                      class="mr-3"
+                      size="48"
+                    >
+                      <v-icon
+                        :icon="teacher.isHeadTeacher ? 'mdi-star' : 'mdi-account'"
+                        size="28"
+                      />
+                    </v-avatar>
 
-                      <div class="flex-grow-1">
-                        <div class="d-flex align-center mb-1">
-                          <v-text-field
-                            v-if="editState.index === index"
-                            v-model="editState.teacher.name"
-                            autofocus
-                            class="flex-grow-1"
-                            density="compact"
-                            hide-details
-                            variant="underlined"
-                          />
-                          <span
-                            v-else
-                            class="text-headline-small font-weight-medium"
-                            @click="handleClick(index, teacher)"
-                          >
-                            {{ teacher.name }}
-                          </span>
-                          <v-chip
-                            v-if="teacher.isHeadTeacher"
-                            class="ml-2"
-                            color="primary"
-                            density="comfortable"
-                            size="small"
-                            variant="flat"
-                          >
-                            班主任
-                          </v-chip>
-                        </div>
-
-                        <div
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-center mb-1">
+                        <v-text-field
                           v-if="editState.index === index"
-                          class="mt-2"
-                        >
-                          <v-combobox
-                            v-model="editState.teacher.subjects"
-                            :items="commonSubjects"
-                            chips
-                            closable-chips
-                            density="compact"
-                            hide-details
-                            label="任教科目"
-                            multiple
-                            variant="outlined"
-                          />
-                          <v-checkbox
-                            v-model="editState.teacher.isHeadTeacher"
-                            class="mt-2"
-                            density="compact"
-                            color="primary"
-                            hide-details
-                            label="班主任"
-                          />
-                        </div>
-                        <div
+                          v-model="editState.teacher.name"
+                          autofocus
+                          class="flex-grow-1"
+                          density="compact"
+                          hide-details
+                          variant="underlined"
+                        />
+                        <span
                           v-else
-                          class="mt-1"
+                          class="text-headline-small font-weight-medium"
+                          @click="handleClick(index, teacher)"
                         >
-                          <v-chip
-                            v-for="(subject, sIndex) in teacher.subjects"
-                            :key="sIndex"
-                            class="mr-1 mb-1"
-                            density="comfortable"
-                            size="small"
-                            variant="tonal"
-                          >
-                            {{ subject }}
-                          </v-chip>
-                        </div>
+                          {{ teacher.name }}
+                        </span>
+                        <v-chip
+                          v-if="teacher.isHeadTeacher"
+                          class="ml-2"
+                          color="primary"
+                          density="comfortable"
+                          size="small"
+                          variant="flat"
+                        >
+                          班主任
+                        </v-chip>
                       </div>
 
-                      <div class="d-flex gap-1 action-buttons ml-2 opacity-100">
-                        <v-btn
-                          v-if="editState.index === index"
-                          color="success"
-                          :icon="ICON.CHECK"
-                          size="small"
-                          variant="text"
-                          @click="saveEdit"
+                      <div
+                        v-if="editState.index === index"
+                        class="mt-2"
+                      >
+                        <v-combobox
+                          v-model="editState.teacher.subjects"
+                          :items="commonSubjects"
+                          chips
+                          closable-chips
+                          density="compact"
+                          hide-details
+                          label="任教科目"
+                          multiple
+                          variant="outlined"
                         />
-                        <v-btn
-                          v-if="editState.index === index"
-                          color="medium-emphasis"
-                          :icon="ICON.CLOSE"
-                          size="small"
-                          variant="text"
-                          @click="cancelEdit"
-                        />
-                        <v-btn
-                          v-else
+                        <v-checkbox
+                          v-model="editState.teacher.isHeadTeacher"
+                          class="mt-2"
+                          density="compact"
                           color="primary"
-                          :icon="ICON.EDIT"
-                          size="small"
-                          variant="text"
-                          @click="startEdit(index, teacher)"
+                          hide-details
+                          label="班主任"
                         />
-                        <v-btn
-                          v-if="editState.index !== index"
-                          color="error"
-                          :icon="ICON.DELETE"
+                      </div>
+                      <div
+                        v-else
+                        class="mt-1"
+                      >
+                        <v-chip
+                          v-for="(subject, sIndex) in teacher.subjects"
+                          :key="sIndex"
+                          class="mr-1 mb-1"
+                          density="comfortable"
                           size="small"
-                          variant="text"
-                          @click="removeTeacher(index)"
-                        />
+                          variant="tonal"
+                        >
+                          {{ subject }}
+                        </v-chip>
                       </div>
                     </div>
-                  </v-card-text>
-                </v-card>
-              </v-hover>
+
+                    <div class="d-flex gap-1 action-buttons ml-2 opacity-100">
+                      <v-btn
+                        v-if="editState.index === index"
+                        color="success"
+                        :icon="ICON.CHECK"
+                        size="small"
+                        variant="text"
+                        @click="saveEdit"
+                      />
+                      <v-btn
+                        v-if="editState.index === index"
+                        color="medium-emphasis"
+                        :icon="ICON.CLOSE"
+                        size="small"
+                        variant="text"
+                        @click="cancelEdit"
+                      />
+                      <v-btn
+                        v-else
+                        color="primary"
+                        :icon="ICON.EDIT"
+                        size="small"
+                        variant="text"
+                        @click="startEdit(index, teacher)"
+                      />
+                      <v-btn
+                        v-if="editState.index !== index"
+                        color="error"
+                        :icon="ICON.DELETE"
+                        size="small"
+                        variant="text"
+                        @click="removeTeacher(index)"
+                      />
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
             </v-col>
           </v-row>
         </div>
@@ -573,12 +566,12 @@ export default {
 
 <style lang="scss" scoped>
 .teacher-card {
-  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-fast) var(--ease-apple);
 }
 
 .action-buttons {
   opacity: 0;
-  transition: opacity var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: opacity var(--duration-fast) var(--ease-apple);
 }
 
 .unsaved-changes {

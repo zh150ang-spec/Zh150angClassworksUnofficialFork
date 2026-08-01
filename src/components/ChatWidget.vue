@@ -981,7 +981,7 @@ export default {
 }
 
 .event-item {
-  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-fast) var(--ease-apple);
 }
 
 .event-item:hover {

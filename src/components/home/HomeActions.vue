@@ -107,19 +107,6 @@
       列表
     </v-btn>
     <v-btn
-      v-if="showFullscreenButton"
-      :color="isFullscreen ? 'medium-emphasis' : 'primary'"
-      :prepend-icon="
-        isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'
-      "
-      class="ml-2"
-      rounded="xl"
-      size="large"
-      @click="$emit('toggle-fullscreen')"
-    >
-      {{ isFullscreen ? "退出全屏" : "全屏显示" }}
-    </v-btn>
-    <v-btn
       v-if="showTestCardButton"
       class="ml-2"
       color="purple"

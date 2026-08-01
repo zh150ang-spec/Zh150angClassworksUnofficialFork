@@ -47,7 +47,9 @@ import { getSetting, watchSettings } from "@/utils/settings";
 import { getEffectiveServerUrl } from "@/utils/serverRotation";
 import { networkStatus } from "@/utils/networkStatus";
 import RateLimitModal from "@/components/RateLimitModal.vue";
+// eslint-disable-next-line no-unused-vars -- used in template
 import OfflineIndicator from "@/components/OfflineIndicator.vue";
+// eslint-disable-next-line no-unused-vars -- used in template
 import SwUpdateNotification from "@/components/SwUpdateNotification.vue";
 
 const theme = useTheme();
@@ -133,7 +135,7 @@ onUnmounted(() => {
 /* Apple-style page transitions */
 .md3-enter-active,
 .md3-leave-active {
-  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple),
+  transition: opacity var(--duration-normal) var(--ease-apple),
     transform var(--duration-normal) var(--ease-apple);
 }
 

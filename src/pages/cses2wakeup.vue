@@ -1520,7 +1520,7 @@ export default {
 .filter-chip {
   min-width: 60px;
   justify-content: center;
-  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-fast) var(--ease-apple);
 }
 
 .filter-chip.v-chip--selected {
@@ -1542,7 +1542,7 @@ export default {
 
 /* 美化按钮悬浮效果 */
 .v-btn {
-  transition: transform var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: transform var(--duration-fast) var(--ease-apple);
 }
 
 .v-btn:not(:disabled):hover {

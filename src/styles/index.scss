@@ -6,40 +6,24 @@
 @use 'tokens.scss';
 @use 'radius.scss';
 
-/* ── Card Hover (Apple-style: subtle lift, no glow) ───────── */
+/* ── Card Hover (design rule: cards remain static on hover) ─ */
 .grid-item .v-card {
-  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
-              box-shadow var(--duration-normal) var(--ease-apple);
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
+  /* Cards must NOT float, transform, or change elevation on hover. */
 }
 
 /* ── Empty Subject Card ───────────────────────────────────── */
 .empty-subject-card {
-  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
-              opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity var(--duration-normal) var(--ease-apple);
   opacity: 0.85;
 
   &:hover {
     opacity: 1;
-    transform: translateY(-1px);
   }
 }
 
 /* ── Anti-burn card ───────────────────────────────────────── */
 .anti-burn-card {
-  transition: box-shadow var(--duration-normal) var(--var(--ease-apple)-apple);
-
-  &:hover {
-    box-shadow: var(--shadow-hover);
-  }
+  /* Cards must NOT change elevation or shadow on hover. */
 }
 
 /* ── Attendance ───────────────────────────────────────────── */
@@ -99,7 +83,7 @@
 
 .grid-item {
   width: 100%;
-  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
+  transition: transform var(--duration-normal) var(--ease-apple),
               opacity var(--duration-normal) var(--ease-apple);
 }
 
@@ -110,7 +94,6 @@
 }
 
 .empty-card:hover {
-  transform: scale(0.95);
   opacity: 1;
 }
 
@@ -167,24 +150,24 @@
   border-left: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content) {
+.attendance-drawer .v-navigation-drawer__content {
   overflow-y: auto;
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar) {
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar {
   width: 8px;
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-track) {
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb) {
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-thumb {
   background-color: var(--color-scrollbar);
   border-radius: var(--radius-full);
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb:hover) {
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-scrollbar-hover);
 }
 
@@ -236,13 +219,11 @@
 
 .empty-subject-card {
   cursor: pointer;
-  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple),
-              opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity var(--duration-normal) var(--ease-apple);
   opacity: 0.85;
 }
 
 .empty-subject-card:hover {
-  transform: scale(1.01);
   opacity: 1;
 }
 
@@ -253,5 +234,4 @@
 
 .empty-subject-card:not(:disabled):hover {
   opacity: 1;
-  transform: scale(1.01);
 }

@@ -96,7 +96,6 @@
             <v-card-title class="text-body-large">
               <v-icon
                 start
-                color="error"
                 :icon="ICON.BELL_ALERT"
               />
               紧急通知铃声
@@ -135,7 +134,7 @@
 
               <div class="mt-3 d-flex gap-2">
                 <v-btn
-                  color="error"
+                  color="primary"
                   variant="tonal"
                   @click="previewSound(urgentSound)"
                 >

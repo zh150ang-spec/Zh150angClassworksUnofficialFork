@@ -714,8 +714,8 @@ export default {
       importDataPreview: null,
       importDataCount: 0,
       unwatchSettings: null,
+      settingsRevision: 0,
       lastProvider: null,
-      currentProviderValue: null,
 
       // 选中的项目
       selectedItem: null,
@@ -747,37 +747,41 @@ export default {
 
   computed: {
     currentProvider() {
-      return this.currentProviderValue;
+      this.settingsRevision; // create reactive dependency
+      return getSetting('server.provider');
     },
 
     isDualMode() {
-      return this.currentProviderValue === 'dual-cloud' || this.currentProviderValue === 'dual-server';
+      this.settingsRevision; // create reactive dependency
+      return this.currentProvider === 'dual-cloud' || this.currentProvider === 'dual-server';
     },
 
     isKvProvider() {
-      return ['kv-local', 'kv-server', 'classworkscloud', 'dual-cloud', 'dual-server'].includes(this.currentProviderValue);
+      this.settingsRevision; // create reactive dependency
+      return ['kv-local', 'kv-server', 'classworkscloud', 'dual-cloud', 'dual-server'].includes(this.currentProvider);
     },
 
     connectionStatus() {
       if (!this.isKvProvider) {
         return '当前数据提供者不支持KV数据库管理';
       }
+      const providerLabel = this.currentProvider || '未知';
       if (this.isDualMode) {
-        return '双存储模式 (云端+本地)';
+        return `双存储模式 (${providerLabel})`;
       }
-      return this.currentProviderValue === 'kv-local' ? '本地数据库' : '服务器数据库';
+      return providerLabel === 'kv-local' ? `本地数据库 (${providerLabel})` : `服务器数据库 (${providerLabel})`;
     },
 
     connectionIcon() {
       if (!this.isKvProvider) return ICON.DATABASE_OFF;
       if (this.isDualMode) return ICON.DATABASE_SYNC;
-      return this.currentProviderValue === 'kv-local' ? ICON.DATABASE : ICON.CLOUD_SYNC;
+      return this.currentProvider === 'kv-local' ? ICON.DATABASE : ICON.CLOUD_SYNC;
     },
 
     connectionColor() {
       if (!this.isKvProvider) return 'error';
-      if (this.isDualMode) return 'success';
-      return 'success';
+      if (this.isDualMode) return 'primary';
+      return 'primary';
     },
 
     filteredKvData() {
@@ -815,18 +819,19 @@ export default {
   },
 
   async mounted() {
-    this.currentProviderValue = getSetting('server.provider');
-    this.lastProvider = this.currentProviderValue;
+    this.settingsRevision++;
+    this.lastProvider = getSetting('server.provider');
     if (this.isKvProvider) {
       await this.loadKvData();
       if (this.isDualMode) {
         await this.loadSyncStatus();
       }
     }
+    await this.loadStorageInfo();
     this.unwatchSettings = watchSettings(async () => {
-      this.currentProviderValue = getSetting('server.provider');
-      if (this.currentProviderValue !== this.lastProvider) {
-        this.lastProvider = this.currentProviderValue;
+      this.settingsRevision++;
+      // 检查 provider 是否真的变化了，变化时重置数据
+      if (this.providerChanged()) {
         this.kvData = [];
         this.syncStatus = {
           mode: 'local-only',
@@ -1296,6 +1301,18 @@ export default {
       } catch (error) {
         this.$message.error('打开链接失败', error.message);
       }
+    },
+
+    /**
+     * 检测数据提供者是否已变更
+     */
+    providerChanged() {
+      const current = this.currentProvider;
+      if (current !== this.lastProvider) {
+        this.lastProvider = current;
+        return true;
+      }
+      return false;
     }
   }
 };

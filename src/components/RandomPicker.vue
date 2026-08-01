@@ -617,7 +617,7 @@ export default {
 
 .filter-chip {
   cursor: pointer;
-  transition: all var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-fast) var(--ease-apple);
 
   &:active {
     transform: scale(0.95);
@@ -657,7 +657,7 @@ export default {
   padding: var(--space-compat-10px) var(--space-compat-15px);
   background-color: rgba(var(--v-theme-surface-variant), 0.7);
   border-radius: var(--radius-sm);
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-normal) var(--ease-apple);
   font-size: 1.2rem;
 
   &.highlighted {
@@ -676,20 +676,15 @@ export default {
 .result-card {
   max-width: 400px;
   margin: 0 auto;
-  transition: transform var(--duration-normal) var(--var(--ease-apple)-apple);
+}
 
-  &:hover {
-    transform: translateY(-4px);
-
-    .refresh-btn {
-      opacity: 1;
-    }
-  }
+.result-card:hover .refresh-btn {
+  opacity: 1;
 }
 
 .refresh-btn {
   opacity: 0.7;
-  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple);
+  transition: opacity var(--duration-normal) var(--ease-apple);
 
   &:hover {
     opacity: 1;
@@ -721,7 +716,7 @@ export default {
 // 动画效果
 .shuffle-enter-active,
 .shuffle-leave-active {
-  transition: all var(--duration-slow) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-slow) var(--ease-apple);
 }
 
 .shuffle-enter-from,

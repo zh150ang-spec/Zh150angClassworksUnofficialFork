@@ -224,7 +224,6 @@
           >
             <v-card
               class="h-100"
-              hover
               variant="tonal"
             >
               <v-card-title class="bg-primary-lighten-5 pa-4">
@@ -2138,11 +2137,7 @@ export default {
   cursor: pointer;
 }
 
-.v-card.hover:hover {
-  transform: translateY(-2px);
-  transition: transform var(--duration-fast) var(--var(--ease-apple)-apple);
-  box-shadow: var(--shadow-hover) !important;
-}
+
 
 .bg-primary-lighten-5 {
   background-color: rgba(var(--v-theme-primary), 0.08) !important;
@@ -2158,7 +2153,7 @@ export default {
 
 /* 科目编辑项悬停效果 */
 .hover-highlight {
-  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple);
+  transition: background-color var(--duration-fast) var(--ease-apple);
 }
 
 .hover-highlight:hover {

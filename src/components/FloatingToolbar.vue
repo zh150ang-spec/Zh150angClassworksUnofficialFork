@@ -177,7 +177,7 @@ export default {
   left: 50%;
   transform: translateX(-50%);
 
-  transition: all var(--duration-normal) var(--var(--ease-apple)-apple);
+  transition: all var(--duration-normal) var(--ease-apple);
   background: rgba(var(--v-theme-surface-container), 0.75) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -217,7 +217,7 @@ export default {
   min-height: 40px !important;
   max-width: 40px !important;
   max-height: 40px !important;
-  transition: background-color var(--duration-fast) var(--var(--ease-apple)-apple),
+  transition: background-color var(--duration-fast) var(--ease-apple),
               box-shadow var(--duration-fast) var(--ease-apple) !important;
 }
 

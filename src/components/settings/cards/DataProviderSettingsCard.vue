@@ -263,7 +263,7 @@ export default {
 
         // Use rotation for classworkscloud provider
         if (isRotationEnabled()) {
-          const response = await tryWithRotation(
+          await tryWithRotation(
             async (serverUrl) => {
               const res = await axios.get(`${serverUrl}/check`, {
                 method: "GET",
@@ -275,7 +275,7 @@ export default {
               return res;
             },
             {
-              onServerTried: ({url, status, tried}) => {
+              onServerTried: ({tried}) => {
                 triedServers.length = 0;
                 triedServers.push(...tried);
               }

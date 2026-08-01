@@ -12,7 +12,9 @@
   // ── Border Radius (Apple: 1.2rem = 19.2px) ─────────────
   // Unify all rounded-* variants to 19.2px;
   // only 0 / pill / circle keep their special meanings.
+  // Input fields use a smaller radius to avoid SVG outline asymmetry.
   $border-radius-root: 19.2px,
+  $field-border-radius: 12px,
   $rounded: (
     0: 0,
     'sm': 19.2px,
