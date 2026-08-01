@@ -455,7 +455,9 @@
         variant="elevated"
         class="mr-auto"
       >
-        <v-icon start>mdi-alert</v-icon>
+        <v-icon start>
+          mdi-alert
+        </v-icon>
         有未保存的更改
       </v-chip>
       <v-btn

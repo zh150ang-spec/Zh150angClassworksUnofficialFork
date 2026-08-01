@@ -3,11 +3,14 @@ import {kvLocalProvider} from "./providers/kvLocalProvider";
 import {kvServerProvider} from "./providers/kvServerProvider";
 import {networkStatus} from "./networkStatus";
 import {rmwWriteServer} from "./rmw";
+import {loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY} from "./syncHelpers";
+import {acquireLock} from "./crossTabLock";
 
-const SYNC_CONCURRENCY = 5
-const KEYS_PAGE_SIZE = 1000
 const IMMEDIATE_BACKOFF_DELAYS = [30000, 60000, 120000, 300000]
 const MAX_IMMEDIATE_ATTEMPTS = 4
+// 跨标签页同步锁超时（30s，一次同步通常 <10s，留 3 倍余量）
+const SYNC_LOCK_TIMEOUT = 30000
+const SYNC_LOCK_NAME = "classworks-background-sync"
 
 const BackgroundSyncService = {
   _intervalId: null,
@@ -51,40 +54,6 @@ const BackgroundSyncService = {
     this._isReadOnly = !!isReadOnly;
   },
 
-  async _runWithConcurrency(items, limit, operation) {
-    const results = [];
-    for (let i = 0; i < items.length; i += limit) {
-      const batch = items.slice(i, i + limit);
-      const batchResults = await Promise.all(batch.map(operation));
-      results.push(...batchResults);
-    }
-    return results;
-  },
-
-  async _loadAllKeys(loadFn) {
-    const allKeys = [];
-    let skip = 0;
-
-    while (true) {
-      const result = await loadFn({limit: KEYS_PAGE_SIZE, skip}).catch(() => null);
-      if (!result || result.success === false) {
-        return null;
-      }
-
-      const keys = result.keys || [];
-      allKeys.push(...keys);
-
-      const totalRows = result.total_rows || 0;
-      if (allKeys.length >= totalRows || keys.length < KEYS_PAGE_SIZE) {
-        break;
-      }
-
-      skip += KEYS_PAGE_SIZE;
-    }
-
-    return {keys: allKeys, success: true};
-  },
-
   async _retryWithBackoff(operation, maxRetries = 3) {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
@@ -109,6 +78,13 @@ const BackgroundSyncService = {
     if (!this._isDualMode()) return;
     if (!networkStatus.isBrowserOnline()) return;
 
+    // 尝试获取跨标签页独占锁，防止多标签页同时同步放大服务器负载
+    const releaseLock = await acquireLock(SYNC_LOCK_NAME, SYNC_LOCK_TIMEOUT);
+    if (!releaseLock) {
+      // 其他标签页正在同步，跳过本次（数据一致性由 RMW 保障）
+      return;
+    }
+
     this._isSyncing = true;
     try {
       await this._doSyncPhases();
@@ -116,6 +92,7 @@ const BackgroundSyncService = {
       console.error("后台同步出错:", error);
     } finally {
       this._isSyncing = false;
+      releaseLock();
     }
   },
 
@@ -127,8 +104,8 @@ const BackgroundSyncService = {
 
     // 获取双方键列表（阶段2和阶段3共用）
     const [cloudKeysResult, localKeysResult] = await Promise.all([
-      this._loadAllKeys((opts) => kvServerProvider.loadKeys(opts)),
-      this._loadAllKeys((opts) => kvLocalProvider.loadKeys(opts))
+      loadAllKeys((opts) => kvServerProvider.loadKeys(opts)),
+      loadAllKeys((opts) => kvLocalProvider.loadKeys(opts))
     ]);
 
     if (!cloudKeysResult || cloudKeysResult.success === false ||
@@ -161,7 +138,7 @@ const BackgroundSyncService = {
 
     this._lastQueueLength = offlineQueueResult.data.length;
 
-    const results = await this._runWithConcurrency(
+    const results = await runWithConcurrency(
       offlineQueueResult.data,
       SYNC_CONCURRENCY,
       async (item) => {
@@ -201,7 +178,7 @@ const BackgroundSyncService = {
     const missingInCloud = localKeys.filter(key => !cloudKeysSet.has(key));
     if (missingInCloud.length === 0) return;
 
-    const results = await this._runWithConcurrency(
+    const results = await runWithConcurrency(
       missingInCloud,
       SYNC_CONCURRENCY,
       async (key) => {
@@ -234,7 +211,7 @@ const BackgroundSyncService = {
     const missingInLocal = cloudKeys.filter(key => !localKeysSet.has(key));
     if (missingInLocal.length === 0) return;
 
-    const results = await this._runWithConcurrency(
+    const results = await runWithConcurrency(
       missingInLocal,
       SYNC_CONCURRENCY,
       async (key) => {

@@ -60,6 +60,8 @@ defineProps({
   }
 })
 
+defineEmits(['cancel'])
+
 const code = ref('')
 
 // 暴露清空表单的方法

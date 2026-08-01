@@ -6,6 +6,7 @@ import {networkStatus} from "./networkStatus";
 import backgroundSync from "./backgroundSync";
 import {rmwWriteServer, computeDataHash} from "./rmw";
 import messageService from "./message";
+import {loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY} from "./syncHelpers";
 
 export const formatResponse = (data) => data;
 
@@ -173,35 +174,6 @@ function mergeData(local, cloud, isReadOnly) {
 
 function isDualMode(provider) {
   return provider === "dual-cloud" || provider === "dual-server";
-}
-
-// 分页加载全部键名（突破 1000 限制），与 backgroundSync._loadAllKeys 策略一致
-const KEYS_PAGE_SIZE = 1000
-async function loadAllKeys(loadFn) {
-  const allKeys = [];
-  let skip = 0;
-  while (true) {
-    const result = await loadFn({limit: KEYS_PAGE_SIZE, skip}).catch(() => null);
-    if (!result || result.success === false) return null;
-    const keys = result.keys || [];
-    allKeys.push(...keys);
-    const totalRows = result.total_rows || 0;
-    if (allKeys.length >= totalRows || keys.length < KEYS_PAGE_SIZE) break;
-    skip += KEYS_PAGE_SIZE;
-  }
-  return {keys: allKeys, success: true};
-}
-
-// 并发执行器（与 backgroundSync._runWithConcurrency 策略一致）
-const SYNC_CONCURRENCY = 5
-async function runWithConcurrency(items, limit, operation) {
-  const results = [];
-  for (let i = 0; i < items.length; i += limit) {
-    const batch = items.slice(i, i + limit);
-    const batchResults = await Promise.all(batch.map(operation));
-    results.push(...batchResults);
-  }
-  return results;
 }
 
 export default {

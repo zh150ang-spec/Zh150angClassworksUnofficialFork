@@ -299,8 +299,10 @@ export const kvLocalProvider = {
 
   /**
    * 获取本地存储的键名列表
+   * 使用 IDB key cursor + advance 实现真游标分页，避免全量加载 getAllKeys。
+   * 排序按 IDB 原生 key 顺序（UTF-16 code unit），与旧 localeCompare 在 ASCII 范围一致。
    * @param {Object} options - 查询选项
-   * @param {string} options.sortBy - 排序字段，默认为 "key"
+   * @param {string} options.sortBy - 排序字段（仅支持 "key"，忽略其他值）
    * @param {string} options.sortDir - 排序方向，"asc" 或 "desc"，默认为 "asc"
    * @param {number} options.limit - 每页返回的记录数，默认为 100
    * @param {number} options.skip - 跳过的记录数，默认为 0
@@ -321,34 +323,43 @@ export const kvLocalProvider = {
   async loadKeys(options = {}) {
     try {
       const db = await getDB();
-      const transaction = db.transaction(["kv"], "readonly");
-      const store = transaction.objectStore("kv");
-
-      const allKeys = await store.getAllKeys();
+      const tx = db.transaction(["kv"], "readonly");
+      const store = tx.objectStore("kv");
 
       const {
         sortDir = "asc",
         limit = 100,
         skip = 0
       } = options;
-      
-      const sortedKeys = [...allKeys].sort((a, b) => {
-        if (sortDir === "desc") {
-          return b.localeCompare(a);
-        }
-        return a.localeCompare(b);
-      });
 
-      const totalRows = sortedKeys.length;
-      const paginatedKeys = sortedKeys.slice(skip, skip + limit);
+      // 用 count 获取总数，避免 getAllKeys 全量加载
+      const totalRows = await store.count();
+
+      // 用 openKeyCursor 游标分页，direction 控制升序/降序
+      const direction = sortDir === "desc" ? "prev" : "next";
+      const keys = [];
+      let cursor = await store.openKeyCursor(null, direction);
+
+      // 跳过 skip 条（advance 在 IDB 引擎层跳过，不触发 JS 回调，性能优于遍历跳过）
+      if (cursor && skip > 0) {
+        cursor = await cursor.advance(skip);
+      }
+
+      // 收集 limit 条
+      while (cursor && keys.length < limit) {
+        keys.push(cursor.key);
+        cursor = await cursor.continue();
+      }
+
+      await tx.done;
 
       const responseData = {
-        keys: paginatedKeys,
+        keys: keys,
         total_rows: totalRows,
         current_page: {
           limit,
           skip,
-          count: paginatedKeys.length
+          count: keys.length
         },
         load_more: null
       };
