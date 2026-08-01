@@ -871,6 +871,7 @@ export default {
         getDateString: () => this.state.dateString,
         getBoardData: () => this.state.boardData,
         downloadData: () => this.downloadData(),
+        shouldSkipRefresh: () => this.shouldSkipRefresh(),
         loadPersistentNotifications: () => this.loadPersistentNotifications(),
         showMessage: (type, title, content) => this.$message[type](title, content),
       });
@@ -1087,13 +1088,29 @@ export default {
     },
 
     async downloadData(forceClear = false) {
-      if (this.loading.download) return;
+      // 已有在途请求：记录本次请求参数，待在途请求完成后自动补发一次，
+      // 避免"日期切换等场景下新请求被互斥跳过"导致新日期数据不加载
+      if (this.loading.download) {
+        this._downloadQueued = { forceClear };
+        return;
+      }
+
+      // 请求序号 + 发起时日期：用于丢弃过期响应
+      // （下载期间日期已切换或已有更新的请求时，旧日期/旧参数的结果不得写入 boardData）
+      const seq = (this._downloadSeq || 0) + 1;
+      this._downloadSeq = seq;
+      const reqDate = this.state.dateString;
 
       try {
         this.loading.download = true;
         const response = await dataProvider.loadData(
-          "classworks-data-" + this.state.dateString
+          "classworks-data-" + reqDate
         );
+
+        // 日期守卫 + 序号守卫：期间日期已切换或已有新请求时，丢弃本次过期结果
+        if (seq !== this._downloadSeq || reqDate !== this.state.dateString) {
+          return;
+        }
 
         if (response.success == false) {
           if (response.error.code === "NOT_FOUND") {
@@ -1182,6 +1199,13 @@ export default {
         }
       } finally {
         this.loading.download = false;
+        // 有排队中的请求（如日期切换时被互斥跳过的下载），在本次结束后补发一次，
+        // 确保最新参数（forceClear/日期）一定被加载
+        const queued = this._downloadQueued;
+        this._downloadQueued = null;
+        if (queued) {
+          this.downloadData(queued.forceClear);
+        }
       }
     },
 
@@ -1760,12 +1784,14 @@ export default {
         const sourceHomework = structuredClone(this.state.boardData.homework);
 
         // 2. 切换到今天并加载今天的数据（主要是为了获取考勤等其他数据）
+        // 必须 forceClear：今天无数据时清空源日期的残留 boardData（含源日期考勤），
+        // 避免源日期的 absent/late/exclude 被一并写入今天的键
         const today = new Date();
         const todayString = formatDateYYYYMMDD(today);
 
         // 临时切换到今天以加载数据
         this.state.dateString = todayString;
-        await this.downloadData();
+        await this.downloadData(true);
 
         // 3. 直接替换今天的作业数据（删除原有作业，使用源日期的作业）
         // 深拷贝源日期的作业数据

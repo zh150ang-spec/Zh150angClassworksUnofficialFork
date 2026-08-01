@@ -75,6 +75,11 @@ export function useRealtimeChannel() {
       // Debounce refresh to avoid storms
       if (!debouncedRealtimeRefresh) {
         debouncedRealtimeRefresh = debounce(async () => {
+          // 保护未保存修改：本地存在未同步修改、弹窗打开或加载中时跳过自动刷新，
+          // 避免远端更新静默覆盖本地正在编辑的数据（与 useAutoRefresh 的 shouldSkipRefresh 保持同一策略）
+          if (ctx.shouldSkipRefresh && ctx.shouldSkipRefresh()) {
+            return;
+          }
           const boardData = ctx.getBoardData();
           // 空值保护：boardData.homework 在初始化期间可能为 undefined，
           // structuredClone(undefined) 返回 undefined，后续 oldHomework[key] 会抛错

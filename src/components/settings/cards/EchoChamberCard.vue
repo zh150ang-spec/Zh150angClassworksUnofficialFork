@@ -127,7 +127,7 @@ export default {
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity var(--duration-normal) var(--var(--ease-apple)-apple);
+  transition: opacity var(--duration-normal) var(--ease-apple);
 }
 
 .fade-enter-from, .fade-leave-to {
