@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-if="showCard"
-    class="mb-4 pwa-install-card"
+    class="mb-4 mt-4 pwa-install-card"
     color="primary"
     variant="tonal"
     border

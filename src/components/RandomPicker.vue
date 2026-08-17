@@ -713,16 +713,16 @@ export default {
   animation: result-appear 0.45s ease-out both;
 }
 
-.result-card:nth-child(1) { animation-delay: 0.05s; }
-.result-card:nth-child(2) { animation-delay: 0.13s; }
-.result-card:nth-child(3) { animation-delay: 0.21s; }
-.result-card:nth-child(4) { animation-delay: 0.29s; }
-.result-card:nth-child(5) { animation-delay: 0.37s; }
-.result-card:nth-child(6) { animation-delay: 0.45s; }
-.result-card:nth-child(7) { animation-delay: 0.53s; }
-.result-card:nth-child(8) { animation-delay: 0.61s; }
-.result-card:nth-child(9) { animation-delay: 0.69s; }
-.result-card:nth-child(10) { animation-delay: 0.77s; }
+.result-card:nth-child(2) { animation-delay: 0.05s; }
+.result-card:nth-child(3) { animation-delay: 0.13s; }
+.result-card:nth-child(4) { animation-delay: 0.21s; }
+.result-card:nth-child(5) { animation-delay: 0.29s; }
+.result-card:nth-child(6) { animation-delay: 0.37s; }
+.result-card:nth-child(7) { animation-delay: 0.45s; }
+.result-card:nth-child(8) { animation-delay: 0.53s; }
+.result-card:nth-child(9) { animation-delay: 0.61s; }
+.result-card:nth-child(10) { animation-delay: 0.69s; }
+.result-card:nth-child(11) { animation-delay: 0.77s; }
 
 // 结果卡片入场动画
 @keyframes result-appear {

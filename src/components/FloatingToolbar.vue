@@ -163,16 +163,8 @@ export default {
       type: Boolean,
       default: false,
     },
-    unreadCount: {
-      type: Number,
-      default: 0,
-    },
     selectedDate: {
       type: [String, Date],
-      required: true,
-    },
-    isToday: {
-      type: Boolean,
       required: true,
     },
     isPastDate: {
@@ -195,9 +187,6 @@ export default {
     };
   },
   methods: {
-    handleDateSelect(newDate) {
-      this.$emit("date-select", newDate);
-    },
     onDateChange(newDate) {
       this.$emit("date-select", newDate);
     },

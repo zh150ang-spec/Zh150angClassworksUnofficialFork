@@ -968,11 +968,19 @@ export default {
         this.updateTokenDisplayInfo();
       });
 
-      // 首次打开主界面时提示修改班级编号
+      // 首次打开主界面时提示修改班级编号。
+      // 两个条件同时满足才弹出：班级编号仍为默认值 + 用户从未处理过此提示。
       this.$nextTick(() => {
-        const CLASS_NUMBER_PROMPT_KEY = "classNumberPromptShown";
-        if (!localStorage.getItem(CLASS_NUMBER_PROMPT_KEY)) {
-          this.classNumberDialog.value = getSetting("server.classNumber");
+        const DEFAULT_CLASS_NUMBER = "Classworks for Classroom 01";
+        const current = getSetting("server.classNumber");
+        const shown = localStorage.getItem("classNumberPromptShown");
+        if (
+          shown !== "true" &&
+          (!current ||
+            current.trim() === "" ||
+            current === DEFAULT_CLASS_NUMBER)
+        ) {
+          this.classNumberDialog.value = current || DEFAULT_CLASS_NUMBER;
           this.classNumberDialog.show = true;
         }
       });
@@ -1015,10 +1023,8 @@ export default {
       localStorage.setItem("classNumberPromptShown", "true");
     },
 
-    // 取消班级编号设置（使用默认值）
+    // 取消班级编号设置
     cancelClassNumber() {
-      setSetting("server.classNumber", "Classworks for Classroom 01");
-      this.state.classNumber = "Classworks for Classroom 01";
       this.classNumberDialog.show = false;
       localStorage.setItem("classNumberPromptShown", "true");
     },

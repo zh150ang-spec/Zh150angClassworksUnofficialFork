@@ -179,18 +179,16 @@
         <!-- 普通作业卡片 -->
         <v-card
           v-else
-          :class="{ 'cursor-not-allowed': isEditingDisabled, 'cursor-pointer': !isEditingDisabled, 'homework-card': true }"
+          :class="{ 'cursor-not-allowed': isEditingDisabled, 'cursor-pointer': !isEditingDisabled }"
           border
           height="100%"
           rounded="xl"
           @click="handleCardClick('dialog', item.key)"
         >
-          <v-card-title class="homework-card-title">
-            <span class="subject-indicator" />
+          <v-card-title>
             {{ item.name }}
           </v-card-title>
           <v-card-text
-            class="homework-card-text"
             :style="contentStyle"
           >
             <!-- eslint-disable vue/no-v-html -- 内容已通过 escapeHtml 进行 XSS 防护 -->
@@ -239,7 +237,7 @@
             :key="subject.name"
             border
             rounded="xl"
-            class="empty-subject-card empty-subject-card--button"
+            class="empty-subject-card"
             @click="handleCardClick('dialog', subject.name)"
           >
             <v-card-text class="d-flex align-center justify-center py-3">
@@ -759,5 +757,11 @@ export default {
 .homework-content :deep(.hw-notebook-sep) {
   color: rgba(var(--v-theme-on-surface), 0.3);
   font-weight: var(--font-weight-light);
+}
+
+/* 空科目 chip 在深色模式下使用高不透明度实底语义色背景，
+   避免半透明色块与纯黑页面背景混为一体而难以辨识。不影响 on-surface 文字。 */
+:deep(.empty-subject-chip.v-chip--variant-tonal.v-theme--dark) {
+  background-color: rgba(var(--v-theme-primary), 0.98) !important;
 }
 </style>

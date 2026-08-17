@@ -238,4 +238,23 @@ export default {
     margin-left: 0 !important;
   }
 }
+
+/* 主界面操作按钮在深色模式下使用高不透明度实底语义色背景，
+   避免半透明色块与纯黑页面背景混为一体而难以辨识。不影响 on-surface 文字。
+   注意：v-theme--dark 是直接在按钮元素上的类，必须用复合选择器（无空格）。 */
+:deep(.v-btn--variant-tonal.text-primary.v-theme--dark) {
+  background-color: rgba(var(--v-theme-primary), 0.98) !important;
+}
+
+:deep(.v-btn--variant-tonal.text-error.v-theme--dark) {
+  background-color: rgba(var(--v-theme-error), 0.98) !important;
+}
+
+:deep(.v-btn--variant-tonal.text-success.v-theme--dark) {
+  background-color: rgba(var(--v-theme-success), 0.98) !important;
+}
+
+:deep(.v-btn--variant-tonal.text-warning.v-theme--dark) {
+  background-color: rgba(var(--v-theme-warning), 0.98) !important;
+}
 </style>
