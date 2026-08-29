@@ -153,6 +153,10 @@
             border
             class="mt-4"
           />
+          <sync-settings-card
+            border
+            class="mt-4"
+          />
           <settings-link-generator
             border
             class="mt-4"
@@ -193,14 +197,9 @@
             class="mt-4"
             @saved="onSettingsSaved"
           />
-          <refresh-settings-card
-            class="mt-4"
-          />
-          <homework-edit-settings-card
-            :loading="loading.edit"
+          <background-settings-card
             border
             class="mt-4"
-            @saved="onSettingsSaved"
           />
           <notification-sound-settings
             border
@@ -212,15 +211,20 @@
           />
         </v-tabs-window-item>
 
-        <v-tabs-window-item value="randomPicker">
+        <v-tabs-window-item value="edit">
+          <homework-edit-settings-card
+            :loading="loading.edit"
+            border
+            @saved="onSettingsSaved"
+          />
+          <refresh-settings-card
+            class="mt-4"
+          />
           <random-picker-card
             :is-mobile="isMobile"
             border
+            class="mt-4"
           />
-        </v-tabs-window-item>
-
-        <v-tabs-window-item value="background">
-          <background-settings-card border />
         </v-tabs-window-item>
 
         <v-tabs-window-item value="developer">
@@ -357,6 +361,7 @@ import NotificationSoundSettings from "@/components/settings/cards/NotificationS
 import AutoAttendanceCard from "@/components/settings/cards/AutoAttendanceCard.vue";
 import BackgroundSettingsCard from "@/components/settings/cards/BackgroundSettingsCard.vue";
 import ThemeSettingsCard from "@/components/settings/cards/ThemeSettingsCard.vue";
+import SyncSettingsCard from "@/components/settings/cards/SyncSettingsCard.vue";
 
 export default {
   name: "Settings",
@@ -383,6 +388,7 @@ export default {
     AutoAttendanceCard,
     BackgroundSettingsCard,
     ThemeSettingsCard,
+    SyncSettingsCard,
   },
   setup() {
     const {mobile} = useDisplay();
@@ -494,31 +500,23 @@ export default {
           value: "subject",
         },
         {
-          title: "人员管理",
+          title: "人员与考勤",
           icon: ICON.ACCOUNT_GROUP,
           color: "primary",
           value: "people",
         },
         {
-          title: "显示与编辑",
+          title: "显示与外观",
           icon: ICON.EYE,
           color: "warning",
           value: "display",
         },
         {
-          title: "随机点名",
-          icon: ICON.DICE_MULTIPLE,
+          title: "编辑与行为",
+          icon: ICON.COG_OUTLINE,
           color: "info",
-          value: "randomPicker",
+          value: "edit",
         },
-
-        {
-          title: "背景",
-          icon: ICON.IMAGE,
-          color: "primary",
-          value: "background",
-        },
-
         {
           title: "开发者",
           icon: ICON.DEVELOPER_BOARD,
