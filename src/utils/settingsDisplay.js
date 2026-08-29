@@ -22,7 +22,7 @@ const SETTING_NAME_MAP = {
   cardHoverEffect: "卡片悬浮效果",
   enhancedTouchMode: "增强触摸模式",
   showAntiScreenBurnCard: "防烧屏卡片",
-  showUafTransfer: "UAF导入导出",
+  showUafTransfer: "UAF作业导入导出按钮",
   mode: "主题模式",
   size: "字体大小",
   autoSave: "自动保存",

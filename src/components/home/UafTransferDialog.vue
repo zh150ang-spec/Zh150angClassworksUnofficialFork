@@ -8,13 +8,13 @@
     <v-card>
       <v-card-title class="d-flex align-center">
         <v-icon
-          :icon="mode === 'export' ? 'mdi-file-export-outline' : 'mdi-file-import-outline'"
+          :icon="mode === 'export' ? ICON.FILE_EXPORT_OUTLINE : ICON.FILE_IMPORT_OUTLINE"
           class="mr-2"
         />
         {{ mode === "export" ? "导出 UAF" : "导入 UAF" }}
         <v-spacer />
         <v-btn
-          icon="mdi-close"
+          :icon="ICON.CLOSE"
           variant="text"
           @click="dialog = false"
         />
@@ -47,7 +47,7 @@
                 v-model="exportDate"
                 class="mb-3"
                 label="导出日期"
-                prepend-inner-icon="mdi-calendar"
+                :prepend-inner-icon="ICON.CALENDAR"
                 type="date"
                 hide-details
                 :disabled="busy"
@@ -135,7 +135,7 @@
 
               <v-empty-state
                 v-else-if="!loadingPreview && !exportError"
-                icon="mdi-book-open-blank-variant-outline"
+                :icon="ICON.BOOK_OPEN_BLANK_VARIANT_OUTLINE"
                 text="该日期没有可导出的作业"
                 title="暂无作业"
               />
@@ -236,7 +236,7 @@
             accept="application/pdf,.pdf"
             clearable
             label="选择 UAF PDF"
-            prepend-icon="mdi-file-pdf-box"
+            :prepend-icon="ICON.FILE_PDF_BOX"
             :disabled="busy"
             @update:model-value="prepareImport"
           />
@@ -347,7 +347,7 @@
           color="primary"
           :disabled="primaryDisabled"
           :loading="busy"
-          :prepend-icon="mode === 'export' ? 'mdi-download' : 'mdi-database-import-outline'"
+          :prepend-icon="mode === 'export' ? ICON.DOWNLOAD : ICON.DATABASE_IMPORT_OUTLINE"
           @click="mode === 'export' ? exportSelected() : importSelected()"
         >
           {{ mode === "export" ? "导出所选作业" : "确认导入" }}

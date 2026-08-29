@@ -111,26 +111,22 @@
         />
         <span class="text-body-large font-weight-bold">班级编号设置</span>
         <v-spacer />
-        <v-btn-toggle
+        <v-radio-group
           v-if="useServer"
           v-model="serverSettings.classNumberSource"
-          color="primary"
-          density="comfortable"
-          mandatory
+          density="compact"
+          hide-details
+          inline
         >
-          <v-btn
+          <v-radio
             value="cloud"
-            size="small"
-          >
-            云端
-          </v-btn>
-          <v-btn
+            label="云端"
+          />
+          <v-radio
             value="local"
-            size="small"
-          >
-            本地
-          </v-btn>
-        </v-btn-toggle>
+            label="本地"
+          />
+        </v-radio-group>
       </div>
 
       <div
@@ -185,19 +181,22 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="handleEnableSyncDialog(false)"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="primary"
-            variant="elevated"
-            @click="handleEnableSyncDialog(true)"
-          >
-            允许
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="handleEnableSyncDialog(false)"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              color="success"
+              variant="elevated"
+              @click="handleEnableSyncDialog(true)"
+            >
+              允许
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>

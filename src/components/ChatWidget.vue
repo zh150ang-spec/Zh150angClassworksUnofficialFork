@@ -125,7 +125,7 @@
                   size="24"
                 >
                   <v-icon size="small">
-                    {{ msg.self ? 'mdi-account' : 'mdi-account-outline' }}
+                    {{ msg.self ? ICON.ACCOUNT : ICON.ACCOUNT_OUTLINE }}
                   </v-icon>
                 </v-avatar>
               </div>

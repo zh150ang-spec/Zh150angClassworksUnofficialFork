@@ -73,7 +73,7 @@ const settingsDefinitions = {
     icon: ICON.IDENTIFIER,
   },
   // 命名空间切换检测：记录上次启动时的 device.uuid，用于检测是否发生切换
-  "lastKnownNamespace": {
+  "device.lastKnownNamespace": {
     type: "string",
     default: "",
     description: "上次记录的命名空间标识",
@@ -94,7 +94,7 @@ const settingsDefinitions = {
     default: "card",
     validate: (value) => ["card", "button"].includes(value),
     description: "空科目显示方式",
-    icon: "mdi-card-outline",
+    icon: ICON.CARD_OUTLINE,
   },
 
   // 时间卡片设置
@@ -122,25 +122,25 @@ const settingsDefinitions = {
     type: "number",
     default: 300,
     description: "一言刷新间隔（秒，0为不刷新）",
-    icon: "mdi-timer-refresh",
+    icon: ICON.TIMER_REFRESH,
   },
   "display.dynamicSort": {
     type: "boolean",
     default: true,
     description: "动态排序",
-    icon: "mdi-sort-variant",
+    icon: ICON.SORT_VARIANT,
   },
   "display.showRandomButton": {
     type: "boolean",
     default: false,
-    description: "随机点人按钮",
-    icon: "mdi-shuffle-variant",
+    description: "随机点名按钮",
+    icon: ICON.SHUFFLE_VARIANT,
   },
   "display.showFullscreenButton": {
     type: "boolean",
     default: true,
     description: "全屏按钮",
-    icon: "mdi-fullscreen",
+    icon: ICON.FULLSCREEN,
   },
   "display.cardHoverEffect": {
     type: "boolean",
@@ -158,31 +158,31 @@ const settingsDefinitions = {
     type: "boolean",
     default: false,
     description: "防烧屏保护卡片",
-    icon: "mdi-monitor-shimmer",
+    icon: ICON.MONITOR_SHIMMER,
   },
   "display.showListCard": {
     type: "boolean",
     default: true,
-    description: "列表卡片",
+    description: "列表功能入口按钮",
     icon: ICON.LIST_BOX,
   },
   "display.showExamScheduleButton": {
     type: "boolean",
     default: true,
-    description: "考试看板",
+    description: "考试看板按钮",
     icon: ICON.CALENDAR_CHECK,
   },
   "display.showUafTransfer": {
     type: "boolean",
     default: true,
-    description: "是否显示UAF作业导入导出",
-    icon: "mdi-swap-vertical-bold",
+    description: "UAF作业导入导出按钮",
+    icon: ICON.SWAP_VERTICAL_BOLD,
   },
   "display.showQuickTools": {
     type: "boolean",
     default: true,
     description: "快捷输入键盘",
-    icon: "mdi-dialpad",
+    icon: ICON.DIALPAD,
   },
   "display.forceDesktopMode": {
     type: "boolean",
@@ -194,7 +194,7 @@ const settingsDefinitions = {
     type: "boolean",
     default: false,
     description: "迟到计入出勤",
-    icon: "mdi-clock-fast",
+    icon: ICON.CLOCK_FAST,
   },
   // 服务器设置（合并了数据提供者设置）
   "server.domain": {
@@ -231,7 +231,7 @@ const settingsDefinitions = {
     type: "string",
     default: "",
     description: "网站令牌",
-    icon: "mdi-key-chain",
+    icon: ICON.KEY_CHAIN,
   },
   "server.kvToken": {
     type: "string",
@@ -243,7 +243,7 @@ const settingsDefinitions = {
     type: "string",
     default: import.meta.env.VITE_DEFAULT_AUTH_SERVER || "https://kv.houlang.cloud",
     description: "授权服务器域名",
-    icon: "mdi-shield-account",
+    icon: ICON.SHIELD_ACCOUNT,
     validate: (value) => {
       if (!value) return true;
       try {
@@ -269,7 +269,7 @@ const settingsDefinitions = {
     type: "boolean",
     default: false,
     description: "自动刷新数据",
-    icon: "mdi-refresh-auto",
+    icon: ICON.REFRESH_AUTO,
   },
   "refresh.interval": {
     type: "number",
@@ -298,7 +298,7 @@ const settingsDefinitions = {
     default: 1200,
     validate: (value) => value >= 120 && value <= 7200,
     description: "同步最大间隔（秒）",
-    icon: "mdi-timer-sand-complete",
+    icon: ICON.TIMER_SAND_COMPLETE,
   },
 
   // 字体设置
@@ -307,21 +307,21 @@ const settingsDefinitions = {
     default: 28,
     validate: (value) => value >= 16 && value <= 100,
     description: "字体大小",
-    icon: "mdi-format-size",
+    icon: ICON.FORMAT_SIZE,
   },
 
-  // 编辑设置
+  // 作业编辑设置
   "edit.autoSave": {
     type: "boolean",
     default: true,
     description: "自动保存",
-    icon: "mdi-content-save-outline",
+    icon: ICON.CONTENT_SAVE_OUTLINE,
   },
   "edit.blockNonTodayAutoSave": {
     type: "boolean",
     default: true,
     description: "非当天数据禁止自动保存",
-    icon: "mdi-calendar-lock",
+    icon: ICON.CALENDAR_LOCK,
   },
   "edit.refreshBeforeEdit": {
     type: "boolean",
@@ -333,13 +333,13 @@ const settingsDefinitions = {
     type: "boolean",
     default: true,
     description: "非当天数据保存前确认",
-    icon: "mdi-calendar-alert",
+    icon: ICON.CALENDAR_ALERT,
   },
   "edit.blockPastDataEdit": {
     type: "boolean",
     default: false,
     description: "禁止编辑过往数据",
-    icon: "mdi-lock-clock",
+    icon: ICON.LOCK_CLOCK,
   },
   "edit.autoSavePromptText": {
     type: "string",
@@ -365,14 +365,14 @@ const settingsDefinitions = {
     type: "boolean",
     default: false,
     description: "显示调试配置",
-    icon: "mdi-bug-outline",
+    icon: ICON.BUG_OUTLINE,
   },
   "developer.disableMessageLog": {
     type: "boolean",
     default: false,
     description: "禁用消息日志",
     requireDeveloper: true,
-    icon: "mdi-message-off-outline",
+    icon: ICON.MESSAGE_OFF_OUTLINE,
   },
 
   // 消息设置
@@ -381,7 +381,7 @@ const settingsDefinitions = {
     default: true,
     description: "显示消息记录侧栏",
     requireDeveloper: true,
-    icon: "mdi-message-text-outline",
+    icon: ICON.MESSAGE_TEXT_OUTLINE,
   },
   "message.maxActiveMessages": {
     type: "number",
@@ -389,7 +389,7 @@ const settingsDefinitions = {
     validate: (value) => value >= 1 && value <= 10,
     description: "最大同时显示消息数",
     requireDeveloper: true,
-    icon: "mdi-message-badge-outline",
+    icon: ICON.MESSAGE_BADGE_OUTLINE,
     // 控制界面上同时显示的最大消息数量，范围1-10条
   },
   "message.timeout": {
@@ -448,7 +448,7 @@ const settingsDefinitions = {
     default: 30,
     validate: (value) => value >= 0 && value <= 80,
     description: "遮罩暗度（%）",
-    icon: "mdi-circle-half-full",
+    icon: ICON.CIRCLE_HALF_FULL,
   },
 
   // 通知铃声设置
@@ -476,7 +476,7 @@ const settingsDefinitions = {
     type: "boolean",
     default: true,
     description: "点名动画效果",
-    icon: "mdi-animation-play",
+    icon: ICON.ANIMATION_PLAY,
   },
   "randomPicker.defaultCount": {
     type: "number",
@@ -522,7 +522,7 @@ const settingsDefinitions = {
     default: 1,
     validate: (value) => value >= 1 && value,
     description: "学号最小值",
-    icon: "mdi-numeric-negative-1",
+    icon: ICON.NUMERIC_NEGATIVE_1,
   },
 
   // PWA 设置
@@ -530,7 +530,7 @@ const settingsDefinitions = {
     type: "boolean",
     default: false,
     description: "隐藏PWA安装提示",
-    icon: "mdi-download-off",
+    icon: ICON.DOWNLOAD_OFF,
   },
 
   // 自动出勤规则
@@ -586,6 +586,13 @@ class SettingsManagerClass {
       if (!(key in this.settingsCache)) {
         this.settingsCache[key] = definition.default;
       }
+    }
+
+    // 旧键迁移：扁平键 lastKnownNamespace → device.lastKnownNamespace
+    if ("lastKnownNamespace" in this.settingsCache && !("device.lastKnownNamespace" in this.settingsCache)) {
+      this.settingsCache["device.lastKnownNamespace"] = this.settingsCache["lastKnownNamespace"];
+      delete this.settingsCache["lastKnownNamespace"];
+      this.saveSettings();
     }
 
     return this.settingsCache;

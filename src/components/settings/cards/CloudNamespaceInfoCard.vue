@@ -2,6 +2,9 @@
   <v-card
     :disabled="!hasNamespaceInfo"
     :loading="loading"
+    border
+    flat
+    rounded="xl"
     class="my-4"
   >
     <template #loader>
@@ -38,8 +41,9 @@
             :href="getBindAccountUrl()"
             :append-icon="ICON.OPEN_IN_NEW"
             class="mt-3"
+            color="neutral-surface"
             target="_blank"
-            variant="outlined"
+            variant="elevated"
           >
             前往绑定账号
           </v-btn>
@@ -132,35 +136,6 @@
           </div>
         </v-card-text>
       </v-card>
-
-      <v-card
-        border
-        subtitle="文档形键值数据库"
-        title="Classworks KV"
-      >
-        <v-card-text>
-          Classworks KV 是厚浪云推出的文档形键值数据库，其是一个开放的云应用平台，为各种应用提供存储服务。此设备正在使用其服务，如果您希望管理设备信息，请前往
-          Classworks KV 的网站，如果您在服务推出前就在使用 Classworks，您的数据已被自动迁移。
-          <br><br>
-          Classworks KV 的全域管理员是
-          <a
-            href="https://wuyuan.dev"
-            target="_blank"
-          >
-            孙悟元
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            :href="defaultAuthServer"
-            :append-icon="ICON.OPEN_IN_NEW"
-            class="text-none"
-            target="_blank"
-          >
-            前往 Classworks KV
-          </v-btn>
-        </v-card-actions>
-      </v-card>
     </v-card-text>
 
     <v-card-text v-else>
@@ -195,22 +170,24 @@
 
     <v-card-actions>
       <v-spacer />
-      <v-btn
-        :loading="loading"
-        color="primary"
-        variant="outlined"
-        @click="reloadInfo"
-      >
-        刷新设备信息
-      </v-btn>
+      <div class="d-flex gap-2">
+        <v-btn
+          :loading="loading"
+          color="primary"
+          variant="elevated"
+          @click="reloadInfo"
+        >
+          刷新设备信息
+        </v-btn>
 
-      <v-btn
-        color="error"
-        variant="outlined"
-        @click="showReinitDialog = true"
-      >
-        重新初始化云端存储
-      </v-btn>
+        <v-btn
+          color="error"
+          variant="elevated"
+          @click="showReinitDialog = true"
+        >
+          重新初始化云端存储
+        </v-btn>
+      </div>
     </v-card-actions>
 
     <!-- 重新初始化确认对话框 -->
@@ -233,18 +210,22 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="showReinitDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="error"
-            @click="confirmReinitialize"
-          >
-            确认
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="showReinitDialog = false"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              color="error"
+              variant="elevated"
+              @click="confirmReinitialize"
+            >
+              确认
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>

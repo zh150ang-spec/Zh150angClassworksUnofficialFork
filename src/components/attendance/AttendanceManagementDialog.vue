@@ -72,7 +72,7 @@
           <div>
             <v-chip
               :append-icon="
-                attendanceFilter.includes('present') ? 'mdi-check' : ''
+                attendanceFilter.includes('present') ? ICON.CHECK : ''
               "
               :color="attendanceFilter.includes('present') ? 'success' : ''"
               :variant="
@@ -88,7 +88,7 @@
 
             <v-chip
               :append-icon="
-                attendanceFilter.includes('absent') ? 'mdi-check' : ''
+                attendanceFilter.includes('absent') ? ICON.CHECK : ''
               "
               :color="attendanceFilter.includes('absent') ? 'error' : ''"
               :variant="
@@ -103,7 +103,7 @@
             </v-chip>
             <v-chip
               :append-icon="
-                attendanceFilter.includes('late') ? 'mdi-check' : ''
+                attendanceFilter.includes('late') ? ICON.CHECK : ''
               "
               :color="attendanceFilter.includes('late') ? 'warning' : ''"
               :variant="
@@ -118,7 +118,7 @@
             </v-chip>
             <v-chip
               :append-icon="
-                attendanceFilter.includes('exclude') ? 'mdi-check' : ''
+                attendanceFilter.includes('exclude') ? ICON.CHECK : ''
               "
               :color="attendanceFilter.includes('exclude') ? 'grey' : ''"
               :variant="

@@ -75,6 +75,37 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-dialog
+      v-model="confirmDialog.show"
+      max-width="420"
+    >
+      <v-card>
+        <v-card-title class="text-headline-small">
+          {{ confirmDialog.title }}
+        </v-card-title>
+        <v-card-text>{{ confirmDialog.text }}</v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="cancelSave()"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :color="confirmDialog.color || 'warning'"
+              variant="elevated"
+              @click="confirmSave()"
+            >
+              {{ confirmDialog.confirmText || '确认' }}
+            </v-btn>
+          </div>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -82,6 +113,9 @@
 import {ref, computed} from 'vue'
 import {getSetting, setSetting} from '@/utils/settings'
 import {kvServerProvider} from '@/utils/providers/kvServerProvider'
+import {useConfirmDialog} from '@/composables/useConfirmDialog'
+
+const {confirmDialog, showConfirmDialog, confirmSave, cancelSave} = useConfirmDialog()
 
 const REDIRECT_GUARD_KEY = 'kvinit.redirecting'
 
@@ -99,7 +133,16 @@ const applySettings = () => {
   location.reload()
 }
 
-const clearGuard = () => {
+const clearGuard = async () => {
+  try {
+    await showConfirmDialog({
+      title: '确认清除重定向守卫',
+      text: '确定要清除重定向守卫吗？',
+      color: 'warning'
+    });
+  } catch {
+    return;
+  }
   try {
     sessionStorage.removeItem(REDIRECT_GUARD_KEY)
   } catch (e) {

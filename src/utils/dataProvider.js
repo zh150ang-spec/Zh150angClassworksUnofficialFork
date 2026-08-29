@@ -187,14 +187,14 @@ export default {
 
   checkNamespaceChange() {
     const currentNamespace = getSetting("device.uuid") || "";
-    const lastKnown = getSetting("lastKnownNamespace") || "";
+    const lastKnown = getSetting("device.lastKnownNamespace") || "";
 
     if (!currentNamespace) {
       return { changed: false, current: "", previous: lastKnown };
     }
 
     if (!lastKnown) {
-      setSetting("lastKnownNamespace", currentNamespace);
+      setSetting("device.lastKnownNamespace", currentNamespace);
       return { changed: false, current: currentNamespace, previous: "" };
     }
 
@@ -207,7 +207,7 @@ export default {
 
   confirmNamespaceChange() {
     const currentNamespace = getSetting("device.uuid") || "";
-    setSetting("lastKnownNamespace", currentNamespace);
+    setSetting("device.lastKnownNamespace", currentNamespace);
   },
 
   async exportLocalData() {

@@ -124,7 +124,7 @@
               title="刷新队列"
               @click="loadOfflineQueue"
             >
-              <v-icon>mdi-refresh</v-icon>
+              <v-icon :icon="ICON.REFRESH" />
             </v-btn>
             <v-btn
               v-if="offlineQueueItems.length > 0"
@@ -134,7 +134,7 @@
               :title="queueExpanded ? '收起' : '展开'"
               @click="queueExpanded = !queueExpanded"
             >
-              <v-icon>{{ queueExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              <v-icon :icon="queueExpanded ? ICON.CHEVRON_UP : ICON.CHEVRON_DOWN" />
             </v-btn>
           </template>
         </v-list-item>
@@ -152,9 +152,8 @@
                   <v-icon
                     size="small"
                     color="medium-emphasis"
-                  >
-                    mdi-key-variant
-                  </v-icon>
+                    :icon="ICON.KEY_VARIANT"
+                  />
                 </template>
                 <v-list-item-title class="text-body-medium font-mono">
                   {{ item.key }}
@@ -165,15 +164,16 @@
                 <template #append>
                   <v-btn
                     icon
-                    size="x-small"
+                    size="small"
                     variant="text"
                     color="error"
                     title="从队列移除（不影响本地数据）"
                     @click="removeQueueItem(item.id)"
                   >
-                    <v-icon size="small">
-                      mdi-close
-                    </v-icon>
+                    <v-icon
+                      size="small"
+                      :icon="ICON.CLOSE"
+                    />
                   </v-btn>
                 </template>
               </v-list-item>
@@ -198,7 +198,7 @@
             :disabled="!isDualMode"
             color="primary"
             :prepend-icon="ICON.SYNC"
-            variant="tonal"
+            variant="elevated"
             @click="forceSync"
           >
             立即同步

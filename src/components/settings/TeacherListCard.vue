@@ -1,320 +1,299 @@
 <template>
-  <v-card
-    :class="{ 'unsaved-changes': unsavedChanges }"
-    :color="unsavedChanges ? 'warning-subtle' : undefined"
-    border
+  <settings-card
+    :loading="loading"
+    :icon="ICON.ACCOUNT_TIE"
+    title="教师列表"
   >
-    <v-card-item>
-      <template #prepend>
-        <v-icon
-          class="mr-2"
-          :icon="ICON.ACCOUNT_TIE"
-          size="large"
-        />
-      </template>
-      <v-card-title class="text-headline-small">
-        教师列表
-      </v-card-title>
-      <template #append>
-        <unsaved-warning
-          :show="unsavedChanges"
-          message="有未保存的更改"
-        />
+    <template #status>
+      <unsaved-warning
+        :show="unsavedChanges"
+        message="有未保存的更改"
+      />
+    </template>
+    <template #append>
+      <div class="d-flex gap-2">
         <v-btn
-          :color="modelValue.advanced ? 'primary' : undefined"
+          :color="modelValue.advanced ? 'primary' : 'neutral-surface'"
           :prepend-icon="ICON.CODE_BRACES"
-          variant="text"
+          variant="elevated"
           @click="toggleAdvanced"
         >
           {{ modelValue.advanced ? "返回基础编辑" : "高级编辑" }}
         </v-btn>
-      </template>
-    </v-card-item>
+      </div>
+    </template>
 
-    <v-card-text>
-      <v-progress-linear
-        v-if="loading"
-        class="mb-4"
-        color="primary"
-        indeterminate
-      />
+    <v-alert
+      v-if="error"
+      class="mb-4"
+      closable
+      type="error"
+      variant="tonal"
+    >
+      {{ error }}
+    </v-alert>
 
-      <v-alert
-        v-if="error"
-        class="mb-4"
-        closable
-        type="error"
-        variant="tonal"
-      >
-        {{ error }}
-      </v-alert>
-
-      <v-expand-transition>
-        <!-- 普通编辑模式 -->
-        <div v-if="!modelValue.advanced">
-          <!-- 添加教师表单 -->
-          <v-card
-            class="mb-6"
-            variant="outlined"
-          >
-            <v-card-text>
-              <v-row>
-                <v-col
-                  cols="12"
-                  md="4"
-                >
-                  <v-text-field
-                    v-model="newTeacher.name"
-                    density="comfortable"
-                    hide-details
-                    label="教师姓名"
-                    placeholder="输入教师姓名"
-                    :prepend-inner-icon="ICON.ACCOUNT"
-                    variant="outlined"
-                  />
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="5"
-                >
-                  <v-combobox
-                    v-model="newTeacher.subjects"
-                    :items="commonSubjects"
-                    chips
-                    clearable
-                    closable-chips
-                    density="comfortable"
-                    hide-details
-                    label="任教科目"
-                    multiple
-                    placeholder="选择或输入科目"
-                    :prepend-inner-icon="ICON.BOOK_OPEN_VARIANT"
-                    variant="outlined"
-                  />
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="3"
-                  class="d-flex align-center gap-2"
-                >
-                  <v-checkbox
-                    v-model="newTeacher.isHeadTeacher"
-                    density="comfortable"
-                    color="primary"
-                    hide-details
-                    label="班主任"
-                  />
-                  <v-btn
-                    :disabled="!newTeacher.name.trim() || newTeacher.subjects.length === 0"
-                    color="primary"
-                    :prepend-icon="ICON.PLUS"
-                    @click="addTeacher"
-                  >
-                    添加教师
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-          <!-- 教师列表 -->
-          <v-empty-state
-            v-if="modelValue.list.length === 0"
-            :icon="ICON.ACCOUNT_TIE"
-            title="暂无教师"
-            text="还没有添加教师，请添加教师"
-          />
-
-          <v-row v-else>
-            <v-col
-              v-for="(teacher, index) in modelValue.list"
-              :key="index"
-              cols="12"
-              lg="6"
-              xl="4"
-            >
-              <v-card
-                elevation="1"
-                border
-                class="teacher-card"
+    <v-expand-transition>
+      <!-- 普通编辑模式 -->
+      <div v-if="!modelValue.advanced">
+        <!-- 添加教师表单 -->
+        <v-card
+          class="mb-6"
+          variant="outlined"
+        >
+          <v-card-text>
+            <v-row>
+              <v-col
+                cols="12"
+                md="4"
               >
-                <v-card-text class="pa-4">
-                  <div class="d-flex align-start mb-3">
-                    <v-avatar
-                      :color="teacher.isHeadTeacher ? 'primary' : 'grey-lighten-1'"
-                      class="mr-3"
-                      size="48"
-                    >
-                      <v-icon
-                        :icon="teacher.isHeadTeacher ? 'mdi-star' : 'mdi-account'"
-                        size="28"
-                      />
-                    </v-avatar>
+                <v-text-field
+                  v-model="newTeacher.name"
+                  density="comfortable"
+                  hide-details
+                  label="教师姓名"
+                  placeholder="输入教师姓名"
+                  :prepend-inner-icon="ICON.ACCOUNT"
+                  variant="outlined"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="5"
+              >
+                <v-combobox
+                  v-model="newTeacher.subjects"
+                  :items="commonSubjects"
+                  chips
+                  clearable
+                  closable-chips
+                  density="comfortable"
+                  hide-details
+                  label="任教科目"
+                  multiple
+                  placeholder="选择或输入科目"
+                  :prepend-inner-icon="ICON.BOOK_OPEN_VARIANT"
+                  variant="outlined"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="3"
+                class="d-flex align-center gap-2"
+              >
+                <v-checkbox
+                  v-model="newTeacher.isHeadTeacher"
+                  density="comfortable"
+                  color="primary"
+                  hide-details
+                  label="班主任"
+                />
+                <v-btn
+                  :disabled="!newTeacher.name.trim() || newTeacher.subjects.length === 0"
+                  color="success"
+                  :prepend-icon="ICON.PLUS"
+                  variant="elevated"
+                  @click="addTeacher"
+                >
+                  添加教师
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
 
-                    <div class="flex-grow-1">
-                      <div class="d-flex align-center mb-1">
-                        <v-text-field
-                          v-if="editState.index === index"
-                          v-model="editState.teacher.name"
-                          autofocus
-                          class="flex-grow-1"
-                          density="compact"
-                          hide-details
-                          variant="underlined"
-                        />
-                        <span
-                          v-else
-                          class="text-headline-small font-weight-medium"
-                          @click="handleClick(index, teacher)"
-                        >
-                          {{ teacher.name }}
-                        </span>
-                        <v-chip
-                          v-if="teacher.isHeadTeacher"
-                          class="ml-2"
-                          color="primary"
-                          density="comfortable"
-                          size="small"
-                          variant="flat"
-                        >
-                          班主任
-                        </v-chip>
-                      </div>
+        <!-- 教师列表 -->
+        <v-empty-state
+          v-if="modelValue.list.length === 0"
+          :icon="ICON.ACCOUNT_TIE"
+          title="暂无教师"
+          text="还没有添加教师，请添加教师"
+        />
 
-                      <div
+        <v-row v-else>
+          <v-col
+            v-for="(teacher, index) in modelValue.list"
+            :key="index"
+            cols="12"
+            lg="6"
+            xl="4"
+          >
+            <v-card
+              elevation="1"
+              border
+              class="teacher-card"
+            >
+              <v-card-text class="pa-4">
+                <div class="d-flex align-start mb-3">
+                  <v-avatar
+                    :color="teacher.isHeadTeacher ? 'primary' : 'grey-lighten-1'"
+                    class="mr-3"
+                    size="48"
+                  >
+                    <v-icon
+                      :icon="teacher.isHeadTeacher ? ICON.STAR : ICON.ACCOUNT"
+                      size="28"
+                    />
+                  </v-avatar>
+
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-center mb-1">
+                      <v-text-field
                         v-if="editState.index === index"
-                        class="mt-2"
-                      >
-                        <v-combobox
-                          v-model="editState.teacher.subjects"
-                          :items="commonSubjects"
-                          chips
-                          closable-chips
-                          density="compact"
-                          hide-details
-                          label="任教科目"
-                          multiple
-                          variant="outlined"
-                        />
-                        <v-checkbox
-                          v-model="editState.teacher.isHeadTeacher"
-                          class="mt-2"
-                          density="compact"
-                          color="primary"
-                          hide-details
-                          label="班主任"
-                        />
-                      </div>
-                      <div
+                        v-model="editState.teacher.name"
+                        autofocus
+                        class="flex-grow-1"
+                        density="compact"
+                        hide-details
+                        variant="underlined"
+                      />
+                      <span
                         v-else
-                        class="mt-1"
+                        class="text-headline-small font-weight-medium"
+                        @click="handleClick(index, teacher)"
                       >
-                        <v-chip
-                          v-for="(subject, sIndex) in teacher.subjects"
-                          :key="sIndex"
-                          class="mr-1 mb-1"
-                          density="comfortable"
-                          size="small"
-                          variant="tonal"
-                        >
-                          {{ subject }}
-                        </v-chip>
-                      </div>
+                        {{ teacher.name }}
+                      </span>
+                      <v-chip
+                        v-if="teacher.isHeadTeacher"
+                        class="ml-2"
+                        color="primary"
+                        density="comfortable"
+                        size="small"
+                        variant="flat"
+                      >
+                        班主任
+                      </v-chip>
                     </div>
 
-                    <div class="d-flex gap-1 action-buttons ml-2 opacity-100">
-                      <v-btn
-                        v-if="editState.index === index"
-                        color="success"
-                        :icon="ICON.CHECK"
-                        size="small"
-                        variant="text"
-                        @click="saveEdit"
+                    <div
+                      v-if="editState.index === index"
+                      class="mt-2"
+                    >
+                      <v-combobox
+                        v-model="editState.teacher.subjects"
+                        :items="commonSubjects"
+                        chips
+                        closable-chips
+                        density="compact"
+                        hide-details
+                        label="任教科目"
+                        multiple
+                        variant="outlined"
                       />
-                      <v-btn
-                        v-if="editState.index === index"
-                        color="medium-emphasis"
-                        :icon="ICON.CLOSE"
-                        size="small"
-                        variant="text"
-                        @click="cancelEdit"
-                      />
-                      <v-btn
-                        v-else
+                      <v-checkbox
+                        v-model="editState.teacher.isHeadTeacher"
+                        class="mt-2"
+                        density="compact"
                         color="primary"
-                        :icon="ICON.EDIT"
-                        size="small"
-                        variant="text"
-                        @click="startEdit(index, teacher)"
+                        hide-details
+                        label="班主任"
                       />
-                      <v-btn
-                        v-if="editState.index !== index"
-                        color="error"
-                        :icon="ICON.DELETE"
+                    </div>
+                    <div
+                      v-else
+                      class="mt-1"
+                    >
+                      <v-chip
+                        v-for="(subject, sIndex) in teacher.subjects"
+                        :key="sIndex"
+                        class="mr-1 mb-1"
+                        density="comfortable"
                         size="small"
-                        variant="text"
-                        @click="removeTeacher(index)"
-                      />
+                        variant="tonal"
+                      >
+                        {{ subject }}
+                      </v-chip>
                     </div>
                   </div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </div>
 
-        <!-- 高级编辑模式 -->
-        <div
-          v-else
-          class="pt-2"
-        >
-          <v-textarea
-            v-model="modelValue.text"
-            hint="JSON 格式编辑教师列表。每个教师需包含 name、subjects（数组）、isHeadTeacher（布尔值）"
-            label="批量编辑教师列表 (JSON)"
-            persistent-hint
-            placeholder="[{&quot;name&quot;:&quot;教师姓名&quot;,&quot;subjects&quot;:[&quot;语文&quot;,&quot;数学&quot;],&quot;isHeadTeacher&quot;:true}]"
-            rows="15"
-            variant="outlined"
-            @update:model-value="handleTextInput"
-          />
-        </div>
-      </v-expand-transition>
+                  <div class="d-flex gap-2 ml-2">
+                    <v-btn
+                      v-if="editState.index === index"
+                      color="success"
+                      :icon="ICON.CHECK"
+                      size="small"
+                      variant="text"
+                      @click="saveEdit"
+                    />
+                    <v-btn
+                      v-if="editState.index === index"
+                      color="medium-emphasis"
+                      :icon="ICON.CLOSE"
+                      size="small"
+                      variant="text"
+                      @click="cancelEdit"
+                    />
+                    <v-btn
+                      v-else
+                      color="primary"
+                      :icon="ICON.EDIT"
+                      size="small"
+                      variant="text"
+                      @click="startEdit(index, teacher)"
+                    />
+                    <v-btn
+                      v-if="editState.index !== index"
+                      color="error"
+                      :icon="ICON.DELETE"
+                      size="small"
+                      variant="text"
+                      @click="removeTeacher(index)"
+                    />
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
 
-      <v-row class="mt-6">
-        <v-col
-          class="d-flex gap-2"
-          cols="12"
-        >
-          <v-btn
-            :disabled="loading"
-            :loading="loading"
-            color="primary"
-            :prepend-icon="ICON.CONTENT_SAVE"
-            size="large"
-            @click="saveTeachers"
-          >
-            保存教师列表
-          </v-btn>
-          <v-btn
-            :disabled="loading"
-            :loading="loading"
-            color="error"
-            :prepend-icon="ICON.REFRESH"
-            size="large"
-            variant="outlined"
-            @click="loadTeachers"
-          >
-            重载教师列表
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
+      <!-- 高级编辑模式 -->
+      <div
+        v-else
+        class="pt-2"
+      >
+        <v-textarea
+          v-model="modelValue.text"
+          hint="JSON 格式编辑教师列表。每个教师需包含 name、subjects（数组）、isHeadTeacher（布尔值）"
+          label="批量编辑教师列表 (JSON)"
+          persistent-hint
+          placeholder="[{&quot;name&quot;:&quot;教师姓名&quot;,&quot;subjects&quot;:[&quot;语文&quot;,&quot;数学&quot;],&quot;isHeadTeacher&quot;:true}]"
+          rows="15"
+          variant="outlined"
+          @update:model-value="handleTextInput"
+        />
+      </div>
+    </v-expand-transition>
+
+    <template #actions>
+      <v-btn
+        :disabled="loading"
+        :loading="loading"
+        color="success"
+        :prepend-icon="ICON.CONTENT_SAVE"
+        variant="elevated"
+        @click="saveTeachers"
+      >
+        保存教师列表
+      </v-btn>
+      <v-btn
+        :disabled="loading"
+        :loading="loading"
+        color="neutral-surface"
+        :prepend-icon="ICON.REFRESH"
+        variant="elevated"
+        @click="loadTeachers"
+      >
+        重载教师列表
+      </v-btn>
+    </template>
+  </settings-card>
 </template>
 
 <script>
 import { ICON } from '@/utils/icons'
+import SettingsCard from "@/components/SettingsCard.vue";
 import UnsavedWarning from "../common/UnsavedWarning.vue";
 import "@/styles/warnings.scss";
 import dataProvider from "@/utils/dataProvider";
@@ -323,6 +302,7 @@ import {getSetting} from "@/utils/settings";
 export default {
   name: "TeacherListCard",
   components: {
+    SettingsCard,
     UnsavedWarning,
   },
   props: {
@@ -563,18 +543,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.teacher-card {
-  transition: all var(--duration-fast) var(--ease-apple);
-}
-
-.action-buttons {
-  opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-apple);
-}
-
-.unsaved-changes {
-  border-color: rgb(var(--v-theme-warning)) !important;
-}
-</style>

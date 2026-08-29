@@ -1,5 +1,10 @@
 <template>
-  <v-card class="notification-sound-settings">
+  <v-card
+    border
+    flat
+    rounded="xl"
+    class="notification-sound-settings"
+  >
     <v-card-title>
       通知铃声设置
     </v-card-title>
@@ -69,20 +74,18 @@
               <div class="mt-3 d-flex gap-2">
                 <v-btn
                   color="primary"
-                  variant="tonal"
+                  variant="elevated"
+                  :prepend-icon="ICON.PLAY"
                   @click="previewSound(singleSound)"
                 >
-                  <v-icon
-                    start
-                    :icon="ICON.PLAY"
-                  />
                   试听
                 </v-btn>
-                <v-btn @click="resetSingleSound">
-                  <v-icon
-                    start
-                    :icon="ICON.RESTORE"
-                  />
+                <v-btn
+                  color="neutral-surface"
+                  variant="elevated"
+                  :prepend-icon="ICON.RESTORE"
+                  @click="resetSingleSound"
+                >
                   恢复
                 </v-btn>
               </div>
@@ -135,20 +138,18 @@
               <div class="mt-3 d-flex gap-2">
                 <v-btn
                   color="primary"
-                  variant="tonal"
+                  variant="elevated"
+                  :prepend-icon="ICON.PLAY"
                   @click="previewSound(urgentSound)"
                 >
-                  <v-icon
-                    start
-                    :icon="ICON.PLAY"
-                  />
                   试听
                 </v-btn>
-                <v-btn @click="resetUrgentSound">
-                  <v-icon
-                    start
-                    :icon="ICON.RESTORE"
-                  />
+                <v-btn
+                  color="neutral-surface"
+                  variant="elevated"
+                  :prepend-icon="ICON.RESTORE"
+                  @click="resetUrgentSound"
+                >
                   恢复
                 </v-btn>
               </div>

@@ -49,6 +49,9 @@ const appleColors = {
     // Scratch / surface-tone neutrals for custom fills
     'outline': '#48484A',
     'outline-variant': '#3A3A3C',
+    // Neutral tonal surface for toolbar/utility buttons; brighter than
+    // surface-container-high so fills keep contrast in dark mode.
+    'neutral-surface': '#46464D',
   },
   // Light mode
   light: {
@@ -81,11 +84,20 @@ const appleColors = {
     // Scratch / surface-tone neutrals for custom fills
     'outline': '#8E8E93',
     'outline-variant': '#C7C7CC',
+    'neutral-surface': '#E2E2E7',
   },
 }
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  // 全局默认：所有未显式指定 variant 的按钮默认为实心 elevated，
+  // 避免 Vuetify 默认 tonal 导致的浅色底色与低对比度问题。
+  // 显式写 variant（text / outlined / tonal / flat 等）的按钮不受影响。
+  defaults: {
+    VBtn: {
+      variant: 'elevated',
+    },
+  },
   locale: {
     locale: 'zhHans',
     fallback: 'zhHans',

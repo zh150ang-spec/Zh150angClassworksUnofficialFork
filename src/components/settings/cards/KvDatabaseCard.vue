@@ -18,7 +18,8 @@
         <template #append>
           <v-btn
             :loading="loading"
-            variant="tonal"
+            color="neutral-surface"
+            variant="elevated"
             @click="refreshConnection"
           >
             刷新
@@ -40,28 +41,26 @@
           本地: {{ syncStatus.localCount || 0 }} 条
         </v-list-item-subtitle>
         <template #append>
-          <v-btn-group variant="tonal">
+          <div class="d-flex gap-2">
             <v-btn
-              size="small"
+              :loading="loading"
+              color="neutral-surface"
+              :prepend-icon="ICON.CLOUD_DOWNLOAD"
+              variant="elevated"
               @click="syncFromCloud"
             >
-              <v-icon
-                class="mr-1"
-                :icon="ICON.CLOUD_DOWNLOAD"
-              />
               云端 → 本地
             </v-btn>
             <v-btn
-              size="small"
+              :loading="loading"
+              color="neutral-surface"
+              :prepend-icon="ICON.CLOUD_UPLOAD"
+              variant="elevated"
               @click="syncToCloud"
             >
-              <v-icon
-                class="mr-1"
-                :icon="ICON.CLOUD_UPLOAD"
-              />
               本地 → 云端
             </v-btn>
-          </v-btn-group>
+          </div>
         </template>
       </v-list-item>
 
@@ -79,7 +78,8 @@
         <template #append>
           <v-btn
             :loading="loadingStorageInfo"
-            variant="tonal"
+            color="neutral-surface"
+            variant="elevated"
             @click="loadStorageInfo"
           >
             刷新
@@ -99,28 +99,26 @@
         <v-list-item-title>数据导入导出</v-list-item-title>
         <v-list-item-subtitle>备份和恢复所有数据</v-list-item-subtitle>
         <template #append>
-          <v-btn-group variant="tonal">
+          <div class="d-flex gap-2">
             <v-btn
               :loading="exporting"
+              color="neutral-surface"
+              :prepend-icon="ICON.DOWNLOAD"
+              variant="elevated"
               @click="exportAllData"
             >
-              <v-icon
-                class="mr-1"
-                :icon="ICON.DOWNLOAD"
-              />
               导出
             </v-btn>
             <v-btn
               :loading="importing"
+              color="neutral-surface"
+              :prepend-icon="ICON.UPLOAD"
+              variant="elevated"
               @click="triggerImport"
             >
-              <v-icon
-                class="mr-1"
-                :icon="ICON.UPLOAD"
-              />
               导入
             </v-btn>
-          </v-btn-group>
+          </div>
         </template>
       </v-list-item>
 
@@ -142,31 +140,33 @@
         <v-list-item-title>数据条目</v-list-item-title>
         <v-list-item-subtitle>共 {{ kvData.length }} 条记录</v-list-item-subtitle>
         <template #append>
-          <v-btn-group variant="tonal">
+          <div class="d-flex gap-2">
             <v-btn
               :loading="loadingData"
+              color="neutral-surface"
+              variant="elevated"
               @click="loadKvData"
             >
               加载数据
             </v-btn>
             <v-btn
               :disabled="!isKvProvider"
+              color="success"
+              :prepend-icon="ICON.PLUS"
+              variant="elevated"
               @click="createNewItem"
             >
-              <v-icon
-                class="mr-1"
-                :icon="ICON.PLUS"
-              />
               新建
             </v-btn>
-            <v-btn @click="showMigrationDialog = true">
-              <v-icon
-                class="mr-1"
-                :icon="ICON.CLOUD_UPLOAD"
-              />
+            <v-btn
+              color="neutral-surface"
+              :prepend-icon="ICON.CLOUD_UPLOAD"
+              variant="elevated"
+              @click="showMigrationDialog = true"
+            >
               从本地迁移
             </v-btn>
-          </v-btn-group>
+          </div>
         </template>
       </v-list-item>
     </v-list>
@@ -215,12 +215,15 @@
             <v-btn
               :icon="ICON.EYE"
               size="small"
+              variant="text"
               title="查看"
               @click="viewItem(item)"
             />
             <v-btn
               :icon="ICON.EDIT"
               size="small"
+              color="primary"
+              variant="text"
               title="编辑"
               @click="editItem(item)"
             />
@@ -228,6 +231,7 @@
               color="primary"
               :icon="ICON.CLOUD_DOWNLOAD"
               size="small"
+              variant="text"
               title="获取云端地址"
               @click="getCloudUrl(item)"
             />
@@ -235,6 +239,7 @@
               color="error"
               :icon="ICON.DELETE"
               size="small"
+              variant="text"
               title="删除"
               @click="confirmDelete(item)"
             />
@@ -258,6 +263,8 @@
           <v-spacer />
           <v-btn
             :icon="ICON.CLOSE"
+            size="small"
+            color="medium-emphasis"
             variant="text"
             @click="viewDialog = false"
           />
@@ -281,22 +288,23 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="tonal"
-            @click="copyToClipboard(selectedItem?.value)"
-          >
-            <v-icon
-              class="mr-1"
-              :icon="ICON.CONTENT_COPY"
-            />
-            复制数据
-          </v-btn>
-          <v-btn
-            variant="text"
-            @click="viewDialog = false"
-          >
-            关闭
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              :prepend-icon="ICON.CONTENT_COPY"
+              variant="elevated"
+              @click="copyToClipboard(selectedItem?.value)"
+            >
+              复制数据
+            </v-btn>
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="viewDialog = false"
+            >
+              关闭
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -316,6 +324,8 @@
           <v-spacer />
           <v-btn
             :icon="ICON.CLOSE"
+            size="small"
+            color="medium-emphasis"
             variant="text"
             @click="closeEditDialog"
           />
@@ -339,21 +349,23 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="closeEditDialog"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            :disabled="!isValidJson"
-            :loading="savingData"
-            color="primary"
-            variant="tonal"
-            @click="saveEditedData"
-          >
-            保存
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="closeEditDialog"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :disabled="!isValidJson"
+              :loading="savingData"
+              color="success"
+              @click="saveEditedData"
+            >
+              保存
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -373,6 +385,8 @@
           <v-spacer />
           <v-btn
             :icon="ICON.CLOSE"
+            size="small"
+            color="medium-emphasis"
             variant="text"
             @click="closeCreateDialog"
           />
@@ -403,21 +417,23 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="closeCreateDialog"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            :disabled="!isValidKey || !isValidNewJson"
-            :loading="savingData"
-            color="primary"
-            variant="tonal"
-            @click="saveNewData"
-          >
-            创建
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="closeCreateDialog"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :disabled="!isValidKey || !isValidNewJson"
+              :loading="savingData"
+              color="success"
+              @click="saveNewData"
+            >
+              创建
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -437,6 +453,8 @@
           <v-spacer />
           <v-btn
             :icon="ICON.CLOSE"
+            size="small"
+            color="medium-emphasis"
             variant="text"
             @click="cloudUrlDialog = false"
           />
@@ -529,13 +547,10 @@
                   :loading="gettingCloudUrl"
                   class="mt-2"
                   color="primary"
-                  variant="tonal"
+                  :prepend-icon="ICON.REFRESH"
+                  variant="elevated"
                   @click="refreshCloudUrl"
                 >
-                  <v-icon
-                    class="mr-1"
-                    :icon="ICON.REFRESH"
-                  />
                   重新获取
                 </v-btn>
               </v-expansion-panel-text>
@@ -545,24 +560,24 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="cloudUrlDialog = false"
-          >
-            关闭
-          </v-btn>
-          <v-btn
-            v-if="cloudUrlResult && cloudUrlResult.url"
-            color="primary"
-            variant="tonal"
-            @click="openCloudUrl"
-          >
-            <v-icon
-              class="mr-1"
-              :icon="ICON.OPEN_IN_NEW"
-            />
-            在新窗口打开
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="cloudUrlDialog = false"
+            >
+              关闭
+            </v-btn>
+            <v-btn
+              v-if="cloudUrlResult && cloudUrlResult.url"
+              color="primary"
+              :prepend-icon="ICON.OPEN_IN_NEW"
+              variant="elevated"
+              @click="openCloudUrl"
+            >
+              在新窗口打开
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -595,20 +610,23 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="deleteDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            :loading="deletingData"
-            color="error"
-            variant="tonal"
-            @click="deleteItem"
-          >
-            删除
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="deleteDialog = false"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :loading="deletingData"
+              color="error"
+              variant="elevated"
+              @click="deleteItem"
+            >
+              删除
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -647,20 +665,22 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="importConfirmDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            :loading="importing"
-            color="primary"
-            variant="tonal"
-            @click="confirmImport"
-          >
-            确认导入
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="importConfirmDialog = false"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :loading="importing"
+              color="success"
+              @click="confirmImport"
+            >
+              确认导入
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>

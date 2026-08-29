@@ -73,7 +73,7 @@
                     @click="sendNotification"
                   >
                     <v-icon start>
-                      {{ notificationForm.isUrgent ? 'mdi-alert-circle' : 'mdi-information' }}
+                      {{ notificationForm.isUrgent ? ICON.ERROR : ICON.INFORMATION }}
                     </v-icon>
                     {{ notificationForm.isUrgent ? '发送强调通知' : '发送通知' }}
                   </v-btn>
@@ -90,7 +90,7 @@
               <v-card>
                 <v-card-title>
                   <v-icon class="mr-2">
-                    mdi-pin
+                    {{ ICON.PIN }}
                   </v-icon>
                   常驻通知管理
                 </v-card-title>
@@ -111,7 +111,7 @@
                     >
                       <template #prepend>
                         <v-icon :color="item.isUrgent ? 'error' : 'primary'">
-                          {{ item.isUrgent ? 'mdi-alert-circle' : 'mdi-information' }}
+                          {{ item.isUrgent ? ICON.ERROR : ICON.INFORMATION }}
                         </v-icon>
                       </template>
                       <template #append>
@@ -142,7 +142,7 @@
               <v-card>
                 <v-card-title>
                   <v-icon class="mr-2">
-                    mdi-history
+                    {{ ICON.HISTORY }}
                   </v-icon>
                   消息记录
                   <v-spacer />

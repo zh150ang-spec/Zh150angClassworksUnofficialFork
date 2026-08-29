@@ -15,48 +15,6 @@
       {{ error }}
     </v-alert>
 
-    <div class="d-flex justify-space-between align-center mb-6">
-      <div>
-        <v-btn
-          :loading="loading"
-          class="mr-2"
-          color="primary"
-          :prepend-icon="ICON.REFRESH"
-          size="large"
-          variant="text"
-          @click="loadConfig"
-        >
-          重新加载
-        </v-btn>
-
-        <v-btn
-          :loading="loading"
-          color="success"
-          :prepend-icon="ICON.CONTENT_SAVE"
-          size="large"
-          @click="saveConfig"
-        >
-          保存
-        </v-btn>
-        <v-btn
-          :loading="loading"
-          class="mr-2"
-          :prepend-icon="ICON.RESTORE"
-          variant="text"
-          @click="resetToDefault"
-        >
-          重置为默认
-        </v-btn>
-      </div>
-      <v-chip
-        v-if="hasChanges"
-        color="warning"
-        variant="elevated"
-      >
-        有未保存的更改
-      </v-chip>
-    </div>
-
     <!-- 添加新科目 -->
     <v-card
       class="mb-4"
@@ -133,6 +91,45 @@
         </v-list>
       </v-card-text>
     </v-card>
+
+    <template #status>
+      <v-chip
+        v-if="hasChanges"
+        color="warning"
+        variant="elevated"
+      >
+        有未保存的更改
+      </v-chip>
+    </template>
+    <template #actions>
+      <v-btn
+        :loading="loading"
+        :prepend-icon="ICON.REFRESH"
+        color="neutral-surface"
+        variant="elevated"
+        @click="loadConfig"
+      >
+        重新加载
+      </v-btn>
+      <v-btn
+        :loading="loading"
+        color="success"
+        :prepend-icon="ICON.CONTENT_SAVE"
+        variant="elevated"
+        @click="saveConfig"
+      >
+        保存
+      </v-btn>
+      <v-btn
+        :loading="loading"
+        color="warning"
+        :prepend-icon="ICON.RESTORE"
+        variant="elevated"
+        @click="resetToDefault"
+      >
+        重置为默认
+      </v-btn>
+    </template>
   </settings-card>
 </template>
 
@@ -140,6 +137,7 @@
 import { ICON } from '@/utils/icons'
 import SettingsCard from '@/components/SettingsCard.vue';
 import dataProvider from "@/utils/dataProvider.js";
+import { useConfigDefaults } from '@/composables/useConfigDefaults';
 
 export default {
   name: 'SubjectManagementCard',
@@ -167,7 +165,8 @@ export default {
         {name: '历史', order: 7},
         {name: '地理', order: 8},
         {name: '其他', order: 9}
-      ]
+      ],
+      configLoader: useConfigDefaults({ configKey: 'classworks-config-subject', kind: 'array' })
     };
   },
 
@@ -186,27 +185,38 @@ export default {
     async loadConfig() {
       this.loading = true;
       try {
-        const response = await dataProvider.loadData("classworks-config-subject");
-        if (response && response.success !== false) {
-          this.subjects = response.map((subject, index) => ({
-            name: subject.name,
-            order: subject.order ?? index
-          })).sort((a, b) => a.order - b.order);
-          this.originalSubjects = JSON.parse(JSON.stringify(this.subjects));
+        const { result, message } = await this.configLoader.loadConfig({
+          applyLoaded: (response) => {
+            this.subjects = response
+              .map((subject, index) => ({
+                name: subject.name,
+                order: subject.order ?? index
+              }))
+              .sort((a, b) => a.order - b.order);
+            this.originalSubjects = JSON.parse(JSON.stringify(this.subjects));
+          },
+          applyDefault: () => this.applyDefault()
+        });
+
+        if (result === 'loaded') {
           this.showMessage('配置已加载', 'success');
-        } else if (response?.error?.code === 'NOT_FOUND') {
-          this.subjects = JSON.parse(JSON.stringify(this.defaultSubjects));
-          this.originalSubjects = JSON.parse(JSON.stringify(this.defaultSubjects));
-          this.showMessage('使用默认配置', 'info');
+        } else if (this.configLoader.isPreset(result)) {
+          this.showMessage('使用默认科目列表', 'info');
         } else {
-          const errorMsg = response?.error?.message || '加载失败';
-          this.showMessage(`加载失败: ${errorMsg}`, 'warning');
+          this.showMessage(
+            message ? `加载失败: ${message}，可继续编辑当前配置` : '加载失败，可继续编辑当前配置',
+            'warning'
+          );
         }
-      } catch (error) {
-        console.error('Failed to load config:', error);
-        this.showMessage('加载失败，可继续编辑当前配置', 'warning');
+      } finally {
+        this.loading = false;
       }
-      this.loading = false;
+    },
+
+    applyDefault() {
+      const snapshot = this.configLoader.defaultSnapshot(this.defaultSubjects);
+      this.subjects = snapshot;
+      this.originalSubjects = JSON.parse(JSON.stringify(snapshot));
     },
 
     async saveConfig() {
@@ -283,7 +293,7 @@ export default {
     },
 
     resetToDefault() {
-      this.subjects = JSON.parse(JSON.stringify(this.defaultSubjects));
+      this.subjects = this.configLoader.defaultSnapshot(this.defaultSubjects);
       this.showMessage('已重置为默认科目列表', 'info');
     }
   }

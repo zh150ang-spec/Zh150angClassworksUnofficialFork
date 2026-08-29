@@ -76,7 +76,7 @@
             @click="close"
           >
             <v-icon start>
-              mdi-check
+              {{ ICON.CHECK }}
             </v-icon>
             我知道了
           </v-btn>
@@ -141,7 +141,7 @@ export default {
     urgencyIcon() {
       return this.isUrgent
         ? ICON.ALERT_CIRCLE_OUTLINE
-        : "mdi-information-outline";
+        : ICON.INFORMATION_OUTLINE;
     },
     // 已移除：使用 urgencyIcon (MDI) 而非 emoji
     senderName() {

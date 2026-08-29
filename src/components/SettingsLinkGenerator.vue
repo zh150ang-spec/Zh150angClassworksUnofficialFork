@@ -3,6 +3,8 @@
     <!-- 统一链接生成器卡片 -->
     <v-card
       border
+      flat
+      rounded="xl"
       class="unified-link-generator"
     >
       <v-card-title class="text-headline-small">
@@ -134,7 +136,7 @@
                   start
                 >
                   {{
-                    preconfigForm.autoExecute ? "mdi-play-circle" : "mdi-hand-back-left"
+                    preconfigForm.autoExecute ? ICON.PLAY_CIRCLE : ICON.HAND_BACK_LEFT
                   }}
                 </v-icon>
                 {{ preconfigForm.autoExecute ? "自动认证" : "手动认证" }}
@@ -356,7 +358,7 @@
             <!-- 生成的链接 -->
             <v-text-field
               v-model="unifiedLink"
-              :append-inner-icon="linkCopied ? 'mdi-check' : 'mdi-content-copy'"
+              :append-inner-icon="linkCopied ? ICON.CHECK : ICON.CONTENT_COPY"
               :placeholder="preconfigForm.namespace ? '点击「生成统一链接」按钮' : '请先输入命名空间'"
               class="mb-3"
               label="统一链接"

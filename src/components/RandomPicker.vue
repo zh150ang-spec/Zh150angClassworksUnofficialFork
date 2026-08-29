@@ -62,25 +62,21 @@
 
         <!-- 添加模式切换 -->
         <div class="mode-switch-container mt-6">
-          <v-btn-toggle
+          <v-radio-group
             v-model="pickerMode"
-            class="mode-toggle"
-            color="primary"
-            mandatory
+            density="compact"
+            hide-details
+            inline
           >
-            <v-btn
-              :prepend-icon="ICON.ACCOUNT"
+            <v-radio
               value="name"
-            >
-              姓名模式
-            </v-btn>
-            <v-btn
-              :prepend-icon="ICON.NUMERIC_ICON"
+              label="姓名模式"
+            />
+            <v-radio
               value="number"
-            >
-              学号模式
-            </v-btn>
-          </v-btn-toggle>
+              label="学号模式"
+            />
+          </v-radio-group>
         </div>
 
         <!-- 学号范围设置 -->

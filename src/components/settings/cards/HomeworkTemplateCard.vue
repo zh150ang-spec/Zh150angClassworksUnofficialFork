@@ -277,7 +277,7 @@
                     color="primary"
                     size="small"
                   >
-                    mdi-book
+                    {{ ICON.BOOK_SIMPLE }}
                   </v-icon>
                   {{ subject }}
                   <v-spacer />
@@ -429,55 +429,58 @@
 
         <v-card-actions class="pa-4">
           <v-spacer />
-          <v-btn
-            color="error"
-            variant="text"
-            @click="closeDialog"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="primary"
-            variant="elevated"
-            @click="saveDialog"
-          >
-            保存
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="closeDialog"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              color="success"
+              variant="elevated"
+              @click="saveDialog"
+            >
+              保存
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- 底部操作栏：终点清算 -->
-    <div class="d-flex justify-end ga-2 mt-4">
+    <template #status>
       <v-chip
         v-if="hasChanges"
         color="warning"
         variant="elevated"
-        class="mr-auto"
       >
         <v-icon start>
-          mdi-alert
+          {{ ICON.WARNING }}
         </v-icon>
         有未保存的更改
       </v-chip>
+    </template>
+    <template #actions>
       <v-btn
         :loading="loading"
-        color="medium-emphasis"
         :prepend-icon="ICON.REFRESH"
-        variant="outlined"
+        color="neutral-surface"
+        variant="elevated"
         @click="loadConfig"
       >
         重新加载
       </v-btn>
       <v-btn
         :loading="loading"
-        color="primary"
+        color="success"
         :prepend-icon="ICON.CONTENT_SAVE"
+        variant="elevated"
         @click="saveConfig"
       >
         保存
       </v-btn>
-    </div>
+    </template>
   </settings-card>
 </template>
 
@@ -487,6 +490,7 @@ import {reactive} from 'vue';
 import SettingsCard from '@/components/SettingsCard.vue';
 import SettingGroup from '@/components/settings/SettingGroup.vue';
 import dataProvider from "@/utils/dataProvider.js";
+import { useConfigDefaults } from '@/composables/useConfigDefaults';
 
 const DEFAULT_CONFIG = {
   subjects: {
@@ -551,6 +555,7 @@ export default {
       newNotebookSubject: '',
       newSubjectNotebook: {},
       isNewConfig: true,
+      configLoader: useConfigDefaults({ configKey: 'classworks-config-homework-template', kind: 'object' }),
       dialog: {
         show: false,
         title: '',
@@ -586,25 +591,36 @@ export default {
     async loadConfig() {
       this.loading = true;
       try {
-        const response = await dataProvider.loadData("classworks-config-homework-template");
-        if (response && response.success !== false) {
-          const config = response;
-          Object.assign(this.config, config);
-          this.originalConfig = JSON.parse(JSON.stringify(config));
-          this.isNewConfig = false;
+        const { result, message } = await this.configLoader.loadConfig({
+          applyLoaded: (response) => {
+            Object.assign(this.config, response);
+            this.originalConfig = JSON.parse(JSON.stringify(this.config));
+            this.isNewConfig = false;
+          },
+          applyDefault: () => this.applyDefault()
+        });
+
+        if (result === 'loaded') {
           this.showMessage('配置已加载', 'success');
-        } else if (response?.error?.code === 'NOT_FOUND') {
+        } else if (this.configLoader.isPreset(result)) {
           this.showMessage('使用默认配置', 'info');
-          this.isNewConfig = true;
         } else {
-          const errorMsg = response?.error?.message || '加载失败';
-          this.showMessage(`加载失败: ${errorMsg}，可继续编辑当前配置`, 'warning');
+          this.showMessage(
+            message ? `加载失败: ${message}，可继续编辑当前配置` : '加载失败，可继续编辑当前配置',
+            'warning'
+          );
         }
-      } catch (error) {
-        console.error('Failed to load config:', error);
-        this.showMessage('加载失败，可继续编辑当前配置', 'warning');
+      } finally {
+        this.loading = false;
       }
-      this.loading = false;
+    },
+
+    applyDefault() {
+      const snapshot = this.configLoader.defaultSnapshot(DEFAULT_CONFIG);
+      Object.assign(this.config, snapshot);
+      // 内置默认配置视为已保存状态，不再提示未保存的更改
+      this.originalConfig = JSON.parse(JSON.stringify(snapshot));
+      this.isNewConfig = false;
     },
 
     async saveConfig() {

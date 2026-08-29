@@ -6,13 +6,9 @@
     >
       <setting-item setting-key="hitokoto.enabled" />
       <setting-item setting-key="hitokoto.refreshInterval" />
-    </setting-group>
 
-    <setting-group
-      title="一言配置"
-      :icon="ICON.CLOUD_SYNC"
-      class="mt-4"
-    >
+      <v-divider class="my-2" />
+
       <div class="text-body-small text-medium-emphasis px-4 pt-2 pb-2">
         以下配置将同步到云端，对所有连接此班级的设备生效。
       </div>

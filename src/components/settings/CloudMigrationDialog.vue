@@ -82,20 +82,24 @@
           已选择 {{ selectedKeys.length }} 项
         </div>
         <v-spacer />
-        <v-btn
-          variant="text"
-          @click="dialog = false"
-        >
-          取消
-        </v-btn>
-        <v-btn
-          color="primary"
-          :loading="migrating"
-          :disabled="selectedKeys.length === 0"
-          @click="migrate"
-        >
-          开始迁移
-        </v-btn>
+        <div class="d-flex gap-2">
+          <v-btn
+            color="neutral-surface"
+            variant="elevated"
+            @click="dialog = false"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="success"
+            :loading="migrating"
+            :disabled="selectedKeys.length === 0"
+            variant="elevated"
+            @click="migrate"
+          >
+            开始迁移
+          </v-btn>
+        </div>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -122,7 +126,8 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          color="primary"
+          color="neutral-surface"
+          variant="elevated"
           @click="resultDialog = false"
         >
           关闭

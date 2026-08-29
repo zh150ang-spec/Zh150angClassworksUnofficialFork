@@ -86,7 +86,7 @@
           size="24"
           start
         >
-          mdi-login
+          :icon="ICON.LOGIN"
         </v-icon>
         <span class="text-headline-small">认证并登录</span>
       </v-btn>

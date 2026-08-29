@@ -1,103 +1,99 @@
 <template>
-  <v-card>
-    <v-card-title class="d-flex align-center">
-      <v-icon
-        start
-        :icon="ICON.CLOCK_OUTLINE"
-      />
-      自动出勤规则
-    </v-card-title>
-    <v-card-subtitle>
-      设置时间段后自动标记学生的出勤状态
-    </v-card-subtitle>
-    <v-card-text>
-      <v-alert
-        class="mb-4"
-        color="info"
-        :icon="ICON.INFO"
-        variant="tonal"
-      >
-        添加规则后，在指定时间段内，系统会自动将学生标记为对应状态
-      </v-alert>
-
-      <div class="d-flex justify-end mb-4">
+  <settings-card
+    :icon="ICON.CLOCK_OUTLINE"
+    title="自动出勤规则"
+  >
+    <template #append>
+      <div class="d-flex gap-2">
         <v-btn
-          color="default"
-          :prepend-icon="ICON.BROOM"
-          variant="outlined"
-          class="mr-2"
-          @click="cleanupInvalidRules"
-        >
-          清理无效规则
-        </v-btn>
-        <v-btn
-          color="primary"
+          color="success"
           :prepend-icon="ICON.PLUS"
+          variant="elevated"
           @click="openAddDialog"
         >
           添加规则
         </v-btn>
       </div>
+    </template>
 
-      <v-list
-        v-if="rules.length > 0"
-        class="rules-list"
+    <v-alert
+      class="mb-4"
+      color="info"
+      :icon="ICON.INFO"
+      variant="tonal"
+    >
+      添加规则后，在指定时间段内，系统会自动将学生标记为对应状态
+    </v-alert>
+
+    <v-list
+      v-if="rules.length > 0"
+      class="rules-list"
+    >
+      <v-list-item
+        v-for="(rule, index) in rules"
+        :key="index"
+        class="mb-2 rule-item"
       >
-        <v-list-item
-          v-for="(rule, index) in rules"
-          :key="index"
-          class="mb-2 rule-item"
-        >
-          <template #prepend>
-            <v-avatar
-              :color="getStatusColor(rule.status)"
-              size="40"
-            >
-              <v-icon>{{ getStatusIcon(rule.status) }}</v-icon>
-            </v-avatar>
-          </template>
+        <template #prepend>
+          <v-avatar
+            :color="getStatusColor(rule.status)"
+            size="40"
+          >
+            <v-icon>{{ getStatusIcon(rule.status) }}</v-icon>
+          </v-avatar>
+        </template>
 
-          <v-list-item-title class="font-weight-bold">
-            {{ rule.student }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            <v-chip
-              :color="getStatusColor(rule.status)"
-              size="x-small"
-              class="mr-2"
-            >
-              {{ getStatusLabel(rule.status) }}
-            </v-chip>
-            <span class="text-body-small">
-              {{ formatTimeRange(rule) }}
-            </span>
-          </v-list-item-subtitle>
+        <v-list-item-title class="font-weight-bold">
+          {{ rule.student }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          <v-chip
+            :color="getStatusColor(rule.status)"
+            size="x-small"
+            class="mr-2"
+          >
+            {{ getStatusLabel(rule.status) }}
+          </v-chip>
+          <span class="text-body-small">
+            {{ formatTimeRange(rule) }}
+          </span>
+        </v-list-item-subtitle>
 
-          <template #append>
-            <v-btn
-              :icon="ICON.EDIT"
-              size="small"
-              variant="text"
-              @click="editRule(index)"
-            />
-            <v-btn
-              color="error"
-              :icon="ICON.DELETE"
-              size="small"
-              variant="text"
-              @click="deleteRule(index)"
-            />
-          </template>
-        </v-list-item>
-      </v-list>
+        <template #append>
+          <v-btn
+            :icon="ICON.EDIT"
+            size="small"
+            variant="text"
+            @click="editRule(index)"
+          />
+          <v-btn
+            color="error"
+            :icon="ICON.DELETE"
+            size="small"
+            variant="text"
+            @click="deleteRule(index)"
+          />
+        </template>
+      </v-list-item>
+    </v-list>
 
-      <v-empty-state
-        v-else
-        :icon="ICON.CALENDAR_CLOCK"
-        text="暂无自动出勤规则"
-        title="暂无规则"
-      />
-    </v-card-text>
+    <v-empty-state
+      v-else
+      :icon="ICON.CALENDAR_CLOCK"
+      text="暂无自动出勤规则"
+      title="暂无规则"
+    />
+
+    <template #actions>
+      <v-btn
+        color="warning"
+        :prepend-icon="ICON.BROOM"
+        variant="elevated"
+        @click="cleanupInvalidRules"
+      >
+        清理无效规则
+      </v-btn>
+    </template>
 
     <v-dialog
       v-model="dialog"
@@ -281,18 +277,22 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="dialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="primary"
-            @click="saveRule"
-          >
-            保存
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="dialog = false"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              color="success"
+              variant="elevated"
+              @click="saveRule"
+            >
+              保存
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -308,22 +308,26 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="deleteDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="error"
-            @click="confirmDelete"
-          >
-            删除
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="deleteDialog = false"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              color="error"
+              variant="elevated"
+              @click="confirmDelete"
+            >
+              删除
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-card>
+  </settings-card>
 </template>
 
 <script>
@@ -331,9 +335,11 @@ import { ICON } from '@/utils/icons'
 import { getSetting, setSetting } from "@/utils/settings";
 import dataProvider from "@/utils/dataProvider";
 import { formatDateISO } from "@/utils/dateUtils";
+import SettingsCard from '@/components/SettingsCard.vue';
 
 export default {
   name: "AutoAttendanceCard",
+  components: { SettingsCard },
   data() {
     return {
       ICON,

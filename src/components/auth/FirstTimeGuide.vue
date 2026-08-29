@@ -639,7 +639,7 @@ const statusIcon = computed(() => {
       ? ICON.ERROR
       : progressiveStatus.value === 'registering'
         ? ICON.PROGRESS_CLOCK
-        : 'mdi-rocket-launch'
+        : ICON.ROCKET_LAUNCH
 })
 
 const statusTitle = computed(() => {

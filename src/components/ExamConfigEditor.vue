@@ -155,32 +155,29 @@
           <span>请先完善配置信息后再操作</span>
         </v-tooltip>
       </div>
-      <v-btn-toggle
-        v-model="isEditMode"
-        color="primary"
-        divided
-        variant="outlined"
+      <v-btn
+        class="text-error mr-4"
+        :prepend-icon="ICON.DELETE"
+        variant="tonal"
+        @click="confirmDelete"
       >
-        <v-btn
-          class="text-error"
-          :prepend-icon="ICON.DELETE"
-          @click="confirmDelete"
-        >
-          删除配置
-        </v-btn>
-        <v-btn
+        删除配置
+      </v-btn>
+      <v-radio-group
+        v-model="isEditMode"
+        density="compact"
+        hide-details
+        inline
+      >
+        <v-radio
           :value="false"
-          :prepend-icon="ICON.EYE"
-        >
-          预览
-        </v-btn>
-        <v-btn
+          label="预览"
+        />
+        <v-radio
           :value="true"
-          :prepend-icon="ICON.EDIT"
-        >
-          编辑
-        </v-btn>
-      </v-btn-toggle>
+          label="编辑"
+        />
+      </v-radio-group>
     </div>
 
     <!-- 预览模式 -->
@@ -326,7 +323,7 @@
           </v-btn>
 
           <v-btn
-            :icon="showJsonPreview ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+            :icon="showJsonPreview ? ICON.CHEVRON_UP : ICON.CHEVRON_DOWN"
             class="ml-2"
             color="white"
             size="small"

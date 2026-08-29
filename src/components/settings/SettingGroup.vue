@@ -67,7 +67,7 @@ export default {
      */
     border: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   emits: ['update', 'error'],

@@ -134,7 +134,7 @@ export function useTokenDisplay() {
     tokenDisplayInfo.text = displayName;
     tokenDisplayInfo.color = "primary";
     // 学生用人头图标，教师用学校图标
-    tokenDisplayInfo.icon = isTeacher ? "mdi-school" : ICON.ACCOUNT;
+    tokenDisplayInfo.icon = isTeacher ? ICON.SCHOOL : ICON.ACCOUNT;
     tokenDisplayInfo.disabled = isReadOnly; // 只读时不可点击
     tokenDisplayInfo.show = true;
   };

@@ -24,6 +24,7 @@
     "build:store": "node scripts/generate-sound-list.js && vite build && node scripts/validate-pwa-build.js",
     "preview": "vite preview",
     "lint": "eslint . --fix",
+    "scan:ui": "node scripts/scan-ui-issues.js",
     "pwa:validate": "node scripts/validate-pwa-build.js",
     "prebuild": "node scripts/generate-sound-list.js",
     "sync:uaf": "node scripts/sync-uaf-browser.js",

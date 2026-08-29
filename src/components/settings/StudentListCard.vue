@@ -1,264 +1,241 @@
 <template>
-  <v-card
-    :class="{ 'unsaved-changes': unsavedChanges }"
-    :color="unsavedChanges ? 'warning-subtle' : undefined"
-    border
+  <settings-card
+    :loading="loading"
+    :icon="ICON.ACCOUNT_GROUP"
+    title="学生列表"
   >
-    <v-card-item>
-      <template #prepend>
-        <v-icon
-          class="mr-2"
-          :icon="ICON.ACCOUNT_GROUP"
-          size="large"
-        />
-      </template>
-      <v-card-title class="text-headline-small">
-        学生列表
-      </v-card-title>
-      <template #append>
-        <unsaved-warning
-          :show="unsavedChanges"
-          message="有未保存的更改"
-        />
+    <template #status>
+      <unsaved-warning
+        :show="unsavedChanges"
+        message="有未保存的更改"
+      />
+    </template>
+    <template #append>
+      <div class="d-flex gap-2">
         <v-btn
-          :disabled="modelValue.list.length === 0"
-          class="mr-2"
           :prepend-icon="ICON.SORT_ALPHABETICAL_VARIANT"
-          variant="text"
+          color="neutral-surface"
+          variant="elevated"
           @click="sortStudentsByPinyin"
         >
           按姓名首字母排序
         </v-btn>
         <v-btn
-          :color="modelValue.advanced ? 'primary' : undefined"
+          :color="modelValue.advanced ? 'primary' : 'neutral-surface'"
           :prepend-icon="ICON.CODE_BRACES"
-          variant="text"
+          variant="elevated"
           @click="toggleAdvanced"
         >
           {{ modelValue.advanced ? "返回基础编辑" : "高级编辑" }}
         </v-btn>
-      </template>
-    </v-card-item>
+      </div>
+    </template>
 
-    <v-card-text>
-      <v-progress-linear
-        v-if="loading"
-        class="mb-4"
-        color="primary"
-        indeterminate
-      />
+    <v-alert
+      v-if="error"
+      class="mb-4"
+      closable
+      type="error"
+      variant="tonal"
+    >
+      {{ error }}
+    </v-alert>
 
-      <v-alert
-        v-if="error"
-        class="mb-4"
-        closable
-        type="error"
-        variant="tonal"
-      >
-        {{ error }}
-      </v-alert>
-
-      <v-expand-transition>
-        <!-- 普通编辑模式 -->
-        <div v-if="!modelValue.advanced">
-          <v-row class="mb-6">
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
+    <v-expand-transition>
+      <!-- 普通编辑模式 -->
+      <div v-if="!modelValue.advanced">
+        <v-row class="mb-6">
+          <v-col
+            cols="12"
+            md="4"
+            sm="6"
+          >
+            <v-text-field
+              v-model="newStudentName"
+              class="mb-4"
+              hide-details
+              label="添加学生"
+              placeholder="输入学生姓名后回车添加"
+              :prepend-inner-icon="ICON.ACCOUNT_PLUS"
+              variant="outlined"
+              @keyup.enter="addStudent"
             >
-              <v-text-field
-                v-model="newStudentName"
-                class="mb-4"
-                hide-details
-                label="添加学生"
-                placeholder="输入学生姓名后回车添加"
-                :prepend-inner-icon="ICON.ACCOUNT_PLUS"
-                variant="outlined"
-                @keyup.enter="addStudent"
-              >
-                <template #append>
-                  <v-btn
-                    :disabled="!newStudentName.trim()"
-                    color="primary"
-                    :icon="ICON.PLUS"
-                    variant="text"
-                    @click="addStudent"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-          </v-row>
+              <template #append>
+                <v-btn
+                  :disabled="!newStudentName.trim()"
+                  color="primary"
+                  :icon="ICON.PLUS"
+                  size="small"
+                  variant="text"
+                  @click="addStudent"
+                />
+              </template>
+            </v-text-field>
+          </v-col>
+        </v-row>
 
-          <!-- 空状态提示 -->
-          <v-empty-state
-            v-if="modelValue.list.length === 0"
-            :icon="ICON.ACCOUNT_OFF"
-            title="暂无学生"
-            text="还没有添加学生，请在上方添加"
-          />
+        <!-- 空状态提示 -->
+        <v-empty-state
+          v-if="modelValue.list.length === 0"
+          :icon="ICON.ACCOUNT_OFF"
+          title="暂无学生"
+          text="还没有添加学生，请在上方添加"
+        />
 
-          <v-row v-if="modelValue.list.length > 0">
-            <v-col
-              v-for="(student, index) in modelValue.list"
-              :key="index"
-              cols="12"
-              lg="3"
-              md="4"
-              sm="6"
+        <v-row v-if="modelValue.list.length > 0">
+          <v-col
+            v-for="(student, index) in modelValue.list"
+            :key="index"
+            cols="12"
+            lg="3"
+            md="4"
+            sm="6"
+          >
+            <v-card
+              elevation="1"
+              border
+              class="student-card"
             >
-              <v-card
-                elevation="1"
-                border
-                class="student-card"
-              >
-                <v-card-text class="d-flex align-center pa-3">
-                  <v-menu
-                    :open-on-hover="!isMobile"
-                    location="bottom"
-                  >
-                    <template #activator="{ props: menuProps }">
-                      <v-btn
-                        class="mr-3 font-weight-medium"
-                        size="small"
-                        v-bind="menuProps"
-                        variant="tonal"
-                      >
-                        {{ index + 1 }}
-                      </v-btn>
-                    </template>
-
-                    <v-list
-                      density="compact"
-                      nav
+              <v-card-text class="d-flex align-center pa-3">
+                <v-menu
+                  :open-on-hover="!isMobile"
+                  location="bottom"
+                >
+                  <template #activator="{ props: menuProps }">
+                    <v-btn
+                      class="mr-3 font-weight-medium"
+                      size="small"
+                      v-bind="menuProps"
                     >
-                      <v-list-item
-                        :disabled="index === 0"
-                        :prepend-icon="ICON.ARROW_UP_BOLD"
-                        @click="moveStudent(index, 'top')"
-                      >
-                        置顶
-                      </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        :disabled="index === 0"
-                        :prepend-icon="ICON.ARROW_UP"
-                        @click="moveStudent(index, 'up')"
-                      >
-                        上移
-                      </v-list-item>
-                      <v-list-item
-                        :disabled="index === modelValue.list.length - 1"
-                        :prepend-icon="ICON.ARROW_DOWN"
-                        @click="moveStudent(index, 'down')"
-                      >
-                        下移
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
+                      {{ index + 1 }}
+                    </v-btn>
+                  </template>
 
-                  <v-text-field
-                    v-if="editState.index === index"
-                    v-model="editState.name"
-                    autofocus
-                    class="flex-grow-1"
+                  <v-list
                     density="compact"
-                    hide-details
-                    variant="underlined"
-                    @blur="saveEdit"
-                    @keyup.enter="saveEdit"
-                  />
-                  <span
-                    v-else
-                    class="text-body-large flex-grow-1"
-                    @click="handleClick(index, student)"
+                    nav
                   >
-                    {{ student.name }}
-                  </span>
+                    <v-list-item
+                      :disabled="index === 0"
+                      :prepend-icon="ICON.ARROW_UP_BOLD"
+                      @click="moveStudent(index, 'top')"
+                    >
+                      置顶
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item
+                      :disabled="index === 0"
+                      :prepend-icon="ICON.ARROW_UP"
+                      @click="moveStudent(index, 'up')"
+                    >
+                      上移
+                    </v-list-item>
+                    <v-list-item
+                      :disabled="index === modelValue.list.length - 1"
+                      :prepend-icon="ICON.ARROW_DOWN"
+                      @click="moveStudent(index, 'down')"
+                    >
+                      下移
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
 
-                  <div class="d-flex gap-1 action-buttons opacity-100">
-                    <v-btn
-                      color="primary"
-                      :icon="ICON.EDIT"
-                      size="small"
-                      variant="text"
-                      @click="startEdit(index, student)"
-                    />
-                    <v-btn
-                      color="error"
-                      :icon="ICON.DELETE"
-                      size="small"
-                      variant="text"
-                      @click="removeStudent(index)"
-                    />
-                  </div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </div>
+                <v-text-field
+                  v-if="editState.index === index"
+                  v-model="editState.name"
+                  autofocus
+                  class="flex-grow-1"
+                  density="compact"
+                  hide-details
+                  variant="underlined"
+                  @blur="saveEdit"
+                  @keyup.enter="saveEdit"
+                />
+                <span
+                  v-else
+                  class="text-body-large flex-grow-1"
+                  @click="handleClick(index, student)"
+                >
+                  {{ student.name }}
+                </span>
 
-        <!-- 高级编辑模式 -->
-        <div
-          v-else
-          class="pt-2"
+                <div class="d-flex gap-2">
+                  <v-btn
+                    color="primary"
+                    :icon="ICON.EDIT"
+                    size="small"
+                    variant="text"
+                    @click="startEdit(index, student)"
+                  />
+                  <v-btn
+                    color="error"
+                    :icon="ICON.DELETE"
+                    size="small"
+                    variant="text"
+                    @click="removeStudent(index)"
+                  />
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+
+      <!-- 高级编辑模式 -->
+      <div
+        v-else
+        class="pt-2"
+      >
+        <v-alert
+          v-if="!modelValue.text"
+          class="mb-4"
+          :icon="ICON.INFORMATION_OUTLINE"
+          type="info"
+          variant="tonal"
         >
-          <v-alert
-            v-if="!modelValue.text"
-            class="mb-4"
-            icon="mdi-information-outline"
-            type="info"
-            variant="tonal"
-          >
-            在此粘贴学生名单，每行一个
-          </v-alert>
-          <v-textarea
-            v-model="modelValue.text"
-            hint="使用文本编辑模式批量编辑学生名单，保存时会自动去除空行"
-            label="批量编辑学生列表"
-            persistent-hint
-            placeholder="每行输入一个学生姓名"
-            rows="10"
-            variant="outlined"
-            @update:model-value="handleTextInput"
-          />
-        </div>
-      </v-expand-transition>
+          在此粘贴学生名单，每行一个
+        </v-alert>
+        <v-textarea
+          v-model="modelValue.text"
+          hint="使用文本编辑模式批量编辑学生名单，保存时会自动去除空行"
+          label="批量编辑学生列表"
+          persistent-hint
+          placeholder="每行输入一个学生姓名"
+          rows="10"
+          variant="outlined"
+          @update:model-value="handleTextInput"
+        />
+      </div>
+    </v-expand-transition>
 
-      <v-row class="mt-6">
-        <v-col
-          class="d-flex gap-2"
-          cols="12"
-        >
-          <v-btn
-            :disabled="loading"
-            :loading="loading"
-            color="primary"
-            :prepend-icon="ICON.CONTENT_SAVE"
-            size="large"
-            @click="saveStudents"
-          >
-            保存名单
-          </v-btn>
-          <v-btn
-            :disabled="loading"
-            :loading="loading"
-            color="error"
-            :prepend-icon="ICON.REFRESH"
-            size="large"
-            variant="outlined"
-            @click="loadStudents"
-          >
-            重载名单
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
+    <template #actions>
+      <v-btn
+        :disabled="loading"
+        :loading="loading"
+        color="success"
+        :prepend-icon="ICON.CONTENT_SAVE"
+        variant="elevated"
+        @click="saveStudents"
+      >
+        保存名单
+      </v-btn>
+      <v-btn
+        :disabled="loading"
+        :loading="loading"
+        color="neutral-surface"
+        :prepend-icon="ICON.REFRESH"
+        variant="elevated"
+        @click="loadStudents"
+      >
+        重载名单
+      </v-btn>
+    </template>
+  </settings-card>
 </template>
 
 <script>
 import { ICON } from '@/utils/icons'
+import SettingsCard from "@/components/SettingsCard.vue";
 import UnsavedWarning from "../common/UnsavedWarning.vue";
 import "@/styles/warnings.scss";
 import dataProvider from "@/utils/dataProvider";
@@ -276,6 +253,7 @@ import {getSetting} from "@/utils/settings";
 export default {
   name: "StudentListCard",
   components: {
+    SettingsCard,
     UnsavedWarning,
   },
   props: {
@@ -494,6 +472,10 @@ export default {
     },
 
     async sortStudentsByPinyin() {
+      if (this.modelValue.list.length === 0) {
+        this.$message?.warning("提示", "还没有添加学生，请添加学生后重试");
+        return;
+      }
       const pinyinFn = await loadPinyin();
       const sorted = [...this.modelValue.list].sort((a, b) => {
         const pinyinA = pinyinFn(a.name, {toneType: "none"});
@@ -506,18 +488,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.student-card {
-  transition: all var(--duration-fast) var(--ease-apple);
-}
-
-.action-buttons {
-  opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-apple);
-}
-
-.unsaved-changes {
-  border-color: rgb(var(--v-theme-warning)) !important;
-}
-</style>

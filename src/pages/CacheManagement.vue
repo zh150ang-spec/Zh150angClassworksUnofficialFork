@@ -30,7 +30,7 @@
               class="mr-2"
               color="info"
             >
-              mdi-information-outline
+              {{ ICON.INFORMATION_OUTLINE }}
             </v-icon>
             <span>在这里您可以查看和管理应用的缓存文件。清除缓存可能会导致应用需要重新下载资源，但有助于解决某些显示问题。</span>
           </v-card-text>
@@ -51,7 +51,7 @@
                     class="mr-2"
                     color="primary"
                   >
-                    mdi-information
+                    {{ ICON.INFORMATION }}
                   </v-icon>
                   <span class="text-headline-small">什么是缓存？</span>
                 </div>
@@ -76,7 +76,7 @@
                     class="mr-2"
                     color="warning"
                   >
-                    mdi-lightbulb-outline
+                    {{ ICON.LIGHTBULB_OUTLINE }}
                   </v-icon>
                   <span class="text-headline-small">何时清除缓存？</span>
                 </div>

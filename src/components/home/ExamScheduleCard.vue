@@ -77,7 +77,7 @@
                   color="success"
                   class="mr-2"
                 >
-                  mdi-clock-start
+                  :icon="ICON.CLOCK_START"
                 </v-icon>
                 <span class="font-weight-medium">{{ formatTime(info.start) }}</span>
               </div>
@@ -87,7 +87,7 @@
                   color="error"
                   class="mr-2"
                 >
-                  mdi-clock-end
+                  :icon="ICON.CLOCK_END"
                 </v-icon>
                 <span class="font-weight-medium">{{ formatTime(info.end) }}</span>
               </div>

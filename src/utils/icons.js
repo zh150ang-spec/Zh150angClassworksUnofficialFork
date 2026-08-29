@@ -299,6 +299,45 @@ export const ICON = {
   NUMERIC_8_CIRCLE: 'mdi-numeric-8-circle',
   NUMERIC_9_CIRCLE: 'mdi-numeric-9-circle',
   NUMERIC_10_CIRCLE: 'mdi-numeric-10-circle',
+  NUMERIC_NEGATIVE_1: 'mdi-numeric-negative-1',
+
+  // ============ 文件与导入导出 ============
+  FILE_EXPORT_OUTLINE: 'mdi-file-export-outline',
+  FILE_IMPORT_OUTLINE: 'mdi-file-import-outline',
+  FILE_PDF_BOX: 'mdi-file-pdf-box',
+  DATABASE_IMPORT_OUTLINE: 'mdi-database-import-outline',
+  BOOK_OPEN_BLANK_VARIANT_OUTLINE: 'mdi-book-open-blank-variant-outline',
+
+  // ============ 教育 ============
+  SCHOOL: 'mdi-school',
+  PIN: 'mdi-pin',
+  LOGIN: 'mdi-login',
+
+  // ============ 设置项图标 ============
+  CARD_OUTLINE: 'mdi-card-outline',
+  TIMER_REFRESH: 'mdi-timer-refresh',
+  SORT_VARIANT: 'mdi-sort-variant',
+  SHUFFLE_VARIANT: 'mdi-shuffle-variant',
+  MONITOR_SHIMMER: 'mdi-monitor-shimmer',
+  SWAP_VERTICAL_BOLD: 'mdi-swap-vertical-bold',
+  DIALPAD: 'mdi-dialpad',
+  CLOCK_FAST: 'mdi-clock-fast',
+  KEY_CHAIN: 'mdi-key-chain',
+  SHIELD_ACCOUNT: 'mdi-shield-account',
+  REFRESH_AUTO: 'mdi-refresh-auto',
+  TIMER_SAND_COMPLETE: 'mdi-timer-sand-complete',
+  FORMAT_SIZE: 'mdi-format-size',
+  CONTENT_SAVE_OUTLINE: 'mdi-content-save-outline',
+  CALENDAR_LOCK: 'mdi-calendar-lock',
+  CALENDAR_ALERT: 'mdi-calendar-alert',
+  LOCK_CLOCK: 'mdi-lock-clock',
+  BUG_OUTLINE: 'mdi-bug-outline',
+  MESSAGE_OFF_OUTLINE: 'mdi-message-off-outline',
+  MESSAGE_TEXT_OUTLINE: 'mdi-message-text-outline',
+  MESSAGE_BADGE_OUTLINE: 'mdi-message-badge-outline',
+  CIRCLE_HALF_FULL: 'mdi-circle-half-full',
+  ANIMATION_PLAY: 'mdi-animation-play',
+  DOWNLOAD_OFF: 'mdi-download-off',
 
 }
 

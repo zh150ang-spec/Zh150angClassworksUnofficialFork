@@ -77,17 +77,21 @@
       <v-card-title class="d-flex align-center">
         项目列表
         <v-spacer />
-        <v-btn-toggle
+        <v-radio-group
           v-model="sortType"
-          mandatory
+          density="compact"
+          hide-details
+          inline
         >
-          <v-btn value="default">
-            <v-icon :icon="ICON.SORT_ALPHABETICAL_VARIANT" />
-          </v-btn>
-          <v-btn value="completed">
-            <v-icon :icon="ICON.CHECK_CIRCLE_OUTLINE" />
-          </v-btn>
-        </v-btn-toggle>
+          <v-radio
+            value="default"
+            label="默认"
+          />
+          <v-radio
+            value="completed"
+            label="已完成"
+          />
+        </v-radio-group>
       </v-card-title>
       <v-card-text v-if="sortedItems.length === 0">
         暂无项目，请添加新项目

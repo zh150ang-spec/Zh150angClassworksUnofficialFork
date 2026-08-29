@@ -23,7 +23,8 @@
           <template #append>
             <v-btn
               :loading="loading"
-              variant="tonal"
+              color="neutral-surface"
+              variant="elevated"
               @click="checkServerConnection"
             >
               测试连接
@@ -45,7 +46,7 @@
           <template #append>
             <v-btn
               color="error"
-              variant="tonal"
+              variant="elevated"
               @click="confirmClearIndexedDB"
             >
               清除
@@ -62,7 +63,9 @@
           <v-list-item-title>导出数据库</v-list-item-title>
           <template #append>
             <v-btn
-              variant="tonal"
+              :loading="exporting"
+              color="neutral-surface"
+              variant="elevated"
               @click="exportData"
             >
               导出
@@ -81,8 +84,9 @@
         <v-list-item-title>查看本地缓存</v-list-item-title>
         <template #append>
           <v-btn
+            color="neutral-surface"
             to="/cachemanagement"
-            variant="tonal"
+            variant="elevated"
           >
             查看
           </v-btn>
@@ -99,20 +103,22 @@
         <v-card-text>{{ confirmMessage }}</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            color="medium-emphasis"
-            variant="text"
-            @click="confirmDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="error"
-            variant="tonal"
-            @click="handleConfirm"
-          >
-            确认
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="confirmDialog = false"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              color="error"
+              variant="elevated"
+              @click="handleConfirm"
+            >
+              确认
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -139,19 +145,22 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="handleEnableSyncDialog(false)"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="primary"
-            variant="elevated"
-            @click="handleEnableSyncDialog(true)"
-          >
-            允许
-          </v-btn>
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="handleEnableSyncDialog(false)"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              color="success"
+              variant="elevated"
+              @click="handleEnableSyncDialog(true)"
+            >
+              允许
+            </v-btn>
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -174,6 +183,7 @@ export default {
     return {
       ICON,
       loading: false,
+      exporting: false,
       serverchecktime: {},
       confirmDialog: false,
       confirmTitle: "",
@@ -375,6 +385,7 @@ export default {
     },
 
     async exportData() {
+      this.exporting = true;
       try {
         const DBName = "ClassworksDB";
         const data = {indexedDB: {}};
@@ -420,6 +431,8 @@ export default {
       } catch (error) {
         console.error("导出失败:", error);
         this.$message.error("导出失败", error.message || "无法导出数据库数据");
+      } finally {
+        this.exporting = false;
       }
     },
 

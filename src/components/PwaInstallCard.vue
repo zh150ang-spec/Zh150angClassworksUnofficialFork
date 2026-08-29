@@ -169,7 +169,7 @@ const statusIcons = {
   pending: ICON.PROGRESS_CLOCK,
   granted: ICON.SUCCESS,
   denied: ICON.CLOSE_CIRCLE,
-  unavailable: "mdi-help-circle",
+  unavailable: ICON.HELP_CIRCLE,
 };
 
 const chipColors = {

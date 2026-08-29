@@ -275,7 +275,7 @@
                 <div class="mt-8 d-flex ga-3">
                   <v-btn
                     v-if="countdownRemaining > 0"
-                    :icon="countdownRunning ? 'mdi-pause' : 'mdi-play'"
+                    :icon="countdownRunning ? ICON.PAUSE : ICON.PLAY"
                     :color="countdownRunning ? 'warning' : 'primary'"
                     size="x-large"
                     variant="tonal"
@@ -304,7 +304,7 @@
               </div>
               <div class="mt-8 d-flex ga-3">
                 <v-btn
-                  :icon="stopwatchRunning ? 'mdi-pause' : 'mdi-play'"
+                  :icon="stopwatchRunning ? ICON.PAUSE : ICON.PLAY"
                   :color="stopwatchRunning ? 'warning' : 'primary'"
                   size="x-large"
                   variant="tonal"

@@ -43,27 +43,39 @@
       </div>
 
       <!-- 来源选择 -->
-      <v-btn-toggle
+      <v-radio-group
         v-model="imageSource"
         color="primary"
-        density="comfortable"
         class="mb-4"
-        mandatory
-        rounded="xl"
+        row
       >
-        <v-btn
-          value="url"
-          :prepend-icon="ICON.LINK_VARIANT"
+        <v-radio
+          :value="'url'"
+          color="primary"
         >
-          网络地址
-        </v-btn>
-        <v-btn
-          value="upload"
-          :prepend-icon="ICON.UPLOAD"
+          <template #label>
+            <v-icon
+              start
+              size="small"
+              :icon="ICON.LINK_VARIANT"
+            />
+            网络地址
+          </template>
+        </v-radio>
+        <v-radio
+          :value="'upload'"
+          color="primary"
         >
-          本地上传
-        </v-btn>
-      </v-btn-toggle>
+          <template #label>
+            <v-icon
+              start
+              size="small"
+              :icon="ICON.UPLOAD"
+            />
+            本地上传
+          </template>
+        </v-radio>
+      </v-radio-group>
 
       <!-- URL 输入 -->
       <div
@@ -144,7 +156,7 @@
 
         <div
           v-if="localImageData"
-          class="d-flex align-center ga-2"
+          class="d-flex align-center gap-2"
         >
           <v-chip
             color="success"
@@ -154,8 +166,7 @@
             已上传本地图片
           </v-chip>
           <v-btn
-            size="small"
-            variant="text"
+            variant="elevated"
             color="error"
             :prepend-icon="ICON.DELETE"
             @click="clearUploadedImage"
@@ -240,27 +251,27 @@
       </div>
 
       <v-divider class="my-5" />
-
-      <!-- 保存按钮 -->
-      <div class="d-flex justify-end ga-3">
-        <v-btn
-          variant="text"
-          :prepend-icon="ICON.RESTORE"
-          @click="resetAll"
-        >
-          重置
-        </v-btn>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          :prepend-icon="ICON.CONTENT_SAVE"
-          :loading="saving"
-          @click="saveAll"
-        >
-          保存设置
-        </v-btn>
-      </div>
     </div>
+
+    <template #actions>
+      <v-btn
+        variant="elevated"
+        color="neutral-surface"
+        :prepend-icon="ICON.RESTORE"
+        @click="resetAll"
+      >
+        重置
+      </v-btn>
+      <v-btn
+        color="success"
+        :prepend-icon="ICON.CONTENT_SAVE"
+        :loading="saving"
+        variant="elevated"
+        @click="saveAll"
+      >
+        保存设置
+      </v-btn>
+    </template>
   </settings-card>
 </template>
 
@@ -271,10 +282,10 @@ import SettingItem from '@/components/settings/SettingItem.vue';
 import { getSetting, setSetting, resetSetting } from '@/utils/settings';
 
 const URL_PRESETS = [
-  { label: 'Bing 随机壁纸', url: 'https://bing.img.run/rand.php' },
-  { label: 'Bing 每日壁纸', url: 'https://bing.img.run/rand_uhd.php' },
-  { label: 'Bing 每日壁纸(旧)', url: 'https://bing.img.run/1920x1080.php' },
-  { label: '随机风景', url: 'https://picsum.photos/1920/1080?random=1' },
+  { label: 'Bing 4k 随机壁纸', url: 'https://uapis.cn/api/v1/image/bing-daily?random=true' },
+  { label: 'Bing 4k 每日壁纸', url: 'https://uapis.cn/api/v1/image/bing-daily' },
+  { label: 'Bing 1080P 每日壁纸', url: 'https://uapis.cn/api/v1/image/bing-daily?resolution=1080' },
+  { label: '随机（质量较差）', url: 'https://picsum.photos/1920/1080?random=1' },
   { label: '随机二次元', url: 'https://uapis.cn/api/v1/random/image?category=acg&type=pc' },
 ];
 

@@ -76,6 +76,7 @@
                 </v-list-item-subtitle>
                 <template #append>
                   <v-btn
+                    :loading="loading"
                     color="error"
                     icon
                     size="small"
@@ -102,6 +103,37 @@
         没有找到缓存数据。
       </v-alert>
     </v-card-text>
+
+    <v-dialog
+      v-model="confirmDialog.show"
+      max-width="420"
+    >
+      <v-card>
+        <v-card-title class="text-headline-small">
+          {{ confirmDialog.title }}
+        </v-card-title>
+        <v-card-text>{{ confirmDialog.text }}</v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="cancelSave()"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :color="confirmDialog.color || 'warning'"
+              variant="elevated"
+              @click="confirmSave()"
+            >
+              {{ confirmDialog.confirmText || '确认' }}
+            </v-btn>
+          </div>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -120,6 +152,15 @@ export default {
       // 保存定时器 ID 以便卸载时清理，避免在已卸载组件上修改 this.message 触发 Vue 警告
       messageTimerId: null,
       swTimeoutTimerId: null,
+      confirmDialog: {
+        show: false,
+        title: '确认操作',
+        text: '确定要执行此操作吗？',
+        color: 'warning',
+        confirmText: '确认',
+        resolve: null,
+        reject: null,
+      },
     }
   },
   mounted() {
@@ -178,6 +219,15 @@ export default {
       }
     },
     async clearCache(cacheName) {
+      try {
+        await this.showConfirmDialog({
+          title: '确认清除缓存',
+          text: `确定要清除缓存「${this.formatCacheName(cacheName)}」吗？`,
+          color: 'warning'
+        });
+      } catch {
+        return;
+      }
       this.loading = true;
       try {
         const result = await this.sendMessageToSW({
@@ -198,6 +248,15 @@ export default {
       }
     },
     async clearUrl(cacheName, url) {
+      try {
+        await this.showConfirmDialog({
+          title: '确认清除缓存项',
+          text: `确定要清除缓存项「${this.getFileName(url)}」吗？`,
+          color: 'warning'
+        });
+      } catch {
+        return;
+      }
       this.loading = true;
       try {
         const result = await this.sendMessageToSW({
@@ -219,7 +278,14 @@ export default {
       }
     },
     async clearAllCaches() {
-      if (!confirm('确定要清除所有缓存吗？这可能会导致应用需要重新下载资源。')) {
+      try {
+        await this.showConfirmDialog({
+          title: '确认清除所有缓存',
+          text: '确定要清除所有缓存吗？这可能导致应用需要重新下载资源。',
+          color: 'error',
+          confirmText: '清除全部'
+        });
+      } catch {
         return;
       }
 
@@ -297,6 +363,35 @@ export default {
           this.message = '';
         }
       }, 5000);
+    },
+    showConfirmDialog(options = {}) {
+      return new Promise((resolve, reject) => {
+        this.confirmDialog.title = options.title || '确认操作';
+        this.confirmDialog.text = options.text || '确定要执行此操作吗？';
+        this.confirmDialog.color = options.color || 'warning';
+        this.confirmDialog.confirmText = options.confirmText || '确认';
+        this.confirmDialog.resolve = () => {
+          this.confirmDialog.show = false;
+          resolve();
+        };
+        this.confirmDialog.reject = () => {
+          this.confirmDialog.show = false;
+          reject(new Error('用户取消'));
+        };
+        this.confirmDialog.show = true;
+      });
+    },
+    confirmSave() {
+      this.confirmDialog.show = false;
+      if (this.confirmDialog.resolve) {
+        this.confirmDialog.resolve(true);
+      }
+    },
+    cancelSave() {
+      this.confirmDialog.show = false;
+      if (this.confirmDialog.reject) {
+        this.confirmDialog.reject(new Error('用户取消'));
+      }
     }
   }
 }

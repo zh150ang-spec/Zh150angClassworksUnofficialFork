@@ -25,7 +25,7 @@
             </template>
             <template #append>
               <v-btn
-                :icon="addedExamIds.has(exam.id) ? 'mdi-check' : 'mdi-plus'"
+                :icon="addedExamIds.has(exam.id) ? ICON.CHECK : ICON.PLUS"
                 :color="addedExamIds.has(exam.id) ? 'success' : 'grey'"
                 variant="text"
               />

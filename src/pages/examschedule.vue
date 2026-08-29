@@ -561,7 +561,7 @@
               </h3>
               <v-btn
                 :color="copied ? 'success' : 'primary'"
-                :prepend-icon="copied ? 'mdi-check' : 'mdi-content-copy'"
+                :prepend-icon="copied ? ICON.CHECK : ICON.CONTENT_COPY"
                 size="small"
                 variant="tonal"
                 @click="copyPrompt"

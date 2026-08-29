@@ -19,7 +19,7 @@
           class="mr-2"
           color="primary"
         >
-          mdi-notebook
+          {{ ICON.BOOK_NOTEBOOK }}
         </v-icon>
         <span class="text-truncate">作业本作业</span>
         <v-spacer />
@@ -65,7 +65,7 @@
                         class="mr-1"
                         size="small"
                       >
-                        mdi-plus
+                        {{ ICON.PLUS }}
                       </v-icon>
                       自定义...
                     </v-list-item-title>
@@ -165,26 +165,22 @@
                 <div class="optional-section">
                   <div class="optional-section-header">
                     <span>页码（可选）</span>
-                    <v-btn-toggle
+                    <v-radio-group
                       v-model="pageMode"
-                      color="primary"
                       density="compact"
-                      mandatory
+                      hide-details
+                      inline
                       class="ml-2"
                     >
-                      <v-btn
-                        size="x-small"
+                      <v-radio
                         value="single"
-                      >
-                        单页
-                      </v-btn>
-                      <v-btn
-                        size="x-small"
+                        label="单页"
+                      />
+                      <v-radio
                         value="range"
-                      >
-                        范围
-                      </v-btn>
-                    </v-btn-toggle>
+                        label="范围"
+                      />
+                    </v-radio-group>
                   </div>
                   
                   <div
@@ -362,32 +358,26 @@
                 <div class="optional-section">
                   <div class="optional-section-header">
                     <span>题号（可选）</span>
-                    <v-btn-toggle
+                    <v-radio-group
                       v-model="questionMode"
-                      color="primary"
                       density="compact"
-                      mandatory
+                      hide-details
+                      inline
                       class="ml-2"
                     >
-                      <v-btn
-                        size="x-small"
+                      <v-radio
                         value="single"
-                      >
-                        单题
-                      </v-btn>
-                      <v-btn
-                        size="x-small"
+                        label="单题"
+                      />
+                      <v-radio
                         value="range"
-                      >
-                        范围
-                      </v-btn>
-                      <v-btn
-                        size="x-small"
+                        label="范围"
+                      />
+                      <v-radio
                         value="multi"
-                      >
-                        多选
-                      </v-btn>
-                    </v-btn-toggle>
+                        label="多选"
+                      />
+                    </v-radio-group>
                   </div>
                   
                   <div
@@ -642,7 +632,7 @@
               variant="elevated"
             >
               <v-icon class="mr-1">
-                mdi-plus
+                {{ ICON.PLUS }}
               </v-icon>
               添加第 {{ currentTimes }} 次
             </v-btn>

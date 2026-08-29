@@ -248,7 +248,7 @@
           color="warning"
           class="mr-2"
         >
-          mdi-alert
+          {{ ICON.WARNING }}
         </v-icon>
         检测到命名空间变更
       </v-card-title>
@@ -274,7 +274,7 @@
           @click="handleNamespaceClearAndSwitch"
         >
           <v-icon class="mr-1">
-            mdi-download
+            {{ ICON.DOWNLOAD }}
           </v-icon>
           导出备份并清空
         </v-btn>
@@ -1067,7 +1067,7 @@ export default {
         }
         // 清空本地数据（kv + offline-queue）
         await kvLocalProvider.clearAll();
-        // 确认命名空间切换（更新 lastKnownNamespace）
+        // 确认命名空间切换（更新 device.lastKnownNamespace）
         dataProvider.confirmNamespaceChange();
         this.namespaceSwitchDialog.show = false;
         this.$message.success(
@@ -1097,7 +1097,7 @@ export default {
       );
     },
 
-    // 选项3：暂不处理（不更新 lastKnownNamespace，下次启动会再次提示）
+    // 选项3：暂不处理（不更新 device.lastKnownNamespace，下次启动会再次提示）
     handleNamespaceCancelSwitch() {
       this.namespaceSwitchDialog.show = false;
       this.$message.info(

@@ -28,7 +28,7 @@
                   color="primary"
                   size="48"
                 >
-                  mdi-new-box
+                  {{ ICON.NEW_BOX }}
                 </v-icon>
               </div>
               <div class="card-content">
@@ -56,7 +56,7 @@
                   color="success"
                   size="48"
                 >
-                  mdi-account-check
+                  {{ ICON.ACCOUNT_CHECK }}
                 </v-icon>
               </div>
               <div class="card-content">

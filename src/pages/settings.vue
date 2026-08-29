@@ -32,14 +32,16 @@
           v-for="tab in settingsTabs"
           :key="tab.value"
           :active="settingsTab === tab.value"
-          :color="settingsTab === tab.value ? 'primary' : 'default'"
+          active-color="default"
+          base-color="default"
+          color="default"
           class="settings-nav-item"
-          @click="settingsTab = tab.value"
+          @click="selectTab(tab.value)"
         >
           <template #prepend>
             <v-icon
               :icon="tab.icon"
-              :color="settingsTab === tab.value ? 'primary' : tab.color"
+              :color="tab.color"
             />
           </template>
           <v-list-item-title>{{ tab.title }}</v-list-item-title>
@@ -57,9 +59,9 @@
         <v-tabs-window-item value="index">
           <v-card
             border
+            flat
             class="service-card gradient-right clickable mb-4"
             color="primary"
-            elevation="3"
             rounded="xl"
             variant="tonal"
             @click="openClassworksKV"
@@ -182,15 +184,19 @@
         </v-tabs-window-item>
 
         <v-tabs-window-item value="display">
+          <theme-settings-card
+            border
+          />
           <display-settings-card
             :loading="loading.display"
             border
+            class="mt-4"
             @saved="onSettingsSaved"
           />
           <refresh-settings-card
             class="mt-4"
           />
-          <edit-settings-card
+          <homework-edit-settings-card
             :loading="loading.edit"
             border
             class="mt-4"
@@ -251,6 +257,7 @@
                 <template #append>
                   <v-switch
                     v-model="settings.developer.enabled"
+                    color="primary"
                     density="comfortable"
                     hide-details
                     @update:model-value="handleDeveloperChange"
@@ -263,7 +270,8 @@
             v-if="settings.developer.enabled"
             ref="settingsExplorerCard"
             border
-            class="mt-4 rounded-lg"
+            flat
+            class="mt-4 rounded-xl"
           >
             <v-card-title class="d-flex align-center">
               <v-icon
@@ -274,7 +282,7 @@
             </v-card-title>
             <v-card-subtitle> 浏览和修改所有可用设置</v-card-subtitle>
             <v-card-text>
-              <settings-explorer @update="onSettingUpdate" />
+              <settings-explorer />
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
@@ -283,6 +291,37 @@
 
     <!-- 消息记录组件 -->
     <message-log ref="messageLog" />
+
+    <v-dialog
+      v-model="confirmDialog.show"
+      max-width="420"
+    >
+      <v-card>
+        <v-card-title class="text-headline-small">
+          {{ confirmDialog.title }}
+        </v-card-title>
+        <v-card-text>{{ confirmDialog.text }}</v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="cancelSave()"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :color="confirmDialog.color || 'warning'"
+              variant="elevated"
+              @click="confirmSave()"
+            >
+              {{ confirmDialog.confirmText || '确认' }}
+            </v-btn>
+          </div>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -290,7 +329,7 @@
 import { useDisplay } from "vuetify";
 import { ICON } from "@/utils/icons";
 import ServerSettingsCard from "@/components/settings/cards/ServerSettingsCard.vue";
-import EditSettingsCard from "@/components/settings/cards/EditSettingsCard.vue";
+import HomeworkEditSettingsCard from "@/components/settings/cards/HomeworkEditSettingsCard.vue";
 import RefreshSettingsCard from "@/components/settings/cards/RefreshSettingsCard.vue";
 import DisplaySettingsCard from "@/components/settings/cards/DisplaySettingsCard.vue";
 import DataProviderSettingsCard from "@/components/settings/cards/DataProviderSettingsCard.vue";
@@ -317,12 +356,13 @@ import HitokotoSettings from "@/components/HitokotoSettings.vue";
 import NotificationSoundSettings from "@/components/settings/NotificationSoundSettings.vue";
 import AutoAttendanceCard from "@/components/settings/cards/AutoAttendanceCard.vue";
 import BackgroundSettingsCard from "@/components/settings/cards/BackgroundSettingsCard.vue";
+import ThemeSettingsCard from "@/components/settings/cards/ThemeSettingsCard.vue";
 
 export default {
   name: "Settings",
   components: {
     ServerSettingsCard,
-    EditSettingsCard,
+    HomeworkEditSettingsCard,
     RefreshSettingsCard,
     DisplaySettingsCard,
     MessageLog,
@@ -342,6 +382,7 @@ export default {
     NotificationSoundSettings,
     AutoAttendanceCard,
     BackgroundSettingsCard,
+    ThemeSettingsCard,
   },
   setup() {
     const {mobile} = useDisplay();
@@ -423,6 +464,15 @@ export default {
       },
       hasUnsavedChanges: false,
       lastSavedData: null,
+      confirmDialog: {
+        show: false,
+        title: "确认操作",
+        text: "确定要执行此操作吗？",
+        color: "warning",
+        confirmText: "确认",
+        resolve: null,
+        reject: null,
+      },
       settingsTab: "index",
       settingsTabs: [
         {
@@ -527,6 +577,13 @@ export default {
   },
 
   methods: {
+    selectTab(value) {
+      this.settingsTab = value;
+      // 移动端选择区块后自动收起抽屉，减少操作步骤
+      if (this.isMobile) {
+        this.drawer = false;
+      }
+    },
     openClassworksKV() {
       window.open(getSetting("server.authDomain"), "_blank");
     },
@@ -553,9 +610,7 @@ export default {
               const currentValue = getSetting(settingKey);
               if (value !== currentValue) {
                 const success = setSetting(settingKey, value);
-                if (success) {
-                  this.showMessage("设置已更新", `${settingKey} 已保存`);
-                } else {
+                if (!success) {
                   this.showError("保存失败", `${settingKey} 设置失败`);
                   this.settings[section][key] = currentValue;
                 }
@@ -662,7 +717,16 @@ export default {
       // 在 getSetting 层面已自动返回默认值，无需手动重置
     },
 
-    resetDeveloperSettings() {
+    async resetDeveloperSettings() {
+      try {
+        await this.showConfirmDialog({
+          title: "确认重置开发者设置",
+          text: "确定要将所有开发者设置恢复为默认值吗？",
+          color: "warning",
+        });
+      } catch {
+        return;
+      }
       this.settings.developer = {
         enabled: false,
         showDebugConfig: false,
@@ -701,6 +765,35 @@ export default {
         }
       });
     },
+    showConfirmDialog(options = {}) {
+      return new Promise((resolve, reject) => {
+        this.confirmDialog.title = options.title || "确认操作";
+        this.confirmDialog.text = options.text || "确定要执行此操作吗？";
+        this.confirmDialog.color = options.color || "warning";
+        this.confirmDialog.confirmText = options.confirmText || "确认";
+        this.confirmDialog.resolve = () => {
+          this.confirmDialog.show = false;
+          resolve();
+        };
+        this.confirmDialog.reject = () => {
+          this.confirmDialog.show = false;
+          reject(new Error("用户取消"));
+        };
+        this.confirmDialog.show = true;
+      });
+    },
+    confirmSave() {
+      this.confirmDialog.show = false;
+      if (this.confirmDialog.resolve) {
+        this.confirmDialog.resolve(true);
+      }
+    },
+    cancelSave() {
+      this.confirmDialog.show = false;
+      if (this.confirmDialog.reject) {
+        this.confirmDialog.reject(new Error("用户取消"));
+      }
+    },
   },
 };
 </script>
@@ -719,10 +812,6 @@ export default {
   > .v-container {
     flex: 1;
     min-width: 0;
-  }
-
-  .v-card {
-    transition: transform var(--duration-fast), box-shadow var(--duration-fast);
   }
 
   .settings-nav-item {

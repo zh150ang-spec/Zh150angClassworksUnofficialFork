@@ -86,34 +86,33 @@
             </v-tabs>
 
             <!-- 格式选择 -->
-            <v-btn-toggle
+            <v-radio-group
               v-model="formatMode"
-              color="primary"
               class="mb-4 mx-2"
-              mandatory
-              density="comfortable"
-              border
-              rounded
+              density="compact"
+              hide-details
+              inline
             >
-              <v-btn value="auto">
-                自动检测
-              </v-btn>
-              <v-btn value="json">
-                JSON
-              </v-btn>
-              <v-btn
-                value="yaml"
-                :disabled="!yamlLibLoaded"
-              >
-                YAML
-                <v-tooltip
-                  activator="parent"
-                  location="bottom"
-                >
-                  {{ yamlLibLoaded ? 'YAML解析库已加载' : '正在加载YAML解析库...' }}
-                </v-tooltip>
-              </v-btn>
-            </v-btn-toggle>
+              <v-radio
+                value="auto"
+                label="自动检测"
+              />
+              <v-radio
+                value="json"
+                label="JSON"
+              />
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-radio
+                    v-bind="props"
+                    value="yaml"
+                    :disabled="!yamlLibLoaded"
+                    label="YAML"
+                  />
+                </template>
+                {{ yamlLibLoaded ? 'YAML解析库已加载' : '正在加载YAML解析库...' }}
+              </v-tooltip>
+            </v-radio-group>
 
             <!-- 添加当前检测到的格式提示 -->
             <div

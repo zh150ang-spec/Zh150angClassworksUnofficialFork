@@ -9,7 +9,7 @@
               class="mr-2"
               color="primary"
             >
-              mdi-network
+              {{ ICON.NETWORK }}
             </v-icon>
             Socket.IO 连接调试器
             <v-spacer />
@@ -411,6 +411,37 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-dialog
+      v-model="confirmDialog.show"
+      max-width="420"
+    >
+      <v-card>
+        <v-card-title class="text-headline-small">
+          {{ confirmDialog.title }}
+        </v-card-title>
+        <v-card-text>{{ confirmDialog.text }}</v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <div class="d-flex gap-2">
+            <v-btn
+              color="neutral-surface"
+              variant="elevated"
+              @click="cancelSave()"
+            >
+              取消
+            </v-btn>
+            <v-btn
+              :color="confirmDialog.color || 'warning'"
+              variant="elevated"
+              @click="confirmSave()"
+            >
+              {{ confirmDialog.confirmText || '确认' }}
+            </v-btn>
+          </div>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -418,6 +449,9 @@
 import { ICON } from '@/utils/icons'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { getSocket, getServerUrl, disconnect } from '@/utils/socketClient';
+import { useConfirmDialog } from '@/composables/useConfirmDialog';
+
+const { confirmDialog, showConfirmDialog, confirmSave, cancelSave } = useConfirmDialog();
 
 // 状态数据
 const serverUrl = ref(getServerUrl());
@@ -490,7 +524,16 @@ function addLog(type, message, data = null) {
   }
 }
 
-function clearLogs() {
+async function clearLogs() {
+  try {
+    await showConfirmDialog({
+      title: '确认清空日志',
+      text: '确定要清空全部日志吗？此操作不可恢复。',
+      color: 'warning'
+    });
+  } catch {
+    return;
+  }
   logs.value = [];
   addLog('info', '日志已清空');
 }

@@ -1,9 +1,12 @@
 <template>
   <settings-card
-    :icon="ICON.SETTINGS"
-    title="编辑设置"
+    :icon="ICON.BOOK_EDIT"
+    title="作业编辑设置"
   >
     <v-list>
+      <v-list-subheader class="font-weight-bold text-primary">
+        保存行为
+      </v-list-subheader>
       <setting-item :setting-key="'edit.autoSave'" />
 
 
@@ -20,6 +23,10 @@
 
 
       <v-divider class="my-2" />
+
+      <v-list-subheader class="font-weight-bold text-primary">
+        提示语
+      </v-list-subheader>
       <setting-item :setting-key="'edit.autoSavePromptText'" />
 
 
@@ -35,7 +42,7 @@ import SettingsCard from '@/components/SettingsCard.vue';
 import SettingItem from '../SettingItem.vue';
 
 export default {
-  name: 'EditSettingsCard',
+  name: 'HomeworkEditSettingsCard',
   components: {SettingsCard, SettingItem},
   data() {
     return { ICON };

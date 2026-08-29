@@ -1,6 +1,7 @@
 <template>
   <v-card
     border
+    flat
     rounded="xl"
   >
     <v-card-item>
@@ -84,7 +85,7 @@
               <v-btn
                 color="red"
                 :prepend-icon="ICON.BUG"
-                variant="tonal"
+                variant="elevated"
                 @click="openReportDialog"
               >
                 报告问题
@@ -94,23 +95,25 @@
                 href="https://qm.qq.com/q/qNBX4ZZVeg"
                 :prepend-icon="ICON.QQCHAT"
                 target="_blank"
-                variant="tonal"
+                variant="elevated"
               >
                 QQ 群
               </v-btn>
               <v-btn
+                color="neutral-surface"
                 :prepend-icon="ICON.GITHUB"
                 href="https://github.com/Moonrend/Classworks"
                 target="_blank"
-                variant="outlined"
+                variant="elevated"
               >
                 前端
               </v-btn>
               <v-btn
+                color="neutral-surface"
                 :prepend-icon="ICON.GITHUB"
                 href="https://github.com/Moonrend/ClassworksServer"
                 target="_blank"
-                variant="outlined"
+                variant="elevated"
               >
                 后端
               </v-btn>
@@ -188,8 +191,9 @@
 
             <v-btn
               class="mb-4"
+              color="neutral-surface"
               :prepend-icon="ICON.PACKAGE_VARIANT"
-              variant="text"
+              variant="elevated"
               @click="showDeps = true"
             >
               查看使用的第三方库
@@ -204,6 +208,9 @@
                 <v-toolbar>
                   <v-btn
                     :icon="ICON.CLOSE"
+                    size="small"
+                    variant="text"
+                    color="medium-emphasis"
                     @click="showDeps = false"
                   />
                   <v-toolbar-title>使用的第三方库</v-toolbar-title>
@@ -239,6 +246,9 @@
                 <v-toolbar density="compact">
                   <v-btn
                     :icon="ICON.CLOSE"
+                    size="small"
+                    variant="text"
+                    color="medium-emphasis"
                     @click="showReportDialog = false"
                   />
                   <v-toolbar-title>报告问题</v-toolbar-title>
@@ -259,8 +269,8 @@
                   </v-sheet>
                   <div class="d-flex gap-2 flex-wrap mb-4">
                     <v-btn
-                      size="small"
-                      variant="text"
+                      color="neutral-surface"
+                      variant="elevated"
                       :prepend-icon="ICON.REFRESH"
                       :loading="visitorLoading"
                       @click="reloadVisitorId"
@@ -268,16 +278,16 @@
                       刷新
                     </v-btn>
                     <v-btn
-                      size="small"
-                      variant="text"
+                      color="neutral-surface"
+                      variant="elevated"
                       :prepend-icon="ICON.CONTENT_COPY"
                       @click="copyEnvInfo"
                     >
                       复制信息
                     </v-btn>
                     <v-btn
-                      size="small"
-                      variant="text"
+                      color="neutral-surface"
+                      variant="elevated"
                       :prepend-icon="ICON.OPEN_IN_NEW"
                       @click="goToDebug"
                     >
@@ -294,9 +304,7 @@
                   </v-alert>
                   <div class="d-flex gap-2 mb-4">
                     <v-btn
-                      size="small"
-                      color="primary"
-                      variant="elevated"
+                      color="success"
                       :prepend-icon="ICON.MESSAGE_ALERT"
                       block
                       @click="openFeedback"
@@ -340,7 +348,8 @@
                 <v-card-actions>
                   <v-spacer />
                   <v-btn
-                    variant="text"
+                    color="neutral-surface"
+                    variant="elevated"
                     @click="showReportDialog = false"
                   >
                     关闭
