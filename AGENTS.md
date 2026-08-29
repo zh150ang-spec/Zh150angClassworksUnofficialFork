@@ -175,4 +175,8 @@ Git: 禁止 push / 禁止 git merge 合并 PR
 | 需要了解技术栈细节、数据层/实时通信/设置层/UI 层架构、关键工具路径 | `docs/ARCHITECTURE.md`     |
 | 涉及子 Agent 协作、样式根因、跨组件改动流程            | `docs/EXPERIENCE_RULES.md` |
 | 用户要求合并远程 PR 到本地定制版本                  | `docs/PR_MERGE_GUIDE.md`   |
+| 需要了解离线/同步体系（数据可达性、合并、后台同步、离线队列）    | `docs/OFFLINE_SYSTEM.md`   |
+| 需要了解排版系统（字体/字号/字重/行高/字距/渲染）        | `docs/TYPOGRAPHY.md`       |
+| 需要了解阴影与层级系统（shadow token / z-index / elevation） | `docs/SHADOW_LAYERING.md`  |
+| 需要了解版本号规范（SemVer）                     | `docs/VERSIONING.md`       |
 

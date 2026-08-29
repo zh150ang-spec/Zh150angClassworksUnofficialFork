@@ -16,7 +16,7 @@
 ### 环境准备
 
 - Node.js 18+（推荐 20.x）
-- pnpm 8+
+- pnpm 8+（建议使用 `package.json` 中 `packageManager` 声明的 pnpm 11.x）
 
 ### 安装步骤
 
@@ -29,7 +29,7 @@ cd Classworks
 pnpm install
 
 # 复制环境变量示例并进行必要配置
-cp .env.example .env
+cp .env.example .env   # Windows: copy .env.example .env
 
 # 启动开发服务器
 pnpm run dev
@@ -40,11 +40,13 @@ pnpm run build
 
 ### 环境变量
 
-项目运行前需要配置 `.env` 文件，关键变量说明如下：
+项目运行前需要配置 `.env` 文件（参考 `.env.example`），关键变量说明如下：
 
-- `VITE_APP_ID`：应用标识，用于数据分析等服务。
 - `VITE_DEFAULT_KV_SERVER`：默认 KV 存储服务地址。
 - `VITE_DEFAULT_AUTH_SERVER`：默认认证服务地址。
+- `VITE_ENABLE_MONITORING`：生产监控总开关（`true` 时启用 Sentry 与 Microsoft Clarity；默认 `false`）。
+- `VITE_SENTRY_DSN`：Sentry DSN（未配置时使用内置默认值）。
+- `VITE_CLARITY_ID`：Microsoft Clarity 项目 ID（未配置时使用内置默认值）。
 
 生产环境构建时，这些变量由 CI/CD 注入，请勿将敏感 Token 等凭据硬编码到源码中。
 

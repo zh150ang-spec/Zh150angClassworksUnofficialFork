@@ -784,7 +784,8 @@ useTokenDisplay.loadTokenInfo()
 
 | 文件 | 层 | 职责 |
 |---|---|---|
-| `src/utils/dataProvider.js` | 协调层 | mergeData、rmwWriteServer/additiveMerge、syncAllToLocal/Cloud、getSyncStatus、checkNamespaceChange |
+| `src/utils/dataProvider.js` | 协调层 | mergeData、syncAllToLocal/Cloud、getSyncStatus、checkNamespaceChange |
+| `src/utils/rmw.js` | 协调层 | RMW 写入合并（rmwWriteServer / additiveMerge / RMW_MAX_RETRIES） |
 | `src/utils/backgroundSync.js` | 协调层 | 后台同步服务、多级触发、三阶段同步 |
 | `src/utils/providers/kvLocalProvider.js` | 数据层 | offline-queue store 管理、clearAll、countKeys |
 | `src/composables/useTokenDisplay.js` | 协调层 | Token 信息加载、isReadOnly 注入 |

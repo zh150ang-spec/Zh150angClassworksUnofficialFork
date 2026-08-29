@@ -1,6 +1,6 @@
 # Changelog
 
-本项目遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)（详见 `VERSIONING.md`）。
+本项目遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)（详见 `docs/VERSIONING.md`）。
 权威版本号以 `package.json` 的 `version` 字段为准。
 
 > 格式：版本块按时间倒序排列（新在上、旧在下），**两个版本之间以** **`---`** **横线分界**。
