@@ -1,0 +1,13 @@
+diff --git a/dist/vite-build-BGK4YAIU.js b/dist/vite-build-BGK4YAIU.js
+index 9370ed65ab49d2f09ed95af10e792168249c8208..e8d43e81251643902ee0c4ac080bdb8a473baa9c 100644
+--- a/dist/vite-build-BGK4YAIU.js
++++ b/dist/vite-build-BGK4YAIU.js	
+@@ -106,7 +106,7 @@ function prepareViteBuild(options, viteOptions) {
+         input: options.swSrc,
+         output: {
+           entryFileNames: swMjsName,
+-          inlineDynamicImports: true
++          codeSplitting: false
+         }
+       }
+     });

@@ -1,6 +1,6 @@
 /**
  * 自动生成音频文件列表脚本
- * 读取 src/assets/sounds 文件夹中的所有音频文件并生成列表
+ * 读取 public/sounds 文件夹中的所有音频文件并生成 src/utils/soundList.js
  */
 
 import fs from 'fs';
@@ -14,17 +14,21 @@ const __dirname = path.dirname(__filename);
 const soundsDir = path.join(__dirname, '../public/sounds');
 const outputFile = path.join(__dirname, '../src/utils/soundList.js');
 
-// 读取音频文件
+// 支持的音频扩展名
+const AUDIO_EXTS = ['.mp3', '.wav', '.ogg', '.m4a', '.aac'];
+
+// 默认单次/持续通知铃声（若不存在则回退到列表第一个）
+const DEFAULT_SINGLE = 'Teams 默认.mp3';
+const DEFAULT_URGENT = 'Teams 默认通话铃.mp3';
+
+// 读取音频文件名列表（一次性读取）
 function getSoundFiles() {
   try {
-    const files = fs.readdirSync(soundsDir);
-    // 过滤出音频文件（.mp3, .wav, .ogg等）
-    const audioFiles = files.filter(file => {
-      const ext = path.extname(file).toLowerCase();
-      return ['.mp3', '.wav', '.ogg', '.m4a', '.aac'].includes(ext);
-    });
-
-    return audioFiles.sort();
+    return fs
+      .readdirSync(soundsDir, { withFileTypes: true })
+      .filter(entry => entry.isFile() && AUDIO_EXTS.includes(path.extname(entry.name).toLowerCase()))
+      .map(entry => entry.name)
+      .sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', { numeric: true, sensitivity: 'base' }));
   } catch (error) {
     console.error('读取音频文件夹失败:', error);
     return [];
@@ -35,7 +39,13 @@ function getSoundFiles() {
 function generateSoundList() {
   const soundFiles = getSoundFiles();
 
-  const fileContent = `/**
+  // 默认铃声回退：目标文件不存在时使用列表第一个可用铃声
+  const pickDefault = (preferred) =>
+    soundFiles.includes(preferred) || soundFiles.length === 0 ? preferred : soundFiles[0];
+  const defaultSingleSound = pickDefault(DEFAULT_SINGLE);
+  const defaultUrgentSound = pickDefault(DEFAULT_URGENT);
+
+  return `/**
  * 自动生成的音频文件列表
  * 由 scripts/generate-sound-list.js 生成
  * 请勿手动修改此文件
@@ -45,10 +55,10 @@ function generateSoundList() {
 export const soundFiles = ${JSON.stringify(soundFiles, null, 2)};
 
 // 默认的单次通知铃声
-export const defaultSingleSound = 'Teams 默认.mp3';
+export const defaultSingleSound = '${defaultSingleSound}';
 
 // 默认的持续通知铃声
-export const defaultUrgentSound = 'Teams 默认通话铃.mp3';
+export const defaultUrgentSound = '${defaultUrgentSound}';
 
 // 获取音频文件的完整路径
 export function getSoundPath(filename) {
@@ -121,11 +131,9 @@ export function stopSound(audio) {
   }
 }
 `;
-
-  return fileContent;
 }
 
-// 写入文件
+// 写入文件（内容无变化时跳过写入，避免不必要的磁盘 IO 与构建缓存失效）
 function writeSoundList() {
   try {
     const content = generateSoundList();
@@ -136,9 +144,18 @@ function writeSoundList() {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    fs.writeFileSync(outputFile, content, 'utf-8');
-    console.log('✓ 音频文件列表生成成功:', outputFile);
-    console.log('✓ 共找到', getSoundFiles().length, '个音频文件');
+    let changed = true;
+    if (fs.existsSync(outputFile)) {
+      changed = fs.readFileSync(outputFile, 'utf-8') !== content;
+    }
+
+    if (changed) {
+      fs.writeFileSync(outputFile, content, 'utf-8');
+      console.log('✓ 音频文件列表已更新:', outputFile);
+      console.log('✓ 共找到', fs.readdirSync(soundsDir).length, '个音频文件');
+    } else {
+      console.log('→ 音频文件列表无变化，跳过写入');
+    }
   } catch (error) {
     console.error('✗ 生成音频列表失败:', error);
     process.exit(1);

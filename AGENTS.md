@@ -13,7 +13,7 @@ Classworks 是适用于班级大屏的作业板工具。基于 Vue 3 + Vuetify 4
 | 构建工具    | Vite 8                                           |
 | 包管理器    | pnpm（项目根目录有 `pnpm-workspace.yaml`）               |
 | 语言      | JavaScript（非 TypeScript）                         |
-| CSS 预处理 | Sass (`sass-embedded`)                    |
+| CSS 预处理 | Sass (`sass-embedded`)                           |
 | 路径别名    | `@/` → `src/`                                    |
 | 开发端口    | 3031                                             |
 | 数据层     | 纯前端（IndexedDB 本地 + 远程 KV 服务），**无自有后端**           |
@@ -28,7 +28,7 @@ pnpm install          # 安装依赖
 pnpm run dev          # 开发服务器，localhost:3031（局域网可访问）
 pnpm run build        # 生产构建（自动执行 prebuild 重新生成声音列表）
 pnpm run preview      # 预览生产构建
-pnpm run lint         # ESLint 检查并自动修复
+pnpm run lint         # oxlint 主检查（JS/script）+ ESLint 补充检查 Vue 模板规则
 ```
 
 ## 设计规则
@@ -51,9 +51,9 @@ pnpm run lint         # ESLint 检查并自动修复
 
 ### 包管理与构建命令
 
-* **本项目使用 pnpm，禁止使用 npm 作为包管理器。** 禁止 `npm install`、`npx vite`、`npx eslint`。
+* **本项目使用 pnpm，禁止使用 npm 作为包管理器。** 禁止 `npm install`、`npx vite`、`npx oxlint`。
 
-* **禁止使用** **`npx`** **运行** **`devDependencies`** **中的工具。** 使用 `pnpm lint` 而非 `npx eslint`。
+* **禁止使用** **`npx`** **运行** **`devDependencies`** **中的工具。** 使用 `pnpm lint` 而非 `npx oxlint`。
 
 * **禁止修改** **`package.json`** **中的** **`scripts`** **字段**，除非用户明确要求。
 
@@ -113,7 +113,7 @@ pnpm run lint         # ESLint 检查并自动修复
 
 * 路径别名：`@/` 映射到 `src/`（`jsconfig.json`）
 
-* ESLint flat config，Vue 推荐规则（`eslint.config.js`）。不要创建 `.eslintrc.js` 或 `.eslintrc.json`
+* 双 lint 工具链：**oxlint 主查**（`.oxlintrc.json`，覆盖 JS 与 `<script>` 块），**ESLint 补查**（`eslint.config.js`，经 `eslint-plugin-oxlint` 去重后仅保留 oxlint 不支持的 Vue 模板解析规则）。不要创建额外的配置文件
 
 * Composition API 和 Options API 混用；不使用 TypeScript
 
