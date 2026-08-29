@@ -691,8 +691,8 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingsCard from '@/components/SettingsCard.vue';
-import CloudMigrationDialog from '../CloudMigrationDialog.vue';
+import SettingsCard from '@/components/settings/SettingsCard.vue';
+import CloudMigrationDialog from '@/components/settings/CloudMigrationDialog.vue';
 import dataProvider from '@/utils/dataProvider';
 import {getSetting, watchSettings} from '@/utils/settings';
 import {openDB} from 'idb';

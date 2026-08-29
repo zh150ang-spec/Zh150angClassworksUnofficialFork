@@ -323,7 +323,7 @@
 import { ICON } from '@/utils/icons'
 import dataProvider from "@/utils/dataProvider";
 import {getSetting} from "@/utils/settings";
-import NotebookHomeworkDialog from "@/components/NotebookHomeworkDialog.vue";
+import NotebookHomeworkDialog from "@/components/editing/NotebookHomeworkDialog.vue";
 import { useDisplay } from "vuetify";
 
 export default {

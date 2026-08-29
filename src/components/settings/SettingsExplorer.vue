@@ -85,7 +85,7 @@
 <script>
 import { ICON } from '@/utils/icons'
 import {getSetting, settingsDefinitions, exportSettingsAsKeyValue, watchSettings} from '@/utils/settings';
-import SettingItem from './SettingItem.vue';
+import SettingItem from '@/components/settings/SettingItem.vue';
 
 // 比较设置当前值与默认值是否相等（对象/数组需深度比较）
 function isEqualValue(a, b) {

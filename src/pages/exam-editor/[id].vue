@@ -40,7 +40,7 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import ExamConfigEditor from '@/components/ExamConfigEditor.vue'
+import ExamConfigEditor from '@/components/editing/ExamConfigEditor.vue'
 
 export default {
   name: 'ExamEditorPage',

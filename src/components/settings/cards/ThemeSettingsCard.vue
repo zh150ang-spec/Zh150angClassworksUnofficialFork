@@ -42,7 +42,7 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingsCard from '@/components/SettingsCard.vue';
+import SettingsCard from '@/components/settings/SettingsCard.vue';
 import {getSetting, setSetting} from '@/utils/settings';
 import {useTheme} from 'vuetify';
 

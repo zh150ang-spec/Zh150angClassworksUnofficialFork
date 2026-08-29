@@ -70,7 +70,7 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingsCard from '@/components/SettingsCard.vue';
+import SettingsCard from '@/components/settings/SettingsCard.vue';
 import SettingItem from '@/components/settings/SettingItem.vue';
 
 export default {

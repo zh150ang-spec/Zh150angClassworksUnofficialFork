@@ -1,4 +1,4 @@
-import {kvServerProvider} from "./providers/kvServerProvider";
+import {kvServerProvider} from "@/utils/providers/kvServerProvider";
 
 const RMW_MAX_RETRIES = 2;
 

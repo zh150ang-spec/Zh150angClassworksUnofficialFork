@@ -1,7 +1,7 @@
 import axios from "axios";
 import {getSetting} from "@/utils/settings";
 import {parseRateLimit} from "ratelimit-header-parser";
-import RateLimitModal from "@/components/RateLimitModal.vue";
+import RateLimitModal from "@/components/system/RateLimitModal.vue";
 import {Base64} from "js-base64";
 
 const DEFAULT_TIMEOUT = 15000;

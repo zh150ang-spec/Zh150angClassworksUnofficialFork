@@ -1,4 +1,4 @@
-import {getSetting} from './settings';
+import {getSetting} from '@/utils/settings';
 
 class LogDB {
   constructor() {

@@ -4,7 +4,7 @@
  * latency-based preference, background probing, and response caching.
  */
 
-import { getSetting } from "./settings";
+import { getSetting } from "@/utils/settings";
 
 // Server list for classworkscloud provider (in default priority order)
 const CLASSWORKS_CLOUD_SERVERS = [

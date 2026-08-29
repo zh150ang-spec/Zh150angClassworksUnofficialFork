@@ -5,7 +5,7 @@
  * 避免 @sentry/vue (~60KB gzip) 阻塞首屏渲染。
  */
 import * as Sentry from '@sentry/vue'
-import { getVisitorId } from './visitorId'
+import { getVisitorId } from '@/utils/visitorId'
 
 // 保存 feedback integration 实例的引用
 let feedbackIntegration = null

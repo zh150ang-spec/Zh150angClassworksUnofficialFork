@@ -10,7 +10,7 @@
  * - 生成端的快捷按钮默认不勾选敏感项（仅 UX 防误操作，不构成硬性限制）
  * - SENSITIVE_BLOCKLIST 仅用于生成端默认勾选行为，解码端不读取
  */
-import { encodeBase64Utf8, decodeBase64Utf8 } from "./encoding";
+import { encodeBase64Utf8, decodeBase64Utf8 } from "@/utils/encoding";
 
 /**
  * 敏感配置项黑名单

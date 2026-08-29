@@ -192,10 +192,10 @@
 import { ICON } from '@/utils/icons'
 import {ref, computed, onMounted, watch} from 'vue'
 import {getSetting, setSetting} from '@/utils/settings'
-import DeviceAuthDialog from './auth/DeviceAuthDialog.vue'
-import TokenInputDialog from './auth/TokenInputDialog.vue'
-import AlternativeCodeDialog from './auth/AlternativeCodeDialog.vue'
-import FirstTimeGuide from './auth/FirstTimeGuide.vue'
+import DeviceAuthDialog from '@/components/auth/DeviceAuthDialog.vue'
+import TokenInputDialog from '@/components/auth/TokenInputDialog.vue'
+import AlternativeCodeDialog from '@/components/auth/AlternativeCodeDialog.vue'
+import FirstTimeGuide from '@/components/auth/FirstTimeGuide.vue'
 
 const props = defineProps({
   preconfig: {

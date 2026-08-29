@@ -335,7 +335,7 @@ import { ICON } from '@/utils/icons'
 import { getSetting, setSetting } from "@/utils/settings";
 import dataProvider from "@/utils/dataProvider";
 import { formatDateISO } from "@/utils/dateUtils";
-import SettingsCard from '@/components/SettingsCard.vue';
+import SettingsCard from '@/components/settings/SettingsCard.vue';
 
 export default {
   name: "AutoAttendanceCard",

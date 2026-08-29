@@ -55,7 +55,7 @@ import { defineAsyncComponent } from "vue";
 import AsyncLoadingPlaceholder from "@/components/common/AsyncLoadingPlaceholder.vue";
 
 const ExamConfigEditor = defineAsyncComponent({
-  loader: () => import("@/components/ExamConfigEditor.vue"),
+  loader: () => import("@/components/editing/ExamConfigEditor.vue"),
   loadingComponent: AsyncLoadingPlaceholder,
   delay: 0,
 });

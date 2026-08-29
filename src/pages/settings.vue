@@ -340,20 +340,20 @@ import {
   resetSetting,
   watchSettings,
 } from "@/utils/settings";
-import MessageLog from "@/components/MessageLog.vue";
-import SettingsCard from "@/components/SettingsCard.vue";
-import StudentListCard from "@/components/settings/StudentListCard.vue";
-import TeacherListCard from "@/components/settings/TeacherListCard.vue";
-import AboutCard from "@/components/settings/AboutCard.vue";
+import MessageLog from "@/components/common/MessageLog.vue";
+import SettingsCard from "@/components/settings/SettingsCard.vue";
+import StudentListCard from "@/components/settings/cards/StudentListCard.vue";
+import TeacherListCard from "@/components/settings/cards/TeacherListCard.vue";
+import AboutCard from "@/components/settings/cards/AboutCard.vue";
 import "../styles/settings.scss";
 import SettingsExplorer from "@/components/settings/SettingsExplorer.vue";
-import SettingsLinkGenerator from "@/components/SettingsLinkGenerator.vue";
+import SettingsLinkGenerator from "@/components/settings/SettingsLinkGenerator.vue";
 import RandomPickerCard from "@/components/settings/cards/RandomPickerCard.vue";
 import HomeworkTemplateCard from "@/components/settings/cards/HomeworkTemplateCard.vue";
 import SubjectManagementCard from "@/components/settings/cards/SubjectManagementCard.vue";
 import KvDatabaseCard from "@/components/settings/cards/KvDatabaseCard.vue";
-import HitokotoSettings from "@/components/HitokotoSettings.vue";
-import NotificationSoundSettings from "@/components/settings/NotificationSoundSettings.vue";
+import HitokotoSettings from "@/components/settings/cards/HitokotoSettings.vue";
+import NotificationSoundSettings from "@/components/settings/cards/NotificationSoundSettings.vue";
 import AutoAttendanceCard from "@/components/settings/cards/AutoAttendanceCard.vue";
 import BackgroundSettingsCard from "@/components/settings/cards/BackgroundSettingsCard.vue";
 import ThemeSettingsCard from "@/components/settings/cards/ThemeSettingsCard.vue";

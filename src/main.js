@@ -15,16 +15,16 @@ import '@fontsource/jetbrains-mono/400.css'
 import { registerPlugins } from '@/plugins'
 
 // Components
-import App from './App.vue'
-import GlobalMessage from '@/components/GlobalMessage.vue'
+import App from '@/App.vue'
+import GlobalMessage from '@/components/common/GlobalMessage.vue'
 
 // Composables
 import { createApp } from 'vue'
 import { ICON } from '@/utils/icons'
 
-import messageService from './utils/message'
-import { watchSettings } from './utils/settings'
-import BackgroundSyncService from './utils/backgroundSync'
+import messageService from '@/utils/message'
+import { watchSettings } from '@/utils/settings'
+import BackgroundSyncService from '@/utils/backgroundSync'
 
 const app = createApp(App)
 
@@ -38,7 +38,7 @@ app.component('GlobalMessage', GlobalMessage)
 
 // 先异步加载 Sentry 并初始化，再挂载 app
 // 这样 Sentry.init() 在 app.mount() 之前执行，避免 Misconfigured SDK 警告
-import('./utils/sentry').then(({ initSentry }) => {
+import('@/utils/sentry').then(({ initSentry }) => {
   const router = app.config.globalProperties.$router
   initSentry(app, router)
 }).catch((err) => {
@@ -60,7 +60,7 @@ const loadClarity = async () => {
       return
     }
 
-    const { getVisitorId } = await import('./utils/visitorId')
+    const { getVisitorId } = await import('@/utils/visitorId')
     const Clarity = (await import('@microsoft/clarity')).default
     Clarity.init(clarityId)
 

@@ -5,7 +5,7 @@
  * 数据层（settings.js）只管配置定义和存取，展示关注点集中在此
  * 消费方：pages/index.vue、components/settings/SettingItem.vue、SettingsLinkGenerator.vue
  */
-import { getSettingDefinition } from "./settings";
+import { getSettingDefinition } from "@/utils/settings";
 
 /**
  * 设置项 key 末段到中文显示名的映射表

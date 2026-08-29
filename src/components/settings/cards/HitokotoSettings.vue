@@ -405,8 +405,8 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingGroup from './settings/SettingGroup.vue'
-import SettingItem from './settings/SettingItem.vue'
+import SettingGroup from '@/components/settings/SettingGroup.vue'
+import SettingItem from '@/components/settings/SettingItem.vue'
 import dataProvider from '@/utils/dataProvider'
 import axios from 'axios'
 

@@ -1,10 +1,10 @@
-import {getSetting} from "./settings";
-import {kvLocalProvider} from "./providers/kvLocalProvider";
-import {kvServerProvider} from "./providers/kvServerProvider";
-import {networkStatus} from "./networkStatus";
-import {rmwWriteServer} from "./rmw";
-import {loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY} from "./syncHelpers";
-import {acquireLock} from "./crossTabLock";
+import {getSetting} from "@/utils/settings";
+import {kvLocalProvider} from "@/utils/providers/kvLocalProvider";
+import {kvServerProvider} from "@/utils/providers/kvServerProvider";
+import {networkStatus} from "@/utils/networkStatus";
+import {rmwWriteServer} from "@/utils/rmw";
+import {loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY} from "@/utils/syncHelpers";
+import {acquireLock} from "@/utils/crossTabLock";
 
 const IMMEDIATE_BACKOFF_DELAYS = [30000, 60000, 120000, 300000]
 const MAX_IMMEDIATE_ATTEMPTS = 4

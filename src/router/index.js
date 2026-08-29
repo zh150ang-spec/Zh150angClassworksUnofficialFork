@@ -14,6 +14,14 @@ const router = createRouter({
   routes: setupLayouts(routes),
 })
 
+// 调试/诊断页仅允许开发环境访问，生产构建统一重定向到首页，防止线上暴露内部诊断信息
+const DEBUG_PATHS = ['/debug', '/debug-init', '/debug-socket', '/socket-debugger']
+router.beforeEach((to) => {
+  if (import.meta.env.PROD && DEBUG_PATHS.includes(to.path)) {
+    return { path: '/' }
+  }
+})
+
 const DYNAMIC_RELOAD_KEY = 'vuetify:dynamic-reload'
 const MAX_RELOAD_ATTEMPTS = 3
 const RELOAD_COOLDOWN_MS = 5000

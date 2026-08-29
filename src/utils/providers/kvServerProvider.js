@@ -1,7 +1,7 @@
 import axios from "@/axios/axios";
-import {formatResponse, formatError} from "../dataProvider";
-import {getSetting} from "../settings";
-import {tryWithRotation, isRotationEnabled} from "../serverRotation";
+import {formatResponse, formatError} from "@/utils/dataProvider";
+import {getSetting} from "@/utils/settings";
+import {tryWithRotation, isRotationEnabled} from "@/utils/serverRotation";
 
 // Helper function to get request headers with kvtoken
 const getHeaders = () => {

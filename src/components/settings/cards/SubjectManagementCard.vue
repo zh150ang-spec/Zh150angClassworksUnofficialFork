@@ -135,9 +135,10 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingsCard from '@/components/SettingsCard.vue';
+import SettingsCard from '@/components/settings/SettingsCard.vue';
 import dataProvider from "@/utils/dataProvider.js";
 import { useConfigDefaults } from '@/composables/useConfigDefaults';
+import { defaultSubjects } from '@/utils/defaults/defaultData';
 
 export default {
   name: 'SubjectManagementCard',
@@ -154,18 +155,7 @@ export default {
       subjects: [],
       originalSubjects: null,
       newSubjectName: '',
-      defaultSubjects: [
-        {name: '语文', order: 0},
-        {name: '数学', order: 1},
-        {name: '英语', order: 2},
-        {name: '物理', order: 3},
-        {name: '化学', order: 4},
-        {name: '生物', order: 5},
-        {name: '政治', order: 6},
-        {name: '历史', order: 7},
-        {name: '地理', order: 8},
-        {name: '其他', order: 9}
-      ],
+      defaultSubjects,
       configLoader: useConfigDefaults({ configKey: 'classworks-config-subject', kind: 'array' })
     };
   },

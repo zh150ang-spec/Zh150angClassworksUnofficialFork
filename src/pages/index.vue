@@ -353,29 +353,29 @@ import AsyncLoadingPlaceholder from "@/components/common/AsyncLoadingPlaceholder
 // ===== 首屏核心组件（同步加载）=====
 import HomeworkGrid from "@/components/home/HomeworkGrid.vue";
 import HomeActions from "@/components/home/HomeActions.vue";
-import FloatingICP from "@/components/FloatingICP.vue";
-import HomeSkeleton from "@/components/common/HomeSkeleton.vue";
+import FloatingICP from "@/components/home/FloatingICP.vue";
+import HomeSkeleton from "@/components/home/HomeSkeleton.vue";
 
 // ===== 非首屏 / 条件渲染组件（异步懒加载）=====
 const MessageLog = defineAsyncComponent({
-  loader: () => import("@/components/MessageLog.vue"),
+  loader: () => import("@/components/common/MessageLog.vue"),
   loadingComponent: AsyncLoadingPlaceholder,
   delay: 200,
 });
 const RandomPicker = defineAsyncComponent({
-  loader: () => import("@/components/RandomPicker.vue"),
+  loader: () => import("@/components/home/RandomPicker.vue"),
   delay: 0,
 });
 const FloatingToolbar = defineAsyncComponent({
-  loader: () => import("@/components/FloatingToolbar.vue"),
+  loader: () => import("@/components/home/FloatingToolbar.vue"),
   delay: 200,
 });
 const ChatWidget = defineAsyncComponent({
-  loader: () => import("@/components/ChatWidget.vue"),
+  loader: () => import("@/components/home/ChatWidget.vue"),
   delay: 0,
 });
 const HomeworkEditDialog = defineAsyncComponent({
-  loader: () => import("@/components/HomeworkEditDialog.vue"),
+  loader: () => import("@/components/editing/HomeworkEditDialog.vue"),
   delay: 0,
 });
 const UafTransferDialog = defineAsyncComponent({
@@ -383,29 +383,29 @@ const UafTransferDialog = defineAsyncComponent({
   delay: 0,
 });
 const InitServiceChooser = defineAsyncComponent({
-  loader: () => import("@/components/InitServiceChooser.vue"),
+  loader: () => import("@/components/system/InitServiceChooser.vue"),
   loadingComponent: AsyncLoadingPlaceholder,
   delay: 200,
 });
 const StudentNameManager = defineAsyncComponent({
-  loader: () => import("@/components/StudentNameManager.vue"),
+  loader: () => import("@/components/home/StudentNameManager.vue"),
   delay: 200,
 });
 const UrgentTestDialog = defineAsyncComponent({
-  loader: () => import("@/components/UrgentTestDialog.vue"),
+  loader: () => import("@/components/editing/UrgentTestDialog.vue"),
   delay: 0,
 });
 const AttendanceSidebar = defineAsyncComponent({
-  loader: () => import("@/components/attendance/AttendanceSidebar.vue"),
+  loader: () => import("@/components/home/AttendanceSidebar.vue"),
   loadingComponent: AsyncLoadingPlaceholder,
   delay: 200,
 });
 const AttendanceManagementDialog = defineAsyncComponent({
-  loader: () => import("@/components/attendance/AttendanceManagementDialog.vue"),
+  loader: () => import("@/components/home/AttendanceManagementDialog.vue"),
   delay: 0,
 });
 const PwaInstallCard = defineAsyncComponent({
-  loader: () => import("@/components/PwaInstallCard.vue"),
+  loader: () => import("@/components/system/PwaInstallCard.vue"),
   delay: 200,
 });
 import dataProvider from "@/utils/dataProvider";

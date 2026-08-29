@@ -98,7 +98,7 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import CacheManager from '@/components/CacheManager.vue';
+import CacheManager from '@/components/settings/CacheManager.vue';
 
 export default {
   name: 'CacheManagementPage',

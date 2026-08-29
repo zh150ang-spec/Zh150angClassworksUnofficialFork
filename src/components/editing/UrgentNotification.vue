@@ -91,7 +91,7 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import EventSender from "@/components/EventSender.vue";
+import EventSender from "@/components/system/EventSender.vue";
 import { getSetting } from "@/utils/settings.js";
 import { playSound, stopSound } from "@/utils/soundList.js";
 

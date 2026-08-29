@@ -10,16 +10,17 @@
 
 **Props:**
 
-- `showCancel` (Boolean): 是否显示取消按钮,默认为 `false`
+* `showCancel` (Boolean): 是否显示取消按钮,默认为 `false`
 
 **Events:**
 
-- `@success`: 认证成功时触发,传递认证数据
-- `@cancel`: 点击取消按钮时触发
+* `@success`: 认证成功时触发,传递认证数据
+
+* `@cancel`: 点击取消按钮时触发
 
 **暴露的方法:**
 
-- `reset()`: 清空表单和错误信息
+* `reset()`: 清空表单和错误信息
 
 **使用示例:**
 
@@ -39,7 +40,7 @@ import DeviceAuthDialog from '@/components/auth/DeviceAuthDialog.vue'
 </script>
 ```
 
----
+***
 
 ### TokenInputDialog.vue
 
@@ -47,16 +48,17 @@ Token 输入对话框,用于手动输入 KV 授权 Token。
 
 **Props:**
 
-- `showCancel` (Boolean): 是否显示取消按钮,默认为 `false`
+* `showCancel` (Boolean): 是否显示取消按钮,默认为 `false`
 
 **Events:**
 
-- `@success`: Token 验证成功时触发
-- `@cancel`: 点击取消按钮时触发
+* `@success`: Token 验证成功时触发
+
+* `@cancel`: 点击取消按钮时触发
 
 **暴露的方法:**
 
-- `reset()`: 清空表单和错误信息
+* `reset()`: 清空表单和错误信息
 
 **使用示例:**
 
@@ -76,7 +78,7 @@ import TokenInputDialog from '@/components/auth/TokenInputDialog.vue'
 </script>
 ```
 
----
+***
 
 ### AlternativeCodeDialog.vue
 
@@ -84,16 +86,17 @@ import TokenInputDialog from '@/components/auth/TokenInputDialog.vue'
 
 **Props:**
 
-- `showCancel` (Boolean): 是否显示取消按钮,默认为 `false`
+* `showCancel` (Boolean): 是否显示取消按钮,默认为 `false`
 
 **Events:**
 
-- `@submit`: 提交代码时触发,传递代码内容
-- `@cancel`: 点击取消按钮时触发
+* `@submit`: 提交代码时触发,传递代码内容
+
+* `@cancel`: 点击取消按钮时触发
 
 **暴露的方法:**
 
-- `reset()`: 清空表单
+* `reset()`: 清空表单
 
 **使用示例:**
 
@@ -113,7 +116,7 @@ import AlternativeCodeDialog from '@/components/auth/AlternativeCodeDialog.vue'
 </script>
 ```
 
----
+***
 
 ### FirstTimeGuide.vue
 
@@ -121,7 +124,7 @@ import AlternativeCodeDialog from '@/components/auth/AlternativeCodeDialog.vue'
 
 **Events:**
 
-- `@close`: 关闭指南时触发
+* `@close`: 关闭指南时触发
 
 **使用示例:**
 
@@ -146,6 +149,9 @@ import FirstTimeGuide from '@/components/auth/FirstTimeGuide.vue'
 
 ## 注意事项
 
-- 这些组件需要配合 Vuetify 使用
-- 组件内部使用了 `@/utils/settings` 和 `@/axios/axios`,确保这些依赖可用
-- 建议将这些组件包裹在 `v-dialog` 中使用,以获得最佳的用户体验
+* 这些组件需要配合 Vuetify 使用
+
+* 组件内部使用了 `@/utils/settings` 和 `@/axios/axios`,确保这些依赖可用
+
+* 建议将这些组件包裹在 `v-dialog` 中使用,以获得最佳的用户体验
+

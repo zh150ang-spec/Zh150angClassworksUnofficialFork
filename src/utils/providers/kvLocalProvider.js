@@ -1,5 +1,5 @@
 import {openDB} from "idb";
-import {formatResponse, formatError} from "../dataProvider";
+import {formatResponse, formatError} from "@/utils/dataProvider";
 
 const DB_NAME = "ClassworksDB";
 const DB_VERSION = 5;

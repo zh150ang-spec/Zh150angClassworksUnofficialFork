@@ -38,7 +38,7 @@
   padding: 0 var(--space-compat-6px);
 
   &:active {
-    transform: scale(0.97);
+    transform: scale(var(--state-active-scale));
   }
 }
 
@@ -66,7 +66,7 @@
   margin: var(--space-compat-2px);
 
   &:active {
-    transform: scale(0.97);
+    transform: scale(var(--state-active-scale));
   }
 }
 
@@ -224,7 +224,7 @@
 }
 
 .empty-subject-card:hover {
-  opacity: 1;
+  opacity: var(--state-hover-opacity);
 }
 
 .empty-subjects {
@@ -233,5 +233,5 @@
 }
 
 .empty-subject-card:not(:disabled):hover {
-  opacity: 1;
+  opacity: var(--state-hover-opacity);
 }

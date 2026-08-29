@@ -606,7 +606,7 @@
 import { ICON } from '@/utils/icons'
 import dataProvider from '@/utils/dataProvider'
 import {getSetting} from '@/utils/settings'
-import ExamConfigEditor from '@/components/ExamConfigEditor.vue'
+import ExamConfigEditor from '@/components/editing/ExamConfigEditor.vue'
 import {formatDateChinese, formatDateISO} from '@/utils/dateUtils'
 
 export default {

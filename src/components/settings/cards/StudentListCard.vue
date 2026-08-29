@@ -235,8 +235,8 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingsCard from "@/components/SettingsCard.vue";
-import UnsavedWarning from "../common/UnsavedWarning.vue";
+import SettingsCard from "@/components/settings/SettingsCard.vue";
+import UnsavedWarning from "@/components/common/UnsavedWarning.vue";
 import "@/styles/warnings.scss";
 import dataProvider from "@/utils/dataProvider";
 

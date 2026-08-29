@@ -487,46 +487,11 @@
 <script>
 import { ICON } from '@/utils/icons'
 import {reactive} from 'vue';
-import SettingsCard from '@/components/SettingsCard.vue';
+import SettingsCard from '@/components/settings/SettingsCard.vue';
 import SettingGroup from '@/components/settings/SettingGroup.vue';
 import dataProvider from "@/utils/dataProvider.js";
 import { useConfigDefaults } from '@/composables/useConfigDefaults';
-
-const DEFAULT_CONFIG = {
-  subjects: {
-    "语文": {
-      books: {
-        "课本": ["第一单元", "第二单元"],
-        "练习册": ["第一章", "第二章"]
-      }
-    },
-    "数学": {
-      books: {
-        "课本": ["第一章", "第二章"],
-        "习题册": ["基础练习", "提高练习"]
-      }
-    },
-    "英语": {
-      books: {
-        "课本": ["Unit 1", "Unit 2"],
-        "练习册": ["Chapter 1", "Chapter 2"]
-      }
-    }
-  },
-  commonSubject: {
-    books: {
-      "试卷": ["单元测试", "期中测试", "期末测试"],
-      "假期作业": ["必做题", "选做题"]
-    }
-  },
-  actions: ["写完", "下一课", "不交", "明天交"],
-  notebookTemplates: {
-    "语文": { notebooks: ["练习本", "作文本", "听写本"] },
-    "数学": { notebooks: ["练习本", "习题本"] },
-    "英语": { notebooks: ["练习本", "听写本", "单词本"] }
-  },
-  commonNotebooks: ["练习本", "作业本", "习题本"]
-};
+import { defaultHomeworkTemplate as DEFAULT_CONFIG } from '@/utils/defaults/defaultData';
 
 export default {
   name: 'HomeworkTemplateCard',

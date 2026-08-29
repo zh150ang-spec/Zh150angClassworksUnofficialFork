@@ -205,8 +205,8 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingsCard from "@/components/SettingsCard.vue";
-import CloudNamespaceInfoCard from "./CloudNamespaceInfoCard.vue";
+import SettingsCard from "@/components/settings/SettingsCard.vue";
+import CloudNamespaceInfoCard from "@/components/settings/cards/CloudNamespaceInfoCard.vue";
 import {getSetting, setSetting, watchSettings} from "@/utils/settings";
 import BackgroundSyncService from "@/utils/backgroundSync";
 

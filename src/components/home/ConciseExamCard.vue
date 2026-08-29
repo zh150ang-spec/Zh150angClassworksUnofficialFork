@@ -78,7 +78,7 @@
 <script>
 import { useExamStore } from "@/stores/examStore";
 import { mapState, mapActions } from "pinia";
-import RelativeTimeDisplay from "@/components/RelativeTimeDisplay.vue";
+import RelativeTimeDisplay from "@/components/common/RelativeTimeDisplay.vue";
 import { formatTimeOnly } from "@/utils/dateUtils";
 
 export default {

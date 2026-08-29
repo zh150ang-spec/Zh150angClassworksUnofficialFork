@@ -1,12 +1,12 @@
-import {kvLocalProvider} from "./providers/kvLocalProvider";
-import {kvServerProvider} from "./providers/kvServerProvider";
-import {getSetting, setSetting} from "./settings";
-import {getEffectiveServerUrl} from "./serverRotation";
-import {networkStatus} from "./networkStatus";
-import backgroundSync from "./backgroundSync";
-import {rmwWriteServer, computeDataHash} from "./rmw";
-import messageService from "./message";
-import {loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY} from "./syncHelpers";
+import {kvLocalProvider} from "@/utils/providers/kvLocalProvider";
+import {kvServerProvider} from "@/utils/providers/kvServerProvider";
+import {getSetting, setSetting} from "@/utils/settings";
+import {getEffectiveServerUrl} from "@/utils/serverRotation";
+import {networkStatus} from "@/utils/networkStatus";
+import backgroundSync from "@/utils/backgroundSync";
+import {rmwWriteServer, computeDataHash} from "@/utils/rmw";
+import messageService from "@/utils/message";
+import {loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY} from "@/utils/syncHelpers";
 
 export const formatResponse = (data) => data;
 

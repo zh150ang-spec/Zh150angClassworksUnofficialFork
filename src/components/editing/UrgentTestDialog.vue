@@ -366,8 +366,8 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import ChatWidget from '@/components/ChatWidget.vue'
-import EventSender from '@/components/EventSender.vue'
+import ChatWidget from '@/components/home/ChatWidget.vue'
+import EventSender from '@/components/system/EventSender.vue'
 import { on as socketOn } from '@/utils/socketClient'
 import dataProvider from '@/utils/dataProvider'
 import { formatTime } from '@/utils/dateUtils'

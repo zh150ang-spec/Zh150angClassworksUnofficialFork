@@ -169,7 +169,7 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import SettingsCard from "@/components/SettingsCard.vue";
+import SettingsCard from "@/components/settings/SettingsCard.vue";
 import {getSetting, setSetting, watchSettings} from "@/utils/settings";
 import axios from "axios";
 import {tryWithRotation, isRotationEnabled} from "@/utils/serverRotation";

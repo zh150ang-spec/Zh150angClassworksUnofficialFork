@@ -331,7 +331,7 @@ import { ICON } from '@/utils/icons'
 import {getSetting} from '@/utils/settings'
 import {getSocket, joinToken, on as socketOn} from '@/utils/socketClient'
 import {sendChatMessage, createDeviceEventHandler, formatDeviceInfo} from '@/utils/deviceEvents'
-import UrgentNotification from '@/components/UrgentNotification.vue'
+import UrgentNotification from '@/components/editing/UrgentNotification.vue'
 import { formatTimeOnly } from '@/utils/dateUtils'
 
 export default {

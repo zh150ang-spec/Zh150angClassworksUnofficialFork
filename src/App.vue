@@ -46,11 +46,11 @@ import { useTheme } from "vuetify";
 import { getSetting, watchSettings } from "@/utils/settings";
 import { getEffectiveServerUrl } from "@/utils/serverRotation";
 import { networkStatus } from "@/utils/networkStatus";
-import RateLimitModal from "@/components/RateLimitModal.vue";
+import RateLimitModal from "@/components/system/RateLimitModal.vue";
 // eslint-disable-next-line no-unused-vars -- used in template
-import OfflineIndicator from "@/components/OfflineIndicator.vue";
+import OfflineIndicator from "@/components/system/OfflineIndicator.vue";
 // eslint-disable-next-line no-unused-vars -- used in template
-import SwUpdateNotification from "@/components/SwUpdateNotification.vue";
+import SwUpdateNotification from "@/components/system/SwUpdateNotification.vue";
 
 const theme = useTheme();
 const offlineIndicator = ref(null);

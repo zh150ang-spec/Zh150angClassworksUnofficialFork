@@ -70,7 +70,7 @@
             >
               <v-img
                 alt="Classworks"
-                src="../../assets/cslogo.png"
+                src="@/assets/cslogo.png"
               />
             </v-avatar>
 
@@ -286,6 +286,7 @@
                       复制信息
                     </v-btn>
                     <v-btn
+                      v-if="isDev"
                       color="neutral-surface"
                       variant="elevated"
                       :prepend-icon="ICON.OPEN_IN_NEW"
@@ -373,7 +374,7 @@ import { ICON } from '@/utils/icons'
 import {ref, onMounted, computed} from "vue";
 import { useRouter } from 'vue-router'
 import { getVisitorId } from '@/utils/visitorId'
-import packageJson from "../../../package.json";
+import packageJson from '@/../package.json';
 
 export default {
   name: "AboutCard",
@@ -384,6 +385,7 @@ export default {
     const debugIdInput = ref('');
     const visitorLoading = ref(false);
     const copyOk = ref(false);
+    const isDev = import.meta.env.DEV;
     const qqGroupNumber = '964979747';
     const qqGroupLink = 'https://qm.qq.com/q/T6qImKJjGi';
     const router = useRouter();
@@ -527,6 +529,7 @@ export default {
       debugIdInput,
       visitorLoading,
       copyOk,
+      isDev,
       qqGroupNumber,
       qqGroupLink,
       ICON,

@@ -301,8 +301,8 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import HitokotoCard from "@/components/HitokotoCard.vue";
-import TimeCard from "@/components/TimeCard.vue";
+import HitokotoCard from "@/components/home/HitokotoCard.vue";
+import TimeCard from "@/components/home/TimeCard.vue";
 import ConciseExamCard from "@/components/home/ConciseExamCard.vue";
 import {getSetting} from "@/utils/settings.js";
 import {getEffectiveServerUrl} from "@/utils/serverRotation";

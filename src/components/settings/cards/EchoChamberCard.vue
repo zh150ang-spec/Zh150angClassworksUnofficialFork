@@ -40,7 +40,7 @@ async function getTypewriter() {
   }
   return TypewriterClass;
 }
-import SettingsCard from "@/components/SettingsCard.vue";
+import SettingsCard from "@/components/settings/SettingsCard.vue";
 
 const INITIAL_STATE = {
   text: "点击此处查看来自用户社区的精选语录",

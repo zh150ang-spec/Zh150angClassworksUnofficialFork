@@ -157,6 +157,19 @@
   --shadow-overlay: var(--shadow-xl);         /* Dialogs, full overlays */
   --shadow-fab: var(--shadow-lg);             /* Floating action buttons */
 
+  /* ── Interaction States ─────────────────────────────────── */
+  /* Unified feedback tokens for card / button interaction.
+     Design rule: cards remain static on hover (no float / no shadow /
+     no transform), so hover feedback is expressed via opacity and
+     press feedback via a slight scale. Focus ring is a border-like
+     shadow, not an elevation change. */
+  --state-hover-opacity: 1;            /* Card hover target opacity (rest opacity set per-card) */
+  --state-active-scale: 0.97;          /* Press-down scale for tappable cards / chips  */
+  --state-focus-ring: 0 0 0 2px rgba(var(--v-theme-primary), 0.35);  /* Keyboard focus ring */
+  --state-focus-ring-offset: 2px;      /* Ring spacing from element edge */
+  --state-press-fill: rgba(var(--v-theme-on-surface), 0.05);         /* Press fill for buttons */
+  --state-hover-fill: var(--color-fill);                             /* Hover fill for rows / entries */
+
   /* ── Shadows: Special Effects ───────────────────────────── */
   /* Focus ring (not a true shadow, but managed here). */
   --shadow-ring: 0 0 0 2px rgba(var(--v-theme-primary), 0.3);
