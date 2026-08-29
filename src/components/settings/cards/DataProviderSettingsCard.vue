@@ -1,7 +1,7 @@
 <template>
   <settings-card
     :icon="ICON.DATABASE_COG"
-    title="数据源设置"
+    title="数据源维护与诊断"
   >
     <v-list>
       <template

@@ -2,7 +2,7 @@
   <settings-card
     :loading="loading"
     :icon="ICON.DATABASE"
-    title="服务器设置"
+    title="数据提供者与服务器"
   >
     <v-form>
       <v-select
