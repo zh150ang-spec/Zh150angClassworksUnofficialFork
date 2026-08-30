@@ -8,6 +8,44 @@
 
 ***
 
+## \[0.12.0-beta] - 2026-08-30
+
+> 自 `v0.11.1-beta` 之后的设置页功能改进与工程治理批次。
+
+### 新增
+
+* 全新「同步」设置卡片 `SyncSettingsCard`，从 `RefreshSettingsCard` 拆分而来，将同步相关配置集中展示与调整。
+
+* 新增 `docs/SHADOW_LAYERING.md`、`docs/TYPOGRAPHY.md` 两份排版与阴影/层级系统分析文档。
+
+### 重构
+
+* 设置页标签重组，收敛导航粒度：
+
+  * 新设「人员与考勤」标签（原「人员管理」），承接 `TeacherListCard`、`StudentListCard`、`AutoAttendanceCard` 等。
+
+  * 「显示与外观」标签承接主题、背景、通知提示音等外观与展示配置。
+
+  * 新设「编辑与行为」标签（`edit`），合并原「随机点名」「背景」标签，收纳随机点名、作业编辑、刷新设置等行为类配置。
+
+* `RefreshSettingsCard` 职责收敛为刷新控制，同步配置迁移至 `SyncSettingsCard`。
+
+### 工程与 CI
+
+* CI 现代化：`pnpm/action-setup` 改用 Corepack 启用 pnpm，Node 版本 20 → 22，`pnpm install` 改为 `--frozen-lockfile`。
+
+* `pnpm-workspace.yaml` 迁移至 pnpm 11 的 `allowBuilds` 字段，替换废弃的 `onlyBuiltDependencies` 等旧字段。
+
+* 清理冗余配置文件（`.browserslistrc`、`.hintrc` 及部分 `.gitignore` 规则）。
+
+### 文档
+
+* `VERSIONING.md` 移入 `docs/`，统一根目录文档结构。
+
+* 同步更新 `README.md`、`AGENTS.md`、`docs/OFFLINE_SYSTEM.md` 的文档路由与内容。
+
+***
+
 ## \[0.11.1-beta] - 2026-08-29
 
 > 自 `v0.11.0-beta` 之后的工程治理与交互优化批次。
