@@ -1,10 +1,8 @@
+# pnpm 11 以 allowBuilds（pkg -> bool）取代 onlyBuiltDependencies 等旧字段。
+# 这里显式声明这三个原生包为“已审查、禁止运行构建脚本”。
 allowBuilds:
   '@parcel/watcher': false
   esbuild: false
   sharp: false
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - esbuild
-  - sharp
 patchedDependencies:
   vite-plugin-pwa: patches/vite-plugin-pwa.patch
