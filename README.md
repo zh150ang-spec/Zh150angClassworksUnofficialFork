@@ -4,7 +4,7 @@
 
 [![AGPL-3.0](https://img.shields.io/github/license/Moonrend/Classworks?style=flat-square)](LICENSE)
 
-![Classworks](./images/banner.png)
+![Classworks](./apps/web/images/banner.png)
 
 Classworks 是一个适用于班级大屏的作业板小工具。本 Fork 以自用为主，目前保留了原项目除噪音监测以外的所有常用官方功能，并使用较新的依赖栈做了一些面向自用的微更新。
 
