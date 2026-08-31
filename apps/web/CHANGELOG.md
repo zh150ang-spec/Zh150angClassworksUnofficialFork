@@ -8,7 +8,49 @@
 
 ---
 
-## \[0.12.0-beta] - 2026-08-30
+## \[0.13.0\] - 2026-08-31
+
+> 从 `v0.12.0-beta`（旧单应用版本线）跨越式整理后的首个正式版标志提交：完成迁移为 pnpm monorepo、清理无效残留、补齐文档并把本仓库确立为公开 Fork 的里程碑节点。
+
+### 新增
+
+- 建立 pnpm monorepo 结构：`apps/web`、`apps/server`、`apps/dashboard` 与共享常量包 `packages/shared`，通过 `pnpm-workspace.yaml` 统一管理（`@classworks/shared` 提供请求头、服务器地址等常量）。
+- 新增 `docs/VERSIONING.md`、`docs/SHADOW_LAYERING.md`、`docs/TYPOGRAPHY.md`、`docs/OFFLINE_SYSTEM.md` 等排版、阴影、离线体系维度的设计/架构文档。
+- 新增 `scripts/scan-ui-issues.js`（UI 问题扫描脚本）。
+- 新增面向人类读者的使用教程 `docs/Classworks作业板使用教程 for human.md`（含目录、各模块配图与常用技巧）。
+
+### 重构
+
+- 组件目录按功能域重新归并（`home/`、`common/`、`system/`、`editing/`、`settings/cards/`、`auth/`），并在 `1d34742` 里程碑中完成 web 迁入 `apps/web`。
+
+### 修复
+
+- 修复 `vite-plugin-pwa` 弃用告警，统一 `__APP_VERSION__` 版本注入与 Service Worker 缓存联动。
+
+### 一致性
+
+- 建立双 lint 工具链：oxlint 主查（`apps/web/.oxlintrc.json`）+ ESLint 补查（`apps/web/eslint.config.js`，经 `eslint-plugin-oxlint` 去重），并修正根 `eslint.config.js` 的全局变量与 `no-unused-vars` 配置。
+- 统一 pnpm 版本至 `11.24.0`（根与 `apps/web` 的 `packageManager`/`engines`），`pnpm-workspace.yaml` 采用 pnpm 11 的 `allowBuilds` 字段。
+
+### 工程与 CI
+
+- 统一 CI/Docker 构建：新增根级 `vercel.json`（`rootDirectory=apps/web`、`outputDirectory=dist`），更新 `apps/web/vercel.json` 移除失效的 `sw-cache-manager` 缓存头规则。
+
+### 文档
+
+- 融合 `NEWREADME.md` 草稿与既有 `README.md`，重写为公开 Fork 版（明确非官方定位、AGPL-3.0 归因、克隆地址指向公开 fork 仓库）。
+- `AGENTS.md` 声明 web 细节以 `apps/web/AGENTS.md` 为准，根文档透传引用；`README.md` 对齐 pnpm 版本要求。
+- 移除本次发布涉及到的无效文档：`docs/auto_commit_md/` 一次性提交元数据目录、根 `NEWREADME.md`（已并入 README）。
+
+### 移除
+
+- 移除噪音监测模块相关无用组件（`NoiseMonitorCard`、`NoiseMonitorDetail`、`NoiseSettingsCard` 等），与 Fork 自用定位（保留除噪音监测外功能）一致。
+- 移除其它残余：`sw-cache-manager.js`、哈希残留文件、`ExamScheduleCard`、`ProgressiveRegisterPage`、`api.js`、`safeEvents.js`、`smartSyncManager`、`crdtEngine` 等死代码。
+- 删除 `apps/server` 下两个空文档（`API_QUICK_REFERENCE.md`、`NEW_APIS_SUMMARY.md`）。
+
+---
+
+## \[0.12.0-beta\] - 2026-08-30
 
 > 自 `v0.11.1-beta` 之后的设置页功能改进与工程治理批次。
 

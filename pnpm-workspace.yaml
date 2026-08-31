@@ -12,3 +12,5 @@ allowBuilds:
   protobufjs: true
   sharp: false
   vue-demi: true
+
+storeDir: D:\Administrator\Desktop\Classworks for me\Classworks\.pnpm-store
