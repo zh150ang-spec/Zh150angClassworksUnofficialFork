@@ -2,14 +2,32 @@
   <v-card class="auth-card">
     <v-card-text class="pa-8">
       <div class="text-center mb-6">
-        <v-icon class="mb-4" color="success" size="80"> mdi-account-key </v-icon>
-        <h2 class="text-h4 mb-3">设备认证</h2>
-        <p class="text-body-1 text-medium-emphasis">输入你在 Classworks KV 获取的认证信息</p>
+        <v-icon
+          class="mb-4"
+          color="success"
+          size="80"
+        >
+          mdi-account-key
+        </v-icon>
+        <h2 class="text-headline-large mb-3">
+          设备认证
+        </h2>
+        <p class="text-body-large text-medium-emphasis">
+          输入你在 Classworks KV 获取的认证信息
+        </p>
       </div>
 
-      <v-card class="pa-4 mb-6" color="info" variant="tonal">
-        <div class="text-body-2">
-          <v-icon class="mr-2" size="20"> mdi-information </v-icon>
+      <v-card
+        class="pa-4 mb-6"
+        color="info"
+        variant="tonal"
+      >
+        <div class="text-body-medium">
+          <v-icon
+            size="20"
+            start
+            :icon="ICON.INFO"
+          />
           对于已有UUID的用户，您应当使用UUID与您的密码登录。
         </div>
       </v-card>
@@ -20,14 +38,14 @@
           class="mb-4"
           hide-details="auto"
           label="命名空间"
-          prepend-inner-icon="mdi-identifier"
+          :prepend-inner-icon="ICON.IDENTIFIER"
           variant="outlined"
         />
 
         <v-text-field
           v-model="form.password"
           label="认证码"
-          prepend-inner-icon="mdi-lock-outline"
+          :prepend-inner-icon="ICON.LOCK_OUTLINE"
           type="text"
           variant="outlined"
         />
@@ -46,7 +64,14 @@
     </v-card-text>
 
     <v-card-actions class="pa-6 pt-0">
-      <v-btn v-if="showCancel" size="large" variant="text" @click="$emit('cancel')"> 取消 </v-btn>
+      <v-btn
+        v-if="showCancel"
+        size="large"
+        variant="text"
+        @click="$emit('cancel')"
+      >
+        取消
+      </v-btn>
       <v-spacer />
       <v-btn
         :disabled="!form.namespace || authenticating"
@@ -57,16 +82,23 @@
         variant="elevated"
         @click="authenticate"
       >
-        <v-icon size="24" start> mdi-login </v-icon>
-        <span class="text-h6">认证并登录</span>
+        <v-icon
+          size="24"
+          start
+        >
+          :icon="ICON.LOGIN"
+        </v-icon>
+        <span class="text-headline-small">认证并登录</span>
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { getSetting, setSetting } from '@/utils/settings'
+import { ICON } from '@/utils/icons'
+import { ref, watch, onBeforeUnmount } from 'vue'
+import { setSetting } from '@/utils/settings'
+import { getEffectiveServerUrl } from '@/utils/serverRotation'
 import axios from '@/axios/axios'
 
 const props = defineProps({
@@ -88,6 +120,8 @@ const form = ref({
 })
 const authenticating = ref(false)
 const error = ref('')
+// 保存自动认证定时器 ID，组件卸载时清理，避免在已卸载组件上调用 authenticate() 访问 ref 时崩溃
+let autoAuthTimerId = null
 
 // 监听预配置数据变化
 watch(
@@ -102,7 +136,12 @@ watch(
       if (newPreconfig.autoExecute && newPreconfig.namespace) {
         console.log('检测到自动执行标志且有命名空间，自动执行认证')
         // 延迟一下确保UI已更新
-        setTimeout(() => {
+        // 清理上一次未触发的定时器，避免重复执行或组件卸载后触发
+        if (autoAuthTimerId !== null) {
+          clearTimeout(autoAuthTimerId)
+        }
+        autoAuthTimerId = setTimeout(() => {
+          autoAuthTimerId = null
           authenticate()
         }, 300)
       } else if (newPreconfig.namespace) {
@@ -113,13 +152,20 @@ watch(
   { immediate: true, deep: true },
 )
 
+onBeforeUnmount(() => {
+  if (autoAuthTimerId !== null) {
+    clearTimeout(autoAuthTimerId)
+    autoAuthTimerId = null
+  }
+})
+
 const authenticate = async () => {
   if (!form.value.namespace || authenticating.value) return
   error.value = ''
   authenticating.value = true
 
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     if (!serverUrl) throw new Error('未配置服务器域名')
 
     // 验证设备并获取 token

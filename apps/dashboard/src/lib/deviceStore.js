@@ -163,6 +163,7 @@ export const deviceStore = {
 
   openDB() {
     return new Promise((resolve, reject) => {
+      // eslint-disable-next-line no-undef
       const request = indexedDB.open('ClassworksKV', 1)
 
       request.onerror = () => reject(request.error)

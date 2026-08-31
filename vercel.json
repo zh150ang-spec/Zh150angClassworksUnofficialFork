@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "rootDirectory": "apps/web",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @classworks/web run build",
+  "outputDirectory": "dist"
+}

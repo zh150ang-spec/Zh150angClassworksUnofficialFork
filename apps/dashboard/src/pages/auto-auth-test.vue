@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
@@ -157,7 +157,7 @@ const testKVOperation = async () => {
       case 'get':
         response = await apiClient.getKVItem(tab3Form.value.token, key)
         break
-      case 'set':
+      case 'set': {
         let parsedValue
         try {
           parsedValue = JSON.parse(value)
@@ -166,6 +166,7 @@ const testKVOperation = async () => {
         }
         response = await apiClient.setKVItem(tab3Form.value.token, key, parsedValue)
         break
+      }
       case 'delete':
         response = await apiClient.deleteKVItem(tab3Form.value.token, key)
         break

@@ -5,7 +5,7 @@
  */
 
 // Plugins
-import vuetify from './vuetify'
+import vuetify from '@/plugins/vuetify'
 import pinia from '@/stores'
 import router from '@/router'
 

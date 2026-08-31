@@ -502,7 +502,7 @@ export function getTokenInfo(token) {
  * 清理设备相关缓存
  * @param {string} uuid 设备UUID
  */
-function cleanupDeviceCache(uuid) {
+function _cleanupDeviceCache(uuid) {
   // 清理事件历史
   eventHistory.delete(uuid)
 

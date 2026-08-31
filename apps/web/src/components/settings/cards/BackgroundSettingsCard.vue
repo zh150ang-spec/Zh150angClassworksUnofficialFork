@@ -1,47 +1,94 @@
 <template>
-  <settings-card border icon="mdi-image" title="背景设置">
+  <settings-card
+    border
+    :icon="ICON.IMAGE"
+    title="背景设置"
+  >
     <v-list>
-      <setting-item :key="settingItemKey" :setting-key="'background.enabled'" />
+      <setting-item
+        :key="settingItemKey"
+        :setting-key="'background.enabled'"
+      />
     </v-list>
 
     <v-divider class="mb-4" />
 
     <div class="px-4 pb-4">
       <!-- 预览区域 -->
-      <div class="preview-area mb-6" :style="previewContainerStyle">
-        <div class="preview-bg" :style="previewBgStyle" />
-        <div class="preview-overlay" :style="previewOverlayStyle" />
-        <div class="preview-text">背景预览</div>
+      <div
+        class="preview-area mb-6"
+        :style="previewContainerStyle"
+      >
+        <div
+          class="preview-bg"
+          :style="previewBgStyle"
+        />
+        <div
+          class="preview-overlay"
+          :style="previewOverlayStyle"
+        />
+        <div class="preview-text">
+          背景预览
+        </div>
       </div>
 
       <!-- 图片来源 -->
       <div class="d-flex align-center mb-4">
-        <v-icon class="mr-2" color="primary"> mdi-image-search </v-icon>
-        <span class="text-subtitle-1 font-weight-bold">图片来源</span>
+        <v-icon
+          start
+          color="primary"
+          :icon="ICON.IMAGE_SEARCH"
+        />
+        <span class="text-body-large font-weight-bold">图片来源</span>
       </div>
 
       <!-- 来源选择 -->
-      <v-btn-toggle
+      <v-radio-group
         v-model="imageSource"
         color="primary"
-        density="comfortable"
         class="mb-4"
-        mandatory
-        rounded="xl"
+        row
       >
-        <v-btn value="url" prepend-icon="mdi-link-variant"> 网络地址 </v-btn>
-        <v-btn value="upload" prepend-icon="mdi-upload"> 本地上传 </v-btn>
-      </v-btn-toggle>
+        <v-radio
+          :value="'url'"
+          color="primary"
+        >
+          <template #label>
+            <v-icon
+              start
+              size="small"
+              :icon="ICON.LINK_VARIANT"
+            />
+            网络地址
+          </template>
+        </v-radio>
+        <v-radio
+          :value="'upload'"
+          color="primary"
+        >
+          <template #label>
+            <v-icon
+              start
+              size="small"
+              :icon="ICON.UPLOAD"
+            />
+            本地上传
+          </template>
+        </v-radio>
+      </v-radio-group>
 
       <!-- URL 输入 -->
-      <div v-if="imageSource === 'url'" class="mb-4">
+      <div
+        v-if="imageSource === 'url'"
+        class="mb-4"
+      >
         <v-text-field
           v-model="localUrl"
           label="图片地址"
           placeholder="https://example.com/background.jpg"
           variant="outlined"
           density="compact"
-          prepend-inner-icon="mdi-link"
+          :prepend-inner-icon="ICON.LINK"
           clearable
           hide-details="auto"
           :rules="[validateUrl]"
@@ -63,7 +110,10 @@
       </div>
 
       <!-- 本地上传 -->
-      <div v-if="imageSource === 'upload'" class="mb-4">
+      <div
+        v-if="imageSource === 'upload'"
+        class="mb-4"
+      >
         <div
           class="upload-area rounded-xl pa-6 text-center mb-3"
           :class="{ 'upload-hover': isDragging }"
@@ -72,9 +122,16 @@
           @drop.prevent="handleDrop"
           @click="triggerFileInput"
         >
-          <v-icon size="40" color="primary" class="mb-2"> mdi-image-plus </v-icon>
-          <div class="text-body-2">点击或拖拽图片到此处上传</div>
-          <div class="text-caption text-medium-emphasis mt-1">
+          <v-icon
+            size="40"
+            color="primary"
+            class="mb-2"
+            :icon="ICON.IMAGE_PLUS"
+          />
+          <div class="text-body-medium">
+            点击或拖拽图片到此处上传
+          </div>
+          <div class="text-body-small text-medium-emphasis mt-1">
             支持 JPG、PNG、WebP、GIF（建议小于 {{ maxImageSizeMB }}MB）
           </div>
           <input
@@ -83,7 +140,7 @@
             accept="image/*"
             style="display: none"
             @change="handleFileChange"
-          />
+          >
         </div>
 
         <v-alert
@@ -92,20 +149,26 @@
           variant="tonal"
           density="compact"
           class="mb-2"
-          icon="mdi-alert"
+          :icon="ICON.WARNING"
         >
           {{ uploadWarning }}
         </v-alert>
 
-        <div v-if="localImageData" class="d-flex align-center ga-2">
-          <v-chip color="success" prepend-icon="mdi-check-circle" size="small">
+        <div
+          v-if="localImageData"
+          class="d-flex align-center gap-2"
+        >
+          <v-chip
+            color="success"
+            :prepend-icon="ICON.SUCCESS"
+            size="small"
+          >
             已上传本地图片
           </v-chip>
           <v-btn
-            size="small"
-            variant="text"
+            variant="elevated"
             color="error"
-            prepend-icon="mdi-delete"
+            :prepend-icon="ICON.DELETE"
             @click="clearUploadedImage"
           >
             清除
@@ -117,14 +180,17 @@
 
       <!-- 毛玻璃效果设置 -->
       <div class="d-flex align-center mb-4">
-        <v-icon class="mr-2" color="blue"> mdi-blur </v-icon>
-        <span class="text-subtitle-1 font-weight-bold">毛玻璃效果</span>
+        <v-icon
+          start
+          :icon="ICON.BLUR"
+        />
+        <span class="text-body-large font-weight-bold">毛玻璃效果</span>
       </div>
 
       <div class="mb-4">
         <div class="d-flex justify-space-between align-center mb-1">
-          <span class="text-body-2 text-medium-emphasis">模糊幅度</span>
-          <span class="text-body-2 font-weight-bold">{{ localBlur }}px</span>
+          <span class="text-body-medium text-medium-emphasis">模糊幅度</span>
+          <span class="text-body-medium font-weight-bold">{{ localBlur }}px</span>
         </div>
         <v-slider
           v-model="localBlur"
@@ -132,73 +198,94 @@
           :max="50"
           :step="1"
           color="primary"
-          track-color="grey-lighten-3"
           thumb-label
           hide-details
-          @update:model-value="onBlurChange"
         >
           <template #prepend>
-            <v-icon size="small" color="grey"> mdi-blur-off </v-icon>
+            <v-icon
+              size="small"
+              color="medium-emphasis"
+              :icon="ICON.BLUR_OFF"
+            />
           </template>
           <template #append>
-            <v-icon size="small" color="primary"> mdi-blur </v-icon>
+            <v-icon
+              size="small"
+              color="primary"
+              :icon="ICON.BLUR"
+            />
           </template>
         </v-slider>
       </div>
 
       <div class="mb-4">
         <div class="d-flex justify-space-between align-center mb-1">
-          <span class="text-body-2 text-medium-emphasis">遮罩暗色程度</span>
-          <span class="text-body-2 font-weight-bold">{{ localOpacity }}%</span>
+          <span class="text-body-medium text-medium-emphasis">遮罩暗色程度</span>
+          <span class="text-body-medium font-weight-bold">{{ localOpacity }}%</span>
         </div>
         <v-slider
           v-model="localOpacity"
           :min="0"
           :max="80"
           :step="1"
-          color="blue-grey"
-          track-color="grey-lighten-3"
+          color="primary"
           thumb-label
           hide-details
           @update:model-value="onOpacityChange"
         >
           <template #prepend>
-            <v-icon size="small" color="grey"> mdi-brightness-7 </v-icon>
+            <v-icon
+              size="small"
+              color="medium-emphasis"
+              :icon="ICON.BRIGHTNESS_7"
+            />
           </template>
           <template #append>
-            <v-icon size="small" color="blue-grey"> mdi-brightness-2 </v-icon>
+            <v-icon
+              size="small"
+              color="primary"
+              :icon="ICON.BRIGHTNESS_2"
+            />
           </template>
         </v-slider>
       </div>
 
       <v-divider class="my-5" />
-
-      <!-- 保存按钮 -->
-      <div class="d-flex justify-end ga-3">
-        <v-btn variant="text" prepend-icon="mdi-restore" @click="resetAll"> 重置 </v-btn>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          prepend-icon="mdi-content-save"
-          :loading="saving"
-          @click="saveAll"
-        >
-          保存设置
-        </v-btn>
-      </div>
     </div>
+
+    <template #actions>
+      <v-btn
+        variant="elevated"
+        color="neutral-surface"
+        :prepend-icon="ICON.RESTORE"
+        @click="resetAll"
+      >
+        重置
+      </v-btn>
+      <v-btn
+        color="success"
+        :prepend-icon="ICON.CONTENT_SAVE"
+        :loading="saving"
+        variant="elevated"
+        @click="saveAll"
+      >
+        保存设置
+      </v-btn>
+    </template>
   </settings-card>
 </template>
 
 <script>
-import SettingsCard from '@/components/SettingsCard.vue'
+import { ICON } from '@/utils/icons'
+import SettingsCard from '@/components/settings/SettingsCard.vue'
 import SettingItem from '@/components/settings/SettingItem.vue'
 import { getSetting, setSetting, resetSetting } from '@/utils/settings'
 
 const URL_PRESETS = [
-  { label: 'Bing 随机壁纸', url: 'https://bing.img.run/rand.php' },
-  { label: 'Bing 每日壁纸', url: 'https://bing.img.run/1920x1080.php' },
-  { label: '随机风景', url: 'https://picsum.photos/1920/1080?random=1' },
+  { label: 'Bing 4k 随机壁纸', url: 'https://uapis.cn/api/v1/image/bing-daily?random=true' },
+  { label: 'Bing 4k 每日壁纸', url: 'https://uapis.cn/api/v1/image/bing-daily' },
+  { label: 'Bing 1080P 每日壁纸', url: 'https://uapis.cn/api/v1/image/bing-daily?resolution=1080' },
+  { label: '随机（质量较差）', url: 'https://picsum.photos/1920/1080?random=1' },
   { label: '随机二次元', url: 'https://uapis.cn/api/v1/random/image?category=acg&type=pc' },
 ]
 
@@ -211,13 +298,16 @@ export default {
   data() {
     const imageData = getSetting('background.imageData') || ''
     const url = getSetting('background.url') || ''
+    const blur = getSetting('background.blur')
+    const opacity = getSetting('background.opacity')
 
     return {
+      ICON,
       imageSource: imageData ? 'upload' : 'url',
       localUrl: url,
       localImageData: imageData,
-      localBlur: getSetting('background.blur') ?? 10,
-      localOpacity: getSetting('background.opacity') ?? 30,
+      localBlur: blur !== undefined && blur !== null ? blur : 10,
+      localOpacity: opacity !== undefined && opacity !== null ? opacity : 30,
       isDragging: false,
       saving: false,
       uploadWarning: '',
@@ -228,7 +318,6 @@ export default {
   },
 
   computed: {
-    /** The active image src for preview */
     activeImageSrc() {
       if (this.imageSource === 'upload' && this.localImageData) {
         return this.localImageData
@@ -246,7 +335,7 @@ export default {
         height: '160px',
         borderRadius: '12px',
         overflow: 'hidden',
-        border: '1px solid rgba(128,128,128,0.3)',
+        border: '1px solid var(--color-border-strong)',
       }
     },
 
@@ -255,7 +344,7 @@ export default {
         return {
           position: 'absolute',
           inset: '0',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: `linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgba(var(--v-theme-surface-variant), 0.8) 100%)`,
           filter: `blur(${this.localBlur}px)`,
           transform: 'scale(1.1)',
         }
@@ -275,7 +364,7 @@ export default {
       return {
         position: 'absolute',
         inset: '0',
-        background: `rgba(0, 0, 0, ${this.localOpacity / 100})`,
+        background: `rgba(var(--v-theme-on-surface), ${this.localOpacity / 100})`,
       }
     },
   },
@@ -321,7 +410,6 @@ export default {
     handleFileChange(event) {
       const file = event.target.files?.[0]
       if (file) this.processFile(file)
-      // Reset input so same file can be re-selected
       event.target.value = ''
     },
 
@@ -354,7 +442,6 @@ export default {
     async saveAll() {
       this.saving = true
       try {
-        // Determine which image source to persist
         if (this.imageSource === 'upload') {
           setSetting('background.imageData', this.localImageData || '')
           setSetting('background.url', '')
@@ -383,7 +470,6 @@ export default {
       this.localOpacity = getSetting('background.opacity') ?? 30
       this.imageSource = 'url'
       this.uploadWarning = ''
-      // Force re-render of SettingItem to reflect reset enabled state
       this.settingItemKey++
     },
   },
@@ -392,7 +478,7 @@ export default {
 
 <style scoped>
 .preview-area {
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--ease-apple);
 }
 
 .preview-text {
@@ -403,17 +489,17 @@ export default {
   justify-content: center;
   color: white;
   font-size: 1.1rem;
-  font-weight: 600;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  font-weight: var(--font-weight-label);
+  text-shadow: var(--shadow-text);
+  z-index: var(--z-inner);
   pointer-events: none;
 }
 
 .upload-area {
-  border: 2px dashed rgba(128, 128, 128, 0.4);
+  border: 2px dashed var(--color-border-strong);
   cursor: pointer;
-  transition: all 0.2s ease;
-  background: rgba(128, 128, 128, 0.05);
+  transition: all var(--duration-fast) var(--ease-apple);
+  background: var(--color-fill-weakest);
 }
 
 .upload-area:hover,
@@ -423,6 +509,6 @@ export default {
 }
 
 .gap-2 {
-  gap: 8px;
+  gap: var(--space-2);
 }
 </style>

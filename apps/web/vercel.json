@@ -41,15 +41,6 @@
           "value": "no-cache"
         }
       ]
-    },
-    {
-      "source": "/sw-cache-manager.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        }
-      ]
     }
   ],
   "github": {

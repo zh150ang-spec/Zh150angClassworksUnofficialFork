@@ -1,54 +1,35 @@
 <template>
-  <settings-card :loading="loading" border icon="mdi-book-multiple" title="科目管理">
-    <v-alert v-if="error" class="mb-4" closable type="error" variant="tonal">
+  <settings-card
+    :loading="loading"
+    border
+    :icon="ICON.BOOK_MULTIPLE"
+    title="科目管理"
+  >
+    <v-alert
+      v-if="error"
+      class="mb-4"
+      closable
+      type="error"
+      variant="tonal"
+    >
       {{ error }}
     </v-alert>
 
-    <div class="d-flex justify-space-between align-center mb-6">
-      <div>
-        <v-btn
-          :loading="loading"
-          class="mr-2"
-          color="primary"
-          prepend-icon="mdi-refresh"
-          size="large"
-          variant="text"
-          @click="loadConfig"
-        >
-          重新加载
-        </v-btn>
-
-        <v-btn
-          :loading="loading"
-          color="success"
-          prepend-icon="mdi-content-save"
-          size="large"
-          @click="saveConfig"
-        >
-          保存
-        </v-btn>
-        <v-btn
-          :loading="loading"
-          class="mr-2"
-          prepend-icon="mdi-restore"
-          variant="text"
-          @click="resetToDefault"
-        >
-          重置为默认
-        </v-btn>
-      </div>
-      <v-chip v-if="hasChanges" color="warning" variant="elevated"> 有未保存的更改 </v-chip>
-    </div>
-
     <!-- 添加新科目 -->
-    <v-card class="mb-4" variant="outlined">
+    <v-card
+      class="mb-4"
+      variant="outlined"
+    >
       <v-card-text>
         <v-row>
-          <v-col cols="12" sm="6">
+          <v-col
+            cols="12"
+            sm="6"
+          >
             <v-text-field
               v-model="newSubjectName"
               :rules="[(v) => !!v || '科目名称不能为空']"
-              append-inner-icon="mdi-plus"
+              :append-inner-icon="ICON.PLUS"
               density="comfortable"
               label="科目名称"
               variant="outlined"
@@ -64,19 +45,22 @@
     <v-card variant="outlined">
       <v-card-text class="pa-0">
         <v-list lines="one">
-          <v-list-item v-for="(subject, index) in subjects" :key="subject.order">
+          <v-list-item
+            v-for="(subject, index) in subjects"
+            :key="subject.order"
+          >
             <template #prepend>
               <div class="d-flex flex-column align-center mr-2">
                 <v-btn
                   :disabled="index === 0"
-                  icon="mdi-chevron-up"
+                  :icon="ICON.CHEVRON_UP"
                   size="small"
                   variant="text"
                   @click="moveSubject(index, -1)"
                 />
                 <v-btn
                   :disabled="index === subjects.length - 1"
-                  icon="mdi-chevron-down"
+                  :icon="ICON.CHEVRON_DOWN"
                   size="small"
                   variant="text"
                   @click="moveSubject(index, 1)"
@@ -97,7 +81,7 @@
             <template #append>
               <v-btn
                 color="error"
-                icon="mdi-delete"
+                :icon="ICON.DELETE"
                 size="small"
                 variant="text"
                 @click="deleteSubject(subject)"
@@ -108,16 +92,53 @@
       </v-card-text>
     </v-card>
 
-    <!-- 底部提示 -->
-    <v-snackbar v-model="showSnackbar" :color="snackbarColor" :timeout="3000">
-      {{ snackbarText }}
-    </v-snackbar>
+    <template #status>
+      <v-chip
+        v-if="hasChanges"
+        color="warning"
+        variant="elevated"
+      >
+        有未保存的更改
+      </v-chip>
+    </template>
+    <template #actions>
+      <v-btn
+        :loading="loading"
+        :prepend-icon="ICON.REFRESH"
+        color="neutral-surface"
+        variant="elevated"
+        @click="loadConfig"
+      >
+        重新加载
+      </v-btn>
+      <v-btn
+        :loading="loading"
+        color="success"
+        :prepend-icon="ICON.CONTENT_SAVE"
+        variant="elevated"
+        @click="saveConfig"
+      >
+        保存
+      </v-btn>
+      <v-btn
+        :loading="loading"
+        color="warning"
+        :prepend-icon="ICON.RESTORE"
+        variant="elevated"
+        @click="resetToDefault"
+      >
+        重置为默认
+      </v-btn>
+    </template>
   </settings-card>
 </template>
 
 <script>
-import SettingsCard from '@/components/SettingsCard.vue'
+import { ICON } from '@/utils/icons'
+import SettingsCard from '@/components/settings/SettingsCard.vue'
 import dataProvider from '@/utils/dataProvider.js'
+import { useConfigDefaults } from '@/composables/useConfigDefaults'
+import { defaultSubjects } from '@/utils/defaults/defaultData'
 
 export default {
   name: 'SubjectManagementCard',
@@ -128,26 +149,14 @@ export default {
 
   data() {
     return {
+      ICON,
       loading: false,
       error: null,
       subjects: [],
       originalSubjects: null,
       newSubjectName: '',
-      showSnackbar: false,
-      snackbarText: '',
-      snackbarColor: 'success',
-      defaultSubjects: [
-        { name: '语文', order: 0 },
-        { name: '数学', order: 1 },
-        { name: '英语', order: 2 },
-        { name: '物理', order: 3 },
-        { name: '化学', order: 4 },
-        { name: '生物', order: 5 },
-        { name: '政治', order: 6 },
-        { name: '历史', order: 7 },
-        { name: '地理', order: 8 },
-        { name: '其他', order: 9 },
-      ],
+      defaultSubjects,
+      configLoader: useConfigDefaults({ configKey: 'classworks-config-subject', kind: 'array' }),
     }
   },
 
@@ -168,28 +177,38 @@ export default {
     async loadConfig() {
       this.loading = true
       try {
-        const response = await dataProvider.loadData('classworks-config-subject')
-        if (response) {
-          // 数据存在且加载成功
-          this.subjects = response
-            .map((subject, index) => ({
-              name: subject.name,
-              order: subject.order ?? index,
-            }))
-            .sort((a, b) => a.order - b.order)
-          this.originalSubjects = JSON.parse(JSON.stringify(this.subjects))
+        const { result, message } = await this.configLoader.loadConfig({
+          applyLoaded: (response) => {
+            this.subjects = response
+              .map((subject, index) => ({
+                name: subject.name,
+                order: subject.order ?? index,
+              }))
+              .sort((a, b) => a.order - b.order)
+            this.originalSubjects = JSON.parse(JSON.stringify(this.subjects))
+          },
+          applyDefault: () => this.applyDefault(),
+        })
+
+        if (result === 'loaded') {
           this.showMessage('配置已加载', 'success')
+        } else if (this.configLoader.isPreset(result)) {
+          this.showMessage('使用默认科目列表', 'info')
         } else {
-          // 数据不存在，使用空数组
-          this.subjects = []
-          this.originalSubjects = []
-          this.showMessage('使用默认配置', 'info')
+          this.showMessage(
+            message ? `加载失败: ${message}，可继续编辑当前配置` : '加载失败，可继续编辑当前配置',
+            'warning',
+          )
         }
-      } catch (error) {
-        console.error('Failed to load config:', error)
-        this.showMessage('加载失败，可继续编辑当前配置', 'warning')
+      } finally {
+        this.loading = false
       }
-      this.loading = false
+    },
+
+    applyDefault() {
+      const snapshot = this.configLoader.defaultSnapshot(this.defaultSubjects)
+      this.subjects = snapshot
+      this.originalSubjects = JSON.parse(JSON.stringify(snapshot))
     },
 
     async saveConfig() {
@@ -210,9 +229,15 @@ export default {
     },
 
     showMessage(text, color = 'success') {
-      this.snackbarText = text
-      this.snackbarColor = color
-      this.showSnackbar = true
+      if (color === 'success') {
+        this.$message?.success(text)
+      } else if (color === 'error') {
+        this.$message?.error(text)
+      } else if (color === 'warning') {
+        this.$message?.warning(text)
+      } else {
+        this.$message?.info(text)
+      }
     },
 
     addSubject() {
@@ -260,7 +285,7 @@ export default {
     },
 
     resetToDefault() {
-      this.subjects = JSON.parse(JSON.stringify(this.defaultSubjects))
+      this.subjects = this.configLoader.defaultSnapshot(this.defaultSubjects)
       this.showMessage('已重置为默认科目列表', 'info')
     },
   },
@@ -269,7 +294,7 @@ export default {
 
 <style scoped>
 .v-list-item {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .v-list-item:last-child {

@@ -1,37 +1,25 @@
 # Components
 
-Vue template files in this folder are automatically imported.
+Vue components in this tree are **auto-imported** by name via [unplugin-vue-components](https://github.com/unplugin/unplugin-vue-components)
+(`globs: ['src/components/**/[A-Z]*.vue']`), so any component can be used in templates without a manual import.
 
-## 🚀 Usage
+Components are organized by functional domain:
 
-Importing is handled by [unplugin-vue-components](https://github.com/unplugin/unplugin-vue-components). This plugin
-automatically imports `.vue` files created in the `src/components` directory, and registers them as global components.
-This means that you can use any component in your application without having to manually import it.
+| 目录        | 职责                                            | 示例                                                                            |
+| ----------- | ----------------------------------------------- | ------------------------------------------------------------------------------- |
+| `home/`     | 首页业务（作业板 / 考勤 / 浮动工具栏 / 时间卡） | `HomeworkGrid`, `AttendanceSidebar`, `TimeCard`, `FloatingToolbar`, `AppHeader` |
+| `common/`   | 通用展示 / 工具型组件                           | `GlobalMessage`, `RelativeTimeDisplay`, `AppIcon`                               |
+| `system/`   | 初始化 / 服务 / PWA 基础设施                    | `InitServiceChooser`, `OfflineIndicator`, `PwaInstallCard`                      |
+| `editing/`  | 作业 / 考试 / 紧急通知编辑                      | `HomeworkEditDialog`, `ExamConfigEditor`, `UrgentNotification`                  |
+| `settings/` | 设置外壳与各设置卡片                            | `SettingsCard`, `cards/*`                                                       |
+| `auth/`     | 认证对话框与引导                                | `DeviceAuthDialog`, `FirstTimeGuide`                                            |
 
-The following example assumes a component located at `src/components/MyComponent.vue`:
-
-```vue
-<template>
-  <div>
-    <MyComponent />
-  </div>
-</template>
-
-<script lang="ts" setup>
-//
-</script>
-```
-
-When your template is rendered, the component's import will automatically be inlined, which renders to this:
+示例（组件按文件名自动注册，无需 import）：
 
 ```vue
 <template>
-  <div>
-    <MyComponent />
-  </div>
+  <TimeCard />
 </template>
-
-<script lang="ts" setup>
-import MyComponent from '@/components/MyComponent.vue'
-</script>
 ```
+
+> 组件文件名为 PascalCase；`directoryAsNamespace: false`，名称仅取文件名，不携带目录前缀。

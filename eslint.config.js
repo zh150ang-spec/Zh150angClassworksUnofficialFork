@@ -23,6 +23,8 @@ export default [
       // Vendored / bundled sources (minified, WASM helpers, etc.)
       '**/vendor/**',
       '**/public/**',
+      // apps/web 自治理：使用自身 oxlint + ESLint（见 apps/web/AGENTS.md），根 ESLint 不覆盖
+      'apps/web/**',
       'apps/server/generated/**',
     ],
   },
@@ -37,6 +39,15 @@ export default [
     files: ['apps/web/**/*.{js,mjs,jsx,vue}', 'apps/dashboard/**/*.{js,mjs,jsx,vue}'],
     rules: {
       'vue/multi-word-component-names': 'off',
+      'no-unused-vars': [
+        'error',
+        {
+          args: 'none',
+          caughtErrors: 'none',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
     languageOptions: {
       globals: {
@@ -113,10 +124,32 @@ export default [
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
+        // Node 18+ 内置 Web 全局
+        fetch: 'readonly',
+        Headers: 'readonly',
+        Request: 'readonly',
+        Response: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        AbortController: 'readonly',
+        Blob: 'readonly',
+        FormData: 'readonly',
+        WebSocket: 'readonly',
+        EventSource: 'readonly',
       },
     },
     rules: {
       'vue/multi-word-component-names': 'off',
+      'no-unused-vars': [
+        'error',
+        {
+          args: 'none',
+          caughtErrors: 'none',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+      'no-useless-catch': 'off',
     },
   },
 

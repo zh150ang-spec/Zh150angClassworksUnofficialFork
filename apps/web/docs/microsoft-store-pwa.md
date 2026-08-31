@@ -2,9 +2,9 @@
 
 ## 仓库内自动化
 
-1. 在 GitHub Actions 手动运行 `PWA Store Build`。
-2. 确认 `production_url` 是最终公开 HTTPS 地址，例如 `https://cs.houlang.cloud/`。
-3. workflow 会执行 `pnpm run build:store`，生成并校验 `dist/manifest.webmanifest`、`dist/sw.js`、图标、截图和 HTML PWA hint。
+1. 在 GitHub Actions 手动运行 `PWA Store Build`（该 workflow 也随针对 `main` 分支的 pull request 自动触发，但上架流程应使用手动运行）。手动运行时必须填写必填输入 `production_url`。
+2. 确认 `production_url` 是最终公开 HTTPS 地址，例如 `https://cs.houlang.cloud/`（该值会写入生成的手交元数据 `store-handoff/microsoft-store-pwa.json`）。
+3. workflow 会执行 `pnpm run build:store`，即依次：刷新音频资源清单（`scripts/generate-sound-list.js`）→ 构建 Vite 应用（`vite build`）→ 执行 PWA 构建校验（`scripts/validate-pwa-build.js`），生成并校验 `dist/manifest.webmanifest`、`dist/sw.js`、图标（192/512/maskable）、截图和 HTML PWA hint。
 4. 下载 `classworks-pwa-dist` 和 `microsoft-store-handoff` artifacts，作为 PWABuilder 或 Partner Center 提交前的构建记录。
 
 ## 提交到 Microsoft Store

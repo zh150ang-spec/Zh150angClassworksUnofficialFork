@@ -46,7 +46,7 @@ const rows = computed(() => {
 
 const colCount = computed(() => (props.compact ? 1 : props.showAppColumn ? 5 : 4))
 
-const formatDate = (dateString) => new Date(dateString).toLocaleString('zh-CN')
+const _formatDate = (dateString) => new Date(dateString).toLocaleString('zh-CN')
 
 // 紧凑模式下：点击行由父组件决定弹框打开
 </script>

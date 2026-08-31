@@ -1,25 +1,42 @@
 <template>
   <v-app-bar elevation="1">
     <template #prepend>
-      <v-btn icon="mdi-arrow-left" variant="text" @click="$router.push('/')" />
+      <v-btn
+        :icon="ICON.ARROW_LEFT"
+        variant="text"
+        @click="$router.push('/')"
+      />
     </template>
-    <v-app-bar-title v-if="list && !isRenaming" class="text-h6">
+    <v-app-bar-title
+      v-if="list && !isRenaming"
+      class="text-headline-small"
+    >
       {{ list.name }}
     </v-app-bar-title>
-    <v-app-bar-title v-else class="text-h6"> 列表 </v-app-bar-title>
+    <v-app-bar-title
+      v-else
+      class="text-headline-small"
+    >
+      列表
+    </v-app-bar-title>
   </v-app-bar>
   <v-container>
     <div class="d-flex align-center mb-4">
-      <v-btn border class="mr-2" icon to="/list">
-        <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
       <h1 v-if="list && !isRenaming">
         {{ list.name }}
-        <v-btn border icon size="small" @click="startRenaming">
-          <v-icon>mdi-pencil</v-icon>
+        <v-btn
+          border
+          icon
+          size="small"
+          @click="startRenaming"
+        >
+          <v-icon :icon="ICON.EDIT" />
         </v-btn>
       </h1>
-      <div v-else-if="list && isRenaming" class="d-flex align-center">
+      <div
+        v-else-if="list && isRenaming"
+        class="d-flex align-center"
+      >
         <v-text-field
           v-model="newListName"
           autofocus
@@ -30,31 +47,58 @@
           style="min-width: 200px"
           @keyup.enter="saveListName"
         />
-        <v-btn class="mr-2" color="primary" size="small" @click="saveListName">
-          <v-icon>mdi-check</v-icon>
+        <v-btn
+          class="mr-2"
+          color="primary"
+          size="small"
+          @click="saveListName"
+        >
+          <v-icon :icon="ICON.CHECK" />
         </v-btn>
-        <v-btn color="error" size="small" @click="cancelRenaming">
-          <v-icon>mdi-close</v-icon>
+        <v-btn
+          color="error"
+          size="small"
+          @click="cancelRenaming"
+        >
+          <v-icon :icon="ICON.CLOSE" />
         </v-btn>
       </div>
-      <h1 v-else>加载中...</h1>
+      <h1 v-else>
+        加载中...
+      </h1>
     </div>
 
-    <v-card border class="mb-5" rounded="xl">
+    <v-card
+      border
+      class="mb-5"
+      rounded="xl"
+    >
       <v-card-title class="d-flex align-center">
         项目列表
         <v-spacer />
-        <v-btn-toggle v-model="sortType" mandatory>
-          <v-btn value="default">
-            <v-icon>mdi-sort-alphabetical-ascending</v-icon>
-          </v-btn>
-          <v-btn value="completed">
-            <v-icon>mdi-check-circle-outline</v-icon>
-          </v-btn>
-        </v-btn-toggle>
+        <v-radio-group
+          v-model="sortType"
+          density="compact"
+          hide-details
+          inline
+        >
+          <v-radio
+            value="default"
+            label="默认"
+          />
+          <v-radio
+            value="completed"
+            label="已完成"
+          />
+        </v-radio-group>
       </v-card-title>
-      <v-card-text v-if="sortedItems.length === 0"> 暂无项目，请添加新项目 </v-card-text>
-      <v-list v-else select-strategy="leaf">
+      <v-card-text v-if="sortedItems.length === 0">
+        暂无项目，请添加新项目
+      </v-card-text>
+      <v-list
+        v-else
+        select-strategy="leaf"
+      >
         <v-list-item
           v-for="(item, index) in sortedItems"
           :key="item.id"
@@ -82,14 +126,18 @@
         <v-btn
           :disabled="!hasCompletedItems"
           color="error"
-          prepend-icon="mdi-delete-sweep"
+          :prepend-icon="ICON.DELETE_SWEEP"
           @click="confirmDeleteCompleted"
         >
           删除已完成项目
         </v-btn>
       </v-card-actions>
     </v-card>
-    <v-card border class="mb-5" rounded="xl">
+    <v-card
+      border
+      class="mb-5"
+      rounded="xl"
+    >
       <v-card-title>添加新项目</v-card-title>
       <v-card-text>
         <v-text-field
@@ -97,11 +145,21 @@
           :rules="[(v) => !!v || '名称不能为空']"
           label="项目名称"
         />
-        <v-btn :disabled="!newItemName" color="primary" @click="addItem"> 添加 </v-btn>
+        <v-btn
+          :disabled="!newItemName"
+          color="primary"
+          @click="addItem"
+        >
+          添加
+        </v-btn>
       </v-card-text>
     </v-card>
 
-    <v-card border class="mb-5" rounded="xl">
+    <v-card
+      border
+      class="mb-5"
+      rounded="xl"
+    >
       <v-card-title>列表排序</v-card-title>
       <v-card-text>
         <v-text-field
@@ -111,27 +169,62 @@
           label="排序种子 (任意数字或文本)"
           persistent-hint
         />
-        <v-btn class="mr-2" color="primary" @click="randomSort"> 随机排序 </v-btn>
-        <v-btn variant="text" @click="resetSort"> 撤销 </v-btn>
+        <v-btn
+          class="mr-2"
+          color="primary"
+          @click="randomSort"
+        >
+          随机排序
+        </v-btn>
+        <v-btn
+          variant="text"
+          @click="resetSort"
+        >
+          撤销
+        </v-btn>
       </v-card-text>
     </v-card>
 
     <!-- 确认删除对话框 -->
-    <v-dialog v-model="deleteDialog.show" max-width="500">
-      <v-card border rounded="xl">
+    <v-dialog
+      v-model="deleteDialog.show"
+      max-width="500"
+    >
+      <v-card
+        border
+        rounded="xl"
+      >
         <v-card-title>{{ deleteDialog.title }}</v-card-title>
         <v-card-text>{{ deleteDialog.text }}</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" variant="text" @click="deleteDialog.show = false"> 取消 </v-btn>
-          <v-btn color="error" variant="text" @click="confirmDelete"> 确认删除 </v-btn>
+          <v-btn
+            color="primary"
+            variant="text"
+            @click="deleteDialog.show = false"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="text"
+            @click="confirmDelete"
+          >
+            确认删除
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- 项目详情对话框 -->
-    <v-dialog v-model="itemDialog.show" max-width="600">
-      <v-card border rounded="xl">
+    <v-dialog
+      v-model="itemDialog.show"
+      max-width="600"
+    >
+      <v-card
+        border
+        rounded="xl"
+      >
         <v-card-title>
           <span v-if="!itemDialog.isEditing">项目详情</span>
           <span v-else>编辑项目</span>
@@ -141,25 +234,28 @@
           <div v-if="!itemDialog.isEditing && itemDialog.item">
             <v-list>
               <v-list-item>
-                <v-list-item-title class="text-subtitle-1 font-weight-bold">
+                <v-list-item-title class="text-body-large font-weight-bold">
                   {{ itemDialog.item.name }}
                 </v-list-item-title>
                 <v-list-item-subtitle>{{ itemDialog.item.id }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
-                <v-list-item-title class="text-subtitle-1 font-weight-bold">
+                <v-list-item-title class="text-body-large font-weight-bold">
                   状态
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                  <v-chip :color="itemDialog.item.completed ? 'success' : 'warning'" size="small">
+                  <v-chip
+                    :color="itemDialog.item.completed ? 'success' : 'warning'"
+                    size="small"
+                  >
                     {{ itemDialog.item.completed ? '已完成' : '未完成' }}
                   </v-chip>
                 </v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item v-if="itemDialog.item.description">
-                <v-list-item-title class="text-subtitle-1 font-weight-bold">
+                <v-list-item-title class="text-body-large font-weight-bold">
                   描述
                 </v-list-item-title>
                 <v-list-item-subtitle>{{ itemDialog.item.description }}</v-list-item-subtitle>
@@ -167,7 +263,10 @@
             </v-list>
           </div>
 
-          <div v-else-if="itemDialog.isEditing && itemDialog.item" class="pa-2">
+          <div
+            v-else-if="itemDialog.isEditing && itemDialog.item"
+            class="pa-2"
+          >
             <v-text-field
               v-model="itemDialog.editedItem.name"
               class="mb-3"
@@ -196,16 +295,44 @@
           <v-spacer />
 
           <template v-if="!itemDialog.isEditing">
-            <v-btn color="primary" variant="text" @click="startEditingItem"> 编辑 </v-btn>
-            <v-btn color="error" variant="text" @click="confirmDeleteItem(itemDialog.item?.id)">
+            <v-btn
+              color="primary"
+              variant="text"
+              @click="startEditingItem"
+            >
+              编辑
+            </v-btn>
+            <v-btn
+              color="error"
+              variant="text"
+              @click="confirmDeleteItem(itemDialog.item?.id)"
+            >
               删除
             </v-btn>
-            <v-btn color="secondary" variant="text" @click="itemDialog.show = false"> 关闭 </v-btn>
+            <v-btn
+              color="secondary"
+              variant="text"
+              @click="itemDialog.show = false"
+            >
+              关闭
+            </v-btn>
           </template>
 
           <template v-else>
-            <v-btn color="success" variant="text" @click="saveItemChanges"> 保存 </v-btn>
-            <v-btn color="secondary" variant="text" @click="cancelEditingItem"> 取消 </v-btn>
+            <v-btn
+              color="success"
+              variant="text"
+              @click="saveItemChanges"
+            >
+              保存
+            </v-btn>
+            <v-btn
+              color="secondary"
+              variant="text"
+              @click="cancelEditingItem"
+            >
+              取消
+            </v-btn>
           </template>
         </v-card-actions>
       </v-card>
@@ -214,11 +341,13 @@
 </template>
 
 <script>
+import { ICON } from '@/utils/icons'
 import dataProvider from '@/utils/dataProvider.js'
 
 export default {
   data() {
     return {
+      ICON,
       listId: null,
       list: null,
       items: [],

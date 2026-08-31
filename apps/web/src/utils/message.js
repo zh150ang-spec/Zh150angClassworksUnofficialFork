@@ -1,4 +1,4 @@
-import { getSetting } from './settings'
+import { getSetting } from '@/utils/settings'
 
 class LogDB {
   constructor() {
@@ -46,6 +46,9 @@ async function createMessage(type, title, content = '', options = {}) {
     title,
     content: content.substring(0, 500),
     timestamp: new Date(),
+    timeout: msgOptions.timeout,
+    closable: msgOptions.closable !== false,
+    actions: msgOptions.actions || null,
   }
 
   if (msgOptions.addToLog) {

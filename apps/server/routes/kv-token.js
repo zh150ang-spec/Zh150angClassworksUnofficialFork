@@ -82,7 +82,7 @@ router.get(
   tokenReadLimiter,
   errors.catchAsync(async (req, res, next) => {
     const token = res.locals.token
-    const deviceId = res.locals.deviceId
+    const _deviceId = res.locals.deviceId
 
     // 查找当前 token 对应的应用安装记录
     const appInstall = await prisma.appInstall.findUnique({

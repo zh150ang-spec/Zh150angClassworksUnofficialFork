@@ -1,0 +1,253 @@
+/* ═══════════════════════════════════════════════════════════
+   tokens.scss — Apple / Pinguo Design Token Overrides
+   Applied globally; Vuetify component overrides are in radius.scss
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Typography ─────────────────────────────────────────── */
+  /* Font families */
+  --font-sans: 'DM Sans', ui-sans-serif, sans-serif, system-ui;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --font-serif:
+    'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', 'Hiragino Sans GB', 'SimSun', system-ui,
+    serif;
+
+  /* Line-height */
+  --line-height-heading: 1.2;
+  --line-height-body: 1.6;
+  --line-height-code: 1.5;
+  --line-height-preformatted: 1.8;
+
+  /* Font-weight */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-emphasis: 500;
+  --font-weight-label: 600;
+  --font-weight-heading: 700;
+
+  /* Letter-spacing */
+  --tracking-normal: 0em;
+  --tracking-tight: -0.02em; /* Slightly tighter for headings / large numerals */
+  --tracking-wide: 0.05em; /* ~1px at 16px, for uppercase labels / dates */
+  --tracking-display: 0.25em; /* ~8px at 32px, for large time numerals */
+
+  /* ── Radius ─────────────────────────────────────────────── */
+  /* 3-tier Apple radius system + pill.
+     lg/xl — floating surfaces (toolbar, panels)
+     md    — cards, dialogs (also $border-radius-root in Vuetify)
+     sm    — inner panels, chips, message bubbles, tool groups
+     xs    — inline elements (code spans, small tags, badges)
+     full  — pill / fully-rounded
+     Consumed by ~50 component <style> blocks. */
+  --radius-xs: 0.5rem; /* 8px   — inline code, small tags, badges       */
+  --radius-sm: 0.75rem; /* 12px  — inner panels, chips, message bubbles   */
+  --radius-md: 1.2rem; /* 19.2px — cards, dialogs (Vuetify root)         */
+  --radius-lg: 1.4rem; /* 22.4px — floating surfaces, expanded panels    */
+  --radius-xl: 1.6rem; /* 25.6px — toolbar bars, large floating surfaces */
+  --radius-full: 9999px; /* pill  — buttons, chips */
+  --radius-circle: 50%; /* perfect circle — avatars, icon buttons */
+
+  /* ── Text Color Hierarchy ───────────────────────────────── */
+  /* Semantic text levels based on on-surface opacity.
+     Replaces scattered rgba(var(--v-theme-on-surface), 0.xx) calls.
+     Mapping to Vuetify utility classes for reference:
+       --text-primary   → text-high-emphasis (100%)
+       --text-secondary → (none in Vuetify, 78%)
+       --text-tertiary  → text-medium-emphasis (60%)
+       --text-quaternary → text-low-emphasis (38%)
+       --text-disabled  → Vuetify built-in disabled state */
+  --text-primary: rgb(var(--v-theme-on-surface)); /* 100% — body text, card titles */
+  --text-secondary: rgba(
+    var(--v-theme-on-surface),
+    0.78
+  ); /* 78%  — subtitles, labels, time display */
+  --text-tertiary: rgba(var(--v-theme-on-surface), 0.6); /* 60%  — descriptions, secondary info */
+  --text-quaternary: rgba(var(--v-theme-on-surface), 0.38); /* 38%  — placeholders, metadata */
+  --text-disabled: rgba(var(--v-theme-on-surface), 0.26); /* 26%  — disabled controls */
+
+  /* ── Border / Divider ─────────────────────────────────── */
+  /* Replaces hardcoded rgba(0,0,0,0.12) and rgba(var(--v-border-color), 0.12).
+     Use these for all borders and dividers. */
+  --color-border: rgba(var(--v-theme-on-surface), 0.12); /* Standard border / divider */
+  --color-border-weak: rgba(var(--v-theme-on-surface), 0.08); /* Subtle divider, table rows */
+  --color-border-strong: rgba(var(--v-theme-on-surface), 0.2); /* Emphasized border */
+
+  /* ── Surface Tints ─────────────────────────────────────── */
+  /* Subtle background fills derived from surface / primary.
+     Replaces hardcoded rgba(0,0,0,0.05) and rgba(255,255,255,0.06). */
+  --color-fill: rgba(var(--v-theme-on-surface), 0.06); /* Hover fill, subtle bg */
+  --color-fill-soft: rgba(var(--v-theme-on-surface), 0.04); /* Alternate row, code block bg */
+  --color-fill-weakest: rgba(var(--v-theme-on-surface), 0.02); /* Barely-there bg, input bg */
+
+  /* ── Scrollbar ─────────────────────────────────────────── */
+  /* Replaces hardcoded rgba(128, 128, 128, 0.2). */
+  --color-scrollbar: rgba(var(--v-theme-on-surface), 0.16);
+  --color-scrollbar-hover: rgba(var(--v-theme-on-surface), 0.28);
+
+  /* ── Spacing ─────────────────────────────────────────────── */
+  /*
+   * Base unit: 0.25rem = 4px — aligned with Vuetify's $spacer.
+   * Numeric tokens map 1:1 to Vuetify spacing classes:
+   *   --space-4  = 16px  ≈  pa-4 / mb-4 / gap-4
+   *   --space-8  = 32px  ≈  pa-8 / mb-8
+   *
+   * Semantic tokens consume numeric tokens and provide
+   * a single place to tune layout rhythm from SCSS.
+   *
+   * WHERE THESE ARE USED:
+   *   Vuetify classes (mb-4, pa-6 …) stay in .vue <template>.
+   *   Tokens below are consumed ONLY by SCSS files
+   *   (global / cards / index / transitions).
+   */
+  --space: 0.25rem; /* 4px   base unit   */
+  --space-0: 0;
+  --space-1: calc(var(--space) * 1); /* 4px   */
+  --space-2: calc(var(--space) * 2); /* 8px   */
+  --space-3: calc(var(--space) * 3); /* 12px  */
+  --space-4: calc(var(--space) * 4); /* 16px  */
+  --space-5: calc(var(--space) * 5); /* 20px  */
+  --space-6: calc(var(--space) * 6); /* 24px  */
+  --space-8: calc(var(--space) * 8); /* 32px  */
+  --space-10: calc(var(--space) * 10); /* 40px  */
+  --space-12: calc(var(--space) * 12); /* 48px  */
+  --space-16: calc(var(--space) * 16); /* 64px  */
+
+  /* ── Spacing: Backward-Compatible Non-Standard Values ────
+     These tokens exist solely to eliminate hardcoded px values
+     in legacy components. They are NOT part of the standard
+     4px-grid spacing system and should not be used in new code.
+     该部分是为了向后兼容，实现统一所有间距使用token系统，
+     该间距不属于标准间隙系统。 */
+  --space-compat-0px: 0;
+  --space-compat-1px: 1px;
+  --space-compat-2px: 2px;
+  --space-compat-3px: 3px;
+  --space-compat-6px: 6px;
+  --space-compat-10px: 10px;
+  --space-compat-15px: 15px;
+
+  /* ── Spacing semantics (consume numeric tokens above) ──── */
+  --space-element: var(--space-1); /* 4px   icon↔text tight gap          */
+  --space-inline: var(--space-2); /* 8px   inline / chip spacing        */
+  --space-block-sm: var(--space-2); /* 8px   small block separator         */
+  --space-block: var(--space-4); /* 16px  standard block / card gap     */
+  --space-block-lg: var(--space-6); /* 24px  large section separator       */
+  --space-card: var(--space-4); /* 16px  card content padding         */
+  --space-card-title: var(--space-4) var(--space-5); /* 16px 20px card title */
+  --space-card-actions: var(--space-3) var(--space-5); /* 12px 20px card actions */
+  --space-grid: var(--space-4); /* 16px  masonry / auto-fill grid gap */
+  --space-grid-pad: var(--space-2); /* 8px   grid container padding       */
+  --space-gap-tight: var(--space-1); /* 4px   dense button / tag groups     */
+  --space-gap-normal: var(--space-2); /* 8px   standard flex / grid gap     */
+  --space-touch-min: 48px; /* 48px  minimum touch target size    */
+
+  /* ── Shadows (Light Mode) ───────────────────────────────── */
+  /* 8-level Apple-style shadow scale (2xs → 2xl).
+     All multi-layer, X=0 (top light), negative spread.
+     Consumed by .hover-card, .grid-item, .touch-card, .anti-burn-card, etc. */
+  --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.05);
+  --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
+  --shadow-2xl: 0 24px 64px -12px rgba(0, 0, 0, 0.12);
+
+  /* ── Shadows: Semantic Aliases ─────────────────────────── */
+  /* Map semantic intent to the scale above for clarity. */
+  --shadow-hover: var(--shadow-md); /* Default hover lift */
+  --shadow-card: var(--shadow); /* Standard resting card */
+  --shadow-raised: var(--shadow-lg); /* Floating panels, popups */
+  --shadow-overlay: var(--shadow-xl); /* Dialogs, full overlays */
+  --shadow-fab: var(--shadow-lg); /* Floating action buttons */
+
+  /* ── Interaction States ─────────────────────────────────── */
+  /* Unified feedback tokens for card / button interaction.
+     Design rule: cards remain static on hover (no float / no shadow /
+     no transform), so hover feedback is expressed via opacity and
+     press feedback via a slight scale. Focus ring is a border-like
+     shadow, not an elevation change. */
+  --state-hover-opacity: 1; /* Card hover target opacity (rest opacity set per-card) */
+  --state-active-scale: 0.97; /* Press-down scale for tappable cards / chips  */
+  --state-focus-ring: 0 0 0 2px rgba(var(--v-theme-primary), 0.35); /* Keyboard focus ring */
+  --state-focus-ring-offset: 2px; /* Ring spacing from element edge */
+  --state-press-fill: rgba(var(--v-theme-on-surface), 0.05); /* Press fill for buttons */
+  --state-hover-fill: var(--color-fill); /* Hover fill for rows / entries */
+
+  /* ── Shadows: Special Effects ───────────────────────────── */
+  /* Focus ring (not a true shadow, but managed here). */
+  --shadow-ring: 0 0 0 2px rgba(var(--v-theme-primary), 0.3);
+  /* Brand-tinted glow for highlighted interactive elements. */
+  --shadow-primary-glow: 0 0 15px rgba(var(--v-theme-primary), 0.7);
+  /* Text shadow for readability on image backgrounds. */
+  --shadow-text: 0 1px 4px rgba(0, 0, 0, 0.5);
+  /* Urgent notification pulsing white glow. */
+  --shadow-glow-sm: 0 0 30px rgba(255, 255, 255, 0.3);
+  --shadow-glow-lg: 0 0 50px rgba(255, 255, 255, 0.6);
+
+  /* ── Vuetify Elevation Alignment ─────────────────────────── */
+  /* Override Vuetify runtime shadow opacities so that
+     elevation="0".."5" outputs visually match the Apple shadow scale.
+     Vuetify's spatial values (px offsets, blur, spread) remain
+     Material Design defaults — only the alpha is adjusted. */
+  --v-shadow-key-opacity: 0.06; /* Vuetify default 0.30 → 0.06 */
+  --v-shadow-ambient-opacity: 0.05; /* Vuetify default 0.15 → 0.05 */
+
+  /* ── Elevation-to-Token Mapping ─────────────────────────── */
+  /* Quick reference: which Vuetify elevation level maps to
+     which --shadow-* token (by approximate visual weight).
+     elevation 0 → none
+     elevation 1 → --shadow-xs  (resting app-bar)
+     elevation 2 → --shadow-sm  (standard card)
+     elevation 3 → --shadow-md  (raised card)
+     elevation 4 → --shadow-lg  (floating toolbar)
+     elevation 5 → --shadow-xl  (urgent / prominent) */
+
+  /* ── Z-Index Scale ──────────────────────────────────────── */
+  /* Centralized layer stack. All components MUST reference
+     these tokens instead of hard-coding z-index values.
+     Spacing: 0, 1, 2, 10, 100, 101, 1000, 1100, 1101, 9999.
+     Gaps leave room for future intermediate layers. */
+  --z-base: 0; /* Background image (App.vue) */
+  --z-overlay: 1; /* Background overlay (App.vue) */
+  --z-content: 2; /* Main page content (App.vue) */
+  --z-move: 3; /* FLIP transition moving item */
+  --z-inner: 2; /* Local stacking context internal use */
+  --z-toolbar: 10; /* Fullscreen toolbar overlay (TimeCard) */
+  --z-float: 100; /* Floating elements (FloatingToolbar, FloatingICP) */
+  --z-float-top: 101; /* Floating element above siblings (side-action-btn) */
+  --z-app-bar: 1000; /* Aligned near Vuetify v-app-bar implicit z-index */
+  --z-chat: 1100; /* ChatWidget toggle button */
+  --z-chat-panel: 1101; /* ChatWidget open panel (above toggle) */
+  --z-toast: 9999; /* GlobalMessage stack (always on top) */
+
+  /* ── Motion ─────────────────────────────────────────────── */
+  --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+}
+
+/* ── Shadows (Dark Mode) ──────────────────────────────────── */
+/* Alpha values raised ~7x vs light mode (dark surfaces need
+   higher opacity shadows to remain visible).
+   Semantic aliases and special effects do NOT need re-declaration —
+   they reference the base tokens above via var(). */
+.dark {
+  --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.36);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.5), 0 4px 8px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.44);
+  --shadow-2xl: 0 24px 64px -12px rgba(0, 0, 0, 0.6);
+
+  /* Vuetify elevation opacities for dark mode */
+  --v-shadow-key-opacity: 0.44;
+  --v-shadow-ambient-opacity: 0.36;
+
+  /* Text shadow — stronger in dark mode */
+  --shadow-text: 0 1px 4px rgba(0, 0, 0, 0.7);
+}

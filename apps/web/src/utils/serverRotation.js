@@ -4,11 +4,13 @@
  * latency-based preference, background probing, and response caching.
  */
 
-import { getSetting } from './settings'
-import { CLOUD_SERVERS } from '@classworks/shared'
+import { getSetting } from '@/utils/settings'
 
 // Server list for classworkscloud provider (in default priority order)
-const CLASSWORKS_CLOUD_SERVERS = CLOUD_SERVERS
+const CLASSWORKS_CLOUD_SERVERS = [
+  'https://kv-service.houlang.cloud',
+  'https://kv-service.wuyuan.dev',
+]
 
 // Cache TTL for server preference (5 minutes)
 const SERVER_PREFERENCE_TTL = 5 * 60 * 1000
@@ -18,9 +20,9 @@ const PROBE_TIMEOUT_MS = 3000
 
 // Server preference cache
 const serverPreference = {
-  preferred: null, // URL of the fastest responding server
-  cachedAt: 0, // Timestamp when the preference was last updated
-  probing: false, // Whether a background probe is currently running
+  preferred: null,
+  cachedAt: 0,
+  probing: false,
 }
 
 /**
@@ -42,10 +44,8 @@ function setCachedPreference(url) {
  */
 function shouldRotateOnError(error) {
   if (!error.response) {
-    // Network / timeout error — server unreachable, rotate
     return true
   }
-  // Only rotate for server-side (5xx) errors
   return error.response.status >= 500
 }
 
@@ -57,7 +57,7 @@ function shouldRotateOnError(error) {
  * @returns {Promise<number>}
  */
 async function probeServer(serverUrl) {
-  const controller = new AbortController()
+  const controller = new window.AbortController()
   const timeoutId = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS)
   const start = Date.now()
   try {
@@ -107,7 +107,6 @@ function getOrderedCloudServers() {
   const cacheStale = now - serverPreference.cachedAt > SERVER_PREFERENCE_TTL
 
   if (cacheStale && !serverPreference.probing) {
-    // Non-blocking background probe to refresh the preference
     updateServerPreference().catch(() => {})
   }
 
@@ -125,11 +124,10 @@ function getOrderedCloudServers() {
  * @returns {string[]} Array of server URLs to try
  */
 export function getServerList(provider) {
-  if (provider === 'classworkscloud') {
+  if (provider === 'classworkscloud' || provider === 'dual-cloud') {
     return getOrderedCloudServers()
   }
 
-  // For other providers, use the configured domain
   const domain = getSetting('server.domain')
   return domain ? [domain] : []
 }
@@ -173,14 +171,12 @@ export async function tryWithRotation(operation, options = {}) {
         onServerTried({ url: serverUrl, status: 'success', tried: [...triedServers] })
       }
 
-      // Remember this server as the preferred one for future requests
-      if (provider === 'classworkscloud') {
+      if (provider === 'classworkscloud' || provider === 'dual-cloud') {
         setCachedPreference(serverUrl)
       }
 
       return result
     } catch (error) {
-      // For HTTP 4xx errors the server is alive — propagate immediately without rotation
       if (!shouldRotateOnError(error)) {
         triedServers[triedServers.length - 1].status = 'client-error'
         if (hasCallback) {
@@ -200,7 +196,6 @@ export async function tryWithRotation(operation, options = {}) {
     }
   }
 
-  // All servers exhausted
   console.error('All servers failed. Tried:', triedServers)
   const error = lastError || new Error('All servers failed')
   error.triedServers = triedServers
@@ -216,7 +211,7 @@ export async function tryWithRotation(operation, options = {}) {
 export function getEffectiveServerUrl() {
   const provider = getSetting('server.provider')
 
-  if (provider === 'classworkscloud') {
+  if (provider === 'classworkscloud' || provider === 'dual-cloud') {
     return serverPreference.preferred || CLASSWORKS_CLOUD_SERVERS[0]
   }
 
@@ -229,5 +224,5 @@ export function getEffectiveServerUrl() {
  */
 export function isRotationEnabled() {
   const provider = getSetting('server.provider')
-  return provider === 'classworkscloud'
+  return provider === 'classworkscloud' || provider === 'dual-cloud'
 }

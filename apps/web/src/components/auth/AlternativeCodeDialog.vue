@@ -11,12 +11,39 @@
         rows="5"
         variant="outlined"
       />
-      <v-alert class="mt-3" type="info" variant="tonal"> 替代代码功能暂未实现，敬请期待 </v-alert>
+      <v-alert
+        class="mt-3"
+        type="info"
+        variant="tonal"
+      >
+        替代代码功能暂未实现，敬请期待
+      </v-alert>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn v-if="showCancel" variant="text" @click="$emit('cancel')"> 取消 </v-btn>
-      <v-btn :disabled="!code" color="primary" @click="submit"> 提交 </v-btn>
+      <v-btn
+        v-if="showCancel"
+        variant="text"
+        @click="$emit('cancel')"
+      >
+        取消
+      </v-btn>
+      <v-tooltip
+        location="top"
+        text="即将推出"
+      >
+        <template #activator="{ props }">
+          <span
+            v-bind="props"
+            class="d-inline-block"
+          >
+            <v-btn
+              color="primary"
+              disabled
+            > 提交 </v-btn>
+          </span>
+        </template>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>
@@ -31,15 +58,9 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['submit', 'cancel'])
+defineEmits(['cancel'])
 
 const code = ref('')
-
-const submit = () => {
-  if (!code.value) return
-  // TODO: 实现替代代码逻辑
-  emit('submit', code.value)
-}
 
 // 暴露清空表单的方法
 defineExpose({

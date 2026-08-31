@@ -126,7 +126,9 @@ async function ensureDeviceRegistered(uuid, authHeader) {
     // 保存UUID到本地存储，确保后续可用
     try {
       deviceStore.setDeviceUuid(uuid)
-    } catch {}
+    } catch {
+      // 故意忽略
+    }
     return true
   } catch (e) {
     return false
@@ -148,7 +150,9 @@ axiosInstance.interceptors.response.use(
       if (newToken && authHandlers?.setAccessToken) {
         authHandlers.setAccessToken(newToken)
       }
-    } catch {}
+    } catch {
+      // 故意忽略
+    }
     return response.data
   },
   async (error) => {
@@ -171,7 +175,9 @@ axiosInstance.interceptors.response.use(
           // 无法刷新，触发认证失败回调并退出
           try {
             authHandlers?.onAuthFailure && authHandlers.onAuthFailure(new Error('NO_REFRESH_TOKEN'))
-          } catch {}
+          } catch {
+            // 故意忽略
+          }
           throw new Error('NO_REFRESH_TOKEN')
         }
 
@@ -183,7 +189,9 @@ axiosInstance.interceptors.response.use(
               // 刷新失败，触发失败处理
               try {
                 authHandlers?.onAuthFailure && authHandlers.onAuthFailure(e)
-              } catch {}
+              } catch {
+                // 故意忽略
+              }
               throw e
             })
             .finally(() => {
@@ -200,7 +208,9 @@ axiosInstance.interceptors.response.use(
         // 刷新失败，触发认证失败并返回原始错误信息
         try {
           authHandlers?.onAuthFailure && authHandlers.onAuthFailure(refreshErr)
-        } catch {}
+        } catch {
+          // 故意忽略
+        }
         return Promise.reject(new Error(message))
       }
     }
@@ -209,7 +219,9 @@ axiosInstance.interceptors.response.use(
     if (status === 403 && resp?.data?.code === 'AUTH_JWT_EXPIRED') {
       try {
         authHandlers?.onAuthFailure && authHandlers.onAuthFailure(new Error(message || 'FORBIDDEN'))
-      } catch {}
+      } catch {
+        // 故意忽略
+      }
       return Promise.reject(new Error(message || 'FORBIDDEN'))
     }
 
@@ -228,7 +240,9 @@ axiosInstance.interceptors.response.use(
         try {
           const body = typeof config.data === 'string' ? JSON.parse(config.data) : config.data
           if (body && typeof body === 'object' && body.uuid) uuid = body.uuid
-        } catch {}
+        } catch {
+          // 故意忽略
+        }
       }
 
       // 可能需要账户授权头

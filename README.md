@@ -16,7 +16,7 @@
 
 | 包名                    | 路径              | 说明                                      |
 | ----------------------- | ----------------- | ----------------------------------------- |
-| `@classworks/web`       | `apps/web`        | 作业板 PWA（Vue 3 + Vuetify 3）           |
+| `@classworks/web`       | `apps/web`        | 作业板 PWA（Vue 3 + Vuetify 4）           |
 | `@classworks/server`    | `apps/server`     | KV 后端（Express 5 + Prisma + Socket.IO） |
 | `@classworks/dashboard` | `apps/dashboard`  | 管理面板（Vue 3 + Tailwind 4）            |
 | `@classworks/shared`    | `packages/shared` | 共享常量（请求头、服务器地址）            |
@@ -30,7 +30,7 @@ QQ：[964979747](https://qm.qq.com/q/4RX45b1Oac)
 ### 环境准备
 
 - Node.js 20+
-- pnpm 9+
+- pnpm 11+
 
 ### 安装步骤
 

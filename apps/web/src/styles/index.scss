@@ -1,135 +1,58 @@
-@use 'glow.scss';
+/* ═══════════════════════════════════════════════════════════
+   index.scss — Apple-style page layout & interaction styles
+   No glow, no bloom, no pulse — clean and restrained.
+   ═══════════════════════════════════════════════════════════ */
 
-// 添加卡片发光效果
-.glow-track {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
+@use 'tokens.scss';
+@use 'radius.scss';
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-      circle at var(--x, 50%) var(--y, 50%),
-      rgba(255, 255, 255, 0.15) 0%,
-      rgba(255, 255, 255, 0) 70%
-    );
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  &:hover::before {
-    opacity: 1;
-  }
-}
-
-// 数据更新高亮效果
-.glow-highlight {
-  animation: glow-pulse 3s ease-in-out;
-  box-shadow:
-    0 0 20px rgba(33, 150, 243, 0.6),
-    0 0 40px rgba(33, 150, 243, 0.4),
-    0 0 60px rgba(33, 150, 243, 0.2) !important;
-}
-
-@keyframes glow-pulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 20px rgba(33, 150, 243, 0.6),
-      0 0 40px rgba(33, 150, 243, 0.4),
-      0 0 60px rgba(33, 150, 243, 0.2);
-  }
-  50% {
-    box-shadow:
-      0 0 30px rgba(33, 150, 243, 0.8),
-      0 0 60px rgba(33, 150, 243, 0.6),
-      0 0 90px rgba(33, 150, 243, 0.4);
-  }
-}
-
-// 添加卡片悬浮效果
+/* ── Card Hover (design rule: cards remain static on hover) ─ */
 .grid-item .v-card {
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
-  }
-
-  &:active {
-    transform: translateY(-2px);
-  }
+  /* Cards must NOT float, transform, or change elevation on hover. */
 }
 
-// 添加空科目卡片样式
+/* ── Empty Subject Card ───────────────────────────────────── */
 .empty-subject-card {
-  transition: all 0.3s ease;
-  opacity: 0.8;
+  transition: opacity var(--duration-normal) var(--ease-apple);
+  opacity: 0.85;
 
   &:hover {
     opacity: 1;
-    transform: translateY(-4px);
   }
 }
 
-// 修改防烧屏提示卡片，使用 tonal 样式减少信息密度
+/* ── Anti-burn card ───────────────────────────────────────── */
 .anti-burn-card {
-  animation: subtle-glow 4s infinite alternate;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  }
+  /* Cards must NOT change elevation or shadow on hover. */
 }
 
-@keyframes subtle-glow {
-  0% {
-    box-shadow: 0 0 5px rgba(33, 150, 243, 0.1);
-  }
-
-  100% {
-    box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
-  }
-}
-
-// 出勤管理对话框样式
+/* ── Attendance ───────────────────────────────────────────── */
 .attendance-stat {
   height: 100%;
 }
 
-// 搜索建议按钮
+/* ── Search suggestion buttons ────────────────────────────── */
 .suggestion-btn {
-  margin: 2px;
+  margin: var(--space-compat-2px);
   min-width: 0;
-  padding: 0 6px;
+  padding: 0 var(--space-compat-6px);
 
   &:active {
-    transform: scale(0.95);
+    transform: scale(var(--state-active-scale));
   }
 }
 
-// 适配触摸屏
+/* ── Touch-specific styles ────────────────────────────────── */
 @media (hover: none) {
   .student-card .attendance-actions {
     opacity: 1;
   }
 }
 
-// 小屏幕适配
 @media (max-width: 600px) {
   .student-card {
     .attendance-actions .v-btn {
-      margin: 0 1px;
+      margin: 0 var(--space-compat-1px);
       min-width: 28px;
       width: 28px;
       height: 28px;
@@ -137,21 +60,22 @@
   }
 }
 
-// 过滤器芯片
+/* ── Filter chips ─────────────────────────────────────────── */
 .filter-chip {
   cursor: pointer;
-  margin: 2px;
+  margin: var(--space-compat-2px);
 
   &:active {
-    transform: scale(0.95);
+    transform: scale(var(--state-active-scale));
   }
 }
 
+/* ── Grid Layout ──────────────────────────────────────────── */
 .grid-masonry {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 8px;
+  gap: var(--space-grid); /* 16px */
+  padding: var(--space-grid-pad); /* 8px  */
   grid-auto-flow: dense;
   grid-auto-rows: 1px;
   align-items: start;
@@ -159,7 +83,9 @@
 
 .grid-item {
   width: 100%;
-  transition: all 0.2s ease;
+  transition:
+    transform var(--duration-normal) var(--ease-apple),
+    opacity var(--duration-normal) var(--ease-apple);
 }
 
 .empty-card {
@@ -169,7 +95,6 @@
 }
 
 .empty-card:hover {
-  transform: scale(0.95);
   opacity: 1;
 }
 
@@ -194,7 +119,7 @@
   }
 }
 
-/* 优化滚动条样式 */
+/* ── Scrollbar (refined) ──────────────────────────────────── */
 .main-window::-webkit-scrollbar {
   width: 8px;
 }
@@ -204,55 +129,56 @@
 }
 
 .main-window::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  background-color: var(--color-scrollbar);
+  border-radius: var(--radius-full);
 }
 
 .main-window::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--color-scrollbar-hover);
 }
 
+/* ── No-data message ──────────────────────────────────────── */
 .no-data-message {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
-  margin: 20px 0;
+  margin: var(--space-5) 0; /* 20px 0 */
 }
 
+/* ── Attendance drawer ────────────────────────────────────── */
 .attendance-drawer {
-  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  border-left: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content) {
+.attendance-drawer .v-navigation-drawer__content {
   overflow-y: auto;
 }
 
-/* 优化滚动条样式 */
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar) {
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar {
   width: 8px;
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-track) {
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb) {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-thumb {
+  background-color: var(--color-scrollbar);
+  border-radius: var(--radius-full);
 }
 
-.attendance-drawer :deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb:hover) {
-  background-color: rgba(0, 0, 0, 0.3);
+.attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-scrollbar-hover);
 }
 
-/* 响应式调整 */
 @media (max-width: 960px) {
   .attendance-drawer {
     display: none;
   }
 }
 
+/* ── Text color utilities ─────────────────────────────────── */
 .text-success {
   color: rgb(var(--v-theme-success));
 }
@@ -265,98 +191,48 @@
   color: rgb(var(--v-theme-warning));
 }
 
+/* ── Attendance card ──────────────────────────────────────── */
 .attendance-card {
   display: flex;
   flex-direction: column;
 }
 
 .attendance-numbers {
-  padding: 20px 0;
+  padding: var(--space-5) 0; /* 20px 0 */
 }
 
 .total-number {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
+  padding-bottom: var(--space-5); /* 20px */
 }
 
 .status-number {
   flex: 1;
 }
 
-.text-h2,
-.text-h3 {
-  line-height: 1.2;
-}
-
+/* ── Empty subjects grid ──────────────────────────────────── */
 .empty-subjects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  padding: 8px;
+  gap: var(--space-grid); /* 16px */
+  padding: var(--space-grid-pad); /* 8px  */
 }
 
 .empty-subject-card {
   cursor: pointer;
-  transition: all 0.2s ease;
-  opacity: 0.8;
+  transition: opacity var(--duration-normal) var(--ease-apple);
+  opacity: 0.85;
 }
 
 .empty-subject-card:hover {
-  transform: scale(1.02);
-  opacity: 1;
+  opacity: var(--state-hover-opacity);
 }
 
 .empty-subjects {
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  padding-top: 1rem;
+  border-top: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
+  padding-top: var(--space-4); /* 16px (was 1rem) */
 }
 
 .empty-subject-card:not(:disabled):hover {
-  opacity: 1;
-  transform: scale(1.02);
-}
-
-// 出勤管理对话框样式
-.attendance-stat {
-  height: 100%;
-}
-
-// 搜索建议按钮
-.suggestion-btn {
-  margin: 2px;
-  min-width: 0;
-  padding: 0 6px;
-
-  &:active {
-    transform: scale(0.95);
-  }
-}
-
-// 适配触摸屏
-@media (hover: none) {
-  .student-card .attendance-actions {
-    opacity: 1;
-  }
-}
-
-// 小屏幕适配
-@media (max-width: 600px) {
-  .student-card {
-    .attendance-actions .v-btn {
-      margin: 0 1px;
-      min-width: 28px;
-      width: 28px;
-      height: 28px;
-    }
-  }
-}
-
-// 过滤器芯片
-.filter-chip {
-  cursor: pointer;
-  margin: 2px;
-
-  &:active {
-    transform: scale(0.95);
-  }
+  opacity: var(--state-hover-opacity);
 }

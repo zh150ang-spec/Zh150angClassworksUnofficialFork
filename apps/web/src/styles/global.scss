@@ -1,30 +1,46 @@
-// 全局 UI 美化样式
+/* ═══════════════════════════════════════════════════════════
+   global.scss — Apple-style global UI enhancements
+   Fonts handled by settings.scss (@use vuetify/settings).
+   ═══════════════════════════════════════════════════════════ */
 
-// 卡片悬浮效果
-.hover-card {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.3s ease;
-  will-change: transform, box-shadow;
-
-  &:hover,
-  &:focus {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
-  }
-
-  &:active {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-  }
+/* ── Monospace font (unified via --font-mono token) ────────── */
+pre,
+code,
+.v-code,
+.monospace {
+  font-family: var(--font-mono) !important;
 }
 
-// 触摸友好的按钮
+/* ── Serif font (for HitokotoCard & poetic content) ─────────── */
+.serif-font {
+  font-family: var(--font-serif);
+}
+
+/* ── Text rendering & smooth scroll ────────────────────────── */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+/* ── Heading line-height (unified via --line-height-heading) ── */
+.text-h2,
+.text-h3 {
+  line-height: var(--line-height-heading);
+}
+
+/* ── Card hover (design rule: cards remain static on hover) ─ */
+.hover-card {
+  /* Cards must NOT float, transform, or change elevation on hover. */
+}
+
+/* ── Touch-friendly button ────────────────────────────────── */
 .touch-button {
-  min-height: 48px;
-  min-width: 48px;
-  border-radius: 12px;
-  padding: 12px 24px;
+  min-height: var(--space-touch-min);
+  min-width: var(--space-touch-min);
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-6); /* 12px 24px */
 
   &.v-btn--icon {
     min-height: 56px;
@@ -32,56 +48,114 @@
   }
 }
 
-// 波纹效果增强
-.ripple-enhanced {
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-      circle at var(--x, 50%) var(--y, 50%),
-      rgba(255, 255, 255, 0.2) 0%,
-      rgba(255, 255, 255, 0) 60%
-    );
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
-  }
-
-  &:active::after {
-    opacity: 1;
-    transition: opacity 0.2s;
-  }
-}
-
-// 平滑滚动
-html {
-  scroll-behavior: smooth;
-}
-
+/* ── App bar (fixed) ──────────────────────────────────────── */
 .v-app-bar {
   position: fixed !important;
 }
 
-// 触摸友好的列表项
-.touch-list-item {
-  min-height: 56px;
-  padding: 12px 16px;
+/* ── v-alert text contrast (global) ───────────────────────── */
+/* Vuetify tonal alerts set text color to the semantic color
+   (info/warning/error/success), which often fails WCAG 4.5:1
+   against the tinted background. Force content text to on-surface
+   for high contrast, while preserving the semantic icon and
+   background tint. */
+.v-alert .v-alert__content {
+  color: rgb(var(--v-theme-on-surface));
 }
 
-// 大型触摸目标
+/* ── v-card tonal text contrast (global) ──────────────────── */
+/* Same rationale as v-alert: tonal cards with color="primary" etc.
+   cause text to inherit the semantic color (via Vuetify's text-primary
+   class on the card root), reducing contrast against the tinted
+   background. Force the card root to on-surface so ALL descendants
+   (including arbitrary divs, text-variant buttons, etc.) inherit
+   readable contrast. */
+.v-card--variant-tonal {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-snackbar tonal text contrast (global) ──────────────── */
+/* Same rationale as v-alert/v-card: tonal snackbars with color="warning"
+   etc. cause text to inherit the semantic color, reducing contrast
+   against the tinted background. Force content text to on-surface. */
+.v-snackbar--variant-tonal .v-snackbar__content {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-btn tonal text contrast (global) ───────────────────── */
+/* Tonal buttons with color="primary" etc. cause text to inherit
+   the semantic color. Force content to on-surface for readability. */
+.v-btn--variant-tonal .v-btn__content {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── Disabled button: force no shadow (global) ────────────── */
+/* Vuetify's disabled elevated buttons drop their shadow, which
+   renders them as a brighter flat block next to enabled buttons
+   of the same fill. Force every disabled button to have no shadow
+   so fills stay visually identical across states. */
+.v-btn--disabled {
+  box-shadow: none;
+}
+
+/* ── Gap utilities (global) ───────────────────────────────── */
+/* Vuetify does not emit usable gap-* utilities in this project,
+   so define them globally from --space tokens. This keeps every
+   action-button group spacing consistent (gap-2 = 8px) and fixes
+   groups that previously rendered with zero gap. */
+.gap-0 {
+  gap: 0;
+}
+.gap-1 {
+  gap: var(--space-1);
+}
+.gap-2 {
+  gap: var(--space-2);
+}
+.gap-3 {
+  gap: var(--space-3);
+}
+.gap-4 {
+  gap: var(--space-4);
+}
+.gap-6 {
+  gap: var(--space-6);
+}
+.gap-8 {
+  gap: var(--space-8);
+}
+
+/* ── v-chip tonal text contrast (global) ──────────────────── */
+/* Same rationale as v-btn tonal: force chip content text to
+   on-surface for readability against the tinted background. */
+.v-chip--variant-tonal .v-chip__content {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── v-icon contrast in tonal variants (global) ──────────── */
+/* Same rationale as .v-btn__content: icons (prepend, append,
+   standalone) inside tonal components inherit the semantic color,
+   reducing contrast against the tinted background. Force to
+   on-surface for readability. */
+.v-btn--variant-tonal .v-icon,
+.v-chip--variant-tonal .v-icon,
+.v-alert--variant-tonal .v-icon,
+.v-snackbar--variant-tonal .v-icon {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* ── Touch-friendly list ──────────────────────────────────── */
+.touch-list-item {
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4); /* 12px 16px */
+}
+
 .large-touch-target {
   min-height: 56px;
   min-width: 56px;
 }
 
-// 全屏模式样式
+/* ── Fullscreen mode ──────────────────────────────────────── */
 .fullscreen-mode {
   .v-app-bar {
     background-color: rgba(var(--v-theme-surface-variant), 0.85) !important;
@@ -90,7 +164,7 @@ html {
   }
 
   .main-window {
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: var(--space-4); /* 16px */
+    padding-bottom: var(--space-4); /* 16px */
   }
 }

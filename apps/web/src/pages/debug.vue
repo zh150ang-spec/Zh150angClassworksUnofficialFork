@@ -4,13 +4,21 @@
       <v-card-title>调试信息</v-card-title>
       <v-card-subtitle> 请将这个ID复制并私聊给开发者，以便进行问题排查。 </v-card-subtitle>
       <v-card-text>
-        <div class="text-h6 mb-2">访客 ID</div>
-        <v-code class="d-block pa-2 bg-grey-lighten-4 rounded mb-4">
+        <div class="text-headline-small mb-2">
+          访客 ID
+        </div>
+        <v-code class="d-block pa-2 bg-surface-variant rounded mb-4">
           {{ visitorId || '加载中...' }}
         </v-code>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" :loading="loading" @click="loadData"> Refresh </v-btn>
+        <v-btn
+          color="primary"
+          :loading="loading"
+          @click="loadData"
+        >
+          Refresh
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>

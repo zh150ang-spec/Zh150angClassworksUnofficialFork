@@ -19,8 +19,6 @@ import {
 } from '@/components/ui/dialog'
 import {
   Plus,
-  Trash2,
-  Key,
   Shield,
   RefreshCw,
   Copy,
@@ -29,8 +27,6 @@ import {
   Package,
   Clock,
   AlertCircle,
-  Lock,
-  Info,
   User,
   LogOut,
   Layers,
@@ -78,7 +74,7 @@ const appIdToAuthorize = ref('')
 const authNote = ref('')
 
 // 使用OAuth回调处理
-const { handleOAuthCallback } = useOAuthCallback()
+const { handleOAuthCallback: _handleOAuthCallback } = useOAuthCallback()
 
 // 检查 namespace 是否等于 UUID（需要提示用户修改）
 const namespaceEqualsUuid = computed(() => {
@@ -86,7 +82,7 @@ const namespaceEqualsUuid = computed(() => {
 })
 
 // 为 TokenList 扁平化数据并附带 appName
-const flatTokenList = computed(() => {
+const _flatTokenList = computed(() => {
   return tokens.value.map((t) => ({
     ...t,
     appName: appInfoCache.value[t.appId]?.name || null,
@@ -311,7 +307,7 @@ const bindCurrentDevice = async () => {
 }
 
 // 解绑当前设备
-const unbindCurrentDevice = async () => {
+const _unbindCurrentDevice = async () => {
   if (!accountStore.isAuthenticated) {
     toast.error('请先登录')
     return

@@ -46,6 +46,8 @@ lerna-debug.log*
 .rpt2_cache/
 .tern-port
 .fusebox/
+.pnpm-store/
+.pnpm-cache/
 
 # TypeScript cache
 *.tsbuildinfo

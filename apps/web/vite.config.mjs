@@ -2,24 +2,30 @@
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import Fonts from 'unplugin-fonts/vite'
-import Layouts from 'vite-plugin-vue-layouts'
+import Layouts from 'vite-plugin-vue-layouts-next'
 import Vue from '@vitejs/plugin-vue'
-import VueRouter from 'unplugin-vue-router/vite'
+import VueRouter from 'vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import { VitePWA } from 'vite-plugin-pwa'
+import replace from '@rollup/plugin-replace'
 //import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import packageJson from './package.json' with { type: 'json' }
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: './',
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+    'process.env': {},
+  },
   plugins: [
     VueRouter(),
-    vueDevTools(),
+    mode === 'development' && vueDevTools(),
     Layouts(),
     Vue({
       template: { transformAssetUrls },
@@ -32,9 +38,20 @@ export default defineConfig({
         suppressWarnings: true,
       },
 
-      lang: 'zh-CN',
       injectRegister: 'auto',
-      strategies: 'generateSW',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
+      injectManifest: {
+        plugins: [
+          replace({
+            preventAssignment: true,
+            values: {
+              __APP_VERSION__: JSON.stringify(packageJson.version),
+            },
+          }),
+        ],
+      },
 
       workbox: {
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
@@ -119,16 +136,15 @@ export default defineConfig({
         additionalManifestEntries: [],
         clientsClaim: true,
         skipWaiting: true,
-        importScripts: ['sw-cache-manager.js'],
       },
       manifest: {
+        lang: 'zh-CN',
         id: '7C24F2B3.ClassworksPWA',
         name: 'Classworks PWA',
         short_name: 'Classworks PWA',
         description: '适用于班级大屏的作业板小工具，支持记录、查看并同步作业。',
         theme_color: '#212121',
         background_color: '#212121',
-        lang: 'zh-CN',
         dir: 'ltr',
         display: 'standalone',
         display_override: ['window-controls-overlay', 'standalone', 'minimal-ui', 'fullscreen'],
@@ -219,18 +235,20 @@ export default defineConfig({
       },
     }),
     Components({
-      // 排除已在 index.vue 中通过 defineAsyncComponent 手动懒加载的组件
-      // 避免 unplugin-vue-components 生成冲突的静态 import
       directoryAsNamespace: false,
       globs: ['src/components/**/[A-Z]*.vue'],
       exclude: [/pages\/index\.vue$/],
     }),
     Fonts({
+      preload: true,
+      display: 'swap',
       google: {
+        preconnect: true,
         families: [
           {
-            name: 'Roboto',
-            styles: 'wght@100;300;400;500;700;900',
+            name: 'Noto Serif SC',
+            styles: 'wght@300;400;500;600;700',
+            defer: true,
           },
         ],
       },
@@ -243,7 +261,6 @@ export default defineConfig({
       vueTemplate: true,
     }),
   ],
-  define: { 'process.env': {} },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -253,19 +270,21 @@ export default defineConfig({
   build: {
     // ===== Chunk 分割优化 =====
     chunkSizeWarningLimit: 500,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          // 核心框架（极少变动，长缓存）
-          'vendor-vue': ['vue', 'vue-router', 'pinia'],
-          // UI 框架
-          'vendor-vuetify': ['vuetify'],
-          // 监控（异步加载，独立 chunk）
-          // 'vendor-sentry': ['@sentry/vue'],
-          // 实时通信
-          'vendor-socket': ['socket.io-client'],
-          // 通用工具库
-          'vendor-utils': ['axios', 'uuid', 'js-base64'],
+        codeSplitting: {
+          groups: [
+            // 核心框架（极少变动，长缓存）
+            { test: /[\\/]node_modules[\\/](vue|vue-router|pinia)[\\/]/, name: 'vendor-vue' },
+            // UI 框架
+            { test: /[\\/]node_modules[\\/]vuetify[\\/]/, name: 'vendor-vuetify' },
+            // 监控（异步加载，独立 chunk）
+            { test: /[\\/]node_modules[\\/]@sentry[\\/]vue[\\/]/, name: 'vendor-sentry' },
+            // 实时通信
+            { test: /[\\/]node_modules[\\/]socket\.io-client[\\/]/, name: 'vendor-socket' },
+            // 通用工具库
+            { test: /[\\/]node_modules[\\/](axios|uuid|js-base64)[\\/]/, name: 'vendor-utils' },
+          ],
         },
       },
     },
@@ -280,4 +299,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

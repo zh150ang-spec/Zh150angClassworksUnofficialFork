@@ -18,17 +18,7 @@ import DropdownMenu from '@/components/ui/dropdown-menu/DropdownMenu.vue'
 import DropdownItem from '@/components/ui/dropdown-menu/DropdownItem.vue'
 import LoginDialog from '@/components/LoginDialog.vue'
 import DeviceRegisterDialog from '@/components/DeviceRegisterDialog.vue'
-import {
-  ChevronDown,
-  Plus,
-  Monitor,
-  Search,
-  Clock,
-  User,
-  Check,
-  Settings,
-  Layers,
-} from 'lucide-vue-next'
+import { ChevronDown, Plus, Monitor, Search, Clock, User, Check, Settings } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 const props = defineProps({

@@ -159,7 +159,7 @@ export function hasExportableHomework(items) {
 }
 
 async function loadBrowserUaf() {
-  return import('../vendor/uaf/browser.js')
+  return import('@/vendor/uaf/browser.js')
 }
 
 export async function parseUafPdf(file) {

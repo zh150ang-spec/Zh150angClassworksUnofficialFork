@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Shield, TestTube2, Settings, Layers, Database, Key, ArrowRight } from 'lucide-vue-next'
+import { Shield, TestTube2, Layers, Database, ArrowRight } from 'lucide-vue-next'
 
 const router = useRouter()
 

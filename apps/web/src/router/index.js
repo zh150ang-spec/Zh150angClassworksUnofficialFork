@@ -14,15 +14,68 @@ const router = createRouter({
   routes: setupLayouts(routes),
 })
 
+// 调试/诊断页仅允许开发环境访问，生产构建统一重定向到首页，防止线上暴露内部诊断信息
+const DEBUG_PATHS = ['/debug', '/debug-init', '/debug-socket', '/socket-debugger']
+router.beforeEach((to) => {
+  if (import.meta.env.PROD && DEBUG_PATHS.includes(to.path)) {
+    return { path: '/' }
+  }
+})
+
+const DYNAMIC_RELOAD_KEY = 'vuetify:dynamic-reload'
+const MAX_RELOAD_ATTEMPTS = 3
+const RELOAD_COOLDOWN_MS = 5000
+
+const getReloadAttempts = () => {
+  try {
+    const data = localStorage.getItem(DYNAMIC_RELOAD_KEY)
+    if (!data) return { count: 0, timestamp: 0 }
+    const parsed = JSON.parse(data)
+    if (Date.now() - parsed.timestamp > RELOAD_COOLDOWN_MS * 2) {
+      return { count: 0, timestamp: 0 }
+    }
+    return parsed
+  } catch {
+    return { count: 0, timestamp: 0 }
+  }
+}
+
+const setReloadAttempts = (count) => {
+  localStorage.setItem(DYNAMIC_RELOAD_KEY, JSON.stringify({ count, timestamp: Date.now() }))
+}
+
+const clearReloadAttempts = () => {
+  localStorage.removeItem(DYNAMIC_RELOAD_KEY)
+}
+
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {
   if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
-    if (!localStorage.getItem('vuetify:dynamic-reload')) {
-      console.log('Reloading page to fix dynamic import error')
-      localStorage.setItem('vuetify:dynamic-reload', 'true')
-      location.assign(to.fullPath)
+    const { count } = getReloadAttempts()
+
+    if (count < MAX_RELOAD_ATTEMPTS) {
+      console.log(
+        `Reloading page to fix dynamic import error (attempt ${count + 1}/${MAX_RELOAD_ATTEMPTS})`,
+      )
+      setReloadAttempts(count + 1)
+      setTimeout(() => {
+        location.assign(to.fullPath)
+      }, 500)
     } else {
-      console.error('Dynamic import error, reloading page did not fix it', err)
+      console.error('Dynamic import error: max reload attempts reached', err)
+      clearReloadAttempts()
+      const app = document.getElementById('app')
+      if (app) {
+        app.innerHTML = `
+          <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+            <h2 style="color: #ff5252;">加载失败</h2>
+            <p style="color: #888;">页面资源加载失败，请检查网络连接后刷新页面</p>
+            <button onclick="location.reload()" style="margin-top: 16px; padding: 8px 24px; cursor: pointer;">
+              刷新页面
+            </button>
+          </div>
+        `
+      }
     }
   } else {
     console.error(err)
@@ -30,7 +83,7 @@ router.onError((err, to) => {
 })
 
 router.isReady().then(() => {
-  localStorage.removeItem('vuetify:dynamic-reload')
+  clearReloadAttempts()
 })
 
 export default router

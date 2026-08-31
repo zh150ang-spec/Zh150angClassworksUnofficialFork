@@ -134,16 +134,9 @@ if (!fs.existsSync(serviceWorkerPath)) {
   fail('dist/sw.js 不存在，PWA 离线能力未生成。')
 } else {
   const sw = fs.readFileSync(serviceWorkerPath, 'utf8')
-  if (!sw.includes('sw-cache-manager.js')) {
-    fail('sw.js 未导入 sw-cache-manager.js。')
-  }
   if (!sw.includes('index.html')) {
     fail('sw.js 未包含导航回退，离线打开应用可能失败。')
   }
-}
-
-if (!fs.existsSync(path.join(distDir, 'sw-cache-manager.js'))) {
-  fail('dist/sw-cache-manager.js 不存在。')
 }
 
 if (errors.length > 0) {

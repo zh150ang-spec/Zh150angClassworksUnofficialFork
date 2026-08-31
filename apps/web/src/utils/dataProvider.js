@@ -1,15 +1,12 @@
-import { kvLocalProvider } from './providers/kvLocalProvider'
-import { kvServerProvider } from './providers/kvServerProvider'
-import { getSetting, setSetting } from './settings'
-import { getEffectiveServerUrl } from './serverRotation'
-import { createEmptyMeta, bumpClock, mergeValues } from './crdtEngine'
-import { getCacheEntry, setCacheEntry, CACHE_PREFIX } from './cacheManager'
-import {
-  initSmartSync,
-  destroySmartSync,
-  flushAll,
-  triggerSyncAfterSuccess,
-} from './smartSyncManager'
+import { kvLocalProvider } from '@/utils/providers/kvLocalProvider'
+import { kvServerProvider } from '@/utils/providers/kvServerProvider'
+import { getSetting, setSetting } from '@/utils/settings'
+import { getEffectiveServerUrl } from '@/utils/serverRotation'
+import { networkStatus } from '@/utils/networkStatus'
+import backgroundSync from '@/utils/backgroundSync'
+import { rmwWriteServer, computeDataHash } from '@/utils/rmw'
+import messageService from '@/utils/message'
+import { loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY } from '@/utils/syncHelpers'
 
 export const formatResponse = (data) => data
 
@@ -18,205 +15,460 @@ export const formatError = (message, code = 'UNKNOWN_ERROR') => ({
   error: { code, message },
 })
 
-function isServerError(result) {
-  return result && result.success === false
-}
+const DEFAULT_RETRY_ATTEMPTS = 2
+const RETRY_DELAY_BASE = 100
 
-function isNetworkError(result) {
-  return isServerError(result) && result.error?.code === 'NETWORK_ERROR'
-}
-
-/**
- * 获取设备 ID，用于 CRDT 向量时钟节点标识
- */
-function getDeviceId() {
-  return getSetting('device.uuid') || 'unknown'
-}
-
-/**
- * 规范化服务器返回的数据
- * 某些端点 (如 Bearer token 认证) 返回 {value: [...]} 包装格式，
- * 统一解包为原始数据，保证缓存比较的一致性。
- * @param {*} data — 服务器返回的原始数据
- * @returns {*} 规范化后的数据
- */
-function normalizeServerData(data) {
-  if (data && typeof data === 'object' && !Array.isArray(data) && 'value' in data) {
-    return data.value
-  }
-  return data
-}
-
-// --- Sync manager: 向后兼容的导出 ---
-export const syncManager = {
-  init: initSmartSync,
-  destroy: destroySmartSync,
-  flushNow: flushAll,
-}
-
-// Helper: check if we should use the server provider
-function useServerProvider() {
-  const provider = getSetting('server.provider')
-  return provider === 'kv-server' || provider === 'classworkscloud'
-}
-
-// Main data provider with simplified API
-export default {
-  // Provider API methods
-  loadData: async (key) => {
-    if (!useServerProvider()) {
-      return kvLocalProvider.loadData(key)
+async function retryOperation(operation, maxRetries = DEFAULT_RETRY_ATTEMPTS) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await operation()
+      if (result && result.success !== false) {
+        return result
+      }
+      if (attempt < maxRetries) {
+        const delay = RETRY_DELAY_BASE * (attempt + 1)
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      }
+    } catch (error) {
+      if (attempt < maxRetries) {
+        const delay = RETRY_DELAY_BASE * (attempt + 1)
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      } else {
+        throw error
+      }
     }
+  }
+}
 
-    // Server mode: network-first with CRDT-aware cache
-    const rawResult = await kvServerProvider.loadData(key)
-    // 规范化: 某些端点返回 {value: [...]} 包装格式，统一解包
-    const result = normalizeServerData(rawResult)
+let _isReadOnly = false
 
-    if (!isNetworkError(result)) {
-      // 服务器返回成功或非网络错误 (如 NOT_FOUND)
-      if (result.success !== false) {
-        // 有效数据 — 与本地缓存进行 CRDT 比较
-        const cacheEntry = await getCacheEntry(key)
-        const deviceId = getDeviceId()
+function isEmptyArray(value) {
+  return Array.isArray(value) && value.length === 0
+}
 
-        if (cacheEntry) {
-          const cachedData = normalizeServerData(cacheEntry.data)
-          const localDataStr = JSON.stringify(cachedData)
-          const serverDataStr = JSON.stringify(result)
-          const lastSyncedStr = JSON.stringify(
-            normalizeServerData(cacheEntry.meta.lastSyncedData) ?? null,
-          )
+/**
+ * 通知用户 RMW 合并冲突
+ * @param {string} key - 数据键名
+ * @param {Array} conflicts - 冲突列表
+ * @param {*} localData - 本地原始数据
+ * @param {*} serverData - 云端当前数据（合并前的）
+ */
+function notifyRmwConflict(key, conflicts, localData, serverData) {
+  if (!conflicts || conflicts.length === 0) return
 
-          if (serverDataStr === localDataStr) {
-            // 数据完全相同 — 无冲突，直接返回本地
-            return cachedData
-          }
+  const conflictDescriptions = conflicts
+    .map((c) => {
+      if (c.id !== undefined) {
+        // 数组项冲突
+        const serverDisplay = extractHumanDescription(c.serverValue)
+        const localDisplay = extractHumanDescription(c.localValue)
+        return `ID "${c.id}": 云端为 "${serverDisplay}",你的为 "${localDisplay}"`
+      } else {
+        // 对象字段冲突
+        const serverDisplay = extractHumanDescription(c.serverValue)
+        const localDisplay = extractHumanDescription(c.localValue)
+        return `字段 "${c.path}": 云端为 "${serverDisplay}",你的为 "${localDisplay}"`
+      }
+    })
+    .join('; ')
 
-          if (serverDataStr !== lastSyncedStr) {
-            // 服务器数据与上次同步快照不同 — 另一台设备写入了新数据
-            const localVc = cacheEntry.meta.vc || {}
-            const lastSyncedVc = cacheEntry.meta.lastSyncedVc || {}
-            const hasLocalChanges = (localVc[deviceId] || 0) > (lastSyncedVc[deviceId] || 0)
-
-            if (hasLocalChanges) {
-              // 本地也有未同步的更改 — CRDT 合并
-              const serverMeta = createEmptyMeta('server')
-              serverMeta.ts = Date.now()
-
-              const merged = mergeValues(cachedData, cacheEntry.meta, result, serverMeta)
-
-              await setCacheEntry(key, merged.data, merged.meta)
-              // 推送合并结果到服务器 (fire-and-forget)
-              kvServerProvider.saveData(key, merged.data)
-              return merged.data
-            } else {
-              // 本地无未同步更改 — 采用服务器版本
-              const meta = createEmptyMeta(deviceId)
-              meta.ts = Date.now()
-              meta.lastSyncedData = result
-              meta.lastSyncedTs = Date.now()
-              meta.lastSyncedVc = { ...meta.vc }
-              await setCacheEntry(key, result, meta)
-              return result
-            }
+  // 创建操作按钮
+  const actions = [
+    {
+      label: '使用云端',
+      color: 'primary',
+      variant: 'flat',
+      onClick: async () => {
+        try {
+          // 用云端数据覆盖本地
+          await kvLocalProvider.saveData(key, serverData)
+          messageService.success('已使用云端数据', '本地数据已更新为云端版本')
+        } catch (error) {
+          messageService.error('操作失败', '无法更新本地数据: ' + error.message)
+        }
+      },
+    },
+    {
+      label: '换用我的修改',
+      color: 'warning',
+      variant: 'flat',
+      onClick: async () => {
+        try {
+          // 用本地数据覆盖云端
+          const result = await kvServerProvider.saveData(key, localData)
+          if (result && result.success !== false) {
+            messageService.success('已使用你的修改', '云端数据已更新为你的版本')
           } else {
-            // 服务器数据 === 上次同步快照，但 ≠ 本地数据
-            // 说明本地有未推送的更改，返回本地数据
-            return cachedData
+            messageService.error('操作失败', '无法更新云端数据')
           }
-        } else {
-          // 无本地缓存 — 首次获取
-          const meta = createEmptyMeta(deviceId)
-          meta.ts = Date.now()
-          meta.lastSyncedData = result
-          meta.lastSyncedTs = Date.now()
-          meta.lastSyncedVc = { ...meta.vc }
-          await setCacheEntry(key, result, meta)
-          return result
+        } catch (error) {
+          messageService.error('操作失败', '无法更新云端数据: ' + error.message)
+        }
+      },
+    },
+  ]
+
+  messageService.warning('数据冲突', `你刚才修改的内容已被他人先修改过。${conflictDescriptions}`, {
+    timeout: 15000,
+    closable: false,
+    actions,
+  })
+}
+
+/**
+ * 提取人类可读的描述
+ * @param {*} value - 要描述的值
+ * @returns {string} - 人类可读的描述
+ */
+function extractHumanDescription(value) {
+  if (value === null || value === undefined) return '空'
+  if (typeof value === 'string') return value.length > 50 ? value.substring(0, 50) + '...' : value
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  if (Array.isArray(value)) return `数组(${value.length}项)`
+  if (typeof value === 'object') {
+    // 尝试提取有意义的字段
+    if (value.name) return value.name
+    if (value.title) return value.title
+    if (value.id) return `ID:${value.id}`
+    return '对象'
+  }
+  return '未知'
+}
+
+function mergeData(local, cloud, isReadOnly) {
+  if (!cloud) return local
+  if (!local) return cloud
+
+  if (Array.isArray(local) && Array.isArray(cloud)) {
+    if (isReadOnly) {
+      if (isEmptyArray(cloud) && !isEmptyArray(local)) return [...local]
+      return [...cloud]
+    }
+    if (isEmptyArray(local) && !isEmptyArray(cloud)) return [...cloud]
+    return [...local]
+  }
+
+  if (typeof local === 'object' && typeof cloud === 'object') {
+    if (isReadOnly) {
+      const merged = { ...cloud }
+      for (const key of Object.keys(local)) {
+        if (!(key in cloud)) {
+          merged[key] = local[key]
+        } else if (typeof local[key] === 'object' && typeof cloud[key] === 'object') {
+          merged[key] = mergeData(local[key], cloud[key], isReadOnly)
         }
       }
-      return result
+      return merged
     }
-
-    // 网络错误 — 从缓存兜底
-    const cached = await getCacheEntry(key)
-    if (cached) {
-      const data = normalizeServerData(cached.data)
-      // 直接在数据对象上添加 fromCache 标记 (保持数组类型不变)
-      if (typeof data === 'object' && data !== null) {
-        data.fromCache = true
+    const merged = { ...local }
+    for (const key of Object.keys(cloud)) {
+      if (!(key in local)) {
+        merged[key] = cloud[key]
+      } else if (typeof local[key] === 'object' && typeof cloud[key] === 'object') {
+        merged[key] = mergeData(local[key], cloud[key], isReadOnly)
       }
-      return data
+    }
+    return merged
+  }
+
+  return isReadOnly ? cloud : local
+}
+
+function isDualMode(provider) {
+  return provider === 'dual-cloud' || provider === 'dual-server'
+}
+
+export default {
+  setReadOnlyState(isReadOnly) {
+    _isReadOnly = !!isReadOnly
+  },
+
+  isReadOnly() {
+    return _isReadOnly
+  },
+
+  checkNamespaceChange() {
+    const currentNamespace = getSetting('device.uuid') || ''
+    const lastKnown = getSetting('device.lastKnownNamespace') || ''
+
+    if (!currentNamespace) {
+      return { changed: false, current: '', previous: lastKnown }
     }
 
-    // 兼容旧格式缓存
-    const legacyCached = await kvLocalProvider.loadData(CACHE_PREFIX + key)
-    if (legacyCached.success !== false) {
-      return { ...legacyCached, fromCache: true }
+    if (!lastKnown) {
+      setSetting('device.lastKnownNamespace', currentNamespace)
+      return { changed: false, current: currentNamespace, previous: '' }
     }
 
-    return result
+    if (currentNamespace !== lastKnown) {
+      return { changed: true, current: currentNamespace, previous: lastKnown }
+    }
+
+    return { changed: false, current: currentNamespace, previous: lastKnown }
+  },
+
+  confirmNamespaceChange() {
+    const currentNamespace = getSetting('device.uuid') || ''
+    setSetting('device.lastKnownNamespace', currentNamespace)
+  },
+
+  async exportLocalData() {
+    try {
+      const keysResult = await loadAllKeys((opts) => kvLocalProvider.loadKeys(opts))
+      if (!keysResult) return null
+
+      const allData = {}
+      for (const key of keysResult.keys) {
+        const result = await kvLocalProvider.loadData(key)
+        if (result && result.success !== false) {
+          allData[key] = result
+        }
+      }
+      return allData
+    } catch (e) {
+      console.warn('导出本地数据失败:', e)
+      return null
+    }
+  },
+
+  loadData: async (key) => {
+    const provider = getSetting('server.provider')
+
+    // 严格模式：仅本地
+    if (provider === 'local') {
+      try {
+        const result = await kvLocalProvider.loadData(key)
+        if (result && result.success !== false) {
+          return result
+        }
+        return formatError('本地数据不存在', 'DATA_NOT_FOUND')
+      } catch (error) {
+        return formatError('本地数据加载失败: ' + error.message, 'LOCAL_LOAD_ERROR')
+      }
+    }
+
+    // 严格模式：仅云端（不访问本地）
+    if (provider === 'kv-server' || provider === 'classworkscloud') {
+      if (!networkStatus.isOnline()) {
+        return formatError('网络不可用', 'NETWORK_OFFLINE')
+      }
+      try {
+        const result = await retryOperation(() => kvServerProvider.loadData(key))
+        if (result && result.success !== false) {
+          return result
+        }
+        return formatError('云端数据不存在', 'DATA_NOT_FOUND')
+      } catch (error) {
+        return formatError('云端数据加载失败: ' + error.message, 'SERVER_LOAD_ERROR')
+      }
+    }
+
+    // 双模式：云端和本地都存储完整数据
+    if (isDualMode(provider)) {
+      if (networkStatus.isOnline()) {
+        try {
+          const [localResult, serverResult] = await Promise.all([
+            kvLocalProvider.loadData(key).catch(() => null),
+            retryOperation(() => kvServerProvider.loadData(key)),
+          ])
+
+          const localOk = localResult && localResult.success !== false
+          const serverOk = serverResult && serverResult.success !== false
+
+          if (serverOk && localOk) {
+            const merged = mergeData(localResult, serverResult, _isReadOnly)
+            if (computeDataHash(merged) !== computeDataHash(localResult)) {
+              await kvLocalProvider.saveData(key, merged).catch(() => {})
+            }
+            return merged
+          }
+
+          if (serverOk) {
+            await kvLocalProvider.saveData(key, serverResult).catch(() => {})
+            return serverResult
+          }
+
+          if (localOk) {
+            networkStatus.markServerUnreachable()
+            return localResult
+          }
+
+          return formatError('无法加载数据：云端和本地均不可用', 'DATA_UNAVAILABLE')
+        } catch (error) {
+          networkStatus.markServerUnreachable()
+          try {
+            const localResult = await kvLocalProvider.loadData(key)
+            if (localResult && localResult.success !== false) {
+              return localResult
+            }
+          } catch (e) {
+            console.warn('本地数据加载失败:', e)
+          }
+          return formatError('数据加载失败: ' + error.message, 'LOAD_ERROR')
+        }
+      } else {
+        // 离线时：双模式可使用本地缓存
+        try {
+          const localResult = await kvLocalProvider.loadData(key)
+          if (localResult && localResult.success !== false) {
+            return localResult
+          }
+          return formatError('离线且本地无数据', 'DATA_NOT_FOUND')
+        } catch (error) {
+          return formatError('离线数据加载失败: ' + error.message, 'LOCAL_LOAD_ERROR')
+        }
+      }
+    }
+
+    // 默认：本地模式
+    try {
+      const result = await kvLocalProvider.loadData(key)
+      if (result && result.success !== false) {
+        return result
+      }
+      return formatError('本地数据不存在', 'DATA_NOT_FOUND')
+    } catch (error) {
+      return formatError('本地数据加载失败: ' + error.message, 'LOCAL_LOAD_ERROR')
+    }
   },
 
   saveData: async (key, data) => {
-    if (!useServerProvider()) {
-      return kvLocalProvider.saveData(key, data)
+    const provider = getSetting('server.provider')
+
+    // 严格模式：仅本地
+    if (provider === 'local') {
+      try {
+        const result = await kvLocalProvider.saveData(key, data)
+        if (result && result.success !== false) {
+          return { success: true, source: 'local' }
+        }
+        return formatError('本地保存失败', 'LOCAL_SAVE_ERROR')
+      } catch (error) {
+        return formatError('本地保存失败: ' + error.message, 'LOCAL_SAVE_ERROR')
+      }
     }
 
-    const deviceId = getDeviceId()
-
-    // 读取现有缓存条目获取当前向量时钟
-    const existingEntry = await getCacheEntry(key)
-    let meta
-
-    if (existingEntry) {
-      meta = bumpClock(existingEntry.meta, deviceId)
-    } else {
-      meta = bumpClock(createEmptyMeta(deviceId), deviceId)
+    // 严格模式：仅云端（不访问本地）
+    if (provider === 'kv-server' || provider === 'classworkscloud') {
+      if (!networkStatus.isOnline()) {
+        return formatError('网络不可用', 'NETWORK_OFFLINE')
+      }
+      try {
+        const result = await rmwWriteServer(key, data)
+        if (result && result.success !== false) {
+          // 检查并通知冲突
+          if (result.conflicts && result.conflicts.length > 0) {
+            notifyRmwConflict(key, result.conflicts, data, result.serverOriginal)
+          }
+          return { success: true, source: 'cloud' }
+        }
+        return formatError('云端保存失败', 'SERVER_SAVE_ERROR')
+      } catch (error) {
+        return formatError('云端保存失败: ' + error.message, 'SERVER_SAVE_ERROR')
+      }
     }
 
-    // Write-through: 先写入本地缓存 (含 CRDT metadata)
-    await setCacheEntry(key, data, meta)
+    // 双模式：云端和本地都存储完整数据
+    if (isDualMode(provider)) {
+      if (networkStatus.isOnline()) {
+        try {
+          const [localResult, serverResult] = await Promise.all([
+            kvLocalProvider.saveData(key, data),
+            rmwWriteServer(key, data),
+          ])
 
-    const result = await kvServerProvider.saveData(key, data)
+          const localOk = localResult && localResult.success !== false
+          const serverOk = serverResult && serverResult.success !== false
 
-    if (result.success !== false) {
-      // 服务器保存成功 — 更新 lastSynced 快照
-      meta.lastSyncedData = data
-      meta.lastSyncedTs = Date.now()
-      meta.lastSyncedVc = { ...meta.vc }
-      await setCacheEntry(key, data, meta)
-      await kvLocalProvider.removeFromSyncQueue(key)
+          if (serverOk && localOk) {
+            await kvLocalProvider.removeKeyFromOfflineQueue(key).catch(() => {})
+            // 检查并通知冲突
+            if (serverResult.conflicts && serverResult.conflicts.length > 0) {
+              notifyRmwConflict(key, serverResult.conflicts, data, serverResult.serverOriginal)
+            }
+            return { success: true, source: 'dual' }
+          }
 
-      // 智能同步: 刷新其他队列中的更改
-      triggerSyncAfterSuccess()
+          if (serverOk) {
+            // 检查并通知冲突
+            if (serverResult.conflicts && serverResult.conflicts.length > 0) {
+              notifyRmwConflict(key, serverResult.conflicts, data, serverResult.serverOriginal)
+            }
+            return { success: true, source: 'cloud', localFailed: true }
+          }
 
-      return result
+          if (localOk) {
+            await kvLocalProvider.addToOfflineQueue(key).catch(() => {})
+            backgroundSync.scheduleImmediate()
+            networkStatus.markServerUnreachable()
+            return { success: true, source: 'local', serverFailed: true }
+          }
+
+          return formatError('保存失败：云端和本地均不可用', 'SAVE_FAILED')
+        } catch (error) {
+          networkStatus.markServerUnreachable()
+          try {
+            const localResult = await kvLocalProvider.saveData(key, data)
+            if (localResult && localResult.success !== false) {
+              await kvLocalProvider.addToOfflineQueue(key).catch(() => {})
+              backgroundSync.scheduleImmediate()
+              return { success: true, source: 'local', serverFailed: true }
+            }
+          } catch (e) {
+            console.warn('本地数据保存失败:', e)
+          }
+          return formatError('保存失败: ' + error.message, 'SAVE_ERROR')
+        }
+      } else {
+        // 离线时：仅保存到本地，加入离线队列
+        try {
+          const localResult = await kvLocalProvider.saveData(key, data)
+          if (localResult && localResult.success !== false) {
+            await kvLocalProvider.addToOfflineQueue(key).catch(() => {})
+            backgroundSync.scheduleImmediate()
+            return { success: true, source: 'local-offline' }
+          }
+          return formatError('本地保存失败', 'LOCAL_SAVE_ERROR')
+        } catch (error) {
+          return formatError('本地保存失败: ' + error.message, 'LOCAL_SAVE_ERROR')
+        }
+      }
     }
 
-    // 服务器保存失败 — 加入同步队列 (含 CRDT metadata)
-    await kvLocalProvider.addToSyncQueue({
-      key,
-      data,
-      timestamp: Date.now(),
-      meta,
-    })
-    return { success: true, queuedForSync: true }
+    // 默认：本地模式
+    try {
+      const result = await kvLocalProvider.saveData(key, data)
+      if (result && result.success !== false) {
+        return { success: true, source: 'local' }
+      }
+      return formatError('本地保存失败', 'LOCAL_SAVE_ERROR')
+    } catch (error) {
+      return formatError('本地保存失败: ' + error.message, 'LOCAL_SAVE_ERROR')
+    }
   },
 
   loadKeys: async (options = {}) => {
-    if (!useServerProvider()) {
-      return kvLocalProvider.loadKeys(options)
+    const provider = getSetting('server.provider')
+    const isDual = isDualMode(provider)
+    const isCloudOnly = provider === 'kv-server' || provider === 'classworkscloud'
+    const useServer = isDual || isCloudOnly
+
+    if (useServer && isDual) {
+      const [cloudResult, localResult] = await Promise.all([
+        kvServerProvider.loadKeys(options).catch(() => null),
+        kvLocalProvider.loadKeys(options).catch(() => null),
+      ])
+
+      const cloudKeys = cloudResult?.keys || []
+      const localKeys = localResult?.keys || []
+      const allKeys = [...new Set([...cloudKeys, ...localKeys])]
+
+      return { keys: allKeys, total_rows: allKeys.length }
     }
 
-    const result = await kvServerProvider.loadKeys(options)
-
-    if (!isNetworkError(result)) {
-      return result
+    if (useServer) {
+      return kvServerProvider.loadKeys(options)
     }
-
-    // Network error — fall back to local cache keys
     return kvLocalProvider.loadKeys(options)
   },
 
@@ -227,8 +479,7 @@ export default {
       const provider = getSetting('server.provider')
       let serverUrl
 
-      // Use effective server URL for classworkscloud provider
-      if (provider === 'classworkscloud') {
+      if (provider === 'classworkscloud' || provider === 'dual-cloud') {
         serverUrl = getEffectiveServerUrl()
       } else {
         serverUrl = getSetting('server.domain')
@@ -238,13 +489,11 @@ export default {
       const machineId = getSetting('device.uuid')
       let configured = false
 
-      // 检查云端配置是否为空或错误，如果是则使用默认配置
       if (!serverUrl || !machineId) {
         if (autoConfigureCloud) {
-          // 使用classworksCloudDefaults配置
           const classworksCloudDefaults = {
             'server.domain':
-              import.meta.env.VITE_DEFAULT_KV_SERVER || 'https://kv-service.wuyuan.dev',
+              import.meta.env.VITE_DEFAULT_KV_SERVER || 'https://kv-service.houlang.cloud',
             'server.siteKey': '',
           }
 
@@ -259,9 +508,7 @@ export default {
             siteKey = classworksCloudDefaults['server.siteKey']
           }
 
-          // 设置provider为classworkscloud
           setSetting('server.provider', 'classworkscloud')
-          // Get effective URL after setting provider
           serverUrl = getEffectiveServerUrl()
         } else {
           return formatError('云端配置无效，请检查服务器域名和设备UUID', 'CONFIG_ERROR')
@@ -270,18 +517,13 @@ export default {
 
       let migrated = false
 
-      // 如果需要迁移本地数据到云端
       if (migrateFromLocal) {
         try {
-          // 尝试从本地读取数据
           const localData = await kvLocalProvider.loadData(key)
 
-          // 如果本地有数据且不是错误响应
           if (localData && localData.success !== false) {
-            // 检查云端是否已有数据
             const cloudData = await kvServerProvider.loadData(key)
 
-            // 如果云端没有数据，则迁移本地数据
             if (cloudData && cloudData.success === false && cloudData.error?.code === 'NOT_FOUND') {
               const saveResult = await kvServerProvider.saveData(key, localData)
               if (saveResult && saveResult.success !== false) {
@@ -292,13 +534,10 @@ export default {
           }
         } catch (error) {
           console.warn(`迁移键 ${key} 的数据时出错:`, error)
-          // 迁移失败不影响URL生成，继续执行
         }
       }
-      // 获取认证token
       const authtoken = getSetting('server.kvToken')
-      // 构建云端访问URL
-      const url = `${serverUrl}/kv/${key}?token=${authtoken}`
+      let url = `${serverUrl}/kv/${key}?token=${authtoken}`
 
       return {
         success: true,
@@ -311,6 +550,150 @@ export default {
       return formatError(error.message || '获取键云端地址失败', 'CLOUD_URL_ERROR')
     }
   },
+
+  async syncAllToLocal() {
+    const provider = getSetting('server.provider')
+    const useServer =
+      provider === 'kv-server' ||
+      provider === 'classworkscloud' ||
+      provider === 'dual-cloud' ||
+      provider === 'dual-server'
+    if (!useServer) {
+      return formatError('当前不是云端模式', 'CONFIG_ERROR')
+    }
+
+    const keysResult = await loadAllKeys((opts) => kvServerProvider.loadKeys(opts))
+    if (!keysResult) {
+      return formatError('获取云端键列表失败', 'SYNC_ERROR')
+    }
+
+    const total = keysResult.keys.length
+    let synced = 0
+    let failed = 0
+    const failedKeys = []
+
+    await runWithConcurrency(keysResult.keys, SYNC_CONCURRENCY, async (key) => {
+      try {
+        const data = await kvServerProvider.loadData(key)
+        if (data && data.success !== false) {
+          const localData = await kvLocalProvider.loadData(key).catch(() => null)
+          if (
+            localData &&
+            localData.success !== false &&
+            computeDataHash(localData) === computeDataHash(data)
+          ) {
+            return
+          }
+          await kvLocalProvider.saveData(key, data)
+          synced++
+        } else {
+          failed++
+          failedKeys.push(key)
+        }
+      } catch {
+        failed++
+        failedKeys.push(key)
+      }
+    })
+
+    return { success: true, synced, failed, failedKeys, total }
+  },
+
+  async syncAllToCloud() {
+    const provider = getSetting('server.provider')
+    const useServer =
+      provider === 'kv-server' ||
+      provider === 'classworkscloud' ||
+      provider === 'dual-cloud' ||
+      provider === 'dual-server'
+    if (!useServer) {
+      return formatError('当前不是云端模式', 'CONFIG_ERROR')
+    }
+
+    const keysResult = await loadAllKeys((opts) => kvLocalProvider.loadKeys(opts))
+    if (!keysResult) {
+      return formatError('获取本地键列表失败', 'SYNC_ERROR')
+    }
+
+    const total = keysResult.keys.length
+    let synced = 0
+    let failed = 0
+    const failedKeys = []
+
+    await runWithConcurrency(keysResult.keys, SYNC_CONCURRENCY, async (key) => {
+      try {
+        const data = await kvLocalProvider.loadData(key)
+        if (data && data.success !== false) {
+          const result = await kvServerProvider.saveData(key, data)
+          if (result && result.success !== false) {
+            synced++
+          } else {
+            failed++
+            failedKeys.push(key)
+          }
+        } else {
+          failed++
+          failedKeys.push(key)
+        }
+      } catch {
+        failed++
+        failedKeys.push(key)
+      }
+    })
+
+    return { success: true, synced, failed, failedKeys, total }
+  },
+
+  async getSyncStatus() {
+    const provider = getSetting('server.provider')
+    const useServer =
+      provider === 'kv-server' ||
+      provider === 'classworkscloud' ||
+      provider === 'dual-cloud' ||
+      provider === 'dual-server'
+
+    if (!useServer) {
+      return { mode: 'local-only' }
+    }
+
+    // 本地键列表（本地一定可用）
+    const localKeysResult = await loadAllKeys((opts) => kvLocalProvider.loadKeys(opts)).catch(
+      () => null,
+    )
+    const localKeySet = new Set(localKeysResult?.keys || [])
+
+    // 云端键列表（可能不可达）
+    const cloudKeysResult = await loadAllKeys((opts) => kvServerProvider.loadKeys(opts)).catch(
+      () => null,
+    )
+    if (!cloudKeysResult) {
+      return {
+        mode: 'dual',
+        cloudCount: 0,
+        localCount: localKeySet.size,
+        cloudAvailable: false,
+      }
+    }
+
+    const cloudKeySet = new Set(cloudKeysResult.keys || [])
+    const onlyInCloud = [...cloudKeySet].filter((k) => !localKeySet.has(k))
+    const onlyInLocal = [...localKeySet].filter((k) => !cloudKeySet.has(k))
+    const inBoth = [...cloudKeySet].filter((k) => localKeySet.has(k))
+
+    return {
+      mode: 'dual',
+      cloudCount: cloudKeySet.size,
+      localCount: localKeySet.size,
+      synced: inBoth.length,
+      onlyInCloud: onlyInCloud.length,
+      onlyInLocal: onlyInLocal.length,
+      cloudAvailable: true,
+    }
+  },
+
+  async loadStorageInfo() {
+    return kvLocalProvider.getStorageInfo()
+  },
 }
 
 export const ErrorCodes = {
@@ -322,5 +705,6 @@ export const ErrorCodes = {
   PERMISSION_DENIED: '无权限访问',
   UNAUTHORIZED: '认证失败',
   CLOUD_URL_ERROR: '云端地址获取失败',
+  SYNC_ERROR: '同步错误',
   UNKNOWN_ERROR: '未知错误',
 }

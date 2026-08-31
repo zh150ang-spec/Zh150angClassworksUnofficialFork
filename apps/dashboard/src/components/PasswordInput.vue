@@ -4,7 +4,6 @@ import { apiClient } from '@/lib/api'
 import { deviceStore } from '@/lib/deviceStore'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
 import { HelpCircle, Info, AlertCircle } from 'lucide-vue-next'
 
 const props = defineProps({

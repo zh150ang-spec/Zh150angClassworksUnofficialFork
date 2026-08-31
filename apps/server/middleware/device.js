@@ -61,8 +61,9 @@ export const deviceMiddleware = errors.catchAsync(async (req, res, next) => {
     const customDeviceType = req.body.deviceType || req.query.deviceType
     const note = req.body.note || req.query.note
 
-    // 生成设备名称，确保不为空
-    const deviceName = analyzeDevice(userAgent, req.headers, customDeviceType, note).generatedName
+    // 生成设备分析结果并取其中的设备名称，确保不为空
+    const deviceAnalysis = analyzeDevice(userAgent, req.headers, customDeviceType, note)
+    const deviceName = deviceAnalysis.generatedName
 
     device = await prisma.device.create({
       data: {

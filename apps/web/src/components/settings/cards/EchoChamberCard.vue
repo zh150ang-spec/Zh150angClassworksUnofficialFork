@@ -1,11 +1,25 @@
 <template>
-  <settings-card border icon="mdi-thought-bubble" title="回声洞" @click="handleClick">
+  <settings-card
+    border
+    :icon="ICON.THOUGHT_BUBBLE"
+    title="回声洞"
+    @click="handleClick"
+  >
     <v-card-text>
-      <div ref="typewriter" class="typewriter-text" />
-      <div ref="sourceWriter" class="source-text" />
+      <div
+        ref="typewriter"
+        class="typewriter-text"
+      />
+      <div
+        ref="sourceWriter"
+        class="source-text"
+      />
     </v-card-text>
     <transition name="fade">
-      <v-chip v-if="currentQuote?.contributor" class="contributor">
+      <v-chip
+        v-if="currentQuote?.contributor"
+        class="contributor"
+      >
         <v-avatar start>
           <v-img :src="`https://github.com/${currentQuote.contributor}.png`" />
         </v-avatar>
@@ -26,11 +40,11 @@ async function getTypewriter() {
   }
   return TypewriterClass
 }
-import SettingsCard from '@/components/SettingsCard.vue'
+import SettingsCard from '@/components/settings/SettingsCard.vue'
 
 const INITIAL_STATE = {
-  text: '点击此处可以查看 Classworks 用户群里沙雕群友们的发言',
-  author: '点击后会复制当前句子到剪贴板中',
+  text: '点击此处查看来自用户社区的精选语录',
+  author: '点击后会将当前句子复制到剪贴板',
 }
 
 const TYPEWRITER_CONFIG = {
@@ -42,6 +56,7 @@ export default {
   name: 'EchoChamberCard',
   components: { SettingsCard },
   data: () => ({
+    ICON,
     typewriter: null,
     sourceWriter: null,
     currentQuote: INITIAL_STATE,
@@ -114,7 +129,7 @@ export default {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity var(--duration-normal) var(--ease-apple);
 }
 
 .fade-enter-from,

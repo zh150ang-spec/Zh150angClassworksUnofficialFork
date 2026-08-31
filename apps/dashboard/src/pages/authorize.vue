@@ -17,17 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import {
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Shield,
-  Key,
-  AlertCircle,
-  User,
-  Plus,
-  Check,
-} from 'lucide-vue-next'
+import { CheckCircle2, XCircle, Loader2, Key, AlertCircle, User, Plus } from 'lucide-vue-next'
 import AppCard from '@/components/AppCard.vue'
 import LoginDialog from '@/components/LoginDialog.vue'
 import DeviceRegisterDialog from '@/components/DeviceRegisterDialog.vue'
@@ -104,7 +94,7 @@ const selectDevice = async (uuid) => {
 }
 
 // 使用自定义UUID
-const useCustomUuid = () => {
+const _useCustomUuid = () => {
   if (!customDeviceUuid.value) return
 
   selectDevice(customDeviceUuid.value)

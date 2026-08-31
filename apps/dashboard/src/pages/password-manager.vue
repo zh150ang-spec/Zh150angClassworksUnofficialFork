@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { deviceStore } from '@/lib/deviceStore'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, AlertTriangle, Settings, Shield, Key } from 'lucide-vue-next'
+import { ArrowLeft, AlertTriangle } from 'lucide-vue-next'
 import DeviceRegisterDialog from '@/components/DeviceRegisterDialog.vue'
 import EditDeviceNameDialog from '@/components/EditDeviceNameDialog.vue'
 

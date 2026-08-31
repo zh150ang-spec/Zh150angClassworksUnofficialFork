@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAccountStore } from '@/stores/account'
 import { useRouter } from 'vue-router'
 import { apiClient } from '@/lib/api'
@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Smartphone, RefreshCw, Trash2, Edit, Lock, User, ArrowLeft } from 'lucide-vue-next'
+import { Smartphone, RefreshCw, Trash2, Edit, User, ArrowLeft } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import EditDeviceNameDialog from '@/components/EditDeviceNameDialog.vue'
 

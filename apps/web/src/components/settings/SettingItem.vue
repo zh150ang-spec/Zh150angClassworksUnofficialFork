@@ -1,142 +1,192 @@
 <template>
-  <v-list-item :disabled="disabled" class="setting-item">
-    <template #prepend>
-      <v-icon :icon="settingIcon" />
-    </template>
+  <div :class="['setting-item-wrapper', { 'setting-item-developer': isDeveloperMode }]">
+    <v-list-item
+      :disabled="disabled"
+      class="setting-item"
+    >
+      <template #prepend>
+        <v-icon
+          :icon="settingIcon"
+          :size="isDeveloperMode ? 'default' : 'large'"
+        />
+      </template>
 
-    <v-list-item-title class="text-wrap">
-      {{ displayTitle }}
-    </v-list-item-title>
-
-    <!--<v-list-item-subtitle class="d-flex align-center text-wrap">
-      <span class="text-caption text-grey-darken-1">{{ settingKey }}</span>
-    </v-list-item-subtitle>-->
-
-    <template #append>
-      <div class="d-flex flex-column flex-sm-row align-center">
-        <div v-if="type !== 'string' || hasOptions" class="me-2">
-          <!-- 根据设置类型渲染不同的控件 -->
-          <v-switch
-            v-if="type === 'boolean'"
-            v-model="localValue"
-            :disabled="disabled"
-            density="comfortable"
-            hide-details
-            @update:model-value="updateSetting"
-          />
-
-          <v-select
-            v-else-if="type === 'string' && hasOptions"
-            v-model="localValue"
-            :disabled="disabled"
-            :items="selectOptions"
-            bg-color="surface"
-            class="setting-select"
-            density="compact"
-            hide-details
-            item-title="title"
-            item-value="value"
-            variant="outlined"
-            @update:model-value="updateSetting"
-          />
-
-          <div v-else-if="type === 'number'" class="d-flex align-center">
-            <v-btn
-              :disabled="disabled || localValue <= minValue"
-              icon="mdi-minus"
-              size="small"
-              variant="text"
-              @click="adjustValue(-stepValue)"
-            />
-
-            <v-text-field
-              v-model.number="localValue"
-              :disabled="disabled"
-              :max="maxValue"
-              :min="minValue"
-              :step="stepValue"
-              bg-color="surface"
-              class="mx-2 setting-number-field"
-              density="compact"
-              hide-details
-              style="width: 80px"
-              type="number"
-              variant="outlined"
-              @update:model-value="updateSetting"
-            />
-
-            <v-btn
-              :disabled="disabled || localValue >= maxValue"
-              icon="mdi-plus"
-              size="small"
-              variant="text"
-              @click="adjustValue(stepValue)"
-            />
-          </div>
-        </div>
-
-        <v-menu location="bottom">
+      <v-list-item-title
+        :class="['text-wrap', 'setting-title-row', { 'text-body-1': !isDeveloperMode }]"
+      >
+        <span>{{ displayTitle }}</span>
+        <v-menu
+          location="bottom"
+          :close-on-content-click="true"
+        >
           <template #activator="{ props }">
             <v-btn
               :disabled="disabled"
-              class="ml-2"
-              icon="mdi-dots-vertical"
-              size="small"
+              :class="[
+                'setting-menu-btn',
+                {
+                  'setting-menu-btn-hover': !isDeveloperMode && isDefaultValue,
+                  'setting-menu-btn-modified': !isDeveloperMode && !isDefaultValue,
+                },
+              ]"
+              :icon="ICON.DOTS_VERTICAL"
+              size="x-small"
               v-bind="props"
               variant="text"
             />
           </template>
           <v-list density="compact">
-            <v-list-item @click="copySettingId">
+            <v-list-item
+              v-if="isDeveloperMode"
+              @click="copySettingId"
+            >
               <template #prepend>
-                <v-icon icon="mdi-key" size="small" />
+                <v-icon
+                  :icon="ICON.KEY"
+                  size="small"
+                />
               </template>
               <v-list-item-title>复制设置ID</v-list-item-title>
             </v-list-item>
 
-            <v-list-item @click="copySettingValue">
+            <v-list-item
+              v-if="isDeveloperMode"
+              @click="copySettingValue"
+            >
               <template #prepend>
-                <v-icon icon="mdi-content-copy" size="small" />
+                <v-icon
+                  :icon="ICON.CONTENT_COPY"
+                  size="small"
+                />
               </template>
               <v-list-item-title>复制设置值</v-list-item-title>
             </v-list-item>
 
-            <v-divider />
+            <v-divider v-if="isDeveloperMode" />
 
-            <v-list-item :disabled="isDefaultValue" @click="resetToDefault">
+            <v-list-item
+              :disabled="isDefaultValue"
+              @click="resetToDefault"
+            >
               <template #prepend>
-                <v-icon icon="mdi-restore" size="small" />
+                <v-icon
+                  :icon="ICON.RESTORE"
+                  size="small"
+                />
               </template>
               <v-list-item-title>重置为默认值</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
-      </div>
-    </template>
-  </v-list-item>
+      </v-list-item-title>
 
-  <!-- 文本框显示在下方 -->
-  <div v-if="type === 'string' && !hasOptions" class="px-4 pb-2 pt-0">
-    <v-text-field
-      v-model="localValue"
-      :disabled="disabled"
-      bg-color="surface"
-      class="setting-text-field mt-1"
-      density="compact"
-      hide-details
-      variant="outlined"
-      @update:model-value="updateSetting"
-    />
+      <v-list-item-subtitle
+        v-if="isDeveloperMode"
+        class="d-flex align-center text-wrap"
+      >
+        <span class="text-body-small text-medium-emphasis">{{ settingKey }}</span>
+      </v-list-item-subtitle>
+
+      <template #append>
+        <div class="d-flex flex-column flex-sm-row align-center">
+          <div v-if="type !== 'string' || hasOptions">
+            <v-switch
+              v-if="type === 'boolean'"
+              v-model="localValue"
+              :disabled="disabled"
+              color="primary"
+              density="comfortable"
+              hide-details
+              @update:model-value="updateSetting"
+            />
+
+            <v-select
+              v-else-if="type === 'string' && hasOptions"
+              v-model="localValue"
+              :disabled="disabled"
+              :items="selectOptions"
+              bg-color="surface"
+              class="setting-select"
+              density="compact"
+              hide-details
+              item-title="title"
+              item-value="value"
+              variant="outlined"
+              @update:model-value="updateSetting"
+            />
+
+            <div
+              v-else-if="type === 'number'"
+              class="d-flex align-center"
+            >
+              <v-btn
+                :disabled="disabled || localValue <= minValue"
+                :icon="ICON.MINUS"
+                size="small"
+                variant="text"
+                @click="adjustValue(-stepValue)"
+              />
+
+              <v-text-field
+                v-model.number="localValue"
+                :disabled="disabled"
+                :max="maxValue"
+                :min="minValue"
+                :step="stepValue"
+                bg-color="surface"
+                class="mx-2 setting-number-field"
+                density="compact"
+                hide-details
+                style="width: 80px"
+                type="number"
+                variant="outlined"
+                @update:model-value="onNumberInput"
+                @blur="onNumberBlur"
+              />
+
+              <v-btn
+                :disabled="disabled || localValue >= maxValue"
+                :icon="ICON.PLUS"
+                size="small"
+                variant="text"
+                @click="adjustValue(stepValue)"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+    </v-list-item>
+
+    <!-- 文本框显示在下方 -->
+    <div
+      v-if="type === 'string' && !hasOptions"
+      class="px-4 pb-2 pt-0"
+    >
+      <v-text-field
+        v-model="localValue"
+        :disabled="disabled"
+        bg-color="surface"
+        class="setting-text-field mt-1"
+        density="compact"
+        hide-details
+        variant="outlined"
+        @update:model-value="updateSetting"
+      />
+    </div>
   </div>
-
-  <!-- 消息提示 -->
-  <v-snackbar v-model="showSnackbar" :timeout="2000" color="success" location="top">
-    {{ snackbarText }}
-  </v-snackbar>
 </template>
 
 <script>
-import { getSetting, setSetting, getSettingDefinition, resetSetting } from '@/utils/settings'
+import { ICON } from '@/utils/icons'
+import {
+  getSetting,
+  setSetting,
+  getSettingDefinition,
+  resetSetting,
+  watchSettings,
+  coerceValueToType,
+} from '@/utils/settings'
+import { displayValueMappings, getDisplayValue } from '@/utils/settingsDisplay'
 
 export default {
   name: 'SettingItem',
@@ -182,9 +232,11 @@ export default {
       default: null,
     },
   },
+  emits: ['update', 'error'],
 
   data() {
     return {
+      ICON,
       localValue: null,
       definition: null,
       type: null,
@@ -193,8 +245,9 @@ export default {
       minValue: 0,
       maxValue: 100,
       stepValue: 1,
-      showSnackbar: false,
-      snackbarText: '',
+      isDeveloperMode: false,
+      unwatchSettings: null,
+      numberInputTimer: null,
       fontFamilies: [
         { title: 'Arial', value: 'Arial, sans-serif' },
         { title: 'Calibri', value: 'Calibri, sans-serif' },
@@ -211,27 +264,11 @@ export default {
         { title: 'Sans-serif', value: 'sans-serif' },
         { title: 'Serif', value: 'serif' },
       ],
-      // 设置项的显示名称映射
-      displayValueMappings: {
-        'display.emptySubjectDisplay': {
-          card: '卡片',
-          button: '按钮',
-        },
-        'theme.mode': {
-          light: '浅色',
-          dark: '深色',
-        },
-        'server.provider': {
-          classworkscloud: 'Classworks云端存储',
-          'kv-local': 'KV本地存储',
-          'kv-server': 'KV远程服务器',
-        },
-      },
       // 默认图标映射，按设置类型
       defaultIcons: {
-        boolean: 'mdi-toggle-switch-outline',
-        number: 'mdi-numeric',
-        string: 'mdi-form-textbox',
+        boolean: ICON.TOGGLE_SWITCH_OUTLINE,
+        number: ICON.NUMERIC_ICON,
+        string: ICON.FORM_TEXTBOX,
       },
     }
   },
@@ -254,16 +291,13 @@ export default {
     },
 
     displayDescription() {
-      // 优先使用自定义描述
       if (this.description) {
         return this.description
       }
 
-      // 否则使用设置键名
       return this.settingKey
     },
 
-    // 判断是否为字体系列设置
     isFontFamily() {
       return (
         this.settingKey.toLowerCase().includes('fontfamily') ||
@@ -296,12 +330,22 @@ export default {
       }
 
       // 最后使用基于类型的默认图标
-      return this.defaultIcons[this.type] || 'mdi-cog-outline'
+      return this.defaultIcons[this.type] || ICON.COG_OUTLINE
     },
   },
 
   created() {
     this.loadSetting()
+    this.isDeveloperMode = getSetting('developer.enabled') || false
+    this.unwatchSettings = watchSettings(() => {
+      this.isDeveloperMode = getSetting('developer.enabled') || false
+    })
+  },
+
+  beforeUnmount() {
+    if (this.unwatchSettings) {
+      this.unwatchSettings()
+    }
   },
 
   methods: {
@@ -328,8 +372,8 @@ export default {
           this.hasOptions = true
         }
         // 检查是否有显示值映射
-        else if (this.settingKey in this.displayValueMappings) {
-          const mapping = this.displayValueMappings[this.settingKey]
+        else if (this.settingKey in displayValueMappings) {
+          const mapping = displayValueMappings[this.settingKey]
           this.selectOptions = Object.entries(mapping).map(([value, title]) => ({
             title,
             value,
@@ -346,7 +390,7 @@ export default {
             const options = optionsStr.split(',').map((opt) => {
               const cleaned = opt.trim().replace(/['"]/g, '')
               // 检查是否有显示值映射
-              const displayValue = this.getDisplayValue(cleaned)
+              const displayValue = getDisplayValue(this.settingKey, cleaned)
               return {
                 title: displayValue || cleaned,
                 value: cleaned,
@@ -391,25 +435,12 @@ export default {
       }
     },
 
-    // 获取设置值的显示名称
-    getDisplayValue(value) {
-      if (this.settingKey in this.displayValueMappings) {
-        const mapping = this.displayValueMappings[this.settingKey]
-        return mapping[value] || value
-      }
-      return value
-    },
-
     updateSetting(value) {
       // 确保值的类型正确
-      let typedValue = value
+      let typedValue = coerceValueToType(value, this.definition.type)
 
-      if (this.type === 'boolean') {
-        typedValue = Boolean(value)
-      } else if (this.type === 'number') {
-        typedValue = Number(value)
-
-        // 确保值在范围内
+      // 数字类型确保值在范围内
+      if (this.type === 'number') {
         if (typedValue < this.minValue) typedValue = this.minValue
         if (typedValue > this.maxValue) typedValue = this.maxValue
       }
@@ -437,6 +468,25 @@ export default {
       }
     },
 
+    // 数字输入防抖：用户停止输入后自动保存
+    onNumberInput() {
+      if (this.numberInputTimer) {
+        clearTimeout(this.numberInputTimer)
+      }
+      this.numberInputTimer = setTimeout(() => {
+        this.updateSetting(this.localValue)
+      }, 500)
+    },
+
+    // 输入框失去焦点时立即保存
+    onNumberBlur() {
+      if (this.numberInputTimer) {
+        clearTimeout(this.numberInputTimer)
+        this.numberInputTimer = null
+      }
+      this.updateSetting(this.localValue)
+    },
+
     // 复制设置ID到剪贴板
     copySettingId() {
       navigator.clipboard
@@ -451,7 +501,7 @@ export default {
 
     // 复制设置值到剪贴板
     copySettingValue() {
-      let valueText = ''
+      let valueText
 
       if (typeof this.localValue === 'object' && this.localValue !== null) {
         valueText = JSON.stringify(this.localValue)
@@ -481,30 +531,77 @@ export default {
 
     // 显示消息提示
     showSnackbarMessage(message) {
-      this.snackbarText = message
-      this.showSnackbar = true
+      this.$message?.success(message)
     },
   },
 }
 </script>
 
 <style scoped>
+.setting-item-wrapper {
+  position: relative;
+}
+
 .setting-item {
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease-apple);
+}
+
+.setting-item-developer .setting-item {
+  min-height: 56px;
+}
+
+.setting-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .setting-text-field,
 .setting-select,
 .setting-number-field {
   min-width: 180px;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
 }
 
 .text-wrap {
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+.setting-menu-btn {
+  transition: opacity var(--duration-fast) var(--ease-apple);
+}
+
+/* 桌面端（支持悬停的设备） */
+@media (hover: hover) {
+  .setting-menu-btn-hover {
+    opacity: 0;
+  }
+
+  .setting-item-wrapper:hover .setting-menu-btn-hover {
+    opacity: 0.5;
+  }
+
+  .setting-menu-btn-modified {
+    opacity: 0.4;
+  }
+
+  .setting-item-wrapper:hover .setting-menu-btn-modified {
+    opacity: 0.6;
+  }
+}
+
+/* 移动端（触屏设备，不支持悬停） */
+@media (hover: none) {
+  .setting-menu-btn-hover {
+    opacity: 0.4;
+  }
+
+  .setting-menu-btn-modified {
+    opacity: 0.5;
+  }
 }
 
 @media (max-width: 600px) {

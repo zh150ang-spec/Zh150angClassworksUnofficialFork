@@ -7,8 +7,12 @@
 **/package-lock.json
 **/*.min.js
 **/*.min.css
+**/vendor/**
+**/*.d.ts
 apps/server/public/**
+
 apps/web/public/sounds/**
 apps/web/public/uaf/**
 apps/web/public/pwa/**
 pnpm-workspace.yaml
+.claude/

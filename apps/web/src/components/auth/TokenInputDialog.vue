@@ -11,13 +11,24 @@
         placeholder="粘贴从授权页面获取的 Token"
         variant="outlined"
       />
-      <v-alert v-if="error" class="mt-3" type="error" variant="tonal">
+      <v-alert
+        v-if="error"
+        class="mt-3"
+        type="error"
+        variant="tonal"
+      >
         {{ error }}
       </v-alert>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn v-if="showCancel" variant="text" @click="$emit('cancel')"> 取消 </v-btn>
+      <v-btn
+        v-if="showCancel"
+        variant="text"
+        @click="$emit('cancel')"
+      >
+        取消
+      </v-btn>
       <v-btn
         :disabled="!token || verifying"
         :loading="verifying"
@@ -32,9 +43,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getSetting, setSetting } from '@/utils/settings'
+import { setSetting } from '@/utils/settings'
+import { getEffectiveServerUrl } from '@/utils/serverRotation'
 import axios from '@/axios/axios'
-import { HEADER_APP_TOKEN } from '@classworks/shared'
 
 defineProps({
   showCancel: {
@@ -55,13 +66,13 @@ const saveToken = async () => {
   verifying.value = true
 
   try {
-    const serverUrl = getSetting('server.domain')
+    const serverUrl = getEffectiveServerUrl()
     if (!serverUrl) throw new Error('未配置服务器域名')
 
     await axios.get(`${serverUrl}/kv/_info`, {
       headers: {
         Accept: 'application/json',
-        [HEADER_APP_TOKEN]: token.value,
+        'x-app-token': token.value,
       },
     })
 

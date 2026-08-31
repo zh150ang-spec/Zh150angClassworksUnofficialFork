@@ -17,14 +17,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableEmpty,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -39,8 +35,6 @@ import {
   RefreshCw,
   Copy,
   Edit,
-  Check,
-  X,
   Key,
   ShieldCheck,
   Database,
@@ -63,7 +57,7 @@ const loading = ref(false)
 const error = ref('')
 const keys = ref([])
 const values = ref({})
-const loadingValues = ref({})
+const _loadingValues = ref({})
 const specificKey = ref('') // 加载特定项
 
 // 选择与分页
@@ -296,6 +290,7 @@ const exportAll = async () => {
       // 忽略单项失败
     }
   }
+  // eslint-disable-next-line no-undef
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')

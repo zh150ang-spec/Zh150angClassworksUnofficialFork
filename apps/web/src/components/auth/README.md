@@ -15,6 +15,7 @@
 **Events:**
 
 - `@success`: 认证成功时触发,传递认证数据
+
 - `@cancel`: 点击取消按钮时触发
 
 **暴露的方法:**
@@ -48,6 +49,7 @@ Token 输入对话框,用于手动输入 KV 授权 Token。
 **Events:**
 
 - `@success`: Token 验证成功时触发
+
 - `@cancel`: 点击取消按钮时触发
 
 **暴露的方法:**
@@ -81,6 +83,7 @@ import TokenInputDialog from '@/components/auth/TokenInputDialog.vue'
 **Events:**
 
 - `@submit`: 提交代码时触发,传递代码内容
+
 - `@cancel`: 点击取消按钮时触发
 
 **暴露的方法:**
@@ -135,5 +138,7 @@ import FirstTimeGuide from '@/components/auth/FirstTimeGuide.vue'
 ## 注意事项
 
 - 这些组件需要配合 Vuetify 使用
+
 - 组件内部使用了 `@/utils/settings` 和 `@/axios/axios`,确保这些依赖可用
+
 - 建议将这些组件包裹在 `v-dialog` 中使用,以获得最佳的用户体验

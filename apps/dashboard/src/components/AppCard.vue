@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { marked } from 'marked'
-import axios from '@/lib/axios'
 import Card from './ui/card/Card.vue'
 import CardHeader from './ui/card/CardHeader.vue'
 import CardTitle from './ui/card/CardTitle.vue'
@@ -79,7 +78,7 @@ const fetchReadme = async () => {
   try {
     // GitHub
     if (url.includes('github.com')) {
-      const match = url.match(/github\.com\/([^\/]+)\/([^\/]+?)(?:\.git)?$/)
+      const match = url.match(/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/)
       if (match) {
         const [, owner, repo] = match
         readmeUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/README.md`
@@ -98,7 +97,7 @@ const fetchReadme = async () => {
 
     // GitLab
     if (url.includes('gitlab.com')) {
-      const match = url.match(/gitlab\.com\/([^\/]+\/[^\/]+?)(?:\.git)?$/)
+      const match = url.match(/gitlab\.com\/([^/]+\/[^/]+?)(?:\.git)?$/)
       if (match) {
         const [, path] = match
         readmeUrl = `https://gitlab.com/${path}/-/raw/main/README.md`
@@ -116,7 +115,7 @@ const fetchReadme = async () => {
 
     // Bitbucket
     if (url.includes('bitbucket.org')) {
-      const match = url.match(/bitbucket\.org\/([^\/]+)\/([^\/]+?)(?:\.git)?$/)
+      const match = url.match(/bitbucket\.org\/([^/]+)\/([^/]+?)(?:\.git)?$/)
       if (match) {
         const [, owner, repo] = match
         readmeUrl = `https://bitbucket.org/${owner}/${repo}/raw/main/README.md`
@@ -133,7 +132,7 @@ const fetchReadme = async () => {
     }
 
     // Gitea/Forgejo 或通用处理
-    const genericMatch = url.match(/https?:\/\/([^\/]+)\/([^\/]+)\/([^\/]+?)(?:\.git)?$/)
+    const genericMatch = url.match(/https?:\/\/([^/]+)\/([^/]+)\/([^/]+?)(?:\.git)?$/)
     if (genericMatch) {
       const [, domain, owner, repo] = genericMatch
       // 尝试 Gitea/Forgejo 格式

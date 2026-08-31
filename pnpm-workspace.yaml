@@ -4,10 +4,11 @@ packages:
 
 allowBuilds:
   '@parcel/watcher': false
+  '@prisma/engines': true
+  bcrypt: true
+  electron: true
   esbuild: false
+  prisma: true
+  protobufjs: true
   sharp: false
-
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - esbuild
-  - sharp
+  vue-demi: true

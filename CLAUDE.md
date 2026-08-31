@@ -1,79 +1,120 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI agents working with code in this repository.
 
 ## Project Overview
 
-Classworks (作业板) is a pnpm monorepo for a homework board platform designed for classroom large screens. The UI is in Chinese.
+Classworks is a **pnpm monorepo** containing three apps and a shared package for the Classworks (作业板) classroom homework-board platform. The UI is in Chinese.
 
-| App        | Package                 | Path              | Stack                                |
-| ---------- | ----------------------- | ----------------- | ------------------------------------ |
-| 作业板 PWA | `@classworks/web`       | `apps/web`        | Vue 3 + Vuetify 3, Vite 5            |
-| KV 后端    | `@classworks/server`    | `apps/server`     | Express 5 + Prisma 7 + Socket.IO     |
-| 管理面板   | `@classworks/dashboard` | `apps/dashboard`  | Vue 3 + Tailwind 4 + reka-ui, Vite 7 |
-| 共享常量   | `@classworks/shared`    | `packages/shared` | Pure JS (ESM)                        |
+| Package                 | Path              | Stack                          | Description                                           |
+| ----------------------- | ----------------- | ------------------------------ | ----------------------------------------------------- |
+| `@classworks/web`       | `apps/web`        | Vue 3 + Vuetify 4 PWA          | The homework board widget for classroom large screens |
+| `@classworks/server`    | `apps/server`     | Express 5 + Prisma + Socket.IO | KV storage backend                                    |
+| `@classworks/dashboard` | `apps/dashboard`  | Vue 3 + Tailwind 4             | Admin UI for the KV backend                           |
+| `@classworks/shared`    | `packages/shared` | Pure JS (ESM)                  | Shared constants (headers, URLs)                      |
+
+> **各 app 自治理**：每个 app 的细节以其自身的 `AGENTS.md` 为准（`apps/web/AGENTS.md`、`apps/server/AGENTS.md`、`apps/dashboard/AGENTS.md`）。尤其涉及 `apps/web`（命令、lint、数据层、部署约定）时，**以** **`apps/web/AGENTS.md`** **为权威**；本根文档只做笼统说明并透传引用，避免与子文档冲突或重复。
+
+## Monorepo Layout
+
+```
+.
+├── apps/
+│   ├── web/            # 作业板 PWA (Vue + Vuetify)
+│   ├── server/         # KV backend (Express + Prisma + Postgres + Socket.IO)
+│   └── dashboard/      # Admin dashboard (Vue + Tailwind + reka-ui)
+├── packages/
+│   └── shared/         # Shared constants (@classworks/shared)
+├── .github/
+│   ├── actions/setup-pnpm/   # Reusable CI composite action
+│   └── workflows/
+├── package.json              # Root workspace scripts + shared dev deps
+├── pnpm-workspace.yaml
+├── eslint.config.js          # Shared ESLint flat config
+├── .prettierrc.json
+├── .editorconfig
+└── .npmrc
+```
 
 ## Commands
 
-All commands run from the repo root.
+All commands run from the **repo root**.
 
 ```bash
 pnpm install              # Install all workspace dependencies
-
-# All apps
-pnpm run dev              # Dev servers in parallel (web :3031, server :3000, dashboard vite default)
+pnpm run dev              # All apps in parallel (web :3031, server :3000, dashboard vite)
 pnpm run build            # Build all apps
 pnpm run lint             # ESLint with auto-fix
 pnpm run format           # Prettier write
 pnpm run format:check     # Prettier check
 
-# Single app
-pnpm run dev:web
+pnpm run dev:web          # Single app
 pnpm run dev:server
 pnpm run dev:dashboard
 pnpm run build:web
 pnpm run build:server     # prisma generate
 pnpm run build:dashboard
-
-# Filter syntax
-pnpm --filter @classworks/web run dev
-pnpm --filter @classworks/server run start
 ```
 
-## Tech Stack
+> 注：`apps/web` 的内部命令与规范以 `apps/web/AGENTS.md` 为准；根层调用单个 web 命令用 `pnpm --filter @classworks/web run <script>`。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的 `pnpm run lint`（ESLint）是两套，各自独立、互不覆盖。
 
-- **Language**: JavaScript (no TypeScript), ESM throughout
-- **apps/web**: Vue 3 (mixed Composition/Options API), Vuetify 3, Pinia, Vue Router 4 (file-based routes), Socket.IO client, PWA (Workbox), SCSS
-- **apps/server**: Express 5, Prisma 7 + PostgreSQL, Socket.IO server, JWT auth, OpenTelemetry, Prometheus metrics
-- **apps/dashboard**: Vue 3 (Composition API), Tailwind CSS 4, reka-ui/radix-vue, Pinia, vee-validate + zod
-- **packages/shared**: Header constants, server URLs — imported by all apps
+### Per-app
+
+* **apps/web**: `prebuild` (sound list), `build:store` (PWA store validation)
+
+* **apps/server**: `start`, `dev` (nodemon), `build` (prisma generate), `get-token`. Requires `.env` with `DATABASE_URL`.
+
+* **apps/dashboard**: `dev` / `build` / `preview`
+
+## Shared Package (packages/shared)
+
+Exports constants used across all three apps:
+
+* `HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`
+
+* `DEFAULT_KV_SERVER`, `DEFAULT_LOCAL_SERVER`, `CLOUD_SERVERS`
+
+All apps depend via `"@classworks/shared": "workspace:*"`.
 
 ## Architecture
 
-### Shared Package (`packages/shared`)
+* **Data layer** (web): `dataProvider.js` → `kvLocalProvider.js` (IndexedDB) or `kvServerProvider.js` (HTTP). Failover via `serverRotation.js`.
 
-`@classworks/shared` exports constants used across all apps: HTTP header names (`HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`), default server URLs, and the cloud server list. Import from `@classworks/shared` or `@classworks/shared/headers`.
+* **Real-time**: Client `socketClient.js` ↔ Server `socket.js` (Socket.IO rooms)
 
-### Data Layer (apps/web)
-
-`dataProvider.js` routes to either `kvLocalProvider.js` (IndexedDB) or `kvServerProvider.js` (HTTP). Server failover via `serverRotation.js`.
-
-### Real-time Layer
-
-Client: `apps/web/src/utils/socketClient.js`. Server: `apps/server/utils/socket.js`.
-
-### Settings Layer (apps/web)
-
-`settings.js` — localStorage-based settings with typed definitions, defaults, and legacy migration.
-
-### UI Layer (apps/web)
-
-File-based routing from `src/pages/`. Main view: `src/pages/index.vue` (~78KB). Components organized by feature under `src/components/`.
+* **Settings** (web): `settings.js` — localStorage with typed definitions and migration
 
 ## Code Style
 
-- 2-space indent, trim trailing whitespace (`.editorconfig`)
-- Path alias: `@/` maps to each app's `src/` (`jsconfig.json`)
-- ESLint 9 flat config at root; Prettier at root (`.prettierrc.json`)
-- Mixed Composition API and Options API in Vue apps
-- No TypeScript
+* 2-space indent, no TypeScript, ESM throughout
+
+* `@/` alias → each app's `src/`
+
+* 根：ESLint 9 flat config + Prettier（全仓已统一为 Prettier 格式，`format:check` 通过）
+
+* `apps/web` 使用自己的「oxlint + ESLint」双链（见 `apps/web/AGENTS.md`），根工具不覆盖其规范
+
+* Mixed Composition API / Options API in Vue apps
+
+## CI/CD
+
+All workflows use `.github/actions/setup-pnpm` composite action.
+
+| Workflow               | Trigger                           | Action                      |
+| ---------------------- | --------------------------------- | --------------------------- |
+| `ci.yml`               | push/PR to main                   | Lint, build web + dashboard |
+| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages          |
+| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact    |
+| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub  |
+| `store-pwa.yml`        | PR to main (web)                  | PWA store validation        |
+
+## Notes
+
+* Hoisted deps (`node-linker=hoisted` in `.npmrc`)
+
+* Server native modules (`bcrypt`, `@prisma/client`): run `pnpm rebuild` if needed
+
+* Docker builds use repo root as context (Dockerfile references `packages/shared`)
+
+* Env files gitignored; copy `.env.example` / `.env.oauth.example` per app
+
