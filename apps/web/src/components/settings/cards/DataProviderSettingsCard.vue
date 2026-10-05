@@ -1,23 +1,17 @@
 <template>
-  <settings-card
-    :icon="ICON.DATABASE_COG"
-    title="数据源维护与诊断"
-  >
+  <settings-card :icon="ICON.DATABASE_COG" title="数据源维护与诊断">
     <v-list>
       <template
         v-if="
           currentProvider === 'kv-server' ||
-            currentProvider === 'classworkscloud' ||
-            currentProvider === 'dual-cloud' ||
-            currentProvider === 'dual-server'
+          currentProvider === 'classworkscloud' ||
+          currentProvider === 'dual-cloud' ||
+          currentProvider === 'dual-server'
         "
       >
         <v-list-item>
           <template #prepend>
-            <v-icon
-              class="mr-3"
-              :icon="ICON.LAN_CONNECT"
-            />
+            <v-icon class="mr-3" :icon="ICON.LAN_CONNECT" />
           </template>
           <v-list-item-title>检查服务器连接</v-list-item-title>
           <template #append>
@@ -36,29 +30,17 @@
       <template v-if="currentProvider === 'kv-local'">
         <v-list-item>
           <template #prepend>
-            <v-icon
-              class="mr-3"
-              :icon="ICON.DATABASE"
-            />
+            <v-icon class="mr-3" :icon="ICON.DATABASE" />
           </template>
           <v-list-item-title>清除数据库缓存</v-list-item-title>
           <v-list-item-subtitle>这将清除所有本地数据库中的数据</v-list-item-subtitle>
           <template #append>
-            <v-btn
-              color="error"
-              variant="elevated"
-              @click="confirmClearIndexedDB"
-            >
-              清除
-            </v-btn>
+            <v-btn color="error" variant="elevated" @click="confirmClearIndexedDB"> 清除 </v-btn>
           </template>
         </v-list-item>
         <v-list-item>
           <template #prepend>
-            <v-icon
-              class="mr-3"
-              :icon="ICON.DATABASE_EXPORT"
-            />
+            <v-icon class="mr-3" :icon="ICON.DATABASE_EXPORT" />
           </template>
           <v-list-item-title>导出数据库</v-list-item-title>
           <template #append>
@@ -76,71 +58,41 @@
 
       <v-list-item>
         <template #prepend>
-          <v-icon
-            class="mr-3"
-            :icon="ICON.LAN_CONNECT"
-          />
+          <v-icon class="mr-3" :icon="ICON.LAN_CONNECT" />
         </template>
         <v-list-item-title>查看本地缓存</v-list-item-title>
         <template #append>
-          <v-btn
-            color="neutral-surface"
-            to="/cachemanagement"
-            variant="elevated"
-          >
-            查看
-          </v-btn>
+          <v-btn color="neutral-surface" to="/cachemanagement" variant="elevated"> 查看 </v-btn>
         </template>
       </v-list-item>
     </v-list>
 
-    <v-dialog
-      v-model="confirmDialog"
-      max-width="400"
-    >
+    <v-dialog v-model="confirmDialog" max-width="400">
       <v-card>
         <v-card-title>{{ confirmTitle }}</v-card-title>
         <v-card-text>{{ confirmMessage }}</v-card-text>
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="confirmDialog = false"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="confirmDialog = false">
               取消
             </v-btn>
-            <v-btn
-              color="error"
-              variant="elevated"
-              @click="handleConfirm"
-            >
-              确认
-            </v-btn>
+            <v-btn color="error" variant="elevated" @click="handleConfirm"> 确认 </v-btn>
           </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="showEnableSyncDialog"
-      max-width="400"
-      persistent
-    >
+    <v-dialog v-model="showEnableSyncDialog" max-width="400" persistent>
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            class="mr-2"
-            color="primary"
-            :icon="ICON.SYNC_CIRCLE"
-          />
+          <v-icon class="mr-2" color="primary" :icon="ICON.SYNC_CIRCLE" />
           推荐开启双存储同步
         </v-card-title>
         <v-card-text>
           检测到您已切换到双存储模式，推荐开启后台同步功能以获得更好的体验和稳定性。
-          <br>
-          <br>
+          <br />
+          <br />
           开启后，系统会自动将本地独有数据同步到云端，确保数据一致性。
         </v-card-text>
         <v-card-actions>
@@ -153,11 +105,7 @@
             >
               取消
             </v-btn>
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="handleEnableSyncDialog(true)"
-            >
+            <v-btn color="success" variant="elevated" @click="handleEnableSyncDialog(true)">
               允许
             </v-btn>
           </div>

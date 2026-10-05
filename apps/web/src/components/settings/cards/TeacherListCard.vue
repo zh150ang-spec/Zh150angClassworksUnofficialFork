@@ -1,14 +1,7 @@
 <template>
-  <settings-card
-    :loading="loading"
-    :icon="ICON.ACCOUNT_TIE"
-    title="教师列表"
-  >
+  <settings-card :loading="loading" :icon="ICON.ACCOUNT_TIE" title="教师列表">
     <template #status>
-      <unsaved-warning
-        :show="unsavedChanges"
-        message="有未保存的更改"
-      />
+      <unsaved-warning :show="unsavedChanges" message="有未保存的更改" />
     </template>
     <template #append>
       <div class="d-flex gap-2">
@@ -23,13 +16,7 @@
       </div>
     </template>
 
-    <v-alert
-      v-if="error"
-      class="mb-4"
-      closable
-      type="error"
-      variant="tonal"
-    >
+    <v-alert v-if="error" class="mb-4" closable type="error" variant="tonal">
       {{ error }}
     </v-alert>
 
@@ -37,16 +24,10 @@
       <!-- 普通编辑模式 -->
       <div v-if="!modelValue.advanced">
         <!-- 添加教师表单 -->
-        <v-card
-          class="mb-6"
-          variant="outlined"
-        >
+        <v-card class="mb-6" variant="outlined">
           <v-card-text>
             <v-row>
-              <v-col
-                cols="12"
-                md="4"
-              >
+              <v-col cols="12" md="4">
                 <v-text-field
                   v-model="newTeacher.name"
                   density="comfortable"
@@ -57,10 +38,7 @@
                   variant="outlined"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="5"
-              >
+              <v-col cols="12" md="5">
                 <v-combobox
                   v-model="newTeacher.subjects"
                   :items="commonSubjects"
@@ -76,11 +54,7 @@
                   variant="outlined"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="3"
-                class="d-flex align-center gap-2"
-              >
+              <v-col cols="12" md="3" class="d-flex align-center gap-2">
                 <v-checkbox
                   v-model="newTeacher.isHeadTeacher"
                   density="comfortable"
@@ -111,18 +85,8 @@
         />
 
         <v-row v-else>
-          <v-col
-            v-for="(teacher, index) in modelValue.list"
-            :key="index"
-            cols="12"
-            lg="6"
-            xl="4"
-          >
-            <v-card
-              elevation="1"
-              border
-              class="teacher-card"
-            >
+          <v-col v-for="(teacher, index) in modelValue.list" :key="index" cols="12" lg="6" xl="4">
+            <v-card elevation="1" border class="teacher-card">
               <v-card-text class="pa-4">
                 <div class="d-flex align-start mb-3">
                   <v-avatar
@@ -130,10 +94,7 @@
                     class="mr-3"
                     size="48"
                   >
-                    <v-icon
-                      :icon="teacher.isHeadTeacher ? ICON.STAR : ICON.ACCOUNT"
-                      size="28"
-                    />
+                    <v-icon :icon="teacher.isHeadTeacher ? ICON.STAR : ICON.ACCOUNT" size="28" />
                   </v-avatar>
 
                   <div class="flex-grow-1">
@@ -166,10 +127,7 @@
                       </v-chip>
                     </div>
 
-                    <div
-                      v-if="editState.index === index"
-                      class="mt-2"
-                    >
+                    <div v-if="editState.index === index" class="mt-2">
                       <v-combobox
                         v-model="editState.teacher.subjects"
                         :items="commonSubjects"
@@ -190,10 +148,7 @@
                         label="班主任"
                       />
                     </div>
-                    <div
-                      v-else
-                      class="mt-1"
-                    >
+                    <div v-else class="mt-1">
                       <v-chip
                         v-for="(subject, sIndex) in teacher.subjects"
                         :key="sIndex"
@@ -249,16 +204,13 @@
       </div>
 
       <!-- 高级编辑模式 -->
-      <div
-        v-else
-        class="pt-2"
-      >
+      <div v-else class="pt-2">
         <v-textarea
           v-model="modelValue.text"
           hint="JSON 格式编辑教师列表。每个教师需包含 name、subjects（数组）、isHeadTeacher（布尔值）"
           label="批量编辑教师列表 (JSON)"
           persistent-hint
-          placeholder="[{&quot;name&quot;:&quot;教师姓名&quot;,&quot;subjects&quot;:[&quot;语文&quot;,&quot;数学&quot;],&quot;isHeadTeacher&quot;:true}]"
+          placeholder='[{"name":"教师姓名","subjects":["语文","数学"],"isHeadTeacher":true}]'
           rows="15"
           variant="outlined"
           @update:model-value="handleTextInput"

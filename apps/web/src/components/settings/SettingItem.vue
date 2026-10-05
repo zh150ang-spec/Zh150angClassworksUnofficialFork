@@ -1,24 +1,15 @@
 <template>
   <div :class="['setting-item-wrapper', { 'setting-item-developer': isDeveloperMode }]">
-    <v-list-item
-      :disabled="disabled"
-      class="setting-item"
-    >
+    <v-list-item :disabled="disabled" class="setting-item">
       <template #prepend>
-        <v-icon
-          :icon="settingIcon"
-          :size="isDeveloperMode ? 'default' : 'large'"
-        />
+        <v-icon :icon="settingIcon" :size="isDeveloperMode ? 'default' : 'large'" />
       </template>
 
       <v-list-item-title
         :class="['text-wrap', 'setting-title-row', { 'text-body-1': !isDeveloperMode }]"
       >
         <span>{{ displayTitle }}</span>
-        <v-menu
-          location="bottom"
-          :close-on-content-click="true"
-        >
+        <v-menu location="bottom" :close-on-content-click="true">
           <template #activator="{ props }">
             <v-btn
               :disabled="disabled"
@@ -36,43 +27,25 @@
             />
           </template>
           <v-list density="compact">
-            <v-list-item
-              v-if="isDeveloperMode"
-              @click="copySettingId"
-            >
+            <v-list-item v-if="isDeveloperMode" @click="copySettingId">
               <template #prepend>
-                <v-icon
-                  :icon="ICON.KEY"
-                  size="small"
-                />
+                <v-icon :icon="ICON.KEY" size="small" />
               </template>
               <v-list-item-title>复制设置ID</v-list-item-title>
             </v-list-item>
 
-            <v-list-item
-              v-if="isDeveloperMode"
-              @click="copySettingValue"
-            >
+            <v-list-item v-if="isDeveloperMode" @click="copySettingValue">
               <template #prepend>
-                <v-icon
-                  :icon="ICON.CONTENT_COPY"
-                  size="small"
-                />
+                <v-icon :icon="ICON.CONTENT_COPY" size="small" />
               </template>
               <v-list-item-title>复制设置值</v-list-item-title>
             </v-list-item>
 
             <v-divider v-if="isDeveloperMode" />
 
-            <v-list-item
-              :disabled="isDefaultValue"
-              @click="resetToDefault"
-            >
+            <v-list-item :disabled="isDefaultValue" @click="resetToDefault">
               <template #prepend>
-                <v-icon
-                  :icon="ICON.RESTORE"
-                  size="small"
-                />
+                <v-icon :icon="ICON.RESTORE" size="small" />
               </template>
               <v-list-item-title>重置为默认值</v-list-item-title>
             </v-list-item>
@@ -80,10 +53,7 @@
         </v-menu>
       </v-list-item-title>
 
-      <v-list-item-subtitle
-        v-if="isDeveloperMode"
-        class="d-flex align-center text-wrap"
-      >
+      <v-list-item-subtitle v-if="isDeveloperMode" class="d-flex align-center text-wrap">
         <span class="text-body-small text-medium-emphasis">{{ settingKey }}</span>
       </v-list-item-subtitle>
 
@@ -115,10 +85,7 @@
               @update:model-value="updateSetting"
             />
 
-            <div
-              v-else-if="type === 'number'"
-              class="d-flex align-center"
-            >
+            <div v-else-if="type === 'number'" class="d-flex align-center">
               <v-btn
                 :disabled="disabled || localValue <= minValue"
                 :icon="ICON.MINUS"
@@ -158,10 +125,7 @@
     </v-list-item>
 
     <!-- 文本框显示在下方 -->
-    <div
-      v-if="type === 'string' && !hasOptions"
-      class="px-4 pb-2 pt-0"
-    >
+    <div v-if="type === 'string' && !hasOptions" class="px-4 pb-2 pt-0">
       <v-text-field
         v-model="localValue"
         :disabled="disabled"

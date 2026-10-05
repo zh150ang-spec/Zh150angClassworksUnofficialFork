@@ -9,16 +9,9 @@
       <v-card-title class="d-flex align-center pa-4">
         编辑考试配置
         <v-spacer />
-        <v-btn
-          :icon="ICON.CLOSE"
-          variant="text"
-          @click="$emit('update:modelValue', false)"
-        />
+        <v-btn :icon="ICON.CLOSE" variant="text" @click="$emit('update:modelValue', false)" />
       </v-card-title>
-      <v-card-text
-        class="pa-4"
-        style="max-height: 70vh; overflow-y: auto"
-      >
+      <v-card-text class="pa-4" style="max-height: 70vh; overflow-y: auto">
         <exam-config-editor
           :config-id="selectedExamId"
           :dialog-mode="true"
@@ -37,11 +30,7 @@
           移除卡片
         </v-btn>
         <v-spacer />
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="$emit('update:modelValue', false)"
-        >
+        <v-btn color="primary" variant="text" @click="$emit('update:modelValue', false)">
           关闭
         </v-btn>
       </v-card-actions>

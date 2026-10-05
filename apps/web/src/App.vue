@@ -22,14 +22,8 @@
 
     <div class="app-content">
       <router-view v-slot="{ Component, route }">
-        <transition
-          mode="out-in"
-          name="md3"
-        >
-          <component
-            :is="Component"
-            :key="route.path"
-          />
+        <transition mode="out-in" name="md3">
+          <component :is="Component" :key="route.path" />
         </transition>
       </router-view>
     </div>

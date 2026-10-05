@@ -11,10 +11,7 @@
       @click:close="error = ''"
     >
       <div class="d-flex align-center">
-        <v-icon
-          start
-          :icon="ICON.ERROR"
-        />
+        <v-icon start :icon="ICON.ERROR" />
         {{ error }}
       </div>
     </v-alert>
@@ -30,10 +27,7 @@
       @click:close="success = ''"
     >
       <div class="d-flex align-center">
-        <v-icon
-          start
-          :icon="ICON.SUCCESS"
-        />
+        <v-icon start :icon="ICON.SUCCESS" />
         {{ success }}
       </div>
     </v-alert>
@@ -49,21 +43,10 @@
       <div class="d-flex align-center">
         <span class="font-weight-bold">配置验证失败，请检查以下问题：</span>
       </div>
-      <v-list
-        class="bg-transparent"
-        density="compact"
-      >
-        <v-list-item
-          v-for="(err, index) in validationErrors"
-          :key="index"
-          class="px-0 py-0"
-        >
+      <v-list class="bg-transparent" density="compact">
+        <v-list-item v-for="(err, index) in validationErrors" :key="index" class="px-0 py-0">
           <template #prepend>
-            <v-icon
-              color="warning"
-              size="small"
-              :icon="ICON.CIRCLE_SMALL"
-            />
+            <v-icon color="warning" size="small" :icon="ICON.CIRCLE_SMALL" />
           </template>
           <v-list-item-title class="text-body-medium">
             {{ err }}
@@ -73,24 +56,14 @@
     </v-alert>
 
     <!-- 加载状态 -->
-    <v-card
-      v-if="loading"
-      class="my-4"
-      border
-    >
+    <v-card v-if="loading" class="my-4" border>
       <v-card-text>
-        <v-skeleton-loader
-          class="mx-auto"
-          type="article"
-        />
+        <v-skeleton-loader class="mx-auto" type="article" />
       </v-card-text>
     </v-card>
 
     <!-- 模式切换按钮和操作按钮 -->
-    <div
-      v-if="!loading"
-      class="d-flex justify-space-between align-center mb-4"
-    >
+    <div v-if="!loading" class="d-flex justify-space-between align-center mb-4">
       <div class="d-flex align-center gap-2">
         <v-btn
           :disabled="!isValidConfig"
@@ -147,11 +120,7 @@
           拉起EA2播放器
         </v-btn>
 
-        <v-tooltip
-          v-if="!isValidConfig"
-          activator="parent"
-          location="bottom"
-        >
+        <v-tooltip v-if="!isValidConfig" activator="parent" location="bottom">
           <span>请先完善配置信息后再操作</span>
         </v-tooltip>
       </div>
@@ -163,20 +132,9 @@
       >
         删除配置
       </v-btn>
-      <v-radio-group
-        v-model="isEditMode"
-        density="compact"
-        hide-details
-        inline
-      >
-        <v-radio
-          :value="false"
-          label="预览"
-        />
-        <v-radio
-          :value="true"
-          label="编辑"
-        />
+      <v-radio-group v-model="isEditMode" density="compact" hide-details inline>
+        <v-radio :value="false" label="预览" />
+        <v-radio :value="true" label="编辑" />
       </v-radio-group>
     </div>
 
@@ -195,22 +153,12 @@
         >
           {{ localConfig.message || '未设置考试提示' }}
         </div>
-        <v-chip
-          v-if="localConfig.room"
-          class="px-4 py-2"
-          size="large"
-        >
-          <v-icon
-            start
-            :icon="ICON.HOME"
-          />
+        <v-chip v-if="localConfig.room" class="px-4 py-2" size="large">
+          <v-icon start :icon="ICON.HOME" />
           考场：{{ localConfig.room }}
         </v-chip>
       </div>
-      <div
-        v-if="localConfig.examInfos && localConfig.examInfos.length > 0"
-        class="mb-8"
-      >
+      <div v-if="localConfig.examInfos && localConfig.examInfos.length > 0" class="mb-8">
         <v-row>
           <v-col
             v-for="(examInfo, index) in localConfig.examInfos"
@@ -219,28 +167,17 @@
             lg="4"
             md="6"
           >
-            <v-card
-              class="h-100"
-              variant="tonal"
-            >
+            <v-card class="h-100" variant="tonal">
               <v-card-title class="bg-primary-lighten-5 pa-4">
                 <div class="d-flex align-center">
-                  <v-icon
-                    start
-                    :icon="ICON.BOOK"
-                  />
+                  <v-icon start :icon="ICON.BOOK" />
                   <span class="">{{ examInfo.name || '未设置科目' }}</span>
                 </div>
               </v-card-title>
               <v-card-text class="pa-4">
                 <div class="mb-3">
                   <div class="d-flex align-center mb-1">
-                    <v-icon
-                      start
-                      color="success"
-                      size="small"
-                      :icon="ICON.CLOCK_START"
-                    />
+                    <v-icon start color="success" size="small" :icon="ICON.CLOCK_START" />
                     <span class="text-body-medium text-medium-emphasis">开始时间</span>
                   </div>
                   <div class="text-headline-small font-weight-medium text-success">
@@ -249,12 +186,7 @@
                 </div>
                 <div>
                   <div class="d-flex align-center mb-1">
-                    <v-icon
-                      start
-                      color="error"
-                      size="small"
-                      :icon="ICON.CLOCK_END"
-                    />
+                    <v-icon start color="error" size="small" :icon="ICON.CLOCK_END" />
                     <span class="text-body-medium text-medium-emphasis">结束时间</span>
                   </div>
                   <div class="text-headline-small font-weight-medium text-error">
@@ -266,49 +198,25 @@
           </v-col>
         </v-row>
       </div>
-      <div
-        v-else
-        class="text-center py-12"
-      >
-        <v-icon
-          class="mb-4"
-          color="grey-lighten-2"
-          size="80"
-          :icon="ICON.CALENDAR_BLANK"
-        />
-        <div class="text-headline-medium text-medium-emphasis mb-2">
-          暂无考试科目安排
-        </div>
+      <div v-else class="text-center py-12">
+        <v-icon class="mb-4" color="grey-lighten-2" size="80" :icon="ICON.CALENDAR_BLANK" />
+        <div class="text-headline-medium text-medium-emphasis mb-2">暂无考试科目安排</div>
         <div class="text-body-large text-medium-emphasis mb-4">
           点击上方"添加科目"按钮开始配置考试时间表
         </div>
-        <v-btn
-          color="primary"
-          variant="outlined"
-          @click="quickEdit"
-        >
-          <v-icon
-            start
-            :icon="ICON.PLUS"
-          />
+        <v-btn color="primary" variant="outlined" @click="quickEdit">
+          <v-icon start :icon="ICON.PLUS" />
           立即添加
         </v-btn>
       </div>
 
       <!-- JSON预览 -->
-      <v-card
-        border
-        class="mb-4"
-        elevation="2"
-      >
+      <v-card border class="mb-4" elevation="2">
         <v-card-title
           class="d-flex align-center text-white cursor-pointer"
           @click="showJsonPreview = !showJsonPreview"
         >
-          <v-icon
-            start
-            :icon="ICON.CODE_JSON"
-          />
+          <v-icon start :icon="ICON.CODE_JSON" />
           配置预览
           <v-spacer />
 
@@ -331,14 +239,8 @@
           />
         </v-card-title>
         <v-expand-transition>
-          <v-card-text
-            v-show="showJsonPreview"
-            class="pa-4"
-          >
-            <v-card
-              class="pa-4"
-              variant="tonal"
-            >
+          <v-card-text v-show="showJsonPreview" class="pa-4">
+            <v-card class="pa-4" variant="tonal">
               <pre class="json-preview"><code>{{ formattedStorageJson }}</code></pre>
             </v-card>
           </v-card-text>
@@ -349,24 +251,14 @@
     <!-- 编辑模式 -->
     <div v-if="!loading && isEditMode">
       <!-- 基本信息 -->
-      <v-card
-        border
-        class="mb-4"
-        elevation="1"
-      >
+      <v-card border class="mb-4" elevation="1">
         <v-card-title class="d-flex align-center bg-primary-lighten-5 pa-4">
-          <v-icon
-            start
-            :icon="ICON.INFO"
-          />
+          <v-icon start :icon="ICON.INFO" />
           <span class="font-weight-bold">基本信息</span>
         </v-card-title>
         <v-card-text class="pa-6">
           <v-row>
-            <v-col
-              cols="12"
-              md="6"
-            >
+            <v-col cols="12" md="6">
               <v-text-field
                 v-model="localConfig.examName"
                 :rules="[
@@ -383,10 +275,7 @@
                 variant="outlined"
               />
             </v-col>
-            <v-col
-              cols="12"
-              md="6"
-            >
+            <v-col cols="12" md="6">
               <v-text-field
                 v-model="localConfig.room"
                 clearable
@@ -401,11 +290,7 @@
           <v-row>
             <v-col cols="12">
               <span class="text-label-large font-weight-bold d-block mb-2">
-                <v-icon
-                  size="small"
-                  class="mr-1"
-                  :icon="ICON.MESSAGE_TEXT"
-                />
+                <v-icon size="small" class="mr-1" :icon="ICON.MESSAGE_TEXT" />
                 考试提示
               </span>
               <v-textarea
@@ -424,14 +309,8 @@
               />
 
               <!-- 默认提示选项 -->
-              <div
-                v-if="!localConfig.message || localConfig.message.trim() === ''"
-                class="mt-3"
-              >
-                <v-chip-group
-                  class="d-flex gap-2"
-                  column
-                >
+              <div v-if="!localConfig.message || localConfig.message.trim() === ''" class="mt-3">
+                <v-chip-group class="d-flex gap-2" column>
                   <v-chip
                     v-for="(tip, index) in defaultExamTips"
                     :key="index"
@@ -441,20 +320,12 @@
                     variant="outlined"
                     @click="selectDefaultTip(tip)"
                   >
-                    <v-icon
-                      size="small"
-                      start
-                      :icon="ICON.PLUS"
-                    />
+                    <v-icon size="small" start :icon="ICON.PLUS" />
                     {{ tip.substring(0, 20) }}...
                   </v-chip>
                 </v-chip-group>
                 <div class="text-body-small text-medium-emphasis mt-2 ml-2">
-                  <v-icon
-                    class="mr-1"
-                    size="x-small"
-                    :icon="ICON.LIGHTBULB_OUTLINE"
-                  />
+                  <v-icon class="mr-1" size="x-small" :icon="ICON.LIGHTBULB_OUTLINE" />
                   点击上方选项快速添加常用考试提示
                 </div>
               </div>
@@ -464,16 +335,9 @@
       </v-card>
 
       <!-- 考试科目安排 -->
-      <v-card
-        border
-        class="mb-4"
-        elevation="1"
-      >
+      <v-card border class="mb-4" elevation="1">
         <v-card-title class="d-flex align-center bg-success-lighten-5 pa-4">
-          <v-icon
-            start
-            :icon="ICON.FORMAT_LIST"
-          />
+          <v-icon start :icon="ICON.FORMAT_LIST" />
           <span class="font-weight-bold">考试科目安排</span>
           <v-spacer />
 
@@ -503,10 +367,7 @@
           </v-btn>
         </v-card-title>
         <v-card-text class="pa-0">
-          <v-list
-            v-if="localConfig.examInfos && localConfig.examInfos.length > 0"
-            class="py-0"
-          >
+          <v-list v-if="localConfig.examInfos && localConfig.examInfos.length > 0" class="py-0">
             <v-list-item
               v-for="(examInfo, index) in localConfig.examInfos"
               :key="index"
@@ -521,11 +382,7 @@
                     variant="tonal"
                     class="mr-3"
                   >
-                    <v-icon
-                      start
-                      size="small"
-                      :icon="getNumericCircleIcon(index + 1)"
-                    />
+                    <v-icon start size="small" :icon="getNumericCircleIcon(index + 1)" />
                     第 {{ index + 1 }} 科目
                   </v-chip>
 
@@ -541,12 +398,7 @@
                       variant="text"
                       @click="moveExamInfo(index, -1)"
                     >
-                      <v-tooltip
-                        activator="parent"
-                        location="bottom"
-                      >
-                        上移
-                      </v-tooltip>
+                      <v-tooltip activator="parent" location="bottom"> 上移 </v-tooltip>
                     </v-btn>
                     <v-btn
                       v-if="index < localConfig.examInfos.length - 1"
@@ -556,12 +408,7 @@
                       variant="text"
                       @click="moveExamInfo(index, 1)"
                     >
-                      <v-tooltip
-                        activator="parent"
-                        location="bottom"
-                      >
-                        下移
-                      </v-tooltip>
+                      <v-tooltip activator="parent" location="bottom"> 下移 </v-tooltip>
                     </v-btn>
                     <v-btn
                       color="error"
@@ -570,21 +417,13 @@
                       variant="text"
                       @click="removeExamInfo(index)"
                     >
-                      <v-tooltip
-                        activator="parent"
-                        location="bottom"
-                      >
-                        删除
-                      </v-tooltip>
+                      <v-tooltip activator="parent" location="bottom"> 删除 </v-tooltip>
                     </v-btn>
                   </div>
                 </div>
 
                 <v-row class="align-start">
-                  <v-col
-                    cols="12"
-                    md="4"
-                  >
+                  <v-col cols="12" md="4">
                     <!-- 科目名称自动完成选择器 -->
                     <v-autocomplete
                       v-model="examInfo.name"
@@ -602,10 +441,7 @@
                       variant="outlined"
                     >
                       <template #prepend-item>
-                        <v-list-item
-                          v-if="customSubjectInput"
-                          title="自定义："
-                        >
+                        <v-list-item v-if="customSubjectInput" title="自定义：">
                           <template #append>
                             <span class="text-primary font-weight-bold">{{
                               customSubjectInput
@@ -616,10 +452,7 @@
                       </template>
                     </v-autocomplete>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    md="3"
-                  >
+                  <v-col cols="12" md="3">
                     <v-menu
                       v-model="examInfo.startDateMenu"
                       :close-on-content-click="false"
@@ -650,19 +483,12 @@
                       </template>
                       <v-card min-width="500">
                         <v-card-title class="text-center py-3 bg-primary-lighten-5">
-                          <v-icon
-                            start
-                            color="primary"
-                            :icon="ICON.CLOCK_START"
-                          />
+                          <v-icon start color="primary" :icon="ICON.CLOCK_START" />
                           选择开始时间
                         </v-card-title>
                         <v-card-text class="pa-0">
                           <v-row no-gutters>
-                            <v-col
-                              class="border-e"
-                              cols="6"
-                            >
+                            <v-col class="border-e" cols="6">
                               <v-date-picker
                                 v-model="examInfo.startDate"
                                 color="primary"
@@ -696,10 +522,7 @@
                       </v-card>
                     </v-menu>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    md="3"
-                  >
+                  <v-col cols="12" md="3">
                     <v-menu
                       v-model="examInfo.endDateMenu"
                       :close-on-content-click="false"
@@ -731,19 +554,12 @@
                       </template>
                       <v-card min-width="500">
                         <v-card-title class="text-center py-3 bg-error-lighten-5">
-                          <v-icon
-                            start
-                            color="error"
-                            :icon="ICON.CLOCK_END"
-                          />
+                          <v-icon start color="error" :icon="ICON.CLOCK_END" />
                           选择结束时间
                         </v-card-title>
                         <v-card-text class="pa-0">
                           <v-row no-gutters>
-                            <v-col
-                              class="border-e"
-                              cols="6"
-                            >
+                            <v-col class="border-e" cols="6">
                               <v-date-picker
                                 v-model="examInfo.endDate"
                                 color="error"
@@ -777,10 +593,7 @@
                       </v-card>
                     </v-menu>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    md="2"
-                  >
+                  <v-col cols="12" md="2">
                     <v-text-field
                       v-model="examInfo.durationMinutes"
                       :rules="[
@@ -804,11 +617,7 @@
                   </v-col>
 
                   <!-- 提醒时间输入框（仅在启用自定义时显示） -->
-                  <v-col
-                    v-if="enableCustomAlertTime"
-                    cols="12"
-                    md="2"
-                  >
+                  <v-col v-if="enableCustomAlertTime" cols="12" md="2">
                     <v-text-field
                       v-model="examInfo.alertTime"
                       :rules="[
@@ -833,19 +642,9 @@
               </div>
             </v-list-item>
           </v-list>
-          <div
-            v-else
-            class="text-center py-12"
-          >
-            <v-icon
-              class="mb-4"
-              color="grey-lighten-2"
-              size="80"
-              :icon="ICON.CALENDAR_BLANK"
-            />
-            <div class="text-headline-medium text-medium-emphasis mb-2">
-              暂无考试科目安排
-            </div>
+          <div v-else class="text-center py-12">
+            <v-icon class="mb-4" color="grey-lighten-2" size="80" :icon="ICON.CALENDAR_BLANK" />
+            <div class="text-headline-medium text-medium-emphasis mb-2">暂无考试科目安排</div>
             <div class="text-body-large text-medium-emphasis mb-4">
               点击上方"添加科目"按钮开始配置
             </div>
@@ -864,38 +663,20 @@
     </div>
 
     <!-- 删除确认对话框 -->
-    <v-dialog
-      v-model="deleteDialog"
-      max-width="400"
-    >
+    <v-dialog v-model="deleteDialog" max-width="400">
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            start
-            color="error"
-            :icon="ICON.DELETE_ALERT"
-          />
+          <v-icon start color="error" :icon="ICON.DELETE_ALERT" />
           确认删除配置
         </v-card-title>
         <v-card-text>
           确定要删除配置 <strong>{{ localConfig.examName || `配置 ${configId}` }}</strong> 吗？
-          <br><small class="text-medium-emphasis">此操作不可撤销，将会删除所有相关数据</small>
+          <br /><small class="text-medium-emphasis">此操作不可撤销，将会删除所有相关数据</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            color="medium-emphasis"
-            variant="text"
-            @click="deleteDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            :loading="deleting"
-            color="error"
-            variant="outlined"
-            @click="deleteConfig"
-          >
+          <v-btn color="medium-emphasis" variant="text" @click="deleteDialog = false"> 取消 </v-btn>
+          <v-btn :loading="deleting" color="error" variant="outlined" @click="deleteConfig">
             删除
           </v-btn>
         </v-card-actions>

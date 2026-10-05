@@ -1,20 +1,11 @@
 # 创建新的作业编辑对话框组件
 <template>
-  <v-dialog
-    v-model="dialogVisible"
-    :fullscreen="isMobile"
-    max-width="900"
-    width="auto"
-  >
+  <v-dialog v-model="dialogVisible" :fullscreen="isMobile" max-width="900" width="auto">
     <v-card border>
       <v-card-title class="d-flex align-center">
         {{ title }}
         <v-spacer />
-        <v-btn
-          :icon="ICON.CLOSE"
-          variant="text"
-          @click="handleClose"
-        />
+        <v-btn :icon="ICON.CLOSE" variant="text" @click="handleClose" />
       </v-card-title>
       <v-card-subtitle>
         {{ autoSave ? autoSavePromptText : manualSavePromptText }}
@@ -31,25 +22,13 @@
                 variant="flat"
                 @click="showNotebookDialog = true"
               >
-                <v-icon
-                  class="mr-1"
-                  size="small"
-                  :icon="ICON.BOOK_NOTEBOOK"
-                />
+                <v-icon class="mr-1" size="small" :icon="ICON.BOOK_NOTEBOOK" />
                 作业本
-                <v-chip
-                  class="ml-1"
-                  color="warning"
-                  size="x-small"
-                  variant="flat"
-                >
+                <v-chip class="ml-1" color="warning" size="x-small" variant="flat">
                   技术预览
                 </v-chip>
               </v-btn>
-              <v-divider
-                class="mx-2"
-                vertical
-              />
+              <v-divider class="mx-2" vertical />
               <v-btn
                 v-for="tool in mdTools"
                 :key="tool.name"
@@ -76,19 +55,12 @@
             />
 
             <!-- Template Buttons Section -->
-            <div
-              v-if="templateData"
-              class="mt-4"
-            >
+            <div v-if="templateData" class="mt-4">
               <div v-if="hasTemplates">
                 <div class="template-books">
                   <!-- Subject specific books -->
                   <template v-if="subjectBooks">
-                    <div
-                      v-for="(pages, book) in subjectBooks"
-                      :key="book"
-                      class="button-group"
-                    >
+                    <div v-for="(pages, book) in subjectBooks" :key="book" class="button-group">
                       <v-chip
                         :color="isBookSelected(book) ? 'success' : 'default'"
                         :variant="isBookSelected(book) ? 'elevated' : 'flat'"
@@ -99,10 +71,7 @@
                       </v-chip>
 
                       <!-- Show pages only if book is selected -->
-                      <div
-                        v-if="isBookSelected(book)"
-                        class="pages-container mt-2"
-                      >
+                      <div v-if="isBookSelected(book)" class="pages-container mt-2">
                         <v-chip
                           v-for="page in pages"
                           :key="page"
@@ -119,11 +88,7 @@
 
                   <!-- Common books -->
                   <template v-if="commonBooks">
-                    <div
-                      v-for="(pages, book) in commonBooks"
-                      :key="book"
-                      class="button-group"
-                    >
+                    <div v-for="(pages, book) in commonBooks" :key="book" class="button-group">
                       <v-chip
                         :color="isBookSelected(book) ? 'success' : 'default'"
                         :variant="isBookSelected(book) ? 'elevated' : 'flat'"
@@ -134,10 +99,7 @@
                       </v-chip>
 
                       <!-- Show pages only if book is selected -->
-                      <div
-                        v-if="isBookSelected(book)"
-                        class="pages-container mt-2"
-                      >
+                      <div v-if="isBookSelected(book)" class="pages-container mt-2">
                         <v-chip
                           v-for="page in pages"
                           :key="page"
@@ -154,10 +116,7 @@
                 </div>
 
                 <!-- Actions -->
-                <div
-                  v-if="templateData.actions?.length"
-                  class="actions-group"
-                >
+                <div v-if="templateData.actions?.length" class="actions-group">
                   <v-chip
                     v-for="action in templateData.actions"
                     :key="action"
@@ -170,21 +129,14 @@
                   </v-chip>
                 </div>
               </div>
-              <div
-                v-else
-                class="text-center text-body-medium text-disabled mt-2"
-              >
+              <div v-else class="text-center text-body-medium text-disabled mt-2">
                 暂无可用的模板
               </div>
             </div>
           </div>
 
           <!-- Quick Tools Section -->
-          <div
-            v-if="showQuickTools && !isMobile"
-            class="quick-tools ml-4"
-            style="min-width: 180px"
-          >
+          <div v-if="showQuickTools && !isMobile" class="quick-tools ml-4" style="min-width: 180px">
             <!-- Numeric Keypad -->
             <div class="numeric-keypad mb-4">
               <div class="keypad-row">
@@ -224,20 +176,10 @@
                 </v-btn>
               </div>
               <div class="keypad-row">
-                <v-btn
-                  class="keypad-btn"
-                  size="small"
-                  variant="tonal"
-                  @click="insertAtCursor('-')"
-                >
+                <v-btn class="keypad-btn" size="small" variant="tonal" @click="insertAtCursor('-')">
                   -
                 </v-btn>
-                <v-btn
-                  class="keypad-btn"
-                  size="small"
-                  variant="tonal"
-                  @click="insertAtCursor('0')"
-                >
+                <v-btn class="keypad-btn" size="small" variant="tonal" @click="insertAtCursor('0')">
                   0
                 </v-btn>
                 <v-btn
@@ -297,9 +239,7 @@
       >
         <template #prepend />
         <div class="d-flex flex-column">
-          <div class="text-headline-small mb-1">
-            编辑历史作业
-          </div>
+          <div class="text-headline-small mb-1">编辑历史作业</div>
           <div class="text-body-medium">
             {{
               new Date(
@@ -313,9 +253,7 @@
         </div>
       </v-alert>
 
-      <div class="text-center text-body-medium text-disabled mb-5">
-        关闭后自动保存更改
-      </div>
+      <div class="text-center text-body-medium text-disabled mb-5">关闭后自动保存更改</div>
     </v-card>
   </v-dialog>
 

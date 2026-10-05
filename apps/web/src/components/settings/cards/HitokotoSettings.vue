@@ -1,9 +1,6 @@
 <template>
   <div>
-    <setting-group
-      title="一言设置"
-      :icon="ICON.COMMENT_QUOTE"
-    >
+    <setting-group title="一言设置" :icon="ICON.COMMENT_QUOTE">
       <setting-item setting-key="hitokoto.enabled" />
       <setting-item setting-key="hitokoto.refreshInterval" />
 
@@ -14,9 +11,7 @@
       </div>
 
       <v-list-item>
-        <v-list-item-title class="mb-2">
-          启用数据源
-        </v-list-item-title>
+        <v-list-item-title class="mb-2"> 启用数据源 </v-list-item-title>
         <div class="d-flex flex-wrap gap-2">
           <v-checkbox
             v-model="kvConfig.sources"
@@ -49,23 +44,14 @@
           />
         </div>
         <div class="text-body-small text-warning mt-2">
-          <v-icon
-            size="x-small"
-            color="warning"
-            class="mr-1"
-            :icon="ICON.WARNING"
-          />
+          <v-icon size="x-small" color="warning" class="mr-1" :icon="ICON.WARNING" />
           一言（Hitokoto）数据源已收到关于存在负面内容的大量反馈，请用户谨慎启用。
         </div>
       </v-list-item>
 
       <v-list-item v-if="kvConfig.sources.includes('hitokoto')">
-        <v-list-item-title class="mb-2">
-          一言句子类型
-        </v-list-item-title>
-        <div class="text-body-small text-medium-emphasis mb-2">
-          不选则返回所有类型；可多选。
-        </div>
+        <v-list-item-title class="mb-2"> 一言句子类型 </v-list-item-title>
+        <div class="text-body-small text-medium-emphasis mb-2">不选则返回所有类型；可多选。</div>
         <div class="d-flex flex-wrap gap-2">
           <v-checkbox
             v-for="cat in hitokotoCategories"
@@ -142,44 +128,24 @@
           class="mb-2"
         />
         <div class="text-body-small text-medium-emphasis">
-          已启用的数据源将在获取一言时随机尝试，直到成功获取内容为止。<br>
-          敏感词过滤会将包含任意敏感词的句子过滤掉，避免显示不当内容。<br>
+          已启用的数据源将在获取一言时随机尝试，直到成功获取内容为止。<br />
+          敏感词过滤会将包含任意敏感词的句子过滤掉，避免显示不当内容。<br />
         </div>
       </v-list-item>
 
-      <div
-        v-if="loading"
-        class="text-center pb-4"
-      >
-        <v-progress-circular
-          indeterminate
-          size="24"
-          color="primary"
-        />
+      <div v-if="loading" class="text-center pb-4">
+        <v-progress-circular indeterminate size="24" color="primary" />
         <span class="ml-2 text-body-small">正在同步配置...</span>
       </div>
     </setting-group>
 
-    <v-dialog
-      v-model="testResultDialog"
-      max-width="600"
-    >
-      <v-card
-        v-if="testResultData"
-        class="rounded-lg"
-      >
+    <v-dialog v-model="testResultDialog" max-width="600">
+      <v-card v-if="testResultData" class="rounded-lg">
         <v-card-text class="pa-0">
-          <v-list
-            lines="two"
-            class="py-0"
-          >
+          <v-list lines="two" class="py-0">
             <v-list-item class="px-4 py-3">
               <template #prepend>
-                <v-avatar
-                  color="primary"
-                  variant="tonal"
-                  class="mr-2"
-                >
+                <v-avatar color="primary" variant="tonal" class="mr-2">
                   <v-icon :icon="ICON.KEY_VARIANT" />
                 </v-avatar>
               </template>
@@ -200,11 +166,7 @@
               <v-col cols="6">
                 <v-list-item class="px-4 py-2">
                   <template #prepend>
-                    <v-icon
-                      :icon="ICON.IP_NETWORK"
-                      color="grey-darken-1"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="ICON.IP_NETWORK" color="grey-darken-1" class="mr-2" />
                   </template>
                   <v-list-item-title class="text-body-small text-medium-emphasis">
                     IP 地址
@@ -217,11 +179,7 @@
               <v-col cols="6">
                 <v-list-item class="px-4 py-2">
                   <template #prepend>
-                    <v-icon
-                      :icon="ICON.MAP_MARKER_RADIUS"
-                      color="grey-darken-1"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="ICON.MAP_MARKER_RADIUS" color="grey-darken-1" class="mr-2" />
                   </template>
                   <v-list-item-title class="text-body-small text-medium-emphasis">
                     地区
@@ -237,80 +195,44 @@
 
             <v-container class="px-4 py-3">
               <v-row density="compact">
-                <v-col
-                  cols="6"
-                  sm="4"
-                >
+                <v-col cols="6" sm="4">
                   <div class="d-flex align-center mb-2">
-                    <v-icon
-                      :icon="ICON.THERMOMETER"
-                      color="warning"
-                      start
-                    />
+                    <v-icon :icon="ICON.THERMOMETER" color="warning" start />
                     <div>
-                      <div class="text-body-small text-medium-emphasis">
-                        温度
-                      </div>
+                      <div class="text-body-small text-medium-emphasis">温度</div>
                       <div class="text-body-large font-weight-medium">
                         {{ testResultData.data.weatherData.temperature }}°C
                       </div>
                     </div>
                   </div>
                 </v-col>
-                <v-col
-                  cols="6"
-                  sm="4"
-                >
+                <v-col cols="6" sm="4">
                   <div class="d-flex align-center mb-2">
-                    <v-icon
-                      :icon="ICON.WEATHER_CLOUDY"
-                      color="medium-emphasis"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="ICON.WEATHER_CLOUDY" color="medium-emphasis" class="mr-2" />
                     <div>
-                      <div class="text-body-small text-medium-emphasis">
-                        天气
-                      </div>
+                      <div class="text-body-small text-medium-emphasis">天气</div>
                       <div class="text-body-large font-weight-medium">
                         {{ testResultData.data.weatherData.weather }}
                       </div>
                     </div>
                   </div>
                 </v-col>
-                <v-col
-                  cols="6"
-                  sm="4"
-                >
+                <v-col cols="6" sm="4">
                   <div class="d-flex align-center mb-2">
-                    <v-icon
-                      :icon="ICON.WATER_PERCENT"
-                      color="blue"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="ICON.WATER_PERCENT" color="blue" class="mr-2" />
                     <div>
-                      <div class="text-body-small text-medium-emphasis">
-                        湿度
-                      </div>
+                      <div class="text-body-small text-medium-emphasis">湿度</div>
                       <div class="text-body-large font-weight-medium">
                         {{ testResultData.data.weatherData.humidity }}%
                       </div>
                     </div>
                   </div>
                 </v-col>
-                <v-col
-                  cols="6"
-                  sm="4"
-                >
+                <v-col cols="6" sm="4">
                   <div class="d-flex align-center mb-2">
-                    <v-icon
-                      :icon="ICON.WEATHER_WINDY"
-                      color="teal"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="ICON.WEATHER_WINDY" color="teal" class="mr-2" />
                     <div>
-                      <div class="text-body-small text-medium-emphasis">
-                        风向/风力
-                      </div>
+                      <div class="text-body-small text-medium-emphasis">风向/风力</div>
                       <div class="text-body-medium font-weight-medium">
                         {{ testResultData.data.weatherData.windDirection }}
                         {{ testResultData.data.weatherData.windPower }}级
@@ -318,40 +240,22 @@
                     </div>
                   </div>
                 </v-col>
-                <v-col
-                  cols="6"
-                  sm="4"
-                >
+                <v-col cols="6" sm="4">
                   <div class="d-flex align-center mb-2">
-                    <v-icon
-                      :icon="ICON.BLUR"
-                      color="medium-emphasis"
-                      start
-                    />
+                    <v-icon :icon="ICON.BLUR" color="medium-emphasis" start />
                     <div>
-                      <div class="text-body-small text-medium-emphasis">
-                        PM2.5
-                      </div>
+                      <div class="text-body-small text-medium-emphasis">PM2.5</div>
                       <div class="text-body-large font-weight-medium">
                         {{ testResultData.data.weatherData.pm25 }}
                       </div>
                     </div>
                   </div>
                 </v-col>
-                <v-col
-                  cols="6"
-                  sm="4"
-                >
+                <v-col cols="6" sm="4">
                   <div class="d-flex align-center mb-2">
-                    <v-icon
-                      :icon="ICON.EYE"
-                      color="indigo"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="ICON.EYE" color="indigo" class="mr-2" />
                     <div>
-                      <div class="text-body-small text-medium-emphasis">
-                        能见度
-                      </div>
+                      <div class="text-body-small text-medium-emphasis">能见度</div>
                       <div class="text-body-large font-weight-medium">
                         {{ testResultData.data.weatherData.visibility }}
                       </div>
@@ -364,9 +268,7 @@
             <v-divider />
 
             <div class="px-4 py-3">
-              <div class="text-body-small text-medium-emphasis mb-2">
-                环境标签
-              </div>
+              <div class="text-body-small text-medium-emphasis mb-2">环境标签</div>
               <div class="d-flex flex-wrap gap-2">
                 <v-chip
                   v-for="tag in testResultData.data.tags"
@@ -385,11 +287,7 @@
 
             <v-list-item class="px-4 py-2">
               <template #prepend>
-                <v-icon
-                  :icon="ICON.CLOCK_OUTLINE"
-                  size="small"
-                  start
-                />
+                <v-icon :icon="ICON.CLOCK_OUTLINE" size="small" start />
               </template>
               <v-list-item-title class="text-body-small text-medium-emphasis">
                 北京时间: {{ new Date(testResultData.data.beijingTime).toLocaleString() }}

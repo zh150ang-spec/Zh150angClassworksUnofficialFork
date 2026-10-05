@@ -9,35 +9,18 @@
     @click="showFullscreen = true"
     @touchmove="handleTouchMove"
   >
-    <v-card-text
-      class="pa-6 d-flex flex-column"
-      style="height: 100%"
-    >
-      <div
-        class="d-flex align-center"
-        style="gap: var(--space-4)"
-      >
+    <v-card-text class="pa-6 d-flex flex-column" style="height: 100%">
+      <div class="d-flex align-center" style="gap: var(--space-4)">
         <!-- 左侧：时间显示 -->
         <div class="flex-grow-1">
-          <div
-            class="time-display"
-            :style="timeStyle"
-          >
+          <div class="time-display" :style="timeStyle">
             {{ timeString
-            }}<span
-              class="seconds-text"
-              :style="secondsStyle"
-            >{{ secondsString }}</span><span
-              v-if="use12hClock"
-              class="ampm-text"
-              :style="secondsStyle"
+            }}<span class="seconds-text" :style="secondsStyle">{{ secondsString }}</span
+            ><span v-if="use12hClock" class="ampm-text" :style="secondsStyle">
+              {{ amPmString }}</span
             >
-              {{ amPmString }}</span>
           </div>
-          <div
-            class="date-line mt-3"
-            :style="dateStyle"
-          >
+          <div class="date-line mt-3" :style="dateStyle">
             {{ dateString }} {{ weekdayString }} {{ periodOfDay }}
           </div>
         </div>
@@ -60,10 +43,7 @@
     >
       <!-- 顶部分页导航 (自动隐藏) -->
       <Transition name="toolbar-fade">
-        <div
-          v-show="toolbarVisible"
-          class="fullscreen-toolbar"
-        >
+        <div v-show="toolbarVisible" class="fullscreen-toolbar">
           <v-tabs
             v-model="fullscreenMode"
             density="comfortable"
@@ -72,24 +52,15 @@
             class="fullscreen-tabs"
           >
             <v-tab value="clock">
-              <v-icon
-                start
-                :icon="ICON.CLOCK_OUTLINE"
-              />
+              <v-icon start :icon="ICON.CLOCK_OUTLINE" />
               时钟
             </v-tab>
             <v-tab value="countdown">
-              <v-icon
-                start
-                :icon="ICON.TIMER_SAND"
-              />
+              <v-icon start :icon="ICON.TIMER_SAND" />
               倒计时
             </v-tab>
             <v-tab value="stopwatch">
-              <v-icon
-                start
-                :icon="ICON.TIMER_OUTLINE"
-              />
+              <v-icon start :icon="ICON.TIMER_OUTLINE" />
               秒表
             </v-tab>
           </v-tabs>
@@ -98,18 +69,13 @@
 
       <!-- 主体内容区 -->
       <div class="fullscreen-time-body flex-grow-1 d-flex flex-column align-center justify-center">
-        <v-tabs-window
-          v-model="fullscreenMode"
-          class="fullscreen-tabs-window"
-        >
+        <v-tabs-window v-model="fullscreenMode" class="fullscreen-tabs-window">
           <!-- ========= 时钟模式 ========= -->
           <v-tabs-window-item value="clock">
             <div class="d-flex flex-column align-center justify-center">
               <div class="fullscreen-time-display">
-                {{ timeString }}<span class="fullscreen-seconds">{{ secondsString }}</span><span
-                  v-if="use12hClock"
-                  class="fullscreen-seconds"
-                > {{ amPmString }}</span>
+                {{ timeString }}<span class="fullscreen-seconds">{{ secondsString }}</span
+                ><span v-if="use12hClock" class="fullscreen-seconds"> {{ amPmString }}</span>
               </div>
               <div class="fullscreen-date-line mt-6">
                 {{ dateString }} {{ weekdayString }} {{ periodOfDay }}
@@ -177,13 +143,9 @@
                       size="small"
                       @click="countdownHours = Math.max(countdownHours - 1, 0)"
                     />
-                    <div class="text-body-small text-medium-emphasis">
-                      时
-                    </div>
+                    <div class="text-body-small text-medium-emphasis">时</div>
                   </div>
-                  <div class="countdown-sep">
-                    :
-                  </div>
+                  <div class="countdown-sep">:</div>
                   <div class="text-center">
                     <v-btn
                       :icon="ICON.CHEVRON_UP"
@@ -200,13 +162,9 @@
                       size="small"
                       @click="countdownMinutes = Math.max(countdownMinutes - 1, 0)"
                     />
-                    <div class="text-body-small text-medium-emphasis">
-                      分
-                    </div>
+                    <div class="text-body-small text-medium-emphasis">分</div>
                   </div>
-                  <div class="countdown-sep">
-                    :
-                  </div>
+                  <div class="countdown-sep">:</div>
                   <div class="text-center">
                     <v-btn
                       :icon="ICON.CHEVRON_UP"
@@ -223,9 +181,7 @@
                       size="small"
                       @click="countdownSeconds = Math.max(countdownSeconds - 1, 0)"
                     />
-                    <div class="text-body-small text-medium-emphasis">
-                      秒
-                    </div>
+                    <div class="text-body-small text-medium-emphasis">秒</div>
                   </div>
                 </div>
                 <!-- 快捷按钮 -->
@@ -337,14 +293,8 @@
               </div>
               <!-- 计次记录 -->
               <v-slide-y-transition>
-                <div
-                  v-if="laps.length > 0"
-                  class="stopwatch-laps mt-6"
-                >
-                  <v-table
-                    density="compact"
-                    class="stopwatch-laps-table"
-                  >
+                <div v-if="laps.length > 0" class="stopwatch-laps mt-6">
+                  <v-table density="compact" class="stopwatch-laps-table">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -353,10 +303,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr
-                        v-for="(lap, idx) in laps"
-                        :key="idx"
-                      >
+                      <tr v-for="(lap, idx) in laps" :key="idx">
                         <td>
                           {{ laps.length - idx }}
                         </td>
@@ -396,19 +343,10 @@
   </v-dialog>
 
   <!-- 倒计时结束弹框 -->
-  <v-dialog
-    v-model="countdownEndedDialog"
-    max-width="480"
-    persistent
-  >
+  <v-dialog v-model="countdownEndedDialog" max-width="480" persistent>
     <v-card rounded="xl">
       <v-card-title class="d-flex align-center justify-center pt-6">
-        <v-icon
-          color="error"
-          size="32"
-          class="mr-2"
-          :icon="ICON.ALARM"
-        />
+        <v-icon color="error" size="32" class="mr-2" :icon="ICON.ALARM" />
         时间到！
       </v-card-title>
       <v-card-text class="text-center pb-2">
@@ -418,13 +356,8 @@
         >
           {{ formatCountdownTotal(countdownTotal) }}
         </div>
-        <div class="text-body-large text-medium-emphasis">
-          设定的倒计时已结束
-        </div>
-        <div
-          v-if="overtimeElapsed > 0"
-          class="mt-4"
-        >
+        <div class="text-body-large text-medium-emphasis">设定的倒计时已结束</div>
+        <div v-if="overtimeElapsed > 0" class="mt-4">
           <v-chip
             color="error"
             variant="tonal"
@@ -451,27 +384,17 @@
   </v-dialog>
 
   <!-- 设置弹框 -->
-  <v-dialog
-    v-model="showSettings"
-    max-width="420"
-    :scrim="true"
-  >
+  <v-dialog v-model="showSettings" max-width="420" :scrim="true">
     <v-card rounded="xl">
       <v-card-title class="d-flex align-center">
-        <v-icon
-          class="mr-2"
-          :icon="ICON.SETTINGS"
-        />
+        <v-icon class="mr-2" :icon="ICON.SETTINGS" />
         时间卡片设置
       </v-card-title>
       <v-card-text>
         <v-list>
           <v-list-item>
             <template #prepend>
-              <v-icon
-                class="mr-3"
-                :icon="ICON.CLOCK_OUTLINE"
-              />
+              <v-icon class="mr-3" :icon="ICON.CLOCK_OUTLINE" />
             </template>
             <v-list-item-title>显示时间卡片</v-list-item-title>
             <v-list-item-subtitle>在首页显示时间卡片，刷新后生效。</v-list-item-subtitle>
@@ -486,10 +409,7 @@
           </v-list-item>
           <v-list-item>
             <template #prepend>
-              <v-icon
-                class="mr-3"
-                :icon="ICON.CLOCK_TIME_SIX_OUTLINE"
-              />
+              <v-icon class="mr-3" :icon="ICON.CLOCK_TIME_SIX_OUTLINE" />
             </template>
             <v-list-item-title>12 小时制</v-list-item-title>
             <v-list-item-subtitle>以 12 小时制（AM/PM）显示时间。</v-list-item-subtitle>
@@ -506,12 +426,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          variant="text"
-          @click="showSettings = false"
-        >
-          完成
-        </v-btn>
+        <v-btn variant="text" @click="showSettings = false"> 完成 </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -7,16 +7,10 @@
     variant="tonal"
   >
     <div class="d-flex align-center">
-      <v-icon
-        class="mr-2"
-        :icon="snackbarIcon"
-      />
+      <v-icon class="mr-2" :icon="snackbarIcon" />
       <div>
         <div>{{ offlineMessage }}</div>
-        <div
-          v-if="pendingCount > 0"
-          class="text-body-small mt-1"
-        >
+        <div v-if="pendingCount > 0" class="text-body-small mt-1">
           {{ pendingCount }} 项数据等待同步
         </div>
       </div>

@@ -1,36 +1,15 @@
 <template>
-  <v-navigation-drawer
-    v-if="drawer"
-    v-model="drawer"
-    location="right"
-    temporary
-    width="400"
-  >
-    <v-toolbar
-      class="message-toolbar"
-      color="primary"
-    >
+  <v-navigation-drawer v-if="drawer" v-model="drawer" location="right" temporary width="400">
+    <v-toolbar class="message-toolbar" color="primary">
       <v-toolbar-title>消息记录</v-toolbar-title>
       <v-spacer />
-      <v-btn
-        :icon="ICON.CLOSE"
-        variant="text"
-        @click="drawer = false"
-      />
+      <v-btn :icon="ICON.CLOSE" variant="text" @click="drawer = false" />
     </v-toolbar>
 
     <v-list>
-      <v-list-item
-        v-for="msg in messages"
-        :key="msg.id"
-        rounded
-      >
+      <v-list-item v-for="msg in messages" :key="msg.id" rounded>
         <template #prepend>
-          <v-icon
-            :color="colors[msg.type]"
-            :icon="icons[msg.type]"
-            size="20"
-          />
+          <v-icon :color="colors[msg.type]" :icon="icons[msg.type]" size="20" />
         </template>
 
         <v-list-item-title>{{ msg.title }}</v-list-item-title>
@@ -44,14 +23,9 @@
 
       <v-list-item v-if="!messages.length">
         <template #prepend>
-          <v-icon
-            color="medium-emphasis"
-            :icon="ICON.INBOX"
-          />
+          <v-icon color="medium-emphasis" :icon="ICON.INBOX" />
         </template>
-        <v-list-item-title class="text-medium-emphasis">
-          暂无消息
-        </v-list-item-title>
+        <v-list-item-title class="text-medium-emphasis"> 暂无消息 </v-list-item-title>
       </v-list-item>
     </v-list>
   </v-navigation-drawer>

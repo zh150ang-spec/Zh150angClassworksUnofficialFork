@@ -8,18 +8,10 @@
   >
     <v-card>
       <v-card-title class="d-flex align-center">
-        <v-icon
-          start
-          :icon="ICON.ACCOUNT_GROUP"
-        />
+        <v-icon start :icon="ICON.ACCOUNT_GROUP" />
         考勤
         <v-spacer />
-        <v-chip
-          v-if="!isMobile"
-          class="ml-2"
-          color="primary"
-          size="small"
-        >
+        <v-chip v-if="!isMobile" class="ml-2" color="primary" size="small">
           {{ formatDateDisplay(dateString) }}
         </v-chip>
         <v-btn
@@ -33,10 +25,7 @@
       <v-card-text>
         <!-- 批量操作和搜索 -->
         <v-row class="mb-4">
-          <v-col
-            cols="12"
-            md="12"
-          >
+          <v-col cols="12" md="12">
             <v-text-field
               v-model="attendanceSearch"
               clearable
@@ -115,26 +104,12 @@
 
         <!-- 学生列表 -->
         <v-row>
-          <v-col
-            v-for="student in filteredStudents"
-            :key="student"
-            cols="12"
-            lg="4"
-            md="6"
-            sm="6"
-          >
-            <v-card
-              border
-              class="student-card"
-            >
+          <v-col v-for="student in filteredStudents" :key="student" cols="12" lg="4" md="6" sm="6">
+            <v-card border class="student-card">
               <v-card-text class="d-flex align-center pa-2">
                 <div class="flex-grow-1">
                   <div class="d-flex align-center">
-                    <v-avatar
-                      :color="getStudentStatusColor(student)"
-                      class="mr-2"
-                      size="24"
-                    >
+                    <v-avatar :color="getStudentStatusColor(student)" class="mr-2" size="24">
                       <v-icon size="small">
                         {{ getStudentStatusIcon(student) }}
                       </v-icon>
@@ -183,19 +158,10 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col
-            cols="12"
-            md="12"
-          >
-            <v-card
-              class="mb-4"
-              color="primary"
-              variant="tonal"
-            >
+          <v-col cols="12" md="12">
+            <v-card class="mb-4" color="primary" variant="tonal">
               <v-card-text>
-                <div class="text-label-large mb-2">
-                  批量操作
-                </div>
+                <div class="text-label-large mb-2">批量操作</div>
                 <div class="d-flex flex-wrap gap-2">
                   <v-btn
                     class="flex-grow-1"
@@ -241,14 +207,8 @@
       <v-card-actions>
         <v-spacer />
 
-        <v-btn
-          color="primary"
-          @click="$emit('save')"
-        >
-          <v-icon
-            start
-            :icon="ICON.CONTENT_SAVE"
-          />
+        <v-btn color="primary" @click="$emit('save')">
+          <v-icon start :icon="ICON.CONTENT_SAVE" />
           保存
         </v-btn>
       </v-card-actions>

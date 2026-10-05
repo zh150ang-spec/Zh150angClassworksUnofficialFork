@@ -8,34 +8,17 @@
     rounded="lg"
   >
     <div class="d-flex align-center">
-      <v-icon
-        class="mr-3"
-        :icon="ICON.UPDATE"
-      />
+      <v-icon class="mr-3" :icon="ICON.UPDATE" />
       <div>
-        <div class="font-weight-bold">
-          发现新版本
-        </div>
-        <div class="text-body-small">
-          点击更新按钮以使用最新版本
-        </div>
+        <div class="font-weight-bold">发现新版本</div>
+        <div class="text-body-small">点击更新按钮以使用最新版本</div>
       </div>
     </div>
     <template #actions>
-      <v-btn
-        color="primary"
-        variant="elevated"
-        :loading="isUpdating"
-        @click="updateServiceWorker"
-      >
+      <v-btn color="primary" variant="elevated" :loading="isUpdating" @click="updateServiceWorker">
         更新
       </v-btn>
-      <v-btn
-        variant="text"
-        @click="dismissUpdate"
-      >
-        稍后
-      </v-btn>
+      <v-btn variant="text" @click="dismissUpdate"> 稍后 </v-btn>
     </template>
   </v-snackbar>
 </template>

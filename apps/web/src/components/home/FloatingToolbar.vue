@@ -1,11 +1,7 @@
 <template>
   <div class="floating-toolbar-container">
     <v-slide-y-transition>
-      <v-card
-        class="floating-toolbar"
-        elevation="4"
-        rounded="xl"
-      >
+      <v-card class="floating-toolbar" elevation="4" rounded="xl">
         <v-btn
           :title="'查看昨天'"
           class="toolbar-btn"
@@ -14,18 +10,12 @@
           @click="$emit('prev-day')"
         >
           <div class="toolbar-btn-inner">
-            <v-icon
-              :icon="ICON.CHEVRON_LEFT"
-              size="x-large"
-            />
+            <v-icon :icon="ICON.CHEVRON_LEFT" size="x-large" />
             <span class="btn-label">昨天</span>
           </div>
         </v-btn>
 
-        <v-menu
-          :close-on-content-click="false"
-          location="top"
-        >
+        <v-menu :close-on-content-click="false" location="top">
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
@@ -35,18 +25,12 @@
               variant="text"
             >
               <div class="toolbar-btn-inner">
-                <v-icon
-                  :icon="ICON.CALENDAR"
-                  size="x-large"
-                />
+                <v-icon :icon="ICON.CALENDAR" size="x-large" />
                 <span class="btn-label">日期</span>
               </div>
             </v-btn>
           </template>
-          <v-card
-            border
-            class="date-picker-card"
-          >
+          <v-card border class="date-picker-card">
             <v-date-picker
               :model-value="selectedDate"
               color="primary"
@@ -65,18 +49,12 @@
           @click="$emit('next-day')"
         >
           <div class="toolbar-btn-inner">
-            <v-icon
-              :icon="ICON.CHEVRON_RIGHT"
-              size="x-large"
-            />
+            <v-icon :icon="ICON.CHEVRON_RIGHT" size="x-large" />
             <span class="btn-label">明天</span>
           </div>
         </v-btn>
 
-        <v-divider
-          vertical
-          class="toolbar-divider"
-        />
+        <v-divider vertical class="toolbar-divider" />
 
         <v-btn
           :title="'缩小字体'"
@@ -86,10 +64,7 @@
           @click="$emit('zoom', 'out')"
         >
           <div class="toolbar-btn-inner">
-            <v-icon
-              :icon="ICON.FORMAT_FONT_SIZE_DECREASE"
-              size="x-large"
-            />
+            <v-icon :icon="ICON.FORMAT_FONT_SIZE_DECREASE" size="x-large" />
             <span class="btn-label">缩小</span>
           </div>
         </v-btn>
@@ -102,18 +77,12 @@
           @click="$emit('zoom', 'up')"
         >
           <div class="toolbar-btn-inner">
-            <v-icon
-              :icon="ICON.FORMAT_FONT_SIZE_INCREASE"
-              size="x-large"
-            />
+            <v-icon :icon="ICON.FORMAT_FONT_SIZE_INCREASE" size="x-large" />
             <span class="btn-label">放大</span>
           </div>
         </v-btn>
 
-        <v-divider
-          vertical
-          class="toolbar-divider"
-        />
+        <v-divider vertical class="toolbar-divider" />
 
         <v-btn
           :loading="loading"
@@ -124,10 +93,7 @@
           @click="$emit('refresh')"
         >
           <div class="toolbar-btn-inner">
-            <v-icon
-              :icon="ICON.REFRESH"
-              size="x-large"
-            />
+            <v-icon :icon="ICON.REFRESH" size="x-large" />
             <span class="btn-label">刷新</span>
           </div>
         </v-btn>

@@ -1,16 +1,7 @@
 <template>
-  <v-row
-    v-if="notifications.length > 0"
-    class="mb-4"
-  >
+  <v-row v-if="notifications.length > 0" class="mb-4">
     <v-col cols="12">
-      <v-card
-        class="notification-list-card"
-        color="primary"
-        variant="tonal"
-        border
-        rounded="xl"
-      >
+      <v-card class="notification-list-card" color="primary" variant="tonal" border rounded="xl">
         <v-card-text class="pa-3">
           <div
             v-for="notification in notifications"
@@ -48,23 +39,13 @@
     scrollable
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-card
-      v-if="currentNotification"
-      class="rounded-xl"
-    >
+    <v-card v-if="currentNotification" class="rounded-xl">
       <v-card-title class="d-flex align-center pa-4 text-headline-medium">
-        <span
-          :class="currentNotification.isUrgent ? 'text-error' : ''"
-          class="font-weight-bold"
-        >
+        <span :class="currentNotification.isUrgent ? 'text-error' : ''" class="font-weight-bold">
           {{ currentNotification.isUrgent ? '强调通知' : '通知详情' }}
         </span>
         <v-spacer />
-        <v-btn
-          :icon="ICON.CLOSE"
-          variant="text"
-          @click="$emit('update:modelValue', false)"
-        />
+        <v-btn :icon="ICON.CLOSE" variant="text" @click="$emit('update:modelValue', false)" />
       </v-card-title>
 
       <v-divider />
@@ -76,9 +57,7 @@
         >
           {{ currentNotification.message }}
         </div>
-        <div class="text-body-large text-medium-emphasis">
-          发布时间：{{ formattedTime }}
-        </div>
+        <div class="text-body-large text-medium-emphasis">发布时间：{{ formattedTime }}</div>
       </v-card-text>
 
       <v-divider />

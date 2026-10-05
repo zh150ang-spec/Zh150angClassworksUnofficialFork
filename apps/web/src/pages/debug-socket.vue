@@ -1,14 +1,8 @@
 <template>
   <v-container>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
-        <v-card
-          border
-          class="mb-4"
-        >
+      <v-col cols="12" md="6">
+        <v-card border class="mb-4">
           <v-card-title>连接信息</v-card-title>
           <v-card-text>
             <v-list density="compact">
@@ -23,11 +17,7 @@
               <v-list-item>
                 <v-list-item-title>连接状态</v-list-item-title>
                 <v-list-item-subtitle>
-                  <v-chip
-                    :color="connected ? 'success' : 'error'"
-                    class="mr-2"
-                    size="small"
-                  >
+                  <v-chip :color="connected ? 'success' : 'error'" class="mr-2" size="small">
                     {{ connected ? 'connected' : 'disconnected' }}
                   </v-chip>
                   <span v-if="socketId">id: {{ socketId }}</span>
@@ -44,21 +34,14 @@
             </v-list>
             <v-divider class="my-4" />
             <v-row>
-              <v-col
-                cols="12"
-                md="8"
-              >
+              <v-col cols="12" md="8">
                 <v-text-field
                   v-model="manualToken"
                   clearable
                   label="手动加入 Token (留空使用配置的 Token)"
                 />
               </v-col>
-              <v-col
-                class="d-flex align-center"
-                cols="12"
-                md="4"
-              >
+              <v-col class="d-flex align-center" cols="12" md="4">
                 <v-btn
                   class="mr-2"
                   color="primary"
@@ -74,26 +57,14 @@
                 >
                   离开当前
                 </v-btn>
-                <v-btn
-                  color="error"
-                  variant="tonal"
-                  @click="handleLeaveAll"
-                >
-                  离开全部
-                </v-btn>
+                <v-btn color="error" variant="tonal" @click="handleLeaveAll"> 离开全部 </v-btn>
               </v-col>
             </v-row>
             <v-divider class="my-4" />
             <v-row>
               <v-col cols="12">
-                <v-card
-                  border
-                  color="primary"
-                  variant="tonal"
-                >
-                  <v-card-title class="text-body-large">
-                    聊天室消息
-                  </v-card-title>
+                <v-card border color="primary" variant="tonal">
+                  <v-card-title class="text-body-large"> 聊天室消息 </v-card-title>
                   <v-card-text>
                     <v-textarea
                       v-model="chatInput"
@@ -104,11 +75,7 @@
                     />
                     <div class="d-flex">
                       <v-spacer />
-                      <v-btn
-                        :disabled="!canSendChat"
-                        color="primary"
-                        @click="sendChat"
-                      >
+                      <v-btn :disabled="!canSendChat" color="primary" @click="sendChat">
                         发送聊天
                       </v-btn>
                     </div>
@@ -118,13 +85,7 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-btn
-                  color="secondary"
-                  variant="tonal"
-                  @click="reconnect"
-                >
-                  重新连接
-                </v-btn>
+                <v-btn color="secondary" variant="tonal" @click="reconnect"> 重新连接 </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
@@ -133,84 +94,42 @@
         <v-card border>
           <v-card-title>在线设备</v-card-title>
           <v-card-text>
-            <v-btn
-              class="mb-3"
-              color="primary"
-              @click="fetchOnline"
-            >
-              刷新在线列表
-            </v-btn>
-            <v-list
-              v-if="onlineDevices.length"
-              density="compact"
-            >
-              <v-list-item
-                v-for="dev in onlineDevices"
-                :key="dev.uuid"
-              >
+            <v-btn class="mb-3" color="primary" @click="fetchOnline"> 刷新在线列表 </v-btn>
+            <v-list v-if="onlineDevices.length" density="compact">
+              <v-list-item v-for="dev in onlineDevices" :key="dev.uuid">
                 <template #prepend>
-                  <v-avatar
-                    :color="dev.connections > 0 ? 'success' : 'grey'"
-                    size="24"
-                  />
+                  <v-avatar :color="dev.connections > 0 ? 'success' : 'grey'" size="24" />
                 </template>
                 <v-list-item-title>{{ dev.name || '(未命名)' }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{ dev.uuid }} · 连接数 {{ dev.connections }}
                 </v-list-item-subtitle>
                 <template #append>
-                  <v-btn
-                    size="small"
-                    variant="text"
-                    @click="handleSelectDevice(dev)"
-                  >
-                    选择
-                  </v-btn>
+                  <v-btn size="small" variant="text" @click="handleSelectDevice(dev)"> 选择 </v-btn>
                 </template>
               </v-list-item>
             </v-list>
-            <div
-              v-else
-              class="text-medium-emphasis"
-            >
-              暂无数据
-            </div>
+            <div v-else class="text-medium-emphasis">暂无数据</div>
           </v-card-text>
         </v-card>
       </v-col>
 
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col cols="12" md="6">
         <v-card border>
           <v-card-title class="d-flex align-center">
             事件日志
             <v-spacer />
-            <v-btn
-              color="error"
-              size="small"
-              variant="text"
-              @click="clearLogs"
-            >
-              清空
-            </v-btn>
+            <v-btn color="error" size="small" variant="text" @click="clearLogs"> 清空 </v-btn>
           </v-card-title>
           <v-card-text>
             <v-list density="compact">
-              <v-list-item
-                v-for="(log, idx) in logs"
-                :key="idx"
-              >
+              <v-list-item v-for="(log, idx) in logs" :key="idx">
                 <v-list-item-title>
                   <span class="text-body-small text-medium-emphasis">{{ log.time }}</span>
                   <span class="ml-2">{{ log.event }}</span>
                 </v-list-item-title>
                 <v-list-item-text>
-                  <pre
-                    class="mb-2"
-                    style="white-space: pre-wrap"
-                  >{{ log.payload }}</pre>
+                  <pre class="mb-2" style="white-space: pre-wrap">{{ log.payload }}</pre>
                 </v-list-item-text>
               </v-list-item>
             </v-list>
@@ -219,10 +138,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog
-      v-model="confirmDialog.show"
-      max-width="420"
-    >
+    <v-dialog v-model="confirmDialog.show" max-width="420">
       <v-card>
         <v-card-title class="text-headline-small">
           {{ confirmDialog.title }}
@@ -231,13 +147,7 @@
         <v-card-actions class="pa-4">
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="cancelSave()"
-            >
-              取消
-            </v-btn>
+            <v-btn color="neutral-surface" variant="elevated" @click="cancelSave()"> 取消 </v-btn>
             <v-btn
               :color="confirmDialog.color || 'warning'"
               variant="elevated"

@@ -1,10 +1,5 @@
 <template>
-  <v-card
-    border
-    flat
-    rounded="xl"
-    class="notification-sound-settings"
-  >
+  <v-card border flat rounded="xl" class="notification-sound-settings">
     <v-card-title> 通知铃声设置 </v-card-title>
 
     <v-card-text>
@@ -18,10 +13,7 @@
         @click:close="showAutoplayWarning = false"
       >
         <div class="d-flex align-center">
-          <v-icon
-            start
-            :icon="ICON.INFO"
-          />
+          <v-icon start :icon="ICON.INFO" />
           <span>首次使用请点击试听按钮测试音频播放是否正常</span>
         </div>
       </v-alert>
@@ -31,10 +23,7 @@
         <v-col cols="12">
           <v-card border>
             <v-card-title class="text-body-large">
-              <v-icon
-                start
-                :icon="ICON.BELL_RING"
-              />
+              <v-icon start :icon="ICON.BELL_RING" />
               单次通知铃声
             </v-card-title>
             <v-card-text>
@@ -48,10 +37,7 @@
                 @update:model-value="onSingleSoundChange"
               >
                 <template #internalItem="{ props, item }">
-                  <v-list-item
-                    v-bind="props"
-                    @click="previewSound(item.value)"
-                  >
+                  <v-list-item v-bind="props" @click="previewSound(item.value)">
                     <template #prepend>
                       <v-icon :icon="ICON.MUSIC_NOTE" />
                     </template>
@@ -95,10 +81,7 @@
         <v-col cols="12">
           <v-card border>
             <v-card-title class="text-body-large">
-              <v-icon
-                start
-                :icon="ICON.BELL_ALERT"
-              />
+              <v-icon start :icon="ICON.BELL_ALERT" />
               紧急通知铃声
             </v-card-title>
             <v-card-text>
@@ -112,10 +95,7 @@
                 @update:model-value="onUrgentSoundChange"
               >
                 <template #internalItem="{ props, item }">
-                  <v-list-item
-                    v-bind="props"
-                    @click="previewSound(item.value)"
-                  >
+                  <v-list-item v-bind="props" @click="previewSound(item.value)">
                     <template #prepend>
                       <v-icon :icon="ICON.MUSIC_NOTE" />
                     </template>

@@ -1,29 +1,15 @@
 <template>
-  <v-card
-    border
-    flat
-    rounded="xl"
-  >
+  <v-card border flat rounded="xl">
     <v-card-item>
       <template #prepend>
-        <v-icon
-          class="mr-2"
-          :icon="ICON.INFO"
-          size="large"
-        />
+        <v-icon class="mr-2" :icon="ICON.INFO" size="large" />
       </template>
-      <v-card-title class="text-headline-small">
-        关于
-      </v-card-title>
+      <v-card-title class="text-headline-small"> 关于 </v-card-title>
     </v-card-item>
 
     <v-card-text>
       <v-row>
-        <v-col
-          class="mx-auto"
-          cols="12"
-          md="8"
-        >
+        <v-col class="mx-auto" cols="12" md="8">
           <!-- 捐赠卡片 -->
           <v-card
             border
@@ -37,9 +23,7 @@
             <v-card-item>
               <div class="card-content">
                 <div>
-                  <div class="text-headline-small font-weight-bold">
-                    请支持我们 Classworks
-                  </div>
+                  <div class="text-headline-small font-weight-bold">请支持我们 Classworks</div>
                 </div>
               </div>
             </v-card-item>
@@ -64,22 +48,12 @@
           </v-card>
 
           <div class="d-flex flex-column align-start">
-            <v-avatar
-              class="mb-4"
-              size="120"
-            >
-              <v-img
-                alt="Classworks"
-                src="@/assets/cslogo.png"
-              />
+            <v-avatar class="mb-4" size="120">
+              <v-img alt="Classworks" src="@/assets/cslogo.png" />
             </v-avatar>
 
-            <h2 class="mb-2">
-              Classworks
-            </h2>
-            <p class="text-body-large mb-4">
-              适用于班级大屏的作业板小工具
-            </p>
+            <h2 class="mb-2">Classworks</h2>
+            <p class="text-body-large mb-4">适用于班级大屏的作业板小工具</p>
 
             <div class="d-flex gap-2 flex-wrap mb-6">
               <v-btn
@@ -121,9 +95,7 @@
 
             <v-divider class="mb-4 w-100" />
 
-            <h3 class="text-headline-small mb-2">
-              备注与致谢
-            </h3>
+            <h3 class="text-headline-small mb-2">备注与致谢</h3>
             <v-list class="mb-4 bg-transparent">
               <v-list-item
                 :append-icon="ICON.LINK"
@@ -135,28 +107,16 @@
                   感谢 EnderWolf006 (@EnderWolf) fhzit(@Hellofhz) KeyFac 等人的贡献
                 </v-list-item-subtitle>
               </v-list-item>
-              <v-list-item
-                :append-icon="ICON.LINK"
-                href="https://hlyun.org"
-                target="_blank"
-              >
+              <v-list-item :append-icon="ICON.LINK" href="https://hlyun.org" target="_blank">
                 <v-list-item-title> Classworks 由厚浪云提供服务支持 </v-list-item-title>
                 <v-list-item-subtitle> 云服务器托管平台 </v-list-item-subtitle>
               </v-list-item>
-              <v-list-item
-                :append-icon="ICON.LINK"
-                href="https://clock.qqhkx.com/"
-                target="_blank"
-              >
+              <v-list-item :append-icon="ICON.LINK" href="https://clock.qqhkx.com/" target="_blank">
                 <v-list-item-title> 感谢 沉浸式时钟 </v-list-item-title>
                 <v-list-item-subtitle> https://clock.qqhkx.com/ </v-list-item-subtitle>
               </v-list-item>
               <v-divider class="ma-1" />
-              <v-list-item
-                :append-icon="ICON.LINK"
-                href="https://classisland.tech"
-                target="_blank"
-              >
+              <v-list-item :append-icon="ICON.LINK" href="https://classisland.tech" target="_blank">
                 <v-list-item-title> ClassIsland - 班级大屏课表显示工具 </v-list-item-title>
                 <v-list-item-subtitle> 由 HelloWRC 开发 </v-list-item-subtitle>
               </v-list-item>
@@ -180,11 +140,7 @@
               查看使用的第三方库
             </v-btn>
 
-            <v-dialog
-              v-model="showDeps"
-              fullscreen
-              transition="dialog-bottom-transition"
-            >
+            <v-dialog v-model="showDeps" fullscreen transition="dialog-bottom-transition">
               <v-card>
                 <v-toolbar>
                   <v-btn
@@ -217,10 +173,7 @@
             </v-dialog>
 
             <!-- 报告问题对话框 -->
-            <v-dialog
-              v-model="showReportDialog"
-              max-width="640"
-            >
+            <v-dialog v-model="showReportDialog" max-width="640">
               <v-card>
                 <v-toolbar density="compact">
                   <v-btn
@@ -241,10 +194,7 @@
                     class="mb-3 pa-3 bg-surface-variant rounded"
                     style="max-height: 260px; overflow: auto"
                   >
-                    <pre
-                      class="text-body-medium"
-                      style="white-space: pre-wrap; margin: 0"
-                    >{{
+                    <pre class="text-body-medium" style="white-space: pre-wrap; margin: 0">{{
                       envBoxText
                     }}</pre>
                   </v-sheet>
@@ -276,12 +226,7 @@
                       查看 /debug 页面
                     </v-btn>
                   </div>
-                  <v-alert
-                    v-if="copyOk"
-                    type="success"
-                    density="compact"
-                    class="mb-4"
-                  >
+                  <v-alert v-if="copyOk" type="success" density="compact" class="mb-4">
                     已复制到剪贴板
                   </v-alert>
                   <div class="d-flex gap-2 mb-4">
@@ -294,34 +239,17 @@
                       发送错误反馈到 Sentry
                     </v-btn>
                   </div>
-                  <h4 class="text-body-large mb-2">
-                    反馈渠道
-                  </h4>
-                  <v-list
-                    lines="one"
-                    class="bg-transparent"
-                  >
-                    <v-list-item
-                      :href="qqGroupLink"
-                      target="_blank"
-                      :prepend-icon="ICON.QQCHAT"
-                    >
+                  <h4 class="text-body-large mb-2">反馈渠道</h4>
+                  <v-list lines="one" class="bg-transparent">
+                    <v-list-item :href="qqGroupLink" target="_blank" :prepend-icon="ICON.QQCHAT">
                       <v-list-item-title>QQ群 ({{ qqGroupNumber }})</v-list-item-title>
                       <v-list-item-subtitle>964979747</v-list-item-subtitle>
                     </v-list-item>
-                    <v-list-item
-                      :href="githubIssueUrl"
-                      target="_blank"
-                      :prepend-icon="ICON.GITHUB"
-                    >
+                    <v-list-item :href="githubIssueUrl" target="_blank" :prepend-icon="ICON.GITHUB">
                       <v-list-item-title>GitHub Issue</v-list-item-title>
                       <v-list-item-subtitle>Moonrend/Classworks</v-list-item-subtitle>
                     </v-list-item>
-                    <v-list-item
-                      :href="mailtoLink"
-                      target="_blank"
-                      :prepend-icon="ICON.EMAIL"
-                    >
+                    <v-list-item :href="mailtoLink" target="_blank" :prepend-icon="ICON.EMAIL">
                       <v-list-item-title>邮件</v-list-item-title>
                       <v-list-item-subtitle>sun@wuyuan.dev</v-list-item-subtitle>
                     </v-list-item>

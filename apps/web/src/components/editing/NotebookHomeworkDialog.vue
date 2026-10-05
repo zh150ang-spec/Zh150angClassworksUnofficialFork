@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="dialogVisible"
-    :fullscreen="isMobile"
-    max-width="600"
-    width="auto"
-  >
+  <v-dialog v-model="dialogVisible" :fullscreen="isMobile" max-width="600" width="auto">
     <v-card border>
       <v-card-title class="d-flex align-center">
         <v-btn
@@ -14,22 +9,12 @@
           class="mr-2"
           @click="handleClose"
         />
-        <v-icon
-          v-else
-          class="mr-2"
-          color="primary"
-        >
+        <v-icon v-else class="mr-2" color="primary">
           {{ ICON.BOOK_NOTEBOOK }}
         </v-icon>
         <span class="text-truncate">作业本作业</span>
         <v-spacer />
-        <v-chip
-          color="primary"
-          variant="flat"
-          size="small"
-        >
-          第 {{ currentTimes }} 次
-        </v-chip>
+        <v-chip color="primary" variant="flat" size="small"> 第 {{ currentTimes }} 次 </v-chip>
         <v-btn
           v-if="!isMobile"
           :icon="ICON.CLOSE"
@@ -42,10 +27,7 @@
       <v-divider />
 
       <v-card-text class="pt-4">
-        <v-form
-          ref="formRef"
-          @submit.prevent="addHomework"
-        >
+        <v-form ref="formRef" @submit.prevent="addHomework">
           <v-row density="compact">
             <v-col cols="12">
               <v-select
@@ -61,10 +43,7 @@
                   <v-divider class="mb-2" />
                   <v-list-item @click="showCustomNotebook = true">
                     <v-list-item-title>
-                      <v-icon
-                        class="mr-1"
-                        size="small"
-                      >
+                      <v-icon class="mr-1" size="small">
                         {{ ICON.PLUS }}
                       </v-icon>
                       自定义...
@@ -85,18 +64,11 @@
               />
             </v-col>
 
-            <v-col
-              v-if="hasTemplates"
-              cols="12"
-            >
+            <v-col v-if="hasTemplates" cols="12">
               <div class="template-section">
                 <div class="template-books">
                   <template v-if="subjectBooks">
-                    <div
-                      v-for="(pages, book) in subjectBooks"
-                      :key="book"
-                      class="button-group"
-                    >
+                    <div v-for="(pages, book) in subjectBooks" :key="book" class="button-group">
                       <v-chip
                         :color="form.content.includes(book) ? 'success' : 'default'"
                         :variant="form.content.includes(book) ? 'elevated' : 'flat'"
@@ -105,10 +77,7 @@
                       >
                         {{ book }}
                       </v-chip>
-                      <div
-                        v-if="form.content.includes(book)"
-                        class="pages-container mt-1"
-                      >
+                      <div v-if="form.content.includes(book)" class="pages-container mt-1">
                         <v-chip
                           v-for="page in pages"
                           :key="page"
@@ -125,11 +94,7 @@
                   </template>
 
                   <template v-if="commonBooks">
-                    <div
-                      v-for="(pages, book) in commonBooks"
-                      :key="book"
-                      class="button-group"
-                    >
+                    <div v-for="(pages, book) in commonBooks" :key="book" class="button-group">
                       <v-chip
                         :color="form.content.includes(book) ? 'success' : 'default'"
                         :variant="form.content.includes(book) ? 'elevated' : 'flat'"
@@ -138,10 +103,7 @@
                       >
                         {{ book }}
                       </v-chip>
-                      <div
-                        v-if="form.content.includes(book)"
-                        class="pages-container mt-1"
-                      >
+                      <div v-if="form.content.includes(book)" class="pages-container mt-1">
                         <v-chip
                           v-for="page in pages"
                           :key="page"
@@ -172,24 +134,13 @@
                       inline
                       class="ml-2"
                     >
-                      <v-radio
-                        value="single"
-                        label="单页"
-                      />
-                      <v-radio
-                        value="range"
-                        label="范围"
-                      />
+                      <v-radio value="single" label="单页" />
+                      <v-radio value="range" label="范围" />
                     </v-radio-group>
                   </div>
 
-                  <div
-                    v-if="pageMode === 'single'"
-                    class="input-row"
-                  >
-                    <div class="input-label">
-                      第
-                    </div>
+                  <div v-if="pageMode === 'single'" class="input-row">
+                    <div class="input-label">第</div>
                     <v-btn
                       :disabled="!form.pageStart || form.pageStart <= 1"
                       density="comfortable"
@@ -214,18 +165,11 @@
                       variant="tonal"
                       @click="form.pageStart = (form.pageStart || 0) + 1"
                     />
-                    <div class="input-label">
-                      页
-                    </div>
+                    <div class="input-label">页</div>
                   </div>
 
-                  <div
-                    v-else-if="pageMode === 'range'"
-                    class="input-row"
-                  >
-                    <div class="input-label">
-                      第
-                    </div>
+                  <div v-else-if="pageMode === 'range'" class="input-row">
+                    <div class="input-label">第</div>
                     <v-btn
                       :disabled="!form.pageStart || form.pageStart <= 1"
                       density="comfortable"
@@ -250,9 +194,7 @@
                       variant="tonal"
                       @click="form.pageStart = (form.pageStart || 0) + 1"
                     />
-                    <div class="input-label">
-                      至
-                    </div>
+                    <div class="input-label">至</div>
                     <v-btn
                       :disabled="!form.pageEnd || form.pageEnd <= (form.pageStart || 1)"
                       density="comfortable"
@@ -277,9 +219,7 @@
                       variant="tonal"
                       @click="form.pageEnd = (form.pageEnd || form.pageStart || 1) + 1"
                     />
-                    <div class="input-label">
-                      页
-                    </div>
+                    <div class="input-label">页</div>
                   </div>
 
                   <div class="numpad">
@@ -365,28 +305,14 @@
                       inline
                       class="ml-2"
                     >
-                      <v-radio
-                        value="single"
-                        label="单题"
-                      />
-                      <v-radio
-                        value="range"
-                        label="范围"
-                      />
-                      <v-radio
-                        value="multi"
-                        label="多选"
-                      />
+                      <v-radio value="single" label="单题" />
+                      <v-radio value="range" label="范围" />
+                      <v-radio value="multi" label="多选" />
                     </v-radio-group>
                   </div>
 
-                  <div
-                    v-if="questionMode === 'single'"
-                    class="input-row"
-                  >
-                    <div class="input-label">
-                      第
-                    </div>
+                  <div v-if="questionMode === 'single'" class="input-row">
+                    <div class="input-label">第</div>
                     <v-btn
                       :disabled="!form.questionStart || form.questionStart <= 1"
                       density="comfortable"
@@ -411,18 +337,11 @@
                       variant="tonal"
                       @click="form.questionStart = (form.questionStart || 0) + 1"
                     />
-                    <div class="input-label">
-                      题
-                    </div>
+                    <div class="input-label">题</div>
                   </div>
 
-                  <div
-                    v-else-if="questionMode === 'range'"
-                    class="input-row"
-                  >
-                    <div class="input-label">
-                      第
-                    </div>
+                  <div v-else-if="questionMode === 'range'" class="input-row">
+                    <div class="input-label">第</div>
                     <v-btn
                       :disabled="!form.questionStart || form.questionStart <= 1"
                       density="comfortable"
@@ -447,9 +366,7 @@
                       variant="tonal"
                       @click="form.questionStart = (form.questionStart || 0) + 1"
                     />
-                    <div class="input-label">
-                      至
-                    </div>
+                    <div class="input-label">至</div>
                     <v-btn
                       :disabled="!form.questionEnd || form.questionEnd <= (form.questionStart || 1)"
                       density="comfortable"
@@ -479,15 +396,10 @@
                       variant="tonal"
                       @click="form.questionEnd = (form.questionEnd || form.questionStart || 1) + 1"
                     />
-                    <div class="input-label">
-                      题
-                    </div>
+                    <div class="input-label">题</div>
                   </div>
 
-                  <div
-                    v-else-if="questionMode === 'multi'"
-                    class="multi-question-section"
-                  >
+                  <div v-else-if="questionMode === 'multi'" class="multi-question-section">
                     <div class="question-grid">
                       <v-btn
                         v-for="n in 20"
@@ -511,17 +423,13 @@
                       >
                         清空
                       </v-btn>
-                      <span
-                        v-if="selectedQuestions.length"
-                        class="ml-2 text-body-medium"
-                      >已选 {{ selectedQuestions.length }} 题</span>
+                      <span v-if="selectedQuestions.length" class="ml-2 text-body-medium"
+                        >已选 {{ selectedQuestions.length }} 题</span
+                      >
                     </div>
                   </div>
 
-                  <div
-                    v-if="questionMode !== 'multi'"
-                    class="numpad"
-                  >
+                  <div v-if="questionMode !== 'multi'" class="numpad">
                     <div class="numpad-row">
                       <v-btn
                         v-for="n in [1, 2, 3]"
@@ -595,9 +503,7 @@
                 </div>
 
                 <div class="optional-section">
-                  <div class="optional-section-header">
-                    写几遍（可选）
-                  </div>
+                  <div class="optional-section-header">写几遍（可选）</div>
                   <div class="repeat-buttons">
                     <v-btn
                       v-for="n in [1, 2, 3, 5, 10]"
@@ -617,25 +523,15 @@
             </v-col>
           </v-row>
 
-          <div
-            v-if="previewText"
-            class="preview-box mt-4 pa-3 rounded"
-          >
-            <div class="text-body-small text-medium-emphasis mb-1">
-              预览
-            </div>
+          <div v-if="previewText" class="preview-box mt-4 pa-3 rounded">
+            <div class="text-body-small text-medium-emphasis mb-1">预览</div>
             <div class="text-body-large">
               {{ previewText }}
             </div>
           </div>
 
           <div class="d-flex justify-end mt-4">
-            <v-btn
-              :disabled="!form.content"
-              color="primary"
-              type="submit"
-              variant="elevated"
-            >
+            <v-btn :disabled="!form.content" color="primary" type="submit" variant="elevated">
               <v-icon class="mr-1">
                 {{ ICON.PLUS }}
               </v-icon>
@@ -648,12 +544,7 @@
 
         <div class="mb-2 d-flex align-center">
           <span class="text-label-large">已添加</span>
-          <v-chip
-            v-if="pendingItems.length"
-            class="ml-2"
-            color="primary"
-            size="small"
-          >
+          <v-chip v-if="pendingItems.length" class="ml-2" color="primary" size="small">
             {{ pendingItems.length }} 条
           </v-chip>
           <v-spacer />
@@ -668,18 +559,8 @@
           </v-btn>
         </div>
 
-        <v-list
-          v-if="pendingItems.length"
-          border
-          density="compact"
-          rounded
-        >
-          <draggable
-            v-model="pendingItems"
-            item-key="id"
-            handle=".drag-handle"
-            animation="200"
-          >
+        <v-list v-if="pendingItems.length" border density="compact" rounded>
+          <draggable v-model="pendingItems" item-key="id" handle=".drag-handle" animation="200">
             <template #item="{ element, index }">
               <v-list-item class="py-2">
                 <template #prepend>
@@ -689,13 +570,7 @@
                     color="medium-emphasis"
                     size="small"
                   />
-                  <v-chip
-                    color="primary"
-                    size="small"
-                    variant="flat"
-                  >
-                    第{{ index + 1 }}次
-                  </v-chip>
+                  <v-chip color="primary" size="small" variant="flat"> 第{{ index + 1 }}次 </v-chip>
                 </template>
                 <v-list-item-title class="ml-2">
                   {{ element.text }}
@@ -713,24 +588,14 @@
             </template>
           </draggable>
         </v-list>
-        <div
-          v-else
-          class="text-center text-body-medium text-disabled py-4"
-        >
-          暂无待添加的作业
-        </div>
+        <div v-else class="text-center text-body-medium text-disabled py-4">暂无待添加的作业</div>
       </v-card-text>
 
       <v-divider />
 
       <v-card-actions class="pa-4">
         <v-spacer />
-        <v-btn
-          variant="text"
-          @click="handleClose"
-        >
-          取消
-        </v-btn>
+        <v-btn variant="text" @click="handleClose"> 取消 </v-btn>
         <v-btn
           :disabled="!pendingItems.length"
           color="primary"
@@ -742,10 +607,7 @@
       </v-card-actions>
     </v-card>
 
-    <v-dialog
-      v-model="showCustomNotebook"
-      max-width="400"
-    >
+    <v-dialog v-model="showCustomNotebook" max-width="400">
       <v-card>
         <v-card-title>自定义作业本</v-card-title>
         <v-card-text>
@@ -759,19 +621,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="showCustomNotebook = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="primary"
-            variant="elevated"
-            @click="confirmCustomNotebook"
-          >
-            确定
-          </v-btn>
+          <v-btn variant="text" @click="showCustomNotebook = false"> 取消 </v-btn>
+          <v-btn color="primary" variant="elevated" @click="confirmCustomNotebook"> 确定 </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

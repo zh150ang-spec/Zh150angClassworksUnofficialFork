@@ -1,16 +1,9 @@
 <template>
-  <div
-    v-if="visible"
-    class="init-overlay"
-  >
+  <div v-if="visible" class="init-overlay">
     <div class="init-container">
       <div class="init-header">
-        <div class="text-headline-small">
-          欢迎使用 Classworks
-        </div>
-        <div class="subtitle">
-          请选择你的使用方式
-        </div>
+        <div class="text-headline-small">欢迎使用 Classworks</div>
+        <div class="subtitle">请选择你的使用方式</div>
       </div>
 
       <!-- 主要选择卡片 -->
@@ -24,17 +17,12 @@
           <v-card-item>
             <div class="card-horizontal-layout">
               <div class="card-icon-wrapper">
-                <v-icon
-                  color="primary"
-                  size="48"
-                >
+                <v-icon color="primary" size="48">
                   {{ ICON.NEW_BOX }}
                 </v-icon>
               </div>
               <div class="card-content">
-                <div class="text-headline-small font-weight-bold">
-                  初次使用
-                </div>
+                <div class="text-headline-small font-weight-bold">初次使用</div>
                 <div class="text-body-medium text-medium-emphasis mt-1">
                   了解 Classworks KV 并开始使用
                 </div>
@@ -52,17 +40,12 @@
           <v-card-item>
             <div class="card-horizontal-layout">
               <div class="card-icon-wrapper">
-                <v-icon
-                  color="success"
-                  size="48"
-                >
+                <v-icon color="success" size="48">
                   {{ ICON.ACCOUNT_CHECK }}
                 </v-icon>
               </div>
               <div class="card-content">
-                <div class="text-headline-small font-weight-bold">
-                  已注册
-                </div>
+                <div class="text-headline-small font-weight-bold">已注册</div>
                 <div class="text-body-medium text-medium-emphasis mt-1">
                   使用设备 Namespace 登录
                 </div>
@@ -72,27 +55,15 @@
         </v-card>
 
         <!-- Classworks KV 控制台 -->
-        <v-card
-          class="main-service-card clickable"
-          elevation="4"
-          @click="openClassworksKV"
-        >
+        <v-card class="main-service-card clickable" elevation="4" @click="openClassworksKV">
           <v-card-item>
             <div class="card-horizontal-layout">
               <div class="card-icon-wrapper">
-                <v-icon
-                  color="info"
-                  size="48"
-                  :icon="ICON.DATABASE_COG"
-                />
+                <v-icon color="info" size="48" :icon="ICON.DATABASE_COG" />
               </div>
               <div class="card-content">
-                <div class="text-headline-small font-weight-bold">
-                  Classworks KV
-                </div>
-                <div class="text-body-medium text-medium-emphasis mt-1">
-                  打开云端控制台管理数据
-                </div>
+                <div class="text-headline-small font-weight-bold">Classworks KV</div>
+                <div class="text-body-medium text-medium-emphasis mt-1">打开云端控制台管理数据</div>
               </div>
             </div>
           </v-card-item>
@@ -100,20 +71,10 @@
       </div>
 
       <div class="options-buttons">
-        <v-btn
-          :prepend-icon="ICON.LAPTOP"
-          size="small"
-          variant="tonal"
-          @click="useLocalMode"
-        >
+        <v-btn :prepend-icon="ICON.LAPTOP" size="small" variant="tonal" @click="useLocalMode">
           使用本地模式
         </v-btn>
-        <v-btn
-          :prepend-icon="ICON.FLASH"
-          size="small"
-          variant="tonal"
-          @click="handleAutoAuthorize"
-        >
+        <v-btn :prepend-icon="ICON.FLASH" size="small" variant="tonal" @click="handleAutoAuthorize">
           授权码式授权（弃用）
         </v-btn>
         <v-btn
@@ -134,26 +95,15 @@
         </v-btn>
       </div>
 
-      <div class="footer-hint">
-        完成授权后可使用作业同步、考试看板等在线功能。
-      </div>
+      <div class="footer-hint">完成授权后可使用作业同步、考试看板等在线功能。</div>
     </div>
 
     <!-- 对话框 -->
-    <v-dialog
-      v-model="showGuideDialog"
-      max-width="600"
-    >
-      <FirstTimeGuide
-        @close="showGuideDialog = false"
-        @success="handleGuideSuccess"
-      />
+    <v-dialog v-model="showGuideDialog" max-width="600">
+      <FirstTimeGuide @close="showGuideDialog = false" @success="handleGuideSuccess" />
     </v-dialog>
 
-    <v-dialog
-      v-model="showDeviceAuthDialog"
-      max-width="500"
-    >
+    <v-dialog v-model="showDeviceAuthDialog" max-width="500">
       <DeviceAuthDialog
         ref="deviceAuthDialog"
         :preconfig="deviceAuthPreconfig"
@@ -163,10 +113,7 @@
       />
     </v-dialog>
 
-    <v-dialog
-      v-model="showTokenDialog"
-      max-width="500"
-    >
+    <v-dialog v-model="showTokenDialog" max-width="500">
       <TokenInputDialog
         :show-cancel="true"
         @cancel="showTokenDialog = false"
@@ -174,10 +121,7 @@
       />
     </v-dialog>
 
-    <v-dialog
-      v-model="showAlternativeCodeDialog"
-      max-width="500"
-    >
+    <v-dialog v-model="showAlternativeCodeDialog" max-width="500">
       <AlternativeCodeDialog
         :show-cancel="true"
         @cancel="showAlternativeCodeDialog = false"

@@ -1,39 +1,18 @@
 <template>
-  <v-card
-    :disabled="!hasNamespaceInfo"
-    :loading="loading"
-    border
-    flat
-    rounded="xl"
-    class="my-4"
-  >
+  <v-card :disabled="!hasNamespaceInfo" :loading="loading" border flat rounded="xl" class="my-4">
     <template #loader>
-      <v-progress-linear
-        v-if="loading"
-        color="primary"
-        indeterminate
-      />
+      <v-progress-linear v-if="loading" color="primary" indeterminate />
     </template>
 
     <v-card-title>
-      <v-icon
-        :icon="ICON.CLOUD_CHECK"
-        start
-      />
+      <v-icon :icon="ICON.CLOUD_CHECK" start />
       设备信息
     </v-card-title>
 
     <v-card-text v-if="hasNamespaceInfo">
       <!-- 未绑定账号时的提示卡片 -->
-      <div
-        v-if="namespaceInfo.hasAccount === false"
-        class="mb-4"
-      >
-        <v-alert
-          border
-          type="warning"
-          variant="tonal"
-        >
+      <div v-if="namespaceInfo.hasAccount === false" class="mb-4">
+        <v-alert border type="warning" variant="tonal">
           <v-alert-title>设备未绑定账号</v-alert-title>
           <div>当前设备尚未绑定账号,部分功能可能受限。请前往绑定账号以获得完整体验。</div>
           <v-btn
@@ -69,32 +48,17 @@
       </div>
 
       <!-- 设备信息卡片 -->
-      <v-card
-        v-if="namespaceInfo.device"
-        border
-        class="mb-4"
-        variant="tonal"
-      >
-        <v-card-title class="pb-1">
-          设备信息
-        </v-card-title>
+      <v-card v-if="namespaceInfo.device" border class="mb-4" variant="tonal">
+        <v-card-title class="pb-1"> 设备信息 </v-card-title>
         <v-card-text>
           <div class="d-flex flex-column gap-1">
             <div class="d-flex align-center">
-              <v-icon
-                :icon="ICON.TAG"
-                size="small"
-                start
-              />
+              <v-icon :icon="ICON.TAG" size="small" start />
               <span class="font-weight-medium me-2">设备名称:</span>
               <span>{{ namespaceInfo.device.name || '未命名设备' }}</span>
             </div>
             <div class="d-flex align-center">
-              <v-icon
-                :icon="ICON.IDENTIFIER"
-                size="small"
-                start
-              />
+              <v-icon :icon="ICON.IDENTIFIER" size="small" start />
               <span class="font-weight-medium me-2">设备 ID:</span>
               <span>{{ namespaceInfo.device.id }}</span>
             </div>
@@ -103,32 +67,17 @@
               v-if="namespaceInfo.hasAccount === false && namespaceInfo.device.uuid"
               class="d-flex align-center"
             >
-              <v-icon
-                :icon="ICON.UUID"
-                size="small"
-                start
-              />
+              <v-icon :icon="ICON.UUID" size="small" start />
               <span class="font-weight-medium me-2">UUID:</span>
               <span class="text-truncate">{{ namespaceInfo.device.uuid }}</span>
             </div>
             <div class="d-flex align-center">
-              <v-icon
-                :icon="ICON.CALENDAR"
-                size="small"
-                start
-              />
+              <v-icon :icon="ICON.CALENDAR" size="small" start />
               <span class="font-weight-medium me-2">创建时间:</span>
               <span>{{ formatDate(namespaceInfo.device.createdAt) }}</span>
             </div>
-            <div
-              v-if="namespaceInfo.device.updatedAt"
-              class="d-flex align-center"
-            >
-              <v-icon
-                :icon="ICON.CALENDAR_CLOCK"
-                size="small"
-                start
-              />
+            <div v-if="namespaceInfo.device.updatedAt" class="d-flex align-center">
+              <v-icon :icon="ICON.CALENDAR_CLOCK" size="small" start />
               <span class="font-weight-medium me-2">更新时间:</span>
               <span>{{ formatDate(namespaceInfo.device.updatedAt) }}</span>
             </div>
@@ -156,13 +105,7 @@
       >
         {{ namespaceInfo.error }}
       </v-alert>
-      <v-alert
-        v-else
-        color="info"
-        :icon="ICON.INFO"
-        title="未获取到设备信息"
-        variant="outlined"
-      >
+      <v-alert v-else color="info" :icon="ICON.INFO" title="未获取到设备信息" variant="outlined">
         您尚未完成云端存储授权或连接失败，请点击下方按钮进行初始化。
       </v-alert>
     </v-card-text>
@@ -170,38 +113,22 @@
     <v-card-actions>
       <v-spacer />
       <div class="d-flex gap-2">
-        <v-btn
-          :loading="loading"
-          color="primary"
-          variant="elevated"
-          @click="reloadInfo"
-        >
+        <v-btn :loading="loading" color="primary" variant="elevated" @click="reloadInfo">
           刷新设备信息
         </v-btn>
 
-        <v-btn
-          color="error"
-          variant="elevated"
-          @click="showReinitDialog = true"
-        >
+        <v-btn color="error" variant="elevated" @click="showReinitDialog = true">
           重新初始化云端存储
         </v-btn>
       </div>
     </v-card-actions>
 
     <!-- 重新初始化确认对话框 -->
-    <v-dialog
-      v-model="showReinitDialog"
-      max-width="500"
-    >
+    <v-dialog v-model="showReinitDialog" max-width="500">
       <v-card>
         <v-card-title>确认重新初始化</v-card-title>
         <v-card-text>
-          <v-alert
-            class="mb-3"
-            type="warning"
-            variant="tonal"
-          >
+          <v-alert class="mb-3" type="warning" variant="tonal">
             <v-alert-title>警告</v-alert-title>
             此操作将清除当前的云端存储配置（包括 Token），您需要重新进行授权。
           </v-alert>
@@ -210,20 +137,10 @@
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="showReinitDialog = false"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="showReinitDialog = false">
               取消
             </v-btn>
-            <v-btn
-              color="error"
-              variant="elevated"
-              @click="confirmReinitialize"
-            >
-              确认
-            </v-btn>
+            <v-btn color="error" variant="elevated" @click="confirmReinitialize"> 确认 </v-btn>
           </div>
         </v-card-actions>
       </v-card>

@@ -9,11 +9,7 @@
     @open-settings="$router.push('/settings')"
   />
   <!-- 初始化选择卡片，仅在首页且需要授权时显示；不影响顶栏 -->
-  <init-service-chooser
-    v-if="shouldShowInit"
-    :preconfig="preconfigData"
-    @done="settingsTick++"
-  />
+  <init-service-chooser v-if="shouldShowInit" :preconfig="preconfigData" @done="settingsTick++" />
 
   <!-- 学生姓名管理组件 -->
   <StudentNameManager
@@ -25,15 +21,9 @@
   <!-- 首屏骨架屏（数据加载中显示） -->
   <HomeSkeleton v-if="!shouldShowInit && !dataReady" />
 
-  <div
-    v-if="!shouldShowInit && dataReady"
-    class="d-flex"
-  >
+  <div v-if="!shouldShowInit && dataReady" class="d-flex">
     <!-- 主要内容区域 -->
-    <v-container
-      class="main-window flex-grow-1 no-select"
-      fluid
-    >
+    <v-container class="main-window flex-grow-1 no-select" fluid>
       <!-- 常驻通知区域 -->
       <NotificationArea
         v-model="notificationDetailDialog"
@@ -120,13 +110,7 @@
           </v-chip>
         </div>
         <template #append>
-          <v-btn
-            color="primary"
-            variant="text"
-            @click="addAllUpcomingExams"
-          >
-            一键添加
-          </v-btn>
+          <v-btn color="primary" variant="text" @click="addAllUpcomingExams"> 一键添加 </v-btn>
         </template>
       </v-alert>
     </v-container>
@@ -187,10 +171,7 @@
   <FloatingICP />
 
   <!-- 设备聊天室（右下角浮窗） -->
-  <ChatWidget
-    v-model="isChatOpen"
-    :show-button="false"
-  />
+  <ChatWidget v-model="isChatOpen" :show-button="false" />
 
   <!-- 紧急通知测试对话框 -->
   <UrgentTestDialog v-model="urgentTestDialog" />
@@ -237,17 +218,10 @@
   />
 
   <!-- 命名空间切换检测对话框 -->
-  <v-dialog
-    v-model="namespaceSwitchDialog.show"
-    max-width="640"
-    persistent
-  >
+  <v-dialog v-model="namespaceSwitchDialog.show" max-width="640" persistent>
     <v-card>
       <v-card-title class="text-headline-small d-flex align-center">
-        <v-icon
-          color="warning"
-          class="mr-2"
-        >
+        <v-icon color="warning" class="mr-2">
           {{ ICON.WARNING }}
         </v-icon>
         检测到命名空间变更
@@ -257,15 +231,14 @@
           当前设备命名空间已从
           <code>{{ namespaceSwitchDialog.previous }}</code>
           切换为
-          <code>{{ namespaceSwitchDialog.current }}</code>。
+          <code>{{ namespaceSwitchDialog.current }}</code
+          >。
         </p>
         <p class="mb-2">
           本地存储中有
           <strong>{{ namespaceSwitchDialog.localKeyCount }}</strong> 条数据属于原命名空间。
         </p>
-        <p class="text-warning mb-0">
-          直接使用新命名空间可能导致数据混淆，请选择处理方式：
-        </p>
+        <p class="text-warning mb-0">直接使用新命名空间可能导致数据混淆，请选择处理方式：</p>
       </v-card-text>
       <v-card-actions class="flex-wrap ga-2">
         <v-btn
@@ -279,19 +252,11 @@
           </v-icon>
           导出备份并清空
         </v-btn>
-        <v-btn
-          color="warning"
-          variant="tonal"
-          @click="handleNamespaceKeepAndSwitch"
-        >
+        <v-btn color="warning" variant="tonal" @click="handleNamespaceKeepAndSwitch">
           保留数据并切换
         </v-btn>
         <v-spacer />
-        <v-btn
-          color="default"
-          variant="text"
-          @click="handleNamespaceCancelSwitch"
-        >
+        <v-btn color="default" variant="text" @click="handleNamespaceCancelSwitch">
           暂不处理
         </v-btn>
       </v-card-actions>
@@ -299,23 +264,14 @@
   </v-dialog>
 
   <!-- 首次使用：班级编号提示 -->
-  <v-dialog
-    v-model="classNumberDialog.show"
-    max-width="420"
-    persistent
-  >
+  <v-dialog v-model="classNumberDialog.show" max-width="420" persistent>
     <v-card>
       <v-card-title class="d-flex align-center">
-        <v-icon
-          class="mr-2"
-          :icon="ICON.ACCOUNT_GROUP"
-        />
+        <v-icon class="mr-2" :icon="ICON.ACCOUNT_GROUP" />
         设置班级编号
       </v-card-title>
       <v-card-text>
-        <div class="mb-3 text-body-medium">
-          请为当前设备设置一个班级编号，便于识别和管理。
-        </div>
+        <div class="mb-3 text-body-medium">请为当前设备设置一个班级编号，便于识别和管理。</div>
         <v-text-field
           v-model="classNumberDialog.value"
           hide-details
@@ -327,20 +283,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="confirmClassNumber"
-        >
-          确认
-        </v-btn>
-        <v-btn
-          color="medium-emphasis"
-          variant="text"
-          @click="cancelClassNumber"
-        >
-          取消
-        </v-btn>
+        <v-btn color="primary" variant="text" @click="confirmClassNumber"> 确认 </v-btn>
+        <v-btn color="medium-emphasis" variant="text" @click="cancelClassNumber"> 取消 </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -2,16 +2,9 @@
   <v-container class="fill-height">
     <v-row>
       <v-col cols="12">
-        <v-card
-          class="elevation-5"
-          border
-        >
+        <v-card class="elevation-5" border>
           <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-            <v-icon
-              color="white"
-              start
-              :icon="ICON.SWAP_HORIZONTAL"
-            />
+            <v-icon color="white" start :icon="ICON.SWAP_HORIZONTAL" />
             课程表转换工具
           </v-card-title>
           <v-card-subtitle>
@@ -29,10 +22,7 @@
               @click:close="error = ''"
             >
               <div class="d-flex align-center">
-                <v-icon
-                  start
-                  :icon="ICON.ERROR"
-                />
+                <v-icon start :icon="ICON.ERROR" />
                 {{ error }}
               </div>
             </v-alert>
@@ -48,39 +38,19 @@
               @click:close="success = ''"
             >
               <div class="d-flex align-center">
-                <v-icon
-                  start
-                  :icon="ICON.SUCCESS"
-                />
+                <v-icon start :icon="ICON.SUCCESS" />
                 {{ success }}
               </div>
             </v-alert>
 
             <!-- 输入方式选择 -->
-            <v-tabs
-              v-model="activeTab"
-              class="mb-4 mx-2"
-              color="primary"
-              rounded
-            >
-              <v-tab
-                value="text"
-                class="px-5"
-              >
-                <v-icon
-                  :icon="ICON.TEXT_BOX"
-                  start
-                />
+            <v-tabs v-model="activeTab" class="mb-4 mx-2" color="primary" rounded>
+              <v-tab value="text" class="px-5">
+                <v-icon :icon="ICON.TEXT_BOX" start />
                 文本粘贴
               </v-tab>
-              <v-tab
-                value="file"
-                class="px-5"
-              >
-                <v-icon
-                  :icon="ICON.FILE_UPLOAD"
-                  start
-                />
+              <v-tab value="file" class="px-5">
+                <v-icon :icon="ICON.FILE_UPLOAD" start />
                 文件上传
               </v-tab>
             </v-tabs>
@@ -93,32 +63,18 @@
               hide-details
               inline
             >
-              <v-radio
-                value="auto"
-                label="自动检测"
-              />
-              <v-radio
-                value="json"
-                label="JSON"
-              />
+              <v-radio value="auto" label="自动检测" />
+              <v-radio value="json" label="JSON" />
               <v-tooltip location="bottom">
                 <template #activator="{ props }">
-                  <v-radio
-                    v-bind="props"
-                    value="yaml"
-                    :disabled="!yamlLibLoaded"
-                    label="YAML"
-                  />
+                  <v-radio v-bind="props" value="yaml" :disabled="!yamlLibLoaded" label="YAML" />
                 </template>
                 {{ yamlLibLoaded ? 'YAML解析库已加载' : '正在加载YAML解析库...' }}
               </v-tooltip>
             </v-radio-group>
 
             <!-- 添加当前检测到的格式提示 -->
-            <div
-              v-if="jsonText && formatMode === 'auto'"
-              class="text-body-small mb-2"
-            >
+            <div v-if="jsonText && formatMode === 'auto'" class="text-body-small mb-2">
               检测到的格式: {{ isYaml(jsonText) ? 'YAML' : 'JSON' }}
             </div>
 
@@ -165,53 +121,20 @@
 
             <!-- 设置面板 -->
             <v-col cols="12">
-              <v-card
-                flat
-                class="pa-4 rounded-lg"
-                border
-              >
+              <v-card flat class="pa-4 rounded-lg" border>
                 <div class="d-flex align-center mb-3">
-                  <v-icon
-                    color="primary"
-                    start
-                    :icon="ICON.CALENDAR_MULTISELECT"
-                  />
-                  <h3 class="text-body-large font-weight-medium mr-auto">
-                    选择导出天数
-                  </h3>
-                  <v-btn
-                    variant="text"
-                    color="primary"
-                    class="ml-2"
-                    @click="selectAllDays"
-                  >
-                    <v-icon
-                      :icon="ICON.CHECKBOX_MULTIPLE_MARKED"
-                      start
-                      size="small"
-                    />
+                  <v-icon color="primary" start :icon="ICON.CALENDAR_MULTISELECT" />
+                  <h3 class="text-body-large font-weight-medium mr-auto">选择导出天数</h3>
+                  <v-btn variant="text" color="primary" class="ml-2" @click="selectAllDays">
+                    <v-icon :icon="ICON.CHECKBOX_MULTIPLE_MARKED" start size="small" />
                     全选
                   </v-btn>
-                  <v-btn
-                    variant="text"
-                    color="error"
-                    class="ml-2"
-                    @click="clearSelectedDays"
-                  >
-                    <v-icon
-                      :icon="ICON.CHECKBOX_MULTIPLE_BLANK_OUTLINE"
-                      start
-                      size="small"
-                    />
+                  <v-btn variant="text" color="error" class="ml-2" @click="clearSelectedDays">
+                    <v-icon :icon="ICON.CHECKBOX_MULTIPLE_BLANK_OUTLINE" start size="small" />
                     清除
                   </v-btn>
                 </div>
-                <v-chip-group
-                  v-model="selectedDays"
-                  multiple
-                  class="mb-2"
-                  color="primary"
-                >
+                <v-chip-group v-model="selectedDays" multiple class="mb-2" color="primary">
                   <v-chip
                     v-for="day in 7"
                     :key="day"
@@ -235,26 +158,13 @@
 
             <!-- 改进设置选项卡，显示为开关组 -->
             <v-col cols="12">
-              <v-card
-                flat
-                class="pa-4 rounded-lg"
-                border
-              >
+              <v-card flat class="pa-4 rounded-lg" border>
                 <div class="d-flex align-center mb-3">
-                  <v-icon
-                    color="primary"
-                    start
-                    :icon="ICON.SETTINGS"
-                  />
-                  <h3 class="text-body-large font-weight-medium">
-                    显示配置
-                  </h3>
+                  <v-icon color="primary" start :icon="ICON.SETTINGS" />
+                  <h3 class="text-body-large font-weight-medium">显示配置</h3>
                 </div>
                 <v-row>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                  >
+                  <v-col cols="12" sm="6">
                     <v-switch
                       v-model="settings.hideTeacherName"
                       label="不显示教师姓名"
@@ -263,10 +173,7 @@
                       hide-details
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                  >
+                  <v-col cols="12" sm="6">
                     <v-switch
                       v-model="settings.hideRoom"
                       label="不显示教室信息"
@@ -275,10 +182,7 @@
                       hide-details
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                  >
+                  <v-col cols="12" sm="6">
                     <v-text-field
                       v-model.number="settings.totalWeeks"
                       label="总周数"
@@ -297,16 +201,9 @@
             </v-col>
 
             <!-- 添加加载状态的骨架屏 -->
-            <v-card
-              v-if="loading"
-              class="my-4"
-              border
-            >
+            <v-card v-if="loading" class="my-4" border>
               <v-card-text>
-                <v-skeleton-loader
-                  type="table"
-                  class="mx-auto"
-                />
+                <v-skeleton-loader type="table" class="mx-auto" />
               </v-card-text>
             </v-card>
 
@@ -331,29 +228,12 @@
             </v-alert>
 
             <!-- 课程表预览 -->
-            <v-card
-              v-if="processedData"
-              class="my-4"
-              elevation="1"
-            >
+            <v-card v-if="processedData" class="my-4" elevation="1">
               <v-card-title class="d-flex align-center pa-4 bg-primary-lighten-5">
-                <v-icon
-                  color="primary"
-                  start
-                  :icon="ICON.TABLE_ICON"
-                />
+                <v-icon color="primary" start :icon="ICON.TABLE_ICON" />
                 <span class="font-weight-bold">课程表</span>
-                <v-chip
-                  color="primary"
-                  class="ml-3"
-                  size="small"
-                  pill
-                >
-                  <v-icon
-                    :icon="ICON.BOOK_OPEN_VARIANT"
-                    start
-                    size="x-small"
-                  />
+                <v-chip color="primary" class="ml-3" size="small" pill>
+                  <v-icon :icon="ICON.BOOK_OPEN_VARIANT" start size="x-small" />
                   {{ processedData.tableData.length }} 节课程
                 </v-chip>
               </v-card-title>
@@ -381,32 +261,18 @@
                     />
                   </template>
 
-                  <template
-                    v-for="day in 7"
-                    #[`item.${day}`]="{ item }"
-                    :key="day"
-                  >
-                    <div
-                      v-if="item[day]"
-                      class="course-cell"
-                    >
+                  <template v-for="day in 7" #[`item.${day}`]="{ item }" :key="day">
+                    <div v-if="item[day]" class="course-cell">
                       <template v-if="Array.isArray(item[day])">
-                        <div
-                          v-for="(course, index) in item[day]"
-                          :key="index"
-                          class="course-item"
-                        >
+                        <div v-for="(course, index) in item[day]" :key="index" class="course-item">
                           {{ course.name }}
                           <span v-if="!settings.hideTeacherName && course.teacher">
-                            <br>{{ course.teacher }}
+                            <br />{{ course.teacher }}
                           </span>
                           <span v-if="!settings.hideRoom && course.room">
-                            <br>{{ course.room }}
+                            <br />{{ course.room }}
                           </span>
-                          <span
-                            v-if="course.weekType"
-                            class="week-type"
-                          >
+                          <span v-if="course.weekType" class="week-type">
                             {{ course.weekType }}周
                           </span>
                         </div>
@@ -414,15 +280,12 @@
                       <template v-else>
                         {{ item[day].name }}
                         <span v-if="!settings.hideTeacherName && item[day].teacher">
-                          <br>{{ item[day].teacher }}
+                          <br />{{ item[day].teacher }}
                         </span>
                         <span v-if="!settings.hideRoom && item[day].room">
-                          <br>{{ item[day].room }}
+                          <br />{{ item[day].room }}
                         </span>
-                        <span
-                          v-if="item[day].weekType"
-                          class="week-type"
-                        >
+                        <span v-if="item[day].weekType" class="week-type">
                           {{ item[day].weekType }}周
                         </span>
                       </template>
@@ -433,51 +296,26 @@
             </v-card>
 
             <!-- 时间表 -->
-            <v-card
-              v-if="hasExportData"
-              class="my-4"
-              elevation="1"
-            >
+            <v-card v-if="hasExportData" class="my-4" elevation="1">
               <v-card-title class="d-flex align-center pa-4 bg-primary-lighten-5">
-                <v-icon
-                  color="primary"
-                  start
-                  :icon="ICON.TIMETABLE"
-                />
+                <v-icon color="primary" start :icon="ICON.TIMETABLE" />
                 <span class="font-weight-bold">每日课程时间表</span>
-                <v-chip
-                  class="ml-3"
-                  size="small"
-                  color="primary"
-                  pill
-                >
-                  <v-icon
-                    :icon="ICON.CLOCK_OUTLINE"
-                    start
-                    size="x-small"
-                  />
+                <v-chip class="ml-3" size="small" color="primary" pill>
+                  <v-icon :icon="ICON.CLOCK_OUTLINE" start size="x-small" />
                   {{ totalClassHours }} 课时
                 </v-chip>
                 <v-tooltip v-if="exportPeriods.length > 0">
                   <template #activator="{ props }">
-                    <v-chip
-                      class="ml-2"
-                      size="small"
-                      color="info"
-                      v-bind="props"
-                      pill
-                    >
-                      <v-icon
-                        :icon="ICON.INFORMATION_OUTLINE"
-                        start
-                        size="x-small"
-                      />
+                    <v-chip class="ml-2" size="small" color="info" v-bind="props" pill>
+                      <v-icon :icon="ICON.INFORMATION_OUTLINE" start size="x-small" />
                       节次已重排
                     </v-chip>
                   </template>
-                  <span>已将选中的节次 {{ exportPeriods.join(', ') }} 重新排序为连续的 1-{{
-                    exportPeriods.length
-                  }}</span>
+                  <span
+                    >已将选中的节次 {{ exportPeriods.join(', ') }} 重新排序为连续的 1-{{
+                      exportPeriods.length
+                    }}</span
+                  >
                 </v-tooltip>
               </v-card-title>
               <v-card-text>
@@ -497,32 +335,17 @@
                     class="px-2 font-weight-medium"
                   >
                     {{ dayNames[day] }}
-                    <v-badge
-                      :content="getDaySchedule(day).length"
-                      color="primary"
-                      inline
-                    />
+                    <v-badge :content="getDaySchedule(day).length" color="primary" inline />
                   </v-tab>
                 </v-tabs>
 
                 <!-- 当前选中日期的课程表 -->
                 <v-window v-model="activeDay">
-                  <v-window-item
-                    v-for="day in daysWithSchedule"
-                    :key="day"
-                    :value="day"
-                  >
-                    <v-table
-                      density="compact"
-                      class="rounded"
-                      :headers-length="6"
-                      disable-sort
-                    >
+                  <v-window-item v-for="day in daysWithSchedule" :key="day" :value="day">
+                    <v-table density="compact" class="rounded" :headers-length="6" disable-sort>
                       <thead>
                         <tr>
-                          <th class="text-center">
-                            节次
-                          </th>
+                          <th class="text-center">节次</th>
                           <th>课程</th>
                           <th>时间</th>
                           <th>教师</th>
@@ -552,11 +375,7 @@
                               </v-tooltip>
                             </td>
                             <td>
-                              <div
-                                v-for="(item, i) in group.items"
-                                :key="i"
-                                class="mb-1"
-                              >
+                              <div v-for="(item, i) in group.items" :key="i" class="mb-1">
                                 <v-chip
                                   size="small"
                                   :color="getSubjectColor(item.subject)"
@@ -581,10 +400,7 @@
                                 :key="i"
                                 class="mb-1"
                               >
-                                <v-chip
-                                  size="x-small"
-                                  class="time-chip"
-                                >
+                                <v-chip size="x-small" class="time-chip">
                                   {{ formatTime(timeSlot.startTime) }} -
                                   {{ formatTime(timeSlot.endTime) }}
                                 </v-chip>
@@ -592,38 +408,22 @@
                             </td>
                             <td>
                               <template v-if="!settings.hideTeacherName">
-                                <div
-                                  v-for="(item, i) in group.items"
-                                  :key="i"
-                                  class="mb-1"
-                                >
+                                <div v-for="(item, i) in group.items" :key="i" class="mb-1">
                                   {{ item.teacher || '-' }}
                                 </div>
                               </template>
-                              <template v-else>
-                                -
-                              </template>
+                              <template v-else> - </template>
                             </td>
                             <td>
                               <template v-if="!settings.hideRoom">
-                                <div
-                                  v-for="(item, i) in group.items"
-                                  :key="i"
-                                  class="mb-1"
-                                >
+                                <div v-for="(item, i) in group.items" :key="i" class="mb-1">
                                   {{ item.room || '-' }}
                                 </div>
                               </template>
-                              <template v-else>
-                                -
-                              </template>
+                              <template v-else> - </template>
                             </td>
                             <td>
-                              <div
-                                v-for="(item, i) in group.items"
-                                :key="i"
-                                class="mb-1"
-                              >
+                              <div v-for="(item, i) in group.items" :key="i" class="mb-1">
                                 {{ item.weeks }}
                               </div>
                             </td>

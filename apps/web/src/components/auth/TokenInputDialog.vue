@@ -11,24 +11,13 @@
         placeholder="粘贴从授权页面获取的 Token"
         variant="outlined"
       />
-      <v-alert
-        v-if="error"
-        class="mt-3"
-        type="error"
-        variant="tonal"
-      >
+      <v-alert v-if="error" class="mt-3" type="error" variant="tonal">
         {{ error }}
       </v-alert>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn
-        v-if="showCancel"
-        variant="text"
-        @click="$emit('cancel')"
-      >
-        取消
-      </v-btn>
+      <v-btn v-if="showCancel" variant="text" @click="$emit('cancel')"> 取消 </v-btn>
       <v-btn
         :disabled="!token || verifying"
         :loading="verifying"

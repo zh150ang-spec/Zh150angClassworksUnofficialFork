@@ -5,18 +5,12 @@
       <v-col cols="12">
         <v-card border>
           <v-card-title class="d-flex align-center">
-            <v-icon
-              class="mr-2"
-              color="primary"
-            >
+            <v-icon class="mr-2" color="primary">
               {{ ICON.NETWORK }}
             </v-icon>
             Socket.IO 连接调试器
             <v-spacer />
-            <v-chip
-              :color="connectionStatus.color"
-              size="small"
-            >
+            <v-chip :color="connectionStatus.color" size="small">
               {{ connectionStatus.text }}
             </v-chip>
           </v-card-title>
@@ -24,10 +18,7 @@
       </v-col>
 
       <!-- 连接信息卡片 -->
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col cols="12" md="6">
         <v-card border>
           <v-card-title>连接信息</v-card-title>
           <v-card-text>
@@ -54,10 +45,7 @@
                 </template>
                 <v-list-item-title>传输方式</v-list-item-title>
                 <v-list-item-subtitle>
-                  <v-chip
-                    size="x-small"
-                    :color="transportColor"
-                  >
+                  <v-chip size="x-small" :color="transportColor">
                     {{ transport || '未知' }}
                   </v-chip>
                 </v-list-item-subtitle>
@@ -107,18 +95,10 @@
               >
                 断开
               </v-btn>
-              <v-btn
-                color="warning"
-                :prepend-icon="ICON.REFRESH"
-                @click="handleReconnect"
-              >
+              <v-btn color="warning" :prepend-icon="ICON.REFRESH" @click="handleReconnect">
                 重连
               </v-btn>
-              <v-btn
-                color="info"
-                :prepend-icon="ICON.DELETE_SWEEP"
-                @click="clearLogs"
-              >
+              <v-btn color="info" :prepend-icon="ICON.DELETE_SWEEP" @click="clearLogs">
                 清空日志
               </v-btn>
             </div>
@@ -127,71 +107,48 @@
       </v-col>
 
       <!-- 统计信息卡片 -->
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col cols="12" md="6">
         <v-card border>
           <v-card-title>统计信息</v-card-title>
           <v-card-text>
             <v-row>
               <v-col cols="6">
-                <v-card
-                  variant="tonal"
-                  color="success"
-                >
+                <v-card variant="tonal" color="success">
                   <v-card-text class="text-center">
                     <div class="text-headline-large">
                       {{ stats.eventsReceived }}
                     </div>
-                    <div class="text-body-small">
-                      接收事件
-                    </div>
+                    <div class="text-body-small">接收事件</div>
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="6">
-                <v-card
-                  variant="tonal"
-                  color="primary"
-                >
+                <v-card variant="tonal" color="primary">
                   <v-card-text class="text-center">
                     <div class="text-headline-large">
                       {{ stats.eventsSent }}
                     </div>
-                    <div class="text-body-small">
-                      发送事件
-                    </div>
+                    <div class="text-body-small">发送事件</div>
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="6">
-                <v-card
-                  variant="tonal"
-                  color="warning"
-                >
+                <v-card variant="tonal" color="warning">
                   <v-card-text class="text-center">
                     <div class="text-headline-large">
                       {{ stats.errors }}
                     </div>
-                    <div class="text-body-small">
-                      错误次数
-                    </div>
+                    <div class="text-body-small">错误次数</div>
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="6">
-                <v-card
-                  variant="tonal"
-                  color="info"
-                >
+                <v-card variant="tonal" color="info">
                   <v-card-text class="text-center">
                     <div class="text-headline-large">
                       {{ stats.reconnects }}
                     </div>
-                    <div class="text-body-small">
-                      重连次数
-                    </div>
+                    <div class="text-body-small">重连次数</div>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -220,40 +177,22 @@
       </v-col>
 
       <!-- 事件监控 -->
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col cols="12" md="6">
         <v-card border>
           <v-card-title>
             事件监控
-            <v-chip
-              class="ml-2"
-              size="small"
-            >
-              {{ activeListeners.size }} 个监听器
-            </v-chip>
+            <v-chip class="ml-2" size="small"> {{ activeListeners.size }} 个监听器 </v-chip>
           </v-card-title>
           <v-card-text>
-            <v-list
-              density="compact"
-              max-height="300"
-              style="overflow-y: auto"
-            >
+            <v-list density="compact" max-height="300" style="overflow-y: auto">
               <v-list-item v-if="activeListeners.size === 0">
                 <v-list-item-title class="text-center text-disabled">
                   暂无活动监听器
                 </v-list-item-title>
               </v-list-item>
-              <v-list-item
-                v-for="listener in Array.from(activeListeners)"
-                :key="listener"
-              >
+              <v-list-item v-for="listener in Array.from(activeListeners)" :key="listener">
                 <template #prepend>
-                  <v-icon
-                    :icon="ICON.EYE"
-                    size="small"
-                  />
+                  <v-icon :icon="ICON.EYE" size="small" />
                 </template>
                 <v-list-item-title>{{ listener }}</v-list-item-title>
               </v-list-item>
@@ -263,10 +202,7 @@
       </v-col>
 
       <!-- 自定义事件发送 -->
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col cols="12" md="6">
         <v-card border>
           <v-card-title>发送自定义事件</v-card-title>
           <v-card-text>
@@ -311,20 +247,12 @@
               hide-details
               class="mr-4"
             />
-            <v-btn
-              size="small"
-              variant="text"
-              :prepend-icon="ICON.DOWNLOAD"
-              @click="exportLogs"
-            >
+            <v-btn size="small" variant="text" :prepend-icon="ICON.DOWNLOAD" @click="exportLogs">
               导出
             </v-btn>
           </v-card-title>
           <v-card-text>
-            <div
-              ref="logContainer"
-              class="log-container log-container-box"
-            >
+            <div ref="logContainer" class="log-container log-container-box">
               <div
                 v-for="(log, index) in logs"
                 :key="index"
@@ -334,17 +262,9 @@
                 <span class="log-time">[{{ log.time }}]</span>
                 <span class="log-type">[{{ log.type.toUpperCase() }}]</span>
                 <span class="log-message">{{ log.message }}</span>
-                <pre
-                  v-if="log.data"
-                  class="log-data"
-                >{{ log.data }}</pre>
+                <pre v-if="log.data" class="log-data">{{ log.data }}</pre>
               </div>
-              <div
-                v-if="logs.length === 0"
-                class="text-center text-disabled pa-8"
-              >
-                暂无日志
-              </div>
+              <div v-if="logs.length === 0" class="text-center text-disabled pa-8">暂无日志</div>
             </div>
           </v-card-text>
         </v-card>
@@ -356,23 +276,12 @@
           <v-card-title>连接诊断</v-card-title>
           <v-card-text>
             <v-row>
-              <v-col
-                cols="12"
-                md="4"
-              >
-                <v-btn
-                  block
-                  color="info"
-                  :prepend-icon="ICON.TEST_TUBE"
-                  @click="testConnection"
-                >
+              <v-col cols="12" md="4">
+                <v-btn block color="info" :prepend-icon="ICON.TEST_TUBE" @click="testConnection">
                   测试连接
                 </v-btn>
               </v-col>
-              <v-col
-                cols="12"
-                md="4"
-              >
+              <v-col cols="12" md="4">
                 <v-btn
                   block
                   color="success"
@@ -383,16 +292,8 @@
                   测量延迟
                 </v-btn>
               </v-col>
-              <v-col
-                cols="12"
-                md="4"
-              >
-                <v-btn
-                  block
-                  color="warning"
-                  :prepend-icon="ICON.WARNING"
-                  @click="simulateError"
-                >
+              <v-col cols="12" md="4">
+                <v-btn block color="warning" :prepend-icon="ICON.WARNING" @click="simulateError">
                   模拟错误
                 </v-btn>
               </v-col>
@@ -412,10 +313,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog
-      v-model="confirmDialog.show"
-      max-width="420"
-    >
+    <v-dialog v-model="confirmDialog.show" max-width="420">
       <v-card>
         <v-card-title class="text-headline-small">
           {{ confirmDialog.title }}
@@ -424,13 +322,7 @@
         <v-card-actions class="pa-4">
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="cancelSave()"
-            >
-              取消
-            </v-btn>
+            <v-btn color="neutral-surface" variant="elevated" @click="cancelSave()"> 取消 </v-btn>
             <v-btn
               :color="confirmDialog.color || 'warning'"
               variant="elevated"

@@ -1,9 +1,5 @@
 <template>
-  <div
-    ref="gridContainer"
-    class="grid-masonry"
-    :class="$attrs.class"
-  >
+  <div ref="gridContainer" class="grid-masonry" :class="$attrs.class">
     <TransitionGroup name="grid">
       <div
         v-for="item in sortedItems"
@@ -16,26 +12,17 @@
         class="grid-item"
       >
         <!-- 时间卡片 -->
-        <div
-          v-if="item.type === 'time'"
-          style="height: 100%"
-        >
+        <div v-if="item.type === 'time'" style="height: 100%">
           <time-card />
         </div>
 
         <!-- 一言卡片 -->
-        <div
-          v-else-if="item.type === 'hitokoto'"
-          style="height: 100%"
-        >
+        <div v-else-if="item.type === 'hitokoto'" style="height: 100%">
           <hitokoto-card />
         </div>
 
         <!-- 考试卡片 -->
-        <div
-          v-else-if="item.type === 'exam'"
-          style="height: 100%"
-        >
+        <div v-else-if="item.type === 'exam'" style="height: 100%">
           <concise-exam-card
             :exam-id="item.data.examId"
             :content-style="contentStyle"
@@ -52,11 +39,7 @@
           @click="handleCardClick('attendance', null)"
         >
           <v-card-title class="d-flex align-center">
-            <v-icon
-              start
-              color="primary"
-              :icon="ICON.ACCOUNT_GROUP"
-            />
+            <v-icon start color="primary" :icon="ICON.ACCOUNT_GROUP" />
             出勤统计
           </v-card-title>
           <v-card-text>
@@ -65,25 +48,19 @@
               <span class="text-headline-small">
                 {{ item.data.total - item.data.exclude.length }}/{{
                   item.data.total -
-                    item.data.absent.length -
-                    !getSetting('display.lateStudentsArePresent') * item.data.late.length -
-                    item.data.exclude.length
+                  item.data.absent.length -
+                  !getSetting('display.lateStudentsArePresent') * item.data.late.length -
+                  item.data.exclude.length
                 }}
               </span>
             </div>
             <v-divider class="mb-2" />
 
-            <div
-              v-if="item.data.absent.length > 0"
-              class="mb-2"
-            >
+            <div v-if="item.data.absent.length > 0" class="mb-2">
               <div class="text-error text-body-small mb-1">
                 请假 ({{ item.data.absent.length }})
               </div>
-              <div
-                class="d-flex flex-wrap"
-                style="gap: var(--space-1)"
-              >
+              <div class="d-flex flex-wrap" style="gap: var(--space-1)">
                 <v-chip
                   v-for="name in item.data.absent"
                   :key="name"
@@ -96,17 +73,11 @@
               </div>
             </div>
 
-            <div
-              v-if="item.data.late.length > 0"
-              class="mb-2"
-            >
+            <div v-if="item.data.late.length > 0" class="mb-2">
               <div class="text-warning text-body-small mb-1">
                 迟到 ({{ item.data.late.length }})
               </div>
-              <div
-                class="d-flex flex-wrap"
-                style="gap: var(--space-1)"
-              >
+              <div class="d-flex flex-wrap" style="gap: var(--space-1)">
                 <v-chip
                   v-for="name in item.data.late"
                   :key="name"
@@ -119,17 +90,11 @@
               </div>
             </div>
 
-            <div
-              v-if="item.data.exclude.length > 0"
-              class="mb-2"
-            >
+            <div v-if="item.data.exclude.length > 0" class="mb-2">
               <div class="text-medium-emphasis text-body-small mb-1">
                 不参与 ({{ item.data.exclude.length }})
               </div>
-              <div
-                class="d-flex flex-wrap"
-                style="gap: var(--space-1)"
-              >
+              <div class="d-flex flex-wrap" style="gap: var(--space-1)">
                 <v-chip
                   v-for="name in item.data.exclude"
                   :key="name"
@@ -145,8 +110,8 @@
             <div
               v-if="
                 item.data.absent.length === 0 &&
-                  item.data.late.length === 0 &&
-                  item.data.exclude.length === 0
+                item.data.late.length === 0 &&
+                item.data.exclude.length === 0
               "
               class="text-success text-center mt-2"
             >
@@ -164,11 +129,7 @@
           @click="handleCardClick('dialog', item.key)"
         >
           <v-card-title class="text-primary">
-            <v-icon
-              class="mr-2"
-              :icon="ICON.CARD_TEXT_OUTLINE"
-              size="small"
-            />
+            <v-icon class="mr-2" :icon="ICON.CARD_TEXT_OUTLINE" size="small" />
             {{ item.name }}
           </v-card-title>
           <v-card-text :style="contentStyle">
@@ -190,10 +151,7 @@
           </v-card-title>
           <v-card-text :style="contentStyle">
             <!-- eslint-disable vue/no-v-html -- 内容已通过 escapeHtml 进行 XSS 防护 -->
-            <div
-              class="homework-content"
-              v-html="renderMarkdown(item.content)"
-            />
+            <div class="homework-content" v-html="renderMarkdown(item.content)" />
             <!-- eslint-enable vue/no-v-html -->
           </v-card-text>
         </v-card>
@@ -204,10 +162,7 @@
   <!-- 单独显示空科目 -->
   <div class="empty-subjects mt-4">
     <!-- 移动端优化视图：紧凑 chips -->
-    <div
-      v-if="isMobile"
-      class="d-flex flex-wrap justify-center"
-    >
+    <div v-if="isMobile" class="d-flex flex-wrap justify-center">
       <v-chip
         v-for="subject in unusedSubjects"
         :key="subject.name"
@@ -216,10 +171,7 @@
         variant="tonal"
         @click="handleCardClick('dialog', subject.name)"
       >
-        <v-icon
-          start
-          size="small"
-        >
+        <v-icon start size="small">
           {{ isReadOnlyToken ? ICON.CANCEL : ICON.PLUS }}
         </v-icon>
         {{ subject.name }}
@@ -239,10 +191,7 @@
             @click="handleCardClick('dialog', subject.name)"
           >
             <v-card-text class="d-flex align-center justify-center py-3">
-              <v-icon
-                size="small"
-                start
-              >
+              <v-icon size="small" start>
                 {{ isReadOnlyToken ? ICON.CANCEL : ICON.PLUS }}
               </v-icon>
               <span class="text-body-large">{{ subject.name }}</span>
@@ -253,10 +202,7 @@
     </template>
 
     <!-- 卡片模式：与主网格卡片视觉统一 -->
-    <div
-      v-else
-      class="empty-subjects-grid"
-    >
+    <div v-else class="empty-subjects-grid">
       <TransitionGroup name="v-list">
         <v-card
           v-for="subject in unusedSubjects"
@@ -271,24 +217,12 @@
           </v-card-title>
           <v-card-text class="text-center">
             <template v-if="isReadOnlyToken">
-              <v-icon
-                color="medium-emphasis"
-                size="small"
-                :icon="ICON.CANCEL"
-              />
-              <div class="text-body-small text-medium-emphasis">
-                当日无作业
-              </div>
+              <v-icon color="medium-emphasis" size="small" :icon="ICON.CANCEL" />
+              <div class="text-body-small text-medium-emphasis">当日无作业</div>
             </template>
             <template v-else>
-              <v-icon
-                color="medium-emphasis"
-                size="small"
-                :icon="ICON.PLUS"
-              />
-              <div class="text-body-small text-medium-emphasis">
-                点击添加作业
-              </div>
+              <v-icon color="medium-emphasis" size="small" :icon="ICON.PLUS" />
+              <div class="text-body-small text-medium-emphasis">点击添加作业</div>
             </template>
           </v-card-text>
         </v-card>

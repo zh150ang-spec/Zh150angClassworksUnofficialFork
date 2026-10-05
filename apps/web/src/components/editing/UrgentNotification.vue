@@ -6,11 +6,7 @@
     transition="dialog-transition"
     class="urgent-notification-dialog"
   >
-    <v-card
-      class="urgent-notification-card"
-      :color="urgencyColor"
-      elevation="5"
-    >
+    <v-card class="urgent-notification-card" :color="urgencyColor" elevation="5">
       <v-card-text>
         <div class="urgent-title mb-6">
           {{ currentNotification?.content?.message || '无内容' }}
@@ -20,21 +16,11 @@
         </div>
 
         <!-- 多通知导航 -->
-        <div
-          v-if="hasMultipleNotifications"
-          class="navigation-controls mt-6"
-        >
-          <v-card
-            variant="flat"
-            :style="{ background: 'rgba(var(--v-theme-on-error), 0.1)' }"
-          >
+        <div v-if="hasMultipleNotifications" class="navigation-controls mt-6">
+          <v-card variant="flat" :style="{ background: 'rgba(var(--v-theme-on-error), 0.1)' }">
             <v-card-text class="text-center">
               <div class="notification-counter mb-3">
-                <v-chip
-                  color="white"
-                  variant="flat"
-                  size="small"
-                >
+                <v-chip color="white" variant="flat" size="small">
                   {{ notificationCountText }}
                 </v-chip>
               </div>
@@ -67,12 +53,7 @@
 
         <!-- 操作按钮 -->
         <div class="mt-8">
-          <v-btn
-            color="white"
-            size="large"
-            variant="flat"
-            @click="close"
-          >
+          <v-btn color="white" size="large" variant="flat" @click="close">
             <v-icon start>
               {{ ICON.CHECK }}
             </v-icon>

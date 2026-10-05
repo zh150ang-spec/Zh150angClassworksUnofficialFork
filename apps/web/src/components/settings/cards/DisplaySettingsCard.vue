@@ -1,13 +1,7 @@
 <template>
-  <settings-card
-    border
-    :icon="ICON.MONITOR"
-    title="显示设置"
-  >
+  <settings-card border :icon="ICON.MONITOR" title="显示设置">
     <v-list>
-      <v-list-subheader class="font-weight-bold text-primary">
-        按钮
-      </v-list-subheader>
+      <v-list-subheader class="font-weight-bold text-primary"> 按钮 </v-list-subheader>
 
       <setting-item :setting-key="'display.showRandomButton'" />
 
@@ -25,9 +19,7 @@
 
       <v-divider class="my-2" />
 
-      <v-list-subheader class="font-weight-bold text-primary">
-        卡片
-      </v-list-subheader>
+      <v-list-subheader class="font-weight-bold text-primary"> 卡片 </v-list-subheader>
 
       <setting-item :setting-key="'timeCard.enabled'" />
 
@@ -42,9 +34,7 @@
 
       <v-divider class="my-2" />
 
-      <v-list-subheader class="font-weight-bold text-primary">
-        交互
-      </v-list-subheader>
+      <v-list-subheader class="font-weight-bold text-primary"> 交互 </v-list-subheader>
 
       <setting-item :setting-key="'display.showQuickTools'" />
 
@@ -56,9 +46,7 @@
 
       <v-divider class="my-2" />
 
-      <v-list-subheader class="font-weight-bold text-primary">
-        其他
-      </v-list-subheader>
+      <v-list-subheader class="font-weight-bold text-primary"> 其他 </v-list-subheader>
 
       <setting-item :setting-key="'display.emptySubjectDisplay'" />
 

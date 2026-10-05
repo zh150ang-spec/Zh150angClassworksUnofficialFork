@@ -4,12 +4,12 @@
     v-ripple="
       !isEditingDisabled
         ? {
-          class: `text-${
-            ['primary', 'secondary', 'info', 'success', 'warning', 'error'][
-              Math.floor(Math.random() * 6)
-            ]
-          }`,
-        }
+            class: `text-${
+              ['primary', 'secondary', 'info', 'success', 'warning', 'error'][
+                Math.floor(Math.random() * 6)
+              ]
+            }`,
+          }
         : false
     "
     :class="{ 'cursor-not-allowed': isEditingDisabled, 'cursor-pointer': !isEditingDisabled }"
@@ -17,34 +17,25 @@
     @click="handleClick"
   >
     <div class="attendance-header">
-      <v-icon
-        :icon="ICON.ACCOUNT_GROUP"
-        size="small"
-        class="mr-2"
-        color="primary"
-      />
+      <v-icon :icon="ICON.ACCOUNT_GROUP" size="small" class="mr-2" color="primary" />
       <span class="text-body-large font-weight-bold">出勤</span>
     </div>
 
     <div class="attendance-number-block">
-      <div class="attendance-label">
-        应到
-      </div>
+      <div class="attendance-label">应到</div>
       <div class="attendance-number">
         {{ studentList.length - attendance.exclude.length }}
       </div>
     </div>
 
     <div class="attendance-number-block">
-      <div class="attendance-label">
-        实到
-      </div>
+      <div class="attendance-label">实到</div>
       <div class="attendance-number">
         {{
           studentList.length -
-            attendance.absent.length -
-            !getSetting('display.lateStudentsArePresent') * attendance.late.length -
-            attendance.exclude.length
+          attendance.absent.length -
+          !getSetting('display.lateStudentsArePresent') * attendance.late.length -
+          attendance.exclude.length
         }}
       </div>
     </div>
@@ -53,12 +44,8 @@
 
     <div class="attendance-status-list">
       <div class="attendance-status-item">
-        <div class="attendance-label text-error">
-          请假
-        </div>
-        <div class="attendance-count">
-          {{ attendance.absent.length }}人
-        </div>
+        <div class="attendance-label text-error">请假</div>
+        <div class="attendance-count">{{ attendance.absent.length }}人</div>
       </div>
       <div
         v-for="(name, index) in attendance.absent"
@@ -70,12 +57,8 @@
       </div>
 
       <div class="attendance-status-item mt-2">
-        <div class="attendance-label text-warning">
-          迟到
-        </div>
-        <div class="attendance-count">
-          {{ attendance.late.length }}人
-        </div>
+        <div class="attendance-label text-warning">迟到</div>
+        <div class="attendance-count">{{ attendance.late.length }}人</div>
       </div>
       <div
         v-for="(name, index) in attendance.late"
@@ -87,12 +70,8 @@
       </div>
 
       <div class="attendance-status-item mt-2">
-        <div class="attendance-label text-medium-emphasis">
-          不参与
-        </div>
-        <div class="attendance-count">
-          {{ attendance.exclude.length }}人
-        </div>
+        <div class="attendance-label text-medium-emphasis">不参与</div>
+        <div class="attendance-count">{{ attendance.exclude.length }}人</div>
       </div>
       <div
         v-for="(name, index) in attendance.exclude"

@@ -1,15 +1,8 @@
 <template>
   <!-- 纯 CSS 骨架屏，避免使用 VSkeletonLoader 引起的渲染冲突 -->
-  <v-container
-    class="main-window"
-    fluid
-  >
+  <v-container class="main-window" fluid>
     <div class="skeleton-grid">
-      <div
-        v-for="n in cardCount"
-        :key="n"
-        class="skeleton-card"
-      >
+      <div v-for="n in cardCount" :key="n" class="skeleton-card">
         <div class="skeleton-heading skeleton-pulse" />
         <div class="skeleton-line skeleton-pulse" />
         <div class="skeleton-line skeleton-line--short skeleton-pulse" />

@@ -1,87 +1,43 @@
 <template>
-  <settings-card
-    border
-    :icon="ICON.IMAGE"
-    title="背景设置"
-  >
+  <settings-card border :icon="ICON.IMAGE" title="背景设置">
     <v-list>
-      <setting-item
-        :key="settingItemKey"
-        :setting-key="'background.enabled'"
-      />
+      <setting-item :key="settingItemKey" :setting-key="'background.enabled'" />
     </v-list>
 
     <v-divider class="mb-4" />
 
     <div class="px-4 pb-4">
       <!-- 预览区域 -->
-      <div
-        class="preview-area mb-6"
-        :style="previewContainerStyle"
-      >
-        <div
-          class="preview-bg"
-          :style="previewBgStyle"
-        />
-        <div
-          class="preview-overlay"
-          :style="previewOverlayStyle"
-        />
-        <div class="preview-text">
-          背景预览
-        </div>
+      <div class="preview-area mb-6" :style="previewContainerStyle">
+        <div class="preview-bg" :style="previewBgStyle" />
+        <div class="preview-overlay" :style="previewOverlayStyle" />
+        <div class="preview-text">背景预览</div>
       </div>
 
       <!-- 图片来源 -->
       <div class="d-flex align-center mb-4">
-        <v-icon
-          start
-          color="primary"
-          :icon="ICON.IMAGE_SEARCH"
-        />
+        <v-icon start color="primary" :icon="ICON.IMAGE_SEARCH" />
         <span class="text-body-large font-weight-bold">图片来源</span>
       </div>
 
       <!-- 来源选择 -->
-      <v-radio-group
-        v-model="imageSource"
-        color="primary"
-        class="mb-4"
-        row
-      >
-        <v-radio
-          :value="'url'"
-          color="primary"
-        >
+      <v-radio-group v-model="imageSource" color="primary" class="mb-4" row>
+        <v-radio :value="'url'" color="primary">
           <template #label>
-            <v-icon
-              start
-              size="small"
-              :icon="ICON.LINK_VARIANT"
-            />
+            <v-icon start size="small" :icon="ICON.LINK_VARIANT" />
             网络地址
           </template>
         </v-radio>
-        <v-radio
-          :value="'upload'"
-          color="primary"
-        >
+        <v-radio :value="'upload'" color="primary">
           <template #label>
-            <v-icon
-              start
-              size="small"
-              :icon="ICON.UPLOAD"
-            />
+            <v-icon start size="small" :icon="ICON.UPLOAD" />
             本地上传
           </template>
         </v-radio>
       </v-radio-group>
 
       <!-- URL 输入 -->
-      <div
-        v-if="imageSource === 'url'"
-        class="mb-4"
-      >
+      <div v-if="imageSource === 'url'" class="mb-4">
         <v-text-field
           v-model="localUrl"
           label="图片地址"
@@ -110,10 +66,7 @@
       </div>
 
       <!-- 本地上传 -->
-      <div
-        v-if="imageSource === 'upload'"
-        class="mb-4"
-      >
+      <div v-if="imageSource === 'upload'" class="mb-4">
         <div
           class="upload-area rounded-xl pa-6 text-center mb-3"
           :class="{ 'upload-hover': isDragging }"
@@ -122,15 +75,8 @@
           @drop.prevent="handleDrop"
           @click="triggerFileInput"
         >
-          <v-icon
-            size="40"
-            color="primary"
-            class="mb-2"
-            :icon="ICON.IMAGE_PLUS"
-          />
-          <div class="text-body-medium">
-            点击或拖拽图片到此处上传
-          </div>
+          <v-icon size="40" color="primary" class="mb-2" :icon="ICON.IMAGE_PLUS" />
+          <div class="text-body-medium">点击或拖拽图片到此处上传</div>
           <div class="text-body-small text-medium-emphasis mt-1">
             支持 JPG、PNG、WebP、GIF（建议小于 {{ maxImageSizeMB }}MB）
           </div>
@@ -140,7 +86,7 @@
             accept="image/*"
             style="display: none"
             @change="handleFileChange"
-          >
+          />
         </div>
 
         <v-alert
@@ -154,15 +100,8 @@
           {{ uploadWarning }}
         </v-alert>
 
-        <div
-          v-if="localImageData"
-          class="d-flex align-center gap-2"
-        >
-          <v-chip
-            color="success"
-            :prepend-icon="ICON.SUCCESS"
-            size="small"
-          >
+        <div v-if="localImageData" class="d-flex align-center gap-2">
+          <v-chip color="success" :prepend-icon="ICON.SUCCESS" size="small">
             已上传本地图片
           </v-chip>
           <v-btn
@@ -180,10 +119,7 @@
 
       <!-- 毛玻璃效果设置 -->
       <div class="d-flex align-center mb-4">
-        <v-icon
-          start
-          :icon="ICON.BLUR"
-        />
+        <v-icon start :icon="ICON.BLUR" />
         <span class="text-body-large font-weight-bold">毛玻璃效果</span>
       </div>
 
@@ -202,18 +138,10 @@
           hide-details
         >
           <template #prepend>
-            <v-icon
-              size="small"
-              color="medium-emphasis"
-              :icon="ICON.BLUR_OFF"
-            />
+            <v-icon size="small" color="medium-emphasis" :icon="ICON.BLUR_OFF" />
           </template>
           <template #append>
-            <v-icon
-              size="small"
-              color="primary"
-              :icon="ICON.BLUR"
-            />
+            <v-icon size="small" color="primary" :icon="ICON.BLUR" />
           </template>
         </v-slider>
       </div>
@@ -234,18 +162,10 @@
           @update:model-value="onOpacityChange"
         >
           <template #prepend>
-            <v-icon
-              size="small"
-              color="medium-emphasis"
-              :icon="ICON.BRIGHTNESS_7"
-            />
+            <v-icon size="small" color="medium-emphasis" :icon="ICON.BRIGHTNESS_7" />
           </template>
           <template #append>
-            <v-icon
-              size="small"
-              color="primary"
-              :icon="ICON.BRIGHTNESS_2"
-            />
+            <v-icon size="small" color="primary" :icon="ICON.BRIGHTNESS_2" />
           </template>
         </v-slider>
       </div>

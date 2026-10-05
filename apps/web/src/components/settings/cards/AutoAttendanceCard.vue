@@ -1,44 +1,21 @@
 <template>
-  <settings-card
-    :icon="ICON.CLOCK_OUTLINE"
-    title="自动出勤规则"
-  >
+  <settings-card :icon="ICON.CLOCK_OUTLINE" title="自动出勤规则">
     <template #append>
       <div class="d-flex gap-2">
-        <v-btn
-          color="success"
-          :prepend-icon="ICON.PLUS"
-          variant="elevated"
-          @click="openAddDialog"
-        >
+        <v-btn color="success" :prepend-icon="ICON.PLUS" variant="elevated" @click="openAddDialog">
           添加规则
         </v-btn>
       </div>
     </template>
 
-    <v-alert
-      class="mb-4"
-      color="info"
-      :icon="ICON.INFO"
-      variant="tonal"
-    >
+    <v-alert class="mb-4" color="info" :icon="ICON.INFO" variant="tonal">
       添加规则后，在指定时间段内，系统会自动将学生标记为对应状态
     </v-alert>
 
-    <v-list
-      v-if="rules.length > 0"
-      class="rules-list"
-    >
-      <v-list-item
-        v-for="(rule, index) in rules"
-        :key="index"
-        class="mb-2 rule-item"
-      >
+    <v-list v-if="rules.length > 0" class="rules-list">
+      <v-list-item v-for="(rule, index) in rules" :key="index" class="mb-2 rule-item">
         <template #prepend>
-          <v-avatar
-            :color="getStatusColor(rule.status)"
-            size="40"
-          >
+          <v-avatar :color="getStatusColor(rule.status)" size="40">
             <v-icon>{{ getStatusIcon(rule.status) }}</v-icon>
           </v-avatar>
         </template>
@@ -47,11 +24,7 @@
           {{ rule.student }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          <v-chip
-            :color="getStatusColor(rule.status)"
-            size="x-small"
-            class="mr-2"
-          >
+          <v-chip :color="getStatusColor(rule.status)" size="x-small" class="mr-2">
             {{ getStatusLabel(rule.status) }}
           </v-chip>
           <span class="text-body-small">
@@ -60,12 +33,7 @@
         </v-list-item-subtitle>
 
         <template #append>
-          <v-btn
-            :icon="ICON.EDIT"
-            size="small"
-            variant="text"
-            @click="editRule(index)"
-          />
+          <v-btn :icon="ICON.EDIT" size="small" variant="text" @click="editRule(index)" />
           <v-btn
             color="error"
             :icon="ICON.DELETE"
@@ -77,12 +45,7 @@
       </v-list-item>
     </v-list>
 
-    <v-empty-state
-      v-else
-      :icon="ICON.CALENDAR_CLOCK"
-      text="暂无自动出勤规则"
-      title="暂无规则"
-    />
+    <v-empty-state v-else :icon="ICON.CALENDAR_CLOCK" text="暂无自动出勤规则" title="暂无规则" />
 
     <template #actions>
       <v-btn
@@ -95,10 +58,7 @@
       </v-btn>
     </template>
 
-    <v-dialog
-      v-model="dialog"
-      max-width="500"
-    >
+    <v-dialog v-model="dialog" max-width="500">
       <v-card>
         <v-card-title>
           {{ editingIndex === -1 ? '添加规则' : '编辑规则' }}
@@ -131,11 +91,7 @@
           />
 
           <template v-if="form.type === 'dateRange'">
-            <v-menu
-              v-model="startDateMenu"
-              :close-on-content-click="false"
-              location="bottom start"
-            >
+            <v-menu v-model="startDateMenu" :close-on-content-click="false" location="bottom start">
               <template #activator="{ props }">
                 <v-text-field
                   v-bind="props"
@@ -151,11 +107,7 @@
                 @update:model-value="onStartDateChange"
               />
             </v-menu>
-            <v-menu
-              v-model="endDateMenu"
-              :close-on-content-click="false"
-              location="bottom start"
-            >
+            <v-menu v-model="endDateMenu" :close-on-content-click="false" location="bottom start">
               <template #activator="{ props }">
                 <v-text-field
                   v-bind="props"
@@ -177,11 +129,7 @@
           </template>
 
           <template v-if="form.type === 'daily'">
-            <v-menu
-              v-model="startTimeMenu"
-              :close-on-content-click="false"
-              location="bottom start"
-            >
+            <v-menu v-model="startTimeMenu" :close-on-content-click="false" location="bottom start">
               <template #activator="{ props }">
                 <v-text-field
                   v-bind="props"
@@ -198,11 +146,7 @@
                 @update:model-value="onStartTimeChange"
               />
             </v-menu>
-            <v-menu
-              v-model="endTimeMenu"
-              :close-on-content-click="false"
-              location="bottom start"
-            >
+            <v-menu v-model="endTimeMenu" :close-on-content-click="false" location="bottom start">
               <template #activator="{ props }">
                 <v-text-field
                   v-bind="props"
@@ -231,11 +175,7 @@
               :prepend-inner-icon="ICON.CALENDAR_WEEK"
               variant="outlined"
             />
-            <v-menu
-              v-model="startTimeMenu"
-              :close-on-content-click="false"
-              location="bottom start"
-            >
+            <v-menu v-model="startTimeMenu" :close-on-content-click="false" location="bottom start">
               <template #activator="{ props }">
                 <v-text-field
                   v-bind="props"
@@ -252,11 +192,7 @@
                 @update:model-value="onStartTimeChange"
               />
             </v-menu>
-            <v-menu
-              v-model="endTimeMenu"
-              :close-on-content-click="false"
-              location="bottom start"
-            >
+            <v-menu v-model="endTimeMenu" :close-on-content-click="false" location="bottom start">
               <template #activator="{ props }">
                 <v-text-field
                   v-bind="props"
@@ -278,49 +214,24 @@
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="dialog = false"
-            >
-              取消
-            </v-btn>
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="saveRule"
-            >
-              保存
-            </v-btn>
+            <v-btn color="neutral-surface" variant="elevated" @click="dialog = false"> 取消 </v-btn>
+            <v-btn color="success" variant="elevated" @click="saveRule"> 保存 </v-btn>
           </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="deleteDialog"
-      max-width="400"
-    >
+    <v-dialog v-model="deleteDialog" max-width="400">
       <v-card>
         <v-card-title>确认删除</v-card-title>
         <v-card-text> 确定要删除这条自动出勤规则吗？ </v-card-text>
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="deleteDialog = false"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="deleteDialog = false">
               取消
             </v-btn>
-            <v-btn
-              color="error"
-              variant="elevated"
-              @click="confirmDelete"
-            >
-              删除
-            </v-btn>
+            <v-btn color="error" variant="elevated" @click="confirmDelete"> 删除 </v-btn>
           </div>
         </v-card-actions>
       </v-card>

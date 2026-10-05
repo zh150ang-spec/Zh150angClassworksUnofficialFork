@@ -10,11 +10,7 @@
     <!-- 标题行：始终显示，折叠/展开状态顺承 -->
     <div class="d-flex align-center">
       <v-card-title class="text-headline-small d-flex align-center flex-grow-1 min-width-0">
-        <v-icon
-          :icon="ICON.MONITOR_CELLPHONE"
-          class="mr-2"
-          color="primary"
-        />
+        <v-icon :icon="ICON.MONITOR_CELLPHONE" class="mr-2" color="primary" />
         <span class="mr-2">安装应用与授权</span>
         <span class="text-body-medium text-medium-emphasis text-truncate hidden-sm-and-down">
           将网站安装为应用，开启通知与离线存储
@@ -29,12 +25,7 @@
         >
           {{ expanded ? '收起' : '查看' }}
         </v-btn>
-        <v-btn
-          variant="text"
-          size="small"
-          :icon="ICON.CLOSE"
-          @click="dismiss"
-        />
+        <v-btn variant="text" size="small" :icon="ICON.CLOSE" @click="dismiss" />
       </v-card-actions>
     </div>
 
@@ -44,10 +35,7 @@
         <v-divider />
 
         <v-card-text class="pb-1">
-          <v-list
-            density="comfortable"
-            lines="two"
-          >
+          <v-list density="comfortable" lines="two">
             <v-list-item
               v-for="item in chipList"
               :key="item.key"
@@ -55,11 +43,7 @@
               @click="() => handleSingleRequest(item.key)"
             >
               <template #prepend>
-                <v-avatar
-                  :color="chipColors[item.status]"
-                  size="32"
-                  variant="tonal"
-                >
+                <v-avatar :color="chipColors[item.status]" size="32" variant="tonal">
                   <v-icon :icon="statusIcons[item.status]" />
                 </v-avatar>
               </template>
@@ -68,12 +52,7 @@
               <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
 
               <template #append>
-                <v-chip
-                  :color="chipColors[item.status]"
-                  size="small"
-                  variant="tonal"
-                  class="me-2"
-                >
+                <v-chip :color="chipColors[item.status]" size="small" variant="tonal" class="me-2">
                   {{ statusText[item.status] }}
                 </v-chip>
                 <v-btn
@@ -104,10 +83,7 @@
       </div>
     </v-expand-transition>
 
-    <v-dialog
-      v-model="helpDialog"
-      max-width="520"
-    >
+    <v-dialog v-model="helpDialog" max-width="520">
       <v-card rounded="xl">
         <v-card-title class="text-headline-small">
           {{ helpContent.title }}
@@ -131,12 +107,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="helpDialog = false"
-          >
-            我知道了
-          </v-btn>
+          <v-btn variant="text" @click="helpDialog = false"> 我知道了 </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -9,24 +9,12 @@
     @click="fetchSentence"
     @touchmove="handleTouchMove"
   >
-    <v-card-text
-      class="pa-6 d-flex flex-column justify-center"
-      style="height: 100%"
-    >
-      <div
-        class="font-weight-medium mb-4 serif-font"
-        :style="contentStyle"
-      >
+    <v-card-text class="pa-6 d-flex flex-column justify-center" style="height: 100%">
+      <div class="font-weight-medium mb-4 serif-font" :style="contentStyle">
         {{ sentence }}
       </div>
-      <div
-        class="text-medium-emphasis author-font"
-        :style="authorStyle"
-      >
-        <span
-          v-if="author"
-          class="mr-2"
-        >{{ author }}</span>
+      <div class="text-medium-emphasis author-font" :style="authorStyle">
+        <span v-if="author" class="mr-2">{{ author }}</span>
         <span v-if="origin">《{{ origin }}》</span>
       </div>
     </v-card-text>

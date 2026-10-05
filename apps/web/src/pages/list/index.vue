@@ -1,26 +1,14 @@
 <template>
   <v-app-bar elevation="1">
     <template #prepend>
-      <v-btn
-        :icon="ICON.ARROW_LEFT"
-        variant="text"
-        @click="$router.push('/')"
-      />
+      <v-btn :icon="ICON.ARROW_LEFT" variant="text" @click="$router.push('/')" />
     </template>
-    <v-app-bar-title class="text-headline-small">
-      列表
-    </v-app-bar-title>
+    <v-app-bar-title class="text-headline-small"> 列表 </v-app-bar-title>
   </v-app-bar>
   <v-container>
-    <v-card
-      border
-      class="mb-5"
-      rounded="xl"
-    >
+    <v-card border class="mb-5" rounded="xl">
       <v-card-title>现有列表</v-card-title>
-      <v-card-text v-if="lists.length === 0">
-        暂无列表，请创建新列表
-      </v-card-text>
+      <v-card-text v-if="lists.length === 0"> 暂无列表，请创建新列表 </v-card-text>
       <v-list v-else>
         <v-list-item
           v-for="list in lists"
@@ -31,10 +19,7 @@
           <div v-if="list.id !== editingListId">
             <v-list-item-title>{{ list.name }}</v-list-item-title>
           </div>
-          <div
-            v-else
-            class="d-flex align-center w-100"
-          >
+          <div v-else class="d-flex align-center w-100">
             <v-text-field
               v-model="editListName"
               autofocus
@@ -44,40 +29,20 @@
               label="列表名称"
               @keyup.enter="saveListName"
             />
-            <v-btn
-              border
-              class="mr-2"
-              color="primary"
-              icon
-              @click.stop.prevent="saveListName"
-            >
+            <v-btn border class="mr-2" color="primary" icon @click.stop.prevent="saveListName">
               <v-icon :icon="ICON.CHECK" />
             </v-btn>
-            <v-btn
-              border
-              color="error"
-              icon
-              @click.stop.prevent="cancelEditing"
-            >
+            <v-btn border color="error" icon @click.stop.prevent="cancelEditing">
               <v-icon :icon="ICON.CLOSE" />
             </v-btn>
           </div>
 
           <template #append>
             <div v-if="list.id !== editingListId">
-              <v-btn
-                border
-                class="mr-2"
-                icon
-                @click.stop.prevent="startEditing(list.id)"
-              >
+              <v-btn border class="mr-2" icon @click.stop.prevent="startEditing(list.id)">
                 <v-icon :icon="ICON.EDIT" />
               </v-btn>
-              <v-btn
-                border
-                icon
-                @click.stop.prevent="confirmDeleteList(list.id)"
-              >
+              <v-btn border icon @click.stop.prevent="confirmDeleteList(list.id)">
                 <v-icon :icon="ICON.DELETE" />
               </v-btn>
             </div>
@@ -85,11 +50,7 @@
         </v-list-item>
       </v-list>
     </v-card>
-    <v-card
-      border
-      class="mb-5"
-      rounded="xl"
-    >
+    <v-card border class="mb-5" rounded="xl">
       <v-card-title>创建新列表</v-card-title>
       <v-card-text>
         <v-text-field
@@ -97,39 +58,18 @@
           :rules="[(v) => !!v || '名称不能为空']"
           label="列表名称"
         />
-        <v-btn
-          :disabled="!newListName"
-          color="primary"
-          @click="createNewList"
-        >
-          创建列表
-        </v-btn>
+        <v-btn :disabled="!newListName" color="primary" @click="createNewList"> 创建列表 </v-btn>
       </v-card-text>
     </v-card>
     <!-- 确认删除对话框 -->
-    <v-dialog
-      v-model="deleteDialog.show"
-      max-width="500"
-    >
+    <v-dialog v-model="deleteDialog.show" max-width="500">
       <v-card border>
         <v-card-title>删除列表</v-card-title>
         <v-card-text>{{ deleteDialog.text }}</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            color="primary"
-            variant="text"
-            @click="deleteDialog.show = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="confirmDelete"
-          >
-            确认删除
-          </v-btn>
+          <v-btn color="primary" variant="text" @click="deleteDialog.show = false"> 取消 </v-btn>
+          <v-btn color="error" variant="text" @click="confirmDelete"> 确认删除 </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

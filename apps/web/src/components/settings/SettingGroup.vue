@@ -1,17 +1,7 @@
 <template>
-  <v-card
-    :border="border"
-    class="setting-group"
-  >
-    <v-card-title
-      v-if="title"
-      class="d-flex align-center"
-    >
-      <v-icon
-        v-if="icon"
-        :icon="icon"
-        class="mr-2"
-      />
+  <v-card :border="border" class="setting-group">
+    <v-card-title v-if="title" class="d-flex align-center">
+      <v-icon v-if="icon" :icon="icon" class="mr-2" />
       {{ title }}
     </v-card-title>
 

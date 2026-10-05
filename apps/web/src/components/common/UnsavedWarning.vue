@@ -1,11 +1,6 @@
 <template>
   <div class="warning-container">
-    <v-chip
-      v-if="show"
-      class="warning-chip"
-      color="warning"
-      size="small"
-    >
+    <v-chip v-if="show" class="warning-chip" color="warning" size="small">
       {{ message }}
     </v-chip>
   </div>

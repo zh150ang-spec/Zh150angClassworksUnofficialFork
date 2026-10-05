@@ -1,14 +1,7 @@
 <template>
-  <settings-card
-    :loading="loading"
-    :icon="ICON.ACCOUNT_GROUP"
-    title="学生列表"
-  >
+  <settings-card :loading="loading" :icon="ICON.ACCOUNT_GROUP" title="学生列表">
     <template #status>
-      <unsaved-warning
-        :show="unsavedChanges"
-        message="有未保存的更改"
-      />
+      <unsaved-warning :show="unsavedChanges" message="有未保存的更改" />
     </template>
     <template #append>
       <div class="d-flex gap-2">
@@ -31,13 +24,7 @@
       </div>
     </template>
 
-    <v-alert
-      v-if="error"
-      class="mb-4"
-      closable
-      type="error"
-      variant="tonal"
-    >
+    <v-alert v-if="error" class="mb-4" closable type="error" variant="tonal">
       {{ error }}
     </v-alert>
 
@@ -45,11 +32,7 @@
       <!-- 普通编辑模式 -->
       <div v-if="!modelValue.advanced">
         <v-row class="mb-6">
-          <v-col
-            cols="12"
-            md="4"
-            sm="6"
-          >
+          <v-col cols="12" md="4" sm="6">
             <v-text-field
               v-model="newStudentName"
               class="mb-4"
@@ -91,30 +74,16 @@
             md="4"
             sm="6"
           >
-            <v-card
-              elevation="1"
-              border
-              class="student-card"
-            >
+            <v-card elevation="1" border class="student-card">
               <v-card-text class="d-flex align-center pa-3">
-                <v-menu
-                  :open-on-hover="!isMobile"
-                  location="bottom"
-                >
+                <v-menu :open-on-hover="!isMobile" location="bottom">
                   <template #activator="{ props: menuProps }">
-                    <v-btn
-                      class="mr-3 font-weight-medium"
-                      size="small"
-                      v-bind="menuProps"
-                    >
+                    <v-btn class="mr-3 font-weight-medium" size="small" v-bind="menuProps">
                       {{ index + 1 }}
                     </v-btn>
                   </template>
 
-                  <v-list
-                    density="compact"
-                    nav
-                  >
+                  <v-list density="compact" nav>
                     <v-list-item
                       :disabled="index === 0"
                       :prepend-icon="ICON.ARROW_UP_BOLD"
@@ -182,10 +151,7 @@
       </div>
 
       <!-- 高级编辑模式 -->
-      <div
-        v-else
-        class="pt-2"
-      >
+      <div v-else class="pt-2">
         <v-alert
           v-if="!modelValue.text"
           class="mb-4"

@@ -1,18 +1,9 @@
 <template>
   <div>
     <!-- 统一链接生成器卡片 -->
-    <v-card
-      border
-      flat
-      rounded="xl"
-      class="unified-link-generator"
-    >
+    <v-card border flat rounded="xl" class="unified-link-generator">
       <v-card-title class="text-headline-small">
-        <v-icon
-          class="mr-2"
-          :icon="ICON.LINK_VARIANT"
-          start
-        />
+        <v-icon class="mr-2" :icon="ICON.LINK_VARIANT" start />
         统一链接生成器
       </v-card-title>
 
@@ -22,24 +13,15 @@
         </div>
 
         <!-- 预配置认证信息部分 -->
-        <v-card
-          class="mb-4"
-          variant="tonal"
-        >
+        <v-card class="mb-4" variant="tonal">
           <v-card-title class="text-body-large">
-            <v-icon
-              :icon="ICON.ACCOUNT_KEY"
-              start
-            />
+            <v-icon :icon="ICON.ACCOUNT_KEY" start />
             预配置认证信息
           </v-card-title>
 
           <v-card-text>
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="preconfigForm.namespace"
                   hint="设备的命名空间标识符"
@@ -50,10 +32,7 @@
                   variant="outlined"
                 />
               </v-col>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="preconfigForm.authCode"
                   hint="留空则需要用户手动输入"
@@ -79,37 +58,14 @@
             </v-row>
 
             <!-- 预配置信息预览 -->
-            <v-alert
-              v-if="preconfigForm.namespace"
-              class="mt-3"
-              type="info"
-              variant="tonal"
-            >
-              <div class="text-label-large mb-2">
-                预配置信息：
-              </div>
-              <v-chip
-                class="mr-2 mb-1"
-                size="small"
-              >
-                <v-icon
-                  :icon="ICON.IDENTIFIER"
-                  size="small"
-                  start
-                />
+            <v-alert v-if="preconfigForm.namespace" class="mt-3" type="info" variant="tonal">
+              <div class="text-label-large mb-2">预配置信息：</div>
+              <v-chip class="mr-2 mb-1" size="small">
+                <v-icon :icon="ICON.IDENTIFIER" size="small" start />
                 命名空间: {{ preconfigForm.namespace }}
               </v-chip>
-              <v-chip
-                v-if="preconfigForm.authCode"
-                class="mr-2 mb-1"
-                color="warning"
-                size="small"
-              >
-                <v-icon
-                  :icon="ICON.LOCK"
-                  size="small"
-                  start
-                />
+              <v-chip v-if="preconfigForm.authCode" class="mr-2 mb-1" color="warning" size="small">
+                <v-icon :icon="ICON.LOCK" size="small" start />
                 认证码:
                 {{
                   preconfigForm.authCode.length > 8
@@ -117,17 +73,8 @@
                     : preconfigForm.authCode
                 }}
               </v-chip>
-              <v-chip
-                v-else
-                class="mr-2 mb-1"
-                color="medium-emphasis"
-                size="small"
-              >
-                <v-icon
-                  :icon="ICON.LOCK_OPEN"
-                  size="small"
-                  start
-                />
+              <v-chip v-else class="mr-2 mb-1" color="medium-emphasis" size="small">
+                <v-icon :icon="ICON.LOCK_OPEN" size="small" start />
                 无认证码
               </v-chip>
               <v-chip
@@ -135,10 +82,7 @@
                 class="mr-2 mb-1"
                 size="small"
               >
-                <v-icon
-                  size="small"
-                  start
-                >
+                <v-icon size="small" start>
                   {{ preconfigForm.autoExecute ? ICON.PLAY_CIRCLE : ICON.HAND_BACK_LEFT }}
                 </v-icon>
                 {{ preconfigForm.autoExecute ? '自动认证' : '手动认证' }}
@@ -148,15 +92,9 @@
         </v-card>
 
         <!-- 设置分享部分 -->
-        <v-card
-          class="mb-4"
-          variant="tonal"
-        >
+        <v-card class="mb-4" variant="tonal">
           <v-card-title class="text-body-large">
-            <v-icon
-              :icon="ICON.COG_TRANSFER"
-              start
-            />
+            <v-icon :icon="ICON.COG_TRANSFER" start />
             设置分享（可选）
           </v-card-title>
 
@@ -207,12 +145,7 @@
 
             <!-- 选择摘要 -->
             <div class="d-flex align-center mb-3 flex-wrap gap-2">
-              <v-chip
-                class="mr-2"
-                color="primary"
-              >
-                已选 {{ selectedItems.length }} 项设置
-              </v-chip>
+              <v-chip class="mr-2" color="primary"> 已选 {{ selectedItems.length }} 项设置 </v-chip>
 
               <template v-if="selectedItems.length > 0">
                 <v-chip
@@ -265,11 +198,7 @@
                   >
                     <template #[`item.description`]="{ item }">
                       <div class="d-flex align-center">
-                        <v-icon
-                          :icon="item.icon"
-                          size="small"
-                          start
-                        />
+                        <v-icon :icon="item.icon" size="small" start />
                         {{ item.description }}
                         <v-chip
                           v-if="item.key === 'server.kvToken'"
@@ -312,15 +241,9 @@
         </v-card>
 
         <!-- 链接生成和操作部分 -->
-        <v-card
-          class="mb-4"
-          variant="outlined"
-        >
+        <v-card class="mb-4" variant="outlined">
           <v-card-title class="text-body-large">
-            <v-icon
-              :icon="ICON.LINK"
-              start
-            />
+            <v-icon :icon="ICON.LINK" start />
             生成的统一链接
           </v-card-title>
 
@@ -345,12 +268,7 @@
               >
                 测试链接
               </v-btn>
-              <v-btn
-                color="error"
-                :prepend-icon="ICON.DELETE"
-                variant="tonal"
-                @click="clearAll"
-              >
+              <v-btn color="error" :prepend-icon="ICON.DELETE" variant="tonal" @click="clearAll">
                 清空所有
               </v-btn>
             </div>
@@ -370,49 +288,19 @@
             />
 
             <!-- 链接内容预览 -->
-            <v-alert
-              v-if="unifiedLink"
-              class="mb-3"
-              type="success"
-              variant="tonal"
-            >
-              <div class="text-label-large mb-2">
-                链接包含内容：
-              </div>
+            <v-alert v-if="unifiedLink" class="mb-3" type="success" variant="tonal">
+              <div class="text-label-large mb-2">链接包含内容：</div>
               <div class="d-flex flex-wrap gap-1">
-                <v-chip
-                  color="primary"
-                  size="small"
-                >
-                  <v-icon
-                    :icon="ICON.ACCOUNT_KEY"
-                    size="small"
-                    start
-                  />
+                <v-chip color="primary" size="small">
+                  <v-icon :icon="ICON.ACCOUNT_KEY" size="small" start />
                   预配置认证
                 </v-chip>
-                <v-chip
-                  v-if="selectedItems.length > 0"
-                  color="secondary"
-                  size="small"
-                >
-                  <v-icon
-                    :icon="ICON.SETTINGS"
-                    size="small"
-                    start
-                  />
+                <v-chip v-if="selectedItems.length > 0" color="secondary" size="small">
+                  <v-icon :icon="ICON.SETTINGS" size="small" start />
                   {{ selectedItems.length }} 项设置
                 </v-chip>
-                <v-chip
-                  v-else
-                  color="medium-emphasis"
-                  size="small"
-                >
-                  <v-icon
-                    :icon="ICON.COG_OFF"
-                    size="small"
-                    start
-                  />
+                <v-chip v-else color="medium-emphasis" size="small">
+                  <v-icon :icon="ICON.COG_OFF" size="small" start />
                   无额外设置
                 </v-chip>
               </div>
@@ -421,10 +309,7 @@
         </v-card>
 
         <!-- 安全提醒 -->
-        <v-alert
-          type="warning"
-          variant="tonal"
-        >
+        <v-alert type="warning" variant="tonal">
           <div class="d-flex align-center mb-2">
             <span>安全提醒</span>
           </div>

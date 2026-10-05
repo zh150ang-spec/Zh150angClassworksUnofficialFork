@@ -41,32 +41,16 @@
             offset-x="6"
             offset-y="6"
           >
-            <v-btn
-              v-bind="menuProps"
-              :icon="ICON.MESSAGE_TEXT"
-              variant="text"
-            />
+            <v-btn v-bind="menuProps" :icon="ICON.MESSAGE_TEXT" variant="text" />
           </v-badge>
         </template>
         <v-list density="comfortable">
-          <v-list-item
-            :prepend-icon="ICON.BELL"
-            title="消息记录"
-            @click="$emit('open-messages')"
-          />
-          <v-list-item
-            :prepend-icon="ICON.CHAT"
-            title="设备聊天"
-            @click="$emit('open-chat')"
-          />
+          <v-list-item :prepend-icon="ICON.BELL" title="消息记录" @click="$emit('open-messages')" />
+          <v-list-item :prepend-icon="ICON.CHAT" title="设备聊天" @click="$emit('open-chat')" />
         </v-list>
       </v-menu>
 
-      <v-btn
-        :icon="ICON.SETTINGS"
-        variant="text"
-        @click="$emit('open-settings')"
-      />
+      <v-btn :icon="ICON.SETTINGS" variant="text" @click="$emit('open-settings')" />
     </template>
   </v-app-bar>
 </template>

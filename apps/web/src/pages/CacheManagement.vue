@@ -3,54 +3,30 @@
     <v-row>
       <v-col cols="12">
         <div class="d-flex align-center mb-6">
-          <v-icon
-            class="mr-3"
-            color="primary"
-            size="x-large"
-            :icon="ICON.DATABASE_COG_OUTLINE"
-          />
+          <v-icon class="mr-3" color="primary" size="x-large" :icon="ICON.DATABASE_COG_OUTLINE" />
           <div>
-            <h1 class="text-headline-large">
-              缓存管理
-            </h1>
-            <div class="text-body-large text-medium-emphasis">
-              管理应用的本地缓存资源
-            </div>
+            <h1 class="text-headline-large">缓存管理</h1>
+            <div class="text-body-large text-medium-emphasis">管理应用的本地缓存资源</div>
           </div>
         </div>
 
-        <v-card
-          class="mb-6"
-          color="info"
-          density="compact"
-          variant="tonal"
-        >
+        <v-card class="mb-6" color="info" density="compact" variant="tonal">
           <v-card-text class="d-flex align-center">
-            <v-icon
-              class="mr-2"
-              color="info"
-            >
+            <v-icon class="mr-2" color="info">
               {{ ICON.INFORMATION_OUTLINE }}
             </v-icon>
-            <span>在这里您可以查看和管理应用的缓存文件。清除缓存可能会导致应用需要重新下载资源，但有助于解决某些显示问题。</span>
+            <span
+              >在这里您可以查看和管理应用的缓存文件。清除缓存可能会导致应用需要重新下载资源，但有助于解决某些显示问题。</span
+            >
           </v-card-text>
         </v-card>
 
         <v-row>
-          <v-col
-            cols="12"
-            md="8"
-          >
-            <v-card
-              class="mb-4"
-              variant="tonal"
-            >
+          <v-col cols="12" md="8">
+            <v-card class="mb-4" variant="tonal">
               <v-card-text>
                 <div class="d-flex align-center mb-2">
-                  <v-icon
-                    class="mr-2"
-                    color="primary"
-                  >
+                  <v-icon class="mr-2" color="primary">
                     {{ ICON.INFORMATION }}
                   </v-icon>
                   <span class="text-headline-small">什么是缓存？</span>
@@ -62,20 +38,11 @@
             </v-card>
           </v-col>
 
-          <v-col
-            cols="12"
-            md="4"
-          >
-            <v-card
-              class="mb-4"
-              variant="tonal"
-            >
+          <v-col cols="12" md="4">
+            <v-card class="mb-4" variant="tonal">
               <v-card-text>
                 <div class="d-flex align-center mb-2">
-                  <v-icon
-                    class="mr-2"
-                    color="warning"
-                  >
+                  <v-icon class="mr-2" color="warning">
                     {{ ICON.LIGHTBULB_OUTLINE }}
                   </v-icon>
                   <span class="text-headline-small">何时清除缓存？</span>

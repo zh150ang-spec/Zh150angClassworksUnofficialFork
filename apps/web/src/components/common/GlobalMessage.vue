@@ -9,25 +9,15 @@
           :class="`message-${msg.type}`"
         >
           <div class="message-content">
-            <v-icon
-              :icon="icons[msg.type] || icons.info"
-              class="mr-2"
-              size="small"
-            />
+            <v-icon :icon="icons[msg.type] || icons.info" class="mr-2" size="small" />
             <div class="message-text">
               <div class="message-title">
                 {{ msg.title }}
               </div>
-              <div
-                v-if="msg.content"
-                class="message-body"
-              >
+              <div v-if="msg.content" class="message-body">
                 {{ msg.content }}
               </div>
-              <div
-                v-if="msg.actions && msg.actions.length > 0"
-                class="message-actions"
-              >
+              <div v-if="msg.actions && msg.actions.length > 0" class="message-actions">
                 <v-btn
                   v-for="(action, idx) in msg.actions"
                   :key="idx"

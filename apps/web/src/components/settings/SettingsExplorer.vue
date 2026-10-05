@@ -32,10 +32,7 @@
       </div>
 
       <v-list>
-        <template
-          v-for="setting in settingsList"
-          :key="setting.key"
-        >
+        <template v-for="setting in settingsList" :key="setting.key">
           <div v-show="isSettingVisible(setting)">
             <setting-item
               :disabled="setting.requireDeveloper && !isDeveloperMode"

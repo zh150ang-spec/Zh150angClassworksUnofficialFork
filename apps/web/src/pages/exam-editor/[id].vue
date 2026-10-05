@@ -2,15 +2,9 @@
   <v-container class="pa-0">
     <v-app-bar elevation="1">
       <template #prepend>
-        <v-btn
-          :icon="ICON.ARROW_LEFT"
-          variant="text"
-          @click="$router.back()"
-        />
+        <v-btn :icon="ICON.ARROW_LEFT" variant="text" @click="$router.back()" />
       </template>
-      <v-app-bar-title class="text-headline-small">
-        编辑考试配置
-      </v-app-bar-title>
+      <v-app-bar-title class="text-headline-small"> 编辑考试配置 </v-app-bar-title>
       <v-spacer />
       <v-btn
         :loading="saving"
@@ -23,17 +17,8 @@
       </v-btn>
     </v-app-bar>
 
-    <v-container
-      class="py-4"
-      style="max-width: 1200px"
-    >
-      <ExamConfigEditor
-        v-if="id"
-        ref="editor"
-        :config-id="id"
-        @error="onError"
-        @saved="onSaved"
-      />
+    <v-container class="py-4" style="max-width: 1200px">
+      <ExamConfigEditor v-if="id" ref="editor" :config-id="id" @error="onError" @saved="onSaved" />
     </v-container>
   </v-container>
 </template>

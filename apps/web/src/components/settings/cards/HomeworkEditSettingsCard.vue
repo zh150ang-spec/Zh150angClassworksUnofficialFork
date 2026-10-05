@@ -1,12 +1,7 @@
 <template>
-  <settings-card
-    :icon="ICON.BOOK_EDIT"
-    title="作业编辑设置"
-  >
+  <settings-card :icon="ICON.BOOK_EDIT" title="作业编辑设置">
     <v-list>
-      <v-list-subheader class="font-weight-bold text-primary">
-        保存行为
-      </v-list-subheader>
+      <v-list-subheader class="font-weight-bold text-primary"> 保存行为 </v-list-subheader>
       <setting-item :setting-key="'edit.autoSave'" />
 
       <v-divider class="my-2" />
@@ -20,9 +15,7 @@
 
       <v-divider class="my-2" />
 
-      <v-list-subheader class="font-weight-bold text-primary">
-        提示语
-      </v-list-subheader>
+      <v-list-subheader class="font-weight-bold text-primary"> 提示语 </v-list-subheader>
       <setting-item :setting-key="'edit.autoSavePromptText'" />
 
       <v-divider class="my-2" />

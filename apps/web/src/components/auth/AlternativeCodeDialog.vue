@@ -11,36 +11,15 @@
         rows="5"
         variant="outlined"
       />
-      <v-alert
-        class="mt-3"
-        type="info"
-        variant="tonal"
-      >
-        替代代码功能暂未实现，敬请期待
-      </v-alert>
+      <v-alert class="mt-3" type="info" variant="tonal"> 替代代码功能暂未实现，敬请期待 </v-alert>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn
-        v-if="showCancel"
-        variant="text"
-        @click="$emit('cancel')"
-      >
-        取消
-      </v-btn>
-      <v-tooltip
-        location="top"
-        text="即将推出"
-      >
+      <v-btn v-if="showCancel" variant="text" @click="$emit('cancel')"> 取消 </v-btn>
+      <v-tooltip location="top" text="即将推出">
         <template #activator="{ props }">
-          <span
-            v-bind="props"
-            class="d-inline-block"
-          >
-            <v-btn
-              color="primary"
-              disabled
-            > 提交 </v-btn>
+          <span v-bind="props" class="d-inline-block">
+            <v-btn color="primary" disabled> 提交 </v-btn>
           </span>
         </template>
       </v-tooltip>

@@ -1,36 +1,20 @@
 <template>
-  <settings-card
-    :icon="ICON.PALETTE"
-    title="主题设置"
-  >
+  <settings-card :icon="ICON.PALETTE" title="主题设置">
     <v-list>
       <v-list-item>
         <template #prepend>
-          <v-icon
-            class="mr-3"
-            :icon="ICON.THEME_LIGHT_DARK"
-          />
+          <v-icon class="mr-3" :icon="ICON.THEME_LIGHT_DARK" />
         </template>
         <v-list-item-title>主题模式</v-list-item-title>
         <v-list-item-subtitle>选择明亮或暗黑主题</v-list-item-subtitle>
         <template #append>
-          <v-btn-toggle
-            v-model="localTheme"
-            color="primary"
-            density="comfortable"
-          >
+          <v-btn-toggle v-model="localTheme" color="primary" density="comfortable">
             <v-btn value="light">
-              <v-icon
-                class="mr-2"
-                :icon="ICON.WHITE_BALANCE_SUNNY"
-              />
+              <v-icon class="mr-2" :icon="ICON.WHITE_BALANCE_SUNNY" />
               明亮
             </v-btn>
             <v-btn value="dark">
-              <v-icon
-                class="mr-2"
-                :icon="ICON.MOON_WANING_CRESCENT"
-              />
+              <v-icon class="mr-2" :icon="ICON.MOON_WANING_CRESCENT" />
               暗黑
             </v-btn>
           </v-btn-toggle>

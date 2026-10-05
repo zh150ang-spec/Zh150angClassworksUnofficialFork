@@ -1,27 +1,13 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    fullscreen
-    transition="dialog-bottom-transition"
-    scrollable
-  >
+  <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition" scrollable>
     <v-card>
-      <v-toolbar
-        dark
-        flat
-      >
+      <v-toolbar dark flat>
         <v-toolbar-title>
-          <v-icon
-            start
-            :icon="ICON.CHAT"
-          />
+          <v-icon start :icon="ICON.CHAT" />
           发送通知
         </v-toolbar-title>
         <v-spacer />
-        <v-btn
-          :icon="ICON.CLOSE"
-          @click="close"
-        />
+        <v-btn :icon="ICON.CLOSE" @click="close" />
       </v-toolbar>
 
       <v-card-text class="pa-0">
@@ -32,10 +18,7 @@
                 <v-card-text>
                   <v-form>
                     <v-row>
-                      <v-col
-                        cols="12"
-                        md="6"
-                      >
+                      <v-col cols="12" md="6">
                         <v-switch
                           v-model="notificationForm.isUrgent"
                           label="强调通知"
@@ -152,14 +135,8 @@
                     v-if="sentMessages.length === 0"
                     class="text-center text-medium-emphasis py-8"
                   >
-                    <v-icon
-                      size="64"
-                      color="grey-lighten-2"
-                      :icon="ICON.MESSAGE_OUTLINE"
-                    />
-                    <div class="mt-2">
-                      暂无发送记录
-                    </div>
+                    <v-icon size="64" color="grey-lighten-2" :icon="ICON.MESSAGE_OUTLINE" />
+                    <div class="mt-2">暂无发送记录</div>
                   </div>
                   <v-row v-else>
                     <v-col
@@ -170,10 +147,7 @@
                       lg="4"
                     >
                       <!-- 主消息卡片 -->
-                      <v-card
-                        :color="getMainCardColor(message.receipts)"
-                        class="mb-2"
-                      >
+                      <v-card :color="getMainCardColor(message.receipts)" class="mb-2">
                         <v-card-text>
                           <div class="d-flex align-center mb-2">
                             <span class="font-weight-medium">
@@ -212,9 +186,10 @@
                         >
                           <v-card-text class="pa-2">
                             <div class="align-center">
-                              <span class="text-body-medium font-weight-medium">{{ device.deviceName }}
+                              <span class="text-body-medium font-weight-medium"
+                                >{{ device.deviceName }}
                               </span>
-                              <br>
+                              <br />
 
                               {{ device.deviceType }}
                             </div>
@@ -280,37 +255,17 @@
     <EventSender ref="eventSender" />
 
     <!-- 编辑常驻通知对话框 -->
-    <v-dialog
-      v-model="editDialog"
-      max-width="500"
-      :fullscreen="$vuetify.display.xs"
-    >
+    <v-dialog v-model="editDialog" max-width="500" :fullscreen="$vuetify.display.xs">
       <v-card>
-        <v-toolbar
-          flat
-          density="compact"
-        >
+        <v-toolbar flat density="compact">
           <v-toolbar-title>编辑常驻通知</v-toolbar-title>
           <v-spacer />
-          <v-btn
-            :icon="ICON.CLOSE"
-            @click="editDialog = false"
-          />
+          <v-btn :icon="ICON.CLOSE" @click="editDialog = false" />
         </v-toolbar>
         <v-card-text>
           <v-form>
-            <v-textarea
-              v-model="editForm.message"
-              label="通知内容"
-              rows="3"
-              auto-grow
-            />
-            <v-switch
-              v-model="editForm.isUrgent"
-              label="强调通知"
-              color="error"
-              hide-details
-            />
+            <v-textarea v-model="editForm.message" label="通知内容" rows="3" auto-grow />
+            <v-switch v-model="editForm.isUrgent" label="强调通知" color="error" hide-details />
             <v-checkbox
               v-model="editForm.resend"
               label="保存并重新发送通知"
@@ -321,49 +276,23 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="editDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="primary"
-            :loading="savingEdit"
-            @click="saveEdit"
-          >
-            保存
-          </v-btn>
+          <v-btn variant="text" @click="editDialog = false"> 取消 </v-btn>
+          <v-btn color="primary" :loading="savingEdit" @click="saveEdit"> 保存 </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- 删除确认对话框 -->
-    <v-dialog
-      v-model="deleteConfirmDialog"
-      max-width="400"
-    >
+    <v-dialog v-model="deleteConfirmDialog" max-width="400">
       <v-card>
-        <v-card-title class="text-headline-medium">
-          确认删除
-        </v-card-title>
+        <v-card-title class="text-headline-medium"> 确认删除 </v-card-title>
         <v-card-text>确定要删除这条常驻通知吗？此操作无法撤销。</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            color="grey-darken-1"
-            variant="text"
-            @click="deleteConfirmDialog = false"
-          >
+          <v-btn color="grey-darken-1" variant="text" @click="deleteConfirmDialog = false">
             取消
           </v-btn>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="executeDelete"
-          >
-            删除
-          </v-btn>
+          <v-btn color="error" variant="text" @click="executeDelete"> 删除 </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

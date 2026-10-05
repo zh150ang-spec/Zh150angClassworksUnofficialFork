@@ -18,9 +18,7 @@
     <template v-if="tokenInfo">
       <div class="mt-2 text-body-small">
         <div><strong>设备类型：</strong>{{ deviceTypeLabel }}</div>
-        <div v-if="tokenInfo.note">
-          <strong>备注：</strong>{{ tokenInfo.note }}
-        </div>
+        <div v-if="tokenInfo.note"><strong>备注：</strong>{{ tokenInfo.note }}</div>
         <div v-if="tokenInfo.device">
           <strong>设备：</strong>{{ tokenInfo.device.name }} ({{ tokenInfo.device.namespace }})
         </div>

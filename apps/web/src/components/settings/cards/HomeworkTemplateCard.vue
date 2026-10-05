@@ -7,26 +7,13 @@
     title="作业模板配置"
   >
     <!-- 顶部操作栏 -->
-    <v-alert
-      v-if="error"
-      class="mb-4"
-      closable
-      type="error"
-      variant="tonal"
-    >
+    <v-alert v-if="error" class="mb-4" closable type="error" variant="tonal">
       {{ error }}
     </v-alert>
 
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
-        <setting-group
-          border
-          :icon="ICON.BOOK_SIMPLE"
-          title="科目配置"
-        >
+      <v-col cols="12" md="6">
+        <setting-group border :icon="ICON.BOOK_SIMPLE" title="科目配置">
           <v-list>
             <v-list-item>
               <v-text-field
@@ -40,14 +27,8 @@
               />
             </v-list-item>
 
-            <v-list-item
-              v-for="subject in subjectList"
-              :key="subject"
-            >
-              <v-card
-                border
-                class="w-100 mb-2"
-              >
+            <v-list-item v-for="subject in subjectList" :key="subject">
+              <v-card border class="w-100 mb-2">
                 <v-card-title class="d-flex align-center">
                   <v-text-field
                     v-model="editedSubjects[subject]"
@@ -78,11 +59,7 @@
                     @keyup.enter="() => addBookType(subject)"
                   />
 
-                  <v-list
-                    border
-                    density="compact"
-                    rounded
-                  >
+                  <v-list border density="compact" rounded>
                     <v-list-item
                       v-for="(books, bookType) in config.subjects[subject].books"
                       :key="bookType"
@@ -90,17 +67,10 @@
                       @click="openSubjectBookDialog(subject, bookType, books)"
                     >
                       <template #prepend>
-                        <v-icon
-                          class="mr-2"
-                          :icon="ICON.BOOK_OPEN_VARIANT"
-                        />
+                        <v-icon class="mr-2" :icon="ICON.BOOK_OPEN_VARIANT" />
                       </template>
                       <template #append>
-                        <v-chip
-                          class="mr-2"
-                          color="info"
-                          size="small"
-                        >
+                        <v-chip class="mr-2" color="info" size="small">
                           {{ books.length }}个部分
                         </v-chip>
                         <v-btn
@@ -120,15 +90,8 @@
         </setting-group>
       </v-col>
 
-      <v-col
-        cols="12"
-        md="6"
-      >
-        <setting-group
-          border
-          :icon="ICON.SETTINGS"
-          title="通用配置"
-        >
+      <v-col cols="12" md="6">
+        <setting-group border :icon="ICON.SETTINGS" title="通用配置">
           <v-list>
             <v-list-item>
               <v-text-field
@@ -143,11 +106,7 @@
             </v-list-item>
 
             <v-list-item>
-              <v-list
-                border
-                density="compact"
-                rounded
-              >
+              <v-list border density="compact" rounded>
                 <v-list-item
                   v-for="(books, bookType) in config.commonSubject.books"
                   :key="bookType"
@@ -155,17 +114,10 @@
                   @click="openSubjectBookDialog('common', bookType, books)"
                 >
                   <template #prepend>
-                    <v-icon
-                      class="mr-2"
-                      :icon="ICON.BOOK_MULTIPLE"
-                    />
+                    <v-icon class="mr-2" :icon="ICON.BOOK_MULTIPLE" />
                   </template>
                   <template #append>
-                    <v-chip
-                      class="mr-2"
-                      color="info"
-                      size="small"
-                    >
+                    <v-chip class="mr-2" color="info" size="small">
                       {{ books.length }}个部分
                     </v-chip>
                     <v-btn
@@ -195,11 +147,7 @@
             </v-list-item>
 
             <v-list-item>
-              <v-list
-                border
-                density="compact"
-                rounded
-              >
+              <v-list border density="compact" rounded>
                 <v-list-item
                   v-for="action in config.actions"
                   :key="action"
@@ -221,12 +169,7 @@
           </v-list>
         </setting-group>
 
-        <setting-group
-          border
-          class="mt-4"
-          :icon="ICON.BOOK_NOTEBOOK"
-          title="作业本模板配置"
-        >
+        <setting-group border class="mt-4" :icon="ICON.BOOK_NOTEBOOK" title="作业本模板配置">
           <v-list>
             <v-list-item>
               <div class="text-body-medium text-medium-emphasis mb-2">
@@ -263,20 +206,10 @@
 
             <v-divider class="my-2" />
 
-            <v-list-item
-              v-for="(notebooks, subject) in config.notebookTemplates"
-              :key="subject"
-            >
-              <v-card
-                border
-                class="w-100 mb-2"
-              >
+            <v-list-item v-for="(notebooks, subject) in config.notebookTemplates" :key="subject">
+              <v-card border class="w-100 mb-2">
                 <v-card-title class="d-flex align-center py-2">
-                  <v-icon
-                    class="mr-2"
-                    color="primary"
-                    size="small"
-                  >
+                  <v-icon class="mr-2" color="primary" size="small">
                     {{ ICON.BOOK_SIMPLE }}
                   </v-icon>
                   {{ subject }}
@@ -333,10 +266,7 @@
     </v-row>
 
     <!-- 编辑弹框 -->
-    <v-dialog
-      v-model="dialog.show"
-      max-width="600px"
-    >
+    <v-dialog v-model="dialog.show" max-width="600px">
       <v-card>
         <v-card-title class="text-headline-medium pa-4">
           {{ dialog.title }}
@@ -355,13 +285,8 @@
                 />
               </v-col>
 
-              <v-col
-                v-if="dialog.editedItem.type === 'subjectBook'"
-                cols="12"
-              >
-                <div class="text-label-large mb-2">
-                  所属科目
-                </div>
+              <v-col v-if="dialog.editedItem.type === 'subjectBook'" cols="12">
+                <div class="text-label-large mb-2">所属科目</div>
                 <v-chip color="primary">
                   {{ dialog.editedItem.subject }}
                 </v-chip>
@@ -372,26 +297,12 @@
                 cols="12"
               >
                 <v-card variant="outlined">
-                  <v-card-title class="text-body-large py-2">
-                    需完成部分
-                  </v-card-title>
+                  <v-card-title class="text-body-large py-2"> 需完成部分 </v-card-title>
                   <v-card-text class="pt-0">
-                    <v-list
-                      border
-                      class="mb-2"
-                      density="compact"
-                      rounded
-                    >
-                      <v-list-item
-                        v-for="(task, index) in dialog.editedItem.tasks"
-                        :key="index"
-                      >
+                    <v-list border class="mb-2" density="compact" rounded>
+                      <v-list-item v-for="(task, index) in dialog.editedItem.tasks" :key="index">
                         <template #prepend>
-                          <v-icon
-                            start
-                            :icon="ICON.BOOK_CHECKBOX_BLANK_OUTLINE"
-                            size="small"
-                          />
+                          <v-icon start :icon="ICON.BOOK_CHECKBOX_BLANK_OUTLINE" size="small" />
                         </template>
                         <v-text-field
                           v-model="dialog.editedItem.tasks[index]"
@@ -430,31 +341,15 @@
         <v-card-actions class="pa-4">
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="closeDialog"
-            >
-              取消
-            </v-btn>
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="saveDialog"
-            >
-              保存
-            </v-btn>
+            <v-btn color="neutral-surface" variant="elevated" @click="closeDialog"> 取消 </v-btn>
+            <v-btn color="success" variant="elevated" @click="saveDialog"> 保存 </v-btn>
           </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <template #status>
-      <v-chip
-        v-if="hasChanges"
-        color="warning"
-        variant="elevated"
-      >
+      <v-chip v-if="hasChanges" color="warning" variant="elevated">
         <v-icon start>
           {{ ICON.WARNING }}
         </v-icon>

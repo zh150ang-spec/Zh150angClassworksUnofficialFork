@@ -26,10 +26,7 @@
         同步完成
       </v-btn>
 
-      <v-menu
-        v-if="showUafTransferButton"
-        location="bottom end"
-      >
+      <v-menu v-if="showUafTransferButton" location="bottom end">
         <template #activator="{ props: menuProps }">
           <v-btn
             v-bind="menuProps"
@@ -90,11 +87,7 @@
 
     <!-- 导航组 -->
     <div class="action-group nav-group d-flex align-center ml-2">
-      <v-btn-group
-        v-if="showExamScheduleButton"
-        rounded="xl"
-        variant="tonal"
-      >
+      <v-btn-group v-if="showExamScheduleButton" rounded="xl" variant="tonal">
         <v-btn
           :prepend-icon="ICON.CALENDAR_CHECK"
           color="primary"
@@ -103,12 +96,7 @@
         >
           考试看板
         </v-btn>
-        <v-btn
-          :icon="ICON.PLUS"
-          color="primary"
-          size="large"
-          @click="$emit('add-exam-card')"
-        />
+        <v-btn :icon="ICON.PLUS" color="primary" size="large" @click="$emit('add-exam-card')" />
       </v-btn-group>
 
       <v-btn
@@ -161,11 +149,7 @@
     variant="tonal"
   >
     <v-card-title class="text-body-large">
-      <v-icon
-        :icon="ICON.SHIELD_CHECK"
-        size="small"
-        start
-      />
+      <v-icon :icon="ICON.SHIELD_CHECK" size="small" start />
       屏幕保护技术已启用
     </v-card-title>
     <v-card-text class="text-body-medium">
@@ -173,9 +157,7 @@
       <p class="text-body-small text-medium-emphasis">
         此功能不会影响正常使用，仅在长时间静止显示时生效。
       </p>
-      <p class="text-body-small text-medium-emphasis">
-        建议在放学后关闭显示器以节约能源。
-      </p>
+      <p class="text-body-small text-medium-emphasis">建议在放学后关闭显示器以节约能源。</p>
     </v-card-text>
   </v-card>
 </template>

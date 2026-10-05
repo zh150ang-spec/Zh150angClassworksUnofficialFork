@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-dialog
-      v-model="visible"
-      persistent
-      transition="dialog-bottom-transition"
-    >
+    <v-dialog v-model="visible" persistent transition="dialog-bottom-transition">
       <v-card
         class="kvinit-card"
         elevation="3"
@@ -13,42 +9,18 @@
         title="初始化云端存储授权"
       >
         <v-card-actions class="justify-end">
-          <v-btn
-            class="me-3"
-            variant="text"
-            @click="useLocalMode"
-          >
-            使用本地模式
-          </v-btn>
-          <v-btn
-            :loading="loading"
-            color="primary"
-            variant="flat"
-            @click="goToAuthorize"
-          >
+          <v-btn class="me-3" variant="text" @click="useLocalMode"> 使用本地模式 </v-btn>
+          <v-btn :loading="loading" color="primary" variant="flat" @click="goToAuthorize">
             前往授权
           </v-btn>
         </v-card-actions>
         <div class="d-flex align-center justify-space-between">
           <div>
-            <div
-              v-if="loading"
-              class="d-flex align-center"
-            >
-              <v-progress-circular
-                class="me-2"
-                indeterminate
-                size="20"
-                width="2"
-              />
+            <div v-if="loading" class="d-flex align-center">
+              <v-progress-circular class="me-2" indeterminate size="20" width="2" />
               <span class="text-body-medium"> 正在检查授权状态… </span>
             </div>
-            <div
-              v-else-if="error"
-              class="text-body-medium text-error"
-            >
-              检查出错：{{ error }}
-            </div>
+            <div v-else-if="error" class="text-body-medium text-error">检查出错：{{ error }}</div>
           </div>
         </div>
       </v-card>

@@ -1,31 +1,14 @@
 <template>
-  <settings-card
-    :loading="loading"
-    border
-    :icon="ICON.BOOK_MULTIPLE"
-    title="科目管理"
-  >
-    <v-alert
-      v-if="error"
-      class="mb-4"
-      closable
-      type="error"
-      variant="tonal"
-    >
+  <settings-card :loading="loading" border :icon="ICON.BOOK_MULTIPLE" title="科目管理">
+    <v-alert v-if="error" class="mb-4" closable type="error" variant="tonal">
       {{ error }}
     </v-alert>
 
     <!-- 添加新科目 -->
-    <v-card
-      class="mb-4"
-      variant="outlined"
-    >
+    <v-card class="mb-4" variant="outlined">
       <v-card-text>
         <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <v-text-field
               v-model="newSubjectName"
               :rules="[(v) => !!v || '科目名称不能为空']"
@@ -45,10 +28,7 @@
     <v-card variant="outlined">
       <v-card-text class="pa-0">
         <v-list lines="one">
-          <v-list-item
-            v-for="(subject, index) in subjects"
-            :key="subject.order"
-          >
+          <v-list-item v-for="(subject, index) in subjects" :key="subject.order">
             <template #prepend>
               <div class="d-flex flex-column align-center mr-2">
                 <v-btn
@@ -93,13 +73,7 @@
     </v-card>
 
     <template #status>
-      <v-chip
-        v-if="hasChanges"
-        color="warning"
-        variant="elevated"
-      >
-        有未保存的更改
-      </v-chip>
+      <v-chip v-if="hasChanges" color="warning" variant="elevated"> 有未保存的更改 </v-chip>
     </template>
     <template #actions>
       <v-btn

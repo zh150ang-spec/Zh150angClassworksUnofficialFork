@@ -1,19 +1,10 @@
 <template>
   <div class="refresh-settings-group">
     <!-- 自动刷新卡片 -->
-    <settings-card
-      :icon="ICON.REFRESH"
-      title="自动刷新"
-    >
+    <settings-card :icon="ICON.REFRESH" title="自动刷新">
       <v-list>
-        <setting-item
-          setting-key="refresh.auto"
-          title="自动刷新"
-        />
-        <setting-item
-          setting-key="refresh.interval"
-          title="刷新间隔（秒）"
-        />
+        <setting-item setting-key="refresh.auto" title="自动刷新" />
+        <setting-item setting-key="refresh.interval" title="刷新间隔（秒）" />
       </v-list>
     </settings-card>
   </div>

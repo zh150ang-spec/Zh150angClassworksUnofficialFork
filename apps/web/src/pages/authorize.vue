@@ -1,14 +1,7 @@
 <template>
-  <v-container
-    class="fill-height"
-    fluid
-  >
+  <v-container class="fill-height" fluid>
     <v-row class="align-center justify-center">
-      <v-col
-        cols="12"
-        md="6"
-        sm="8"
-      >
+      <v-col cols="12" md="6" sm="8">
         <v-card>
           <v-card-title class="text-headline-medium">
             {{
@@ -30,12 +23,7 @@
           </v-card-text>
           <v-card-actions v-if="status !== 'processing'">
             <v-spacer />
-            <v-btn
-              color="primary"
-              @click="goToHome"
-            >
-              返回首页
-            </v-btn>
+            <v-btn color="primary" @click="goToHome"> 返回首页 </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

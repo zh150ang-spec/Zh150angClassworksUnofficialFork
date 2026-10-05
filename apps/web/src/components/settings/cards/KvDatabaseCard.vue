@@ -1,17 +1,9 @@
 <template>
-  <settings-card
-    :loading="loading"
-    :icon="ICON.DATABASE_EDIT"
-    title="KV数据库管理"
-  >
+  <settings-card :loading="loading" :icon="ICON.DATABASE_EDIT" title="KV数据库管理">
     <v-list>
       <v-list-item>
         <template #prepend>
-          <v-icon
-            :color="connectionColor"
-            :icon="connectionIcon"
-            class="mr-3"
-          />
+          <v-icon :color="connectionColor" :icon="connectionIcon" class="mr-3" />
         </template>
         <v-list-item-title>数据库状态</v-list-item-title>
         <v-list-item-subtitle>{{ connectionStatus }}</v-list-item-subtitle>
@@ -29,10 +21,7 @@
 
       <v-list-item v-if="isDualMode">
         <template #prepend>
-          <v-icon
-            class="mr-3"
-            :icon="ICON.SYNC"
-          />
+          <v-icon class="mr-3" :icon="ICON.SYNC" />
         </template>
         <v-list-item-title>同步状态</v-list-item-title>
         <v-list-item-subtitle>
@@ -67,10 +56,7 @@
 
       <v-list-item>
         <template #prepend>
-          <v-icon
-            class="mr-3"
-            :icon="ICON.HARDDISK"
-          />
+          <v-icon class="mr-3" :icon="ICON.HARDDISK" />
         </template>
         <v-list-item-title>存储占用</v-list-item-title>
         <v-list-item-subtitle>{{ storageInfo }}</v-list-item-subtitle>
@@ -90,10 +76,7 @@
 
       <v-list-item>
         <template #prepend>
-          <v-icon
-            class="mr-3"
-            :icon="ICON.DATABASE_EXPORT"
-          />
+          <v-icon class="mr-3" :icon="ICON.DATABASE_EXPORT" />
         </template>
         <v-list-item-title>数据导入导出</v-list-item-title>
         <v-list-item-subtitle>备份和恢复所有数据</v-list-item-subtitle>
@@ -121,20 +104,11 @@
         </template>
       </v-list-item>
 
-      <input
-        ref="importInput"
-        accept=".json"
-        hidden
-        type="file"
-        @change="handleImportFile"
-      >
+      <input ref="importInput" accept=".json" hidden type="file" @change="handleImportFile" />
 
       <v-list-item>
         <template #prepend>
-          <v-icon
-            class="mr-3"
-            :icon="ICON.FORMAT_LIST"
-          />
+          <v-icon class="mr-3" :icon="ICON.FORMAT_LIST" />
         </template>
         <v-list-item-title>数据条目</v-list-item-title>
         <v-list-item-subtitle>共 {{ kvData.length }} 条记录</v-list-item-subtitle>
@@ -170,16 +144,9 @@
       </v-list-item>
     </v-list>
 
-    <v-card
-      v-if="kvData.length > 0"
-      class="mt-4"
-      variant="outlined"
-    >
+    <v-card v-if="kvData.length > 0" class="mt-4" variant="outlined">
       <v-card-title class="d-flex align-center">
-        <v-icon
-          class="mr-2"
-          :icon="ICON.TABLE_ICON"
-        />
+        <v-icon class="mr-2" :icon="ICON.TABLE_ICON" />
         KV数据列表
         <v-spacer />
         <v-text-field
@@ -207,10 +174,7 @@
         </template>
 
         <template #[`item.actions`]="{ item }">
-          <v-btn-group
-            density="compact"
-            variant="text"
-          >
+          <v-btn-group density="compact" variant="text">
             <v-btn
               :icon="ICON.EYE"
               size="small"
@@ -248,16 +212,10 @@
     </v-card>
 
     <!-- 查看数据对话框 -->
-    <v-dialog
-      v-model="viewDialog"
-      max-width="800px"
-    >
+    <v-dialog v-model="viewDialog" max-width="800px">
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            class="mr-2"
-            :icon="ICON.EYE"
-          />
+          <v-icon class="mr-2" :icon="ICON.EYE" />
           查看数据
           <v-spacer />
           <v-btn
@@ -296,11 +254,7 @@
             >
               复制数据
             </v-btn>
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="viewDialog = false"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="viewDialog = false">
               关闭
             </v-btn>
           </div>
@@ -309,16 +263,10 @@
     </v-dialog>
 
     <!-- 编辑数据对话框 -->
-    <v-dialog
-      v-model="editDialog"
-      max-width="800px"
-    >
+    <v-dialog v-model="editDialog" max-width="800px">
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            class="mr-2"
-            :icon="ICON.EDIT"
-          />
+          <v-icon class="mr-2" :icon="ICON.EDIT" />
           编辑数据
           <v-spacer />
           <v-btn
@@ -349,11 +297,7 @@
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="closeEditDialog"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="closeEditDialog">
               取消
             </v-btn>
             <v-btn
@@ -370,16 +314,10 @@
     </v-dialog>
 
     <!-- 新建数据对话框 -->
-    <v-dialog
-      v-model="createDialog"
-      max-width="800px"
-    >
+    <v-dialog v-model="createDialog" max-width="800px">
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            class="mr-2"
-            :icon="ICON.PLUS"
-          />
+          <v-icon class="mr-2" :icon="ICON.PLUS" />
           新建数据
           <v-spacer />
           <v-btn
@@ -408,7 +346,7 @@
             :error-messages="isValidNewJson ? [] : ['请输入有效的JSON格式']"
             class="font-monospace"
             label="数据内容 (JSON格式)"
-            placeholder="请输入JSON数据，如：{&quot;name&quot;: &quot;value&quot;}"
+            placeholder='请输入JSON数据，如：{"name": "value"}'
             rows="15"
             variant="outlined"
           />
@@ -417,11 +355,7 @@
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="closeCreateDialog"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="closeCreateDialog">
               取消
             </v-btn>
             <v-btn
@@ -438,16 +372,10 @@
     </v-dialog>
 
     <!-- 云端地址对话框 -->
-    <v-dialog
-      v-model="cloudUrlDialog"
-      max-width="800px"
-    >
+    <v-dialog v-model="cloudUrlDialog" max-width="800px">
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            class="mr-2"
-            :icon="ICON.CLOUD_DOWNLOAD"
-          />
+          <v-icon class="mr-2" :icon="ICON.CLOUD_DOWNLOAD" />
           获取云端访问地址
           <v-spacer />
           <v-btn
@@ -464,12 +392,7 @@
         </v-card-subtitle>
 
         <v-card-text>
-          <v-alert
-            v-if="cloudUrlError"
-            class="mb-4"
-            type="error"
-            variant="tonal"
-          >
+          <v-alert v-if="cloudUrlError" class="mb-4" type="error" variant="tonal">
             {{ cloudUrlError }}
           </v-alert>
 
@@ -481,26 +404,12 @@
           >
             <v-alert-title>云端地址获取成功</v-alert-title>
             <div class="mt-2">
-              <div
-                v-if="cloudUrlResult.migrated"
-                class="mb-2"
-              >
-                <v-icon
-                  class="mr-1"
-                  color="success"
-                  :icon="ICON.DATABASE_ARROW_UP"
-                />
+              <div v-if="cloudUrlResult.migrated" class="mb-2">
+                <v-icon class="mr-1" color="success" :icon="ICON.DATABASE_ARROW_UP" />
                 数据已从本地迁移到云端
               </div>
-              <div
-                v-if="cloudUrlResult.configured"
-                class="mb-2"
-              >
-                <v-icon
-                  class="mr-1"
-                  color="info"
-                  :icon="ICON.SETTINGS"
-                />
+              <div v-if="cloudUrlResult.configured" class="mb-2">
+                <v-icon class="mr-1" color="info" :icon="ICON.SETTINGS" />
                 云端配置已自动设置
               </div>
             </div>
@@ -517,16 +426,10 @@
             @click:append-inner="copyCloudUrl"
           />
 
-          <v-expansion-panels
-            v-if="cloudUrlResult && cloudUrlResult.url"
-            class="mt-4"
-          >
+          <v-expansion-panels v-if="cloudUrlResult && cloudUrlResult.url" class="mt-4">
             <v-expansion-panel>
               <v-expansion-panel-title>
-                <v-icon
-                  class="mr-2"
-                  :icon="ICON.SETTINGS"
-                />
+                <v-icon class="mr-2" :icon="ICON.SETTINGS" />
                 高级选项
               </v-expansion-panel-title>
               <v-expansion-panel-text>
@@ -560,11 +463,7 @@
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="cloudUrlDialog = false"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="cloudUrlDialog = false">
               关闭
             </v-btn>
             <v-btn
@@ -582,26 +481,16 @@
     </v-dialog>
 
     <!-- 删除确认对话框 -->
-    <v-dialog
-      v-model="deleteDialog"
-      max-width="400px"
-    >
+    <v-dialog v-model="deleteDialog" max-width="400px">
       <v-card>
         <v-card-title class="d-flex align-center text-error">
-          <v-icon
-            class="mr-2"
-            :icon="ICON.WARNING"
-          />
+          <v-icon class="mr-2" :icon="ICON.WARNING" />
           确认删除
         </v-card-title>
 
         <v-card-text>
-          确定要删除键名为 <code>{{ itemToDelete?.key }}</code> 的数据吗？ <br><br>
-          <v-alert
-            class="mt-2"
-            type="warning"
-            variant="tonal"
-          >
+          确定要删除键名为 <code>{{ itemToDelete?.key }}</code> 的数据吗？ <br /><br />
+          <v-alert class="mt-2" type="warning" variant="tonal">
             此操作不可撤销，请谨慎操作！
           </v-alert>
         </v-card-text>
@@ -609,19 +498,10 @@
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="deleteDialog = false"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="deleteDialog = false">
               取消
             </v-btn>
-            <v-btn
-              :loading="deletingData"
-              color="error"
-              variant="elevated"
-              @click="deleteItem"
-            >
+            <v-btn :loading="deletingData" color="error" variant="elevated" @click="deleteItem">
               删除
             </v-btn>
           </div>
@@ -630,32 +510,19 @@
     </v-dialog>
 
     <!-- 导入确认对话框 -->
-    <v-dialog
-      v-model="importConfirmDialog"
-      max-width="600px"
-    >
+    <v-dialog v-model="importConfirmDialog" max-width="600px">
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            class="mr-2"
-            :icon="ICON.DATABASE_IMPORT"
-          />
+          <v-icon class="mr-2" :icon="ICON.DATABASE_IMPORT" />
           确认导入数据
         </v-card-title>
 
         <v-card-text>
-          <v-alert
-            class="mb-4"
-            type="info"
-            variant="tonal"
-          >
+          <v-alert class="mb-4" type="info" variant="tonal">
             即将导入 <strong>{{ importDataCount }}</strong> 条数据
           </v-alert>
 
-          <v-alert
-            type="warning"
-            variant="tonal"
-          >
+          <v-alert type="warning" variant="tonal">
             <v-alert-title>注意</v-alert-title>
             导入的数据将会覆盖现有同名键的数据，此操作不可撤销！
           </v-alert>
@@ -664,20 +531,10 @@
         <v-card-actions>
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="importConfirmDialog = false"
-            >
+            <v-btn color="neutral-surface" variant="elevated" @click="importConfirmDialog = false">
               取消
             </v-btn>
-            <v-btn
-              :loading="importing"
-              color="success"
-              @click="confirmImport"
-            >
-              确认导入
-            </v-btn>
+            <v-btn :loading="importing" color="success" @click="confirmImport"> 确认导入 </v-btn>
           </div>
         </v-card-actions>
       </v-card>

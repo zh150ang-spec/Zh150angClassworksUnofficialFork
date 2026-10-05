@@ -1,25 +1,13 @@
 <template>
-  <v-card
-    class="settings-card"
-    border
-    flat
-    rounded="xl"
-  >
+  <v-card class="settings-card" border flat rounded="xl">
     <v-card-item>
       <template #prepend>
-        <v-icon
-          :icon="icon"
-          class="mr-2"
-          size="large"
-        />
+        <v-icon :icon="icon" class="mr-2" size="large" />
       </template>
       <v-card-title class="text-headline-small">
         {{ title }}
       </v-card-title>
-      <v-card-subtitle
-        v-if="subtitle"
-        class="mt-1"
-      >
+      <v-card-subtitle v-if="subtitle" class="mt-1">
         {{ subtitle }}
       </v-card-subtitle>
       <template #append>
@@ -29,24 +17,13 @@
     </v-card-item>
 
     <v-card-text>
-      <v-progress-linear
-        v-if="loading"
-        class="mb-4"
-        color="primary"
-        indeterminate
-      />
+      <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
       <slot />
     </v-card-text>
 
-    <v-card-actions
-      v-if="$slots.actions || $slots.status"
-      class="pa-4"
-    >
+    <v-card-actions v-if="$slots.actions || $slots.status" class="pa-4">
       <!-- 左下角：状态提示（不可交互，如"有未保存的更改"） -->
-      <div
-        v-if="$slots.status"
-        class="d-flex align-center mr-auto"
-      >
+      <div v-if="$slots.status" class="d-flex align-center mr-auto">
         <slot name="status" />
       </div>
       <!-- 右下角：保存/重载等提交类操作 -->

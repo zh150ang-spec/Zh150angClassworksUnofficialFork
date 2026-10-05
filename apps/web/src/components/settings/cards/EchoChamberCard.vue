@@ -1,25 +1,11 @@
 <template>
-  <settings-card
-    border
-    :icon="ICON.THOUGHT_BUBBLE"
-    title="回声洞"
-    @click="handleClick"
-  >
+  <settings-card border :icon="ICON.THOUGHT_BUBBLE" title="回声洞" @click="handleClick">
     <v-card-text>
-      <div
-        ref="typewriter"
-        class="typewriter-text"
-      />
-      <div
-        ref="sourceWriter"
-        class="source-text"
-      />
+      <div ref="typewriter" class="typewriter-text" />
+      <div ref="sourceWriter" class="source-text" />
     </v-card-text>
     <transition name="fade">
-      <v-chip
-        v-if="currentQuote?.contributor"
-        class="contributor"
-      >
+      <v-chip v-if="currentQuote?.contributor" class="contributor">
         <v-avatar start>
           <v-img :src="`https://github.com/${currentQuote.contributor}.png`" />
         </v-avatar>

@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :fullscreen="mobile"
-    max-width="920"
-    scrollable
-  >
+  <v-dialog v-model="dialog" :fullscreen="mobile" max-width="920" scrollable>
     <v-card>
       <v-card-title class="d-flex align-center">
         <v-icon
@@ -13,29 +8,16 @@
         />
         {{ mode === 'export' ? '导出 UAF' : '导入 UAF' }}
         <v-spacer />
-        <v-btn
-          :icon="ICON.CLOSE"
-          variant="text"
-          @click="dialog = false"
-        />
+        <v-btn :icon="ICON.CLOSE" variant="text" @click="dialog = false" />
       </v-card-title>
 
       <v-divider />
 
       <v-card-text class="transfer-content">
         <template v-if="mode === 'export'">
-          <v-tabs
-            v-if="mobile"
-            v-model="mobileTab"
-            fixed-tabs
-            class="mb-3"
-          >
-            <v-tab value="edit">
-              编辑
-            </v-tab>
-            <v-tab value="preview">
-              预览
-            </v-tab>
+          <v-tabs v-if="mobile" v-model="mobileTab" fixed-tabs class="mb-3">
+            <v-tab value="edit"> 编辑 </v-tab>
+            <v-tab value="preview"> 预览 </v-tab>
           </v-tabs>
 
           <div
@@ -54,25 +36,13 @@
                 @update:model-value="loadExportPreview"
               />
 
-              <v-progress-linear
-                v-if="loadingPreview"
-                class="mb-3"
-                indeterminate
-              />
+              <v-progress-linear v-if="loadingPreview" class="mb-3" indeterminate />
 
-              <v-alert
-                v-if="exportError"
-                class="mb-3"
-                type="warning"
-                variant="tonal"
-              >
+              <v-alert v-if="exportError" class="mb-3" type="warning" variant="tonal">
                 {{ exportError }}
               </v-alert>
 
-              <div
-                v-if="previewRows.length"
-                class="d-flex align-center mb-2"
-              >
+              <div v-if="previewRows.length" class="d-flex align-center mb-2">
                 <v-checkbox-btn
                   :model-value="allValidSelected"
                   :indeterminate="someValidSelected && !allValidSelected"
@@ -85,21 +55,10 @@
                 </span>
               </div>
 
-              <v-list
-                v-if="previewRows.length"
-                border
-                lines="three"
-              >
-                <v-list-item
-                  v-for="row in previewRows"
-                  :key="row.id"
-                  class="edit-list-item"
-                >
+              <v-list v-if="previewRows.length" border lines="three">
+                <v-list-item v-for="row in previewRows" :key="row.id" class="edit-list-item">
                   <template #prepend>
-                    <v-checkbox-btn
-                      v-model="row.selected"
-                      :disabled="row.issues.length > 0"
-                    />
+                    <v-checkbox-btn v-model="row.selected" :disabled="row.issues.length > 0" />
                   </template>
                   <div class="d-flex flex-column w-100">
                     <v-list-item-title>{{ row.assignment.subject }}</v-list-item-title>
@@ -107,10 +66,7 @@
                       {{ row.assignment.content }}
                     </v-list-item-subtitle>
                     <div class="d-flex flex-wrap align-center mt-1 ga-1">
-                      <v-chip
-                        size="x-small"
-                        variant="tonal"
-                      >
+                      <v-chip size="x-small" variant="tonal">
                         {{ row.assignment.date }}
                       </v-chip>
                       <v-chip
@@ -122,10 +78,7 @@
                       >
                         {{ tag }}
                       </v-chip>
-                      <span
-                        v-if="row.issues.length"
-                        class="text-body-small text-error"
-                      >
+                      <span v-if="row.issues.length" class="text-body-small text-error">
                         {{ row.issues.join('；') }}
                       </span>
                     </div>
@@ -144,30 +97,14 @@
             <div class="preview-section">
               <div class="preview-placeholder">
                 <div class="preview-scroll-container">
-                  <v-progress-linear
-                    v-if="previewLoading"
-                    indeterminate
-                  />
-                  <v-alert
-                    v-else-if="previewError"
-                    type="error"
-                    variant="tonal"
-                  >
+                  <v-progress-linear v-if="previewLoading" indeterminate />
+                  <v-alert v-else-if="previewError" type="error" variant="tonal">
                     {{ previewError }}
                   </v-alert>
-                  <v-alert
-                    v-else-if="!previewUrl"
-                    type="info"
-                    variant="tonal"
-                  >
+                  <v-alert v-else-if="!previewUrl" type="info" variant="tonal">
                     请选择有效作业以预览
                   </v-alert>
-                  <iframe
-                    v-else
-                    :src="previewUrl"
-                    class="pdf-preview-frame"
-                    title="UAF 导出预览"
-                  />
+                  <iframe v-else :src="previewUrl" class="pdf-preview-frame" title="UAF 导出预览" />
                 </div>
               </div>
 
@@ -179,11 +116,7 @@
                 <v-expansion-panel value="settings">
                   <v-expansion-panel-title> 导出字体设置 </v-expansion-panel-title>
                   <v-expansion-panel-text>
-                    <div
-                      v-for="field in styleFields"
-                      :key="field.key"
-                      class="mb-3"
-                    >
+                    <div v-for="field in styleFields" :key="field.key" class="mb-3">
                       <div class="d-flex align-center ga-3">
                         <span class="text-body-small label-min-width">{{ field.label }}</span>
                         <v-slider
@@ -239,27 +172,13 @@
             @update:model-value="prepareImport"
           />
 
-          <v-progress-linear
-            v-if="loadingImport"
-            class="mb-3"
-            indeterminate
-          />
+          <v-progress-linear v-if="loadingImport" class="mb-3" indeterminate />
 
-          <v-alert
-            v-if="importError"
-            class="mb-3"
-            type="error"
-            variant="tonal"
-          >
+          <v-alert v-if="importError" class="mb-3" type="error" variant="tonal">
             {{ importError }}
           </v-alert>
 
-          <v-alert
-            v-if="planIssues.length"
-            class="mb-3"
-            type="warning"
-            variant="tonal"
-          >
+          <v-alert v-if="planIssues.length" class="mb-3" type="warning" variant="tonal">
             {{ planIssues.join('；') }}
           </v-alert>
 
@@ -268,30 +187,17 @@
               共 {{ importPlan.rows.length }} 项作业，分布在 {{ groupedRows.length }} 个日期。
               冲突项默认保留现有内容。
             </div>
-            <v-expansion-panels
-              multiple
-              variant="accordion"
-            >
-              <v-expansion-panel
-                v-for="group in groupedRows"
-                :key="group.date"
-              >
+            <v-expansion-panels multiple variant="accordion">
+              <v-expansion-panel v-for="group in groupedRows" :key="group.date">
                 <v-expansion-panel-title>
                   {{ displayDate(group.date) }}
-                  <v-chip
-                    class="ml-2"
-                    size="small"
-                    variant="tonal"
-                  >
+                  <v-chip class="ml-2" size="small" variant="tonal">
                     {{ group.rows.length }} 项
                   </v-chip>
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
                   <v-list lines="three">
-                    <v-list-item
-                      v-for="row in group.rows"
-                      :key="row.id"
-                    >
+                    <v-list-item v-for="row in group.rows" :key="row.id">
                       <v-list-item-title class="d-flex align-center">
                         {{ row.assignment.subject }}
                         <v-chip
@@ -334,13 +240,7 @@
           {{ footerText }}
         </span>
         <v-spacer />
-        <v-btn
-          variant="text"
-          :disabled="busy"
-          @click="dialog = false"
-        >
-          取消
-        </v-btn>
+        <v-btn variant="text" :disabled="busy" @click="dialog = false"> 取消 </v-btn>
         <v-btn
           color="primary"
           :disabled="primaryDisabled"

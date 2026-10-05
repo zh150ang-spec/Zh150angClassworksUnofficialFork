@@ -2,16 +2,9 @@
   <v-container class="fill-height">
     <v-row>
       <v-col cols="12">
-        <v-card
-          border
-          class="elevation-5"
-        >
+        <v-card border class="elevation-5">
           <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-            <v-icon
-              start
-              color="white"
-              :icon="ICON.CALENDAR_CHECK"
-            />
+            <v-icon start color="white" :icon="ICON.CALENDAR_CHECK" />
             考试看板
           </v-card-title>
           <v-card-subtitle> 不只是考试看板。 </v-card-subtitle>
@@ -27,10 +20,7 @@
               @click:close="error = ''"
             >
               <div class="d-flex align-center">
-                <v-icon
-                  start
-                  :icon="ICON.ERROR"
-                />
+                <v-icon start :icon="ICON.ERROR" />
                 {{ error }}
               </div>
             </v-alert>
@@ -46,10 +36,7 @@
               @click:close="success = ''"
             >
               <div class="d-flex align-center">
-                <v-icon
-                  start
-                  :icon="ICON.SUCCESS"
-                />
+                <v-icon start :icon="ICON.SUCCESS" />
                 {{ success }}
               </div>
             </v-alert>
@@ -103,30 +90,16 @@
             </div>
 
             <!-- 加载状态 -->
-            <v-card
-              v-if="loading"
-              class="my-4"
-              border
-            >
+            <v-card v-if="loading" class="my-4" border>
               <v-card-text>
-                <v-skeleton-loader
-                  class="mx-auto"
-                  type="list-item-avatar-two-line@3"
-                />
+                <v-skeleton-loader class="mx-auto" type="list-item-avatar-two-line@3" />
               </v-card-text>
             </v-card>
 
             <!-- 配置列表 -->
-            <v-card
-              v-if="!loading && configs.length > 0"
-              class="my-4"
-              elevation="1"
-            >
+            <v-card v-if="!loading && configs.length > 0" class="my-4" elevation="1">
               <v-card-title class="d-flex align-center pa-4 bg-primary-lighten-5">
-                <v-icon
-                  start
-                  :icon="ICON.FORMAT_LIST"
-                />
+                <v-icon start :icon="ICON.FORMAT_LIST" />
                 <span class="font-weight-bold">配置列表</span>
               </v-card-title>
               <v-list>
@@ -138,14 +111,8 @@
                   @click="showEditDialog(config)"
                 >
                   <template #prepend>
-                    <v-avatar
-                      class="mr-2"
-                      color="primary"
-                    >
-                      <v-icon
-                        color="white"
-                        :icon="ICON.CALENDAR_TEXT"
-                      />
+                    <v-avatar class="mr-2" color="primary">
+                      <v-icon color="white" :icon="ICON.CALENDAR_TEXT" />
                     </v-avatar>
                   </template>
 
@@ -154,19 +121,11 @@
                   </v-list-item-title>
                   <v-list-item-subtitle class="text-body-small mt-1">
                     <div class="d-flex align-center">
-                      <v-icon
-                        class="mr-1"
-                        size="small"
-                        :icon="ICON.INFORMATION_OUTLINE"
-                      />
+                      <v-icon class="mr-1" size="small" :icon="ICON.INFORMATION_OUTLINE" />
                       {{ config.message || '无描述' }}
                     </div>
                     <div class="d-flex align-center mt-1">
-                      <v-icon
-                        class="mr-1"
-                        size="small"
-                        :icon="ICON.BOOK_MULTIPLE"
-                      />
+                      <v-icon class="mr-1" size="small" :icon="ICON.BOOK_MULTIPLE" />
                       {{ config.examInfos ? config.examInfos.length : 0 }} 堂考试
                     </div>
                   </v-list-item-subtitle>
@@ -201,11 +160,7 @@
             </v-card>
 
             <!-- 空状态 -->
-            <v-card
-              v-if="!loading && configs.length === 0"
-              class="my-4"
-              elevation="1"
-            >
+            <v-card v-if="!loading && configs.length === 0" class="my-4" elevation="1">
               <v-card-text class="text-center py-8">
                 <v-icon
                   class="mb-4"
@@ -213,17 +168,11 @@
                   size="64"
                   :icon="ICON.CALENDAR_BLANK"
                 />
-                <h3 class="text-headline-small mb-2 text-medium-emphasis">
-                  暂无配置
-                </h3>
+                <h3 class="text-headline-small mb-2 text-medium-emphasis">暂无配置</h3>
                 <p class="text-body-medium text-medium-emphasis mb-4">
                   点击"新建配置"按钮创建您的第一个考试配置
                 </p>
-                <v-btn
-                  color="primary"
-                  :prepend-icon="ICON.PLUS"
-                  @click="createNewConfig"
-                >
+                <v-btn color="primary" :prepend-icon="ICON.PLUS" @click="createNewConfig">
                   新建配置
                 </v-btn>
               </v-card-text>
@@ -234,17 +183,10 @@
     </v-row>
 
     <!-- 重命名对话框 -->
-    <v-dialog
-      v-model="renameDialog"
-      max-width="500"
-    >
+    <v-dialog v-model="renameDialog" max-width="500">
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            start
-            color="primary"
-            :icon="ICON.RENAME_BOX"
-          />
+          <v-icon start color="primary" :icon="ICON.RENAME_BOX" />
           重命名配置
         </v-card-title>
         <v-card-text>
@@ -259,13 +201,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            color="medium-emphasis"
-            variant="text"
-            @click="renameDialog = false"
-          >
-            取消
-          </v-btn>
+          <v-btn color="medium-emphasis" variant="text" @click="renameDialog = false"> 取消 </v-btn>
           <v-btn
             :disabled="!newConfigName"
             :loading="renaming"
@@ -280,42 +216,21 @@
     </v-dialog>
 
     <!-- 编辑配置弹框 -->
-    <v-dialog
-      v-model="editDialog"
-      max-width="1200"
-      persistent
-    >
+    <v-dialog v-model="editDialog" max-width="1200" persistent>
       <v-card>
         <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-          <v-icon
-            start
-            color="white"
-            :icon="ICON.EDIT"
-          />
+          <v-icon start color="white" :icon="ICON.EDIT" />
           编辑考试配置
           <v-spacer />
-          <v-chip
-            v-if="editingConfig"
-            class="mr-2 text-primary"
-            color="white"
-            size="small"
-          >
+          <v-chip v-if="editingConfig" class="mr-2 text-primary" color="white" size="small">
             ID: {{ editingConfig.id }}
           </v-chip>
 
-          <v-btn
-            color="white"
-            :icon="ICON.CLOSE"
-            variant="text"
-            @click="closeEditDialog"
-          >
+          <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeEditDialog">
             <v-icon :icon="ICON.CLOSE" />
           </v-btn>
         </v-card-title>
-        <v-card-text
-          class="pa-4"
-          style="max-height: 70vh; overflow-y: auto"
-        >
+        <v-card-text class="pa-4" style="max-height: 70vh; overflow-y: auto">
           <ExamConfigEditor
             v-if="editingConfig"
             ref="configEditor"
@@ -351,26 +266,13 @@
     </v-dialog>
 
     <!-- 导入配置弹框 -->
-    <v-dialog
-      v-model="importDialog"
-      max-width="800"
-      persistent
-    >
+    <v-dialog v-model="importDialog" max-width="800" persistent>
       <v-card>
         <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-          <v-icon
-            start
-            color="white"
-            :icon="ICON.IMPORT_ICON"
-          />
+          <v-icon start color="white" :icon="ICON.IMPORT_ICON" />
           导入考试配置
           <v-spacer />
-          <v-btn
-            color="white"
-            :icon="ICON.CLOSE"
-            variant="text"
-            @click="closeImportDialog"
-          >
+          <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeImportDialog">
             <v-icon :icon="ICON.CLOSE" />
           </v-btn>
         </v-card-title>
@@ -391,30 +293,24 @@
             v-model="importJson"
             :rules="[(v) => !!v || 'JSON内容不能为空']"
             label="请输入JSON配置"
-            placeholder="{
-  &quot;examName&quot;: &quot;期末考试&quot;,
-  &quot;message&quot;: &quot;考试信息&quot;,
-  &quot;room&quot;: &quot;01&quot;,
-  &quot;examInfos&quot;: [
+            placeholder='{
+  "examName": "期末考试",
+  "message": "考试信息",
+  "room": "01",
+  "examInfos": [
     {
-      &quot;name&quot;: &quot;语文&quot;,
-      &quot;start&quot;: &quot;2025/12/14 09:00&quot;,
-      &quot;end&quot;: &quot;2025/12/14 11:00&quot;
+      "name": "语文",
+      "start": "2025/12/14 09:00",
+      "end": "2025/12/14 11:00"
     }
   ]
-}"
+}'
             :prepend-inner-icon="ICON.CODE_JSON"
             rows="15"
             variant="outlined"
           />
 
-          <v-alert
-            border="start"
-            class="mt-2"
-            density="compact"
-            type="info"
-            variant="tonal"
-          >
+          <v-alert border="start" class="mt-2" density="compact" type="info" variant="tonal">
             <div class="text-body-small">
               <strong>提示:</strong>
               <ul class="mt-1">
@@ -451,18 +347,10 @@
     </v-dialog>
 
     <!-- 日期选择弹框 -->
-    <v-dialog
-      v-model="datePickerDialog"
-      max-width="500"
-      persistent
-    >
+    <v-dialog v-model="datePickerDialog" max-width="500" persistent>
       <v-card>
         <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-          <v-icon
-            start
-            color="white"
-            :icon="ICON.CALENDAR"
-          />
+          <v-icon start color="white" :icon="ICON.CALENDAR" />
           选择起始日期
         </v-card-title>
         <v-card-text class="pa-4">
@@ -516,36 +404,18 @@
     </v-dialog>
 
     <!-- AI生成提示词弹框 -->
-    <v-dialog
-      v-model="aiDialog"
-      max-width="900"
-      persistent
-    >
+    <v-dialog v-model="aiDialog" max-width="900" persistent>
       <v-card>
         <v-card-title class="d-flex align-center bg-primary py-3 px-4">
-          <v-icon
-            start
-            color="white"
-            :icon="ICON.BRAIN"
-          />
+          <v-icon start color="white" :icon="ICON.BRAIN" />
           AI生成考试配置
           <v-spacer />
-          <v-btn
-            color="white"
-            :icon="ICON.CLOSE"
-            variant="text"
-            @click="closeAIDialog"
-          >
+          <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeAIDialog">
             <v-icon :icon="ICON.CLOSE" />
           </v-btn>
         </v-card-title>
         <v-card-text class="pa-4">
-          <v-alert
-            border="start"
-            class="mb-4"
-            type="info"
-            variant="tonal"
-          >
+          <v-alert border="start" class="mb-4" type="info" variant="tonal">
             <div class="d-flex align-center">
               <div>
                 将下方提示词复制到 AI 工具中，描述考试安排后生成 JSON 配置，然后通过"导入配置"导入。
@@ -555,9 +425,7 @@
 
           <div class="mb-3">
             <div class="d-flex justify-space-between align-center mb-2">
-              <h3 class="text-headline-small">
-                提示词模板
-              </h3>
+              <h3 class="text-headline-small">提示词模板</h3>
               <v-btn
                 :color="copied ? 'success' : 'primary'"
                 :prepend-icon="copied ? ICON.CHECK : ICON.CONTENT_COPY"
@@ -569,10 +437,7 @@
               </v-btn>
             </div>
 
-            <v-card
-              class="pa-4"
-              variant="outlined"
-            >
+            <v-card class="pa-4" variant="outlined">
               <pre class="ai-prompt-text">{{ aiPrompt }}</pre>
             </v-card>
           </div>

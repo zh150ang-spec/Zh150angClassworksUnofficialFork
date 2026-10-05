@@ -1,20 +1,9 @@
 <template>
   <div class="settings-page">
-    <v-app-bar
-      elevation="1"
-      class="no-select"
-    >
+    <v-app-bar elevation="1" class="no-select">
       <template #prepend>
-        <v-btn
-          :icon="ICON.ARROW_LEFT"
-          variant="text"
-          @click="$router.push('/')"
-        />
-        <v-btn
-          :icon="ICON.MENU"
-          variant="text"
-          @click="drawer = !drawer"
-        />
+        <v-btn :icon="ICON.ARROW_LEFT" variant="text" @click="$router.push('/')" />
+        <v-btn :icon="ICON.MENU" variant="text" @click="drawer = !drawer" />
       </template>
       <v-app-bar-title> 设置 </v-app-bar-title>
     </v-app-bar>
@@ -37,10 +26,7 @@
           @click="selectTab(tab.value)"
         >
           <template #prepend>
-            <v-icon
-              :icon="tab.icon"
-              :color="tab.color"
-            />
+            <v-icon :icon="tab.icon" :color="tab.color" />
           </template>
           <v-list-item-title>{{ tab.title }}</v-list-item-title>
         </v-list-item>
@@ -48,12 +34,7 @@
     </v-navigation-drawer>
 
     <v-container fluid>
-      <v-tabs-window
-        v-model="settingsTab"
-        direction="vertical"
-        style="width: 100%"
-        eager
-      >
+      <v-tabs-window v-model="settingsTab" direction="vertical" style="width: 100%" eager>
         <v-tabs-window-item value="index">
           <v-card
             border
@@ -67,12 +48,8 @@
             <v-card-item>
               <div class="card-title">
                 <div>
-                  <div class="text-headline-small">
-                    在寻找 Classworks KV ？
-                  </div>
-                  <div class="text-body-small text-medium-emphasis">
-                    文档形键值数据库
-                  </div>
+                  <div class="text-headline-small">在寻找 Classworks KV ？</div>
+                  <div class="text-body-small text-medium-emphasis">文档形键值数据库</div>
                 </div>
               </div>
             </v-card-item>
@@ -90,39 +67,20 @@
               </div>
             </v-card-text>
           </v-card>
-          <v-card
-            border
-            class="rounded-xl mb-4"
-            subtitle="设置"
-            title="Classworks"
-          >
+          <v-card border class="rounded-xl mb-4" subtitle="设置" title="Classworks">
             <v-card-text>
-              <v-alert
-                class="rounded-xl"
-                color="error"
-                :icon="ICON.ERROR"
-                variant="tonal"
-              >
-                <span>Classworks 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在
-                  <a
-                    href="https://github.com/Moonrend/Classworks"
-                    target="_blank"
-                  >https://github.com/Moonrend/Classworks</a>。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。</span>
+              <v-alert class="rounded-xl" color="error" :icon="ICON.ERROR" variant="tonal">
+                <span
+                  >Classworks 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在
+                  <a href="https://github.com/Moonrend/Classworks" target="_blank"
+                    >https://github.com/Moonrend/Classworks</a
+                  >。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。</span
+                >
               </v-alert>
-              <v-alert
-                class="mt-4 rounded-xl"
-                color="info"
-                :icon="ICON.INFO"
-                variant="tonal"
-              >
+              <v-alert class="mt-4 rounded-xl" color="info" :icon="ICON.INFO" variant="tonal">
                 <span>请不要使用浏览器清除缓存功能，否则会导致配置丢失。</span>
               </v-alert>
-              <v-alert
-                class="mt-4 rounded-xl"
-                color="warning"
-                :icon="ICON.WARNING"
-                variant="tonal"
-              >
+              <v-alert class="mt-4 rounded-xl" color="warning" :icon="ICON.WARNING" variant="tonal">
                 <p>
                   部分浏览器（如360浏览器、夸克浏览器、QQ浏览器等）可能存在兼容性问题。建议使用
                   Chrome 或 Edge 等现代浏览器以获得最佳体验。
@@ -131,58 +89,26 @@
             </v-card-text>
           </v-card>
           <about-card />
-          <echo-chamber-card
-            border
-            class="mt-4"
-          />
+          <echo-chamber-card border class="mt-4" />
         </v-tabs-window-item>
 
         <v-tabs-window-item value="data">
-          <server-settings-card
-            :loading="loading.server"
-            border
-            @saved="onSettingsSaved"
-          />
-          <data-provider-settings-card
-            border
-            class="mt-4"
-          />
-          <kv-database-card
-            border
-            class="mt-4"
-          />
-          <sync-settings-card
-            border
-            class="mt-4"
-          />
-          <settings-link-generator
-            border
-            class="mt-4"
-          />
+          <server-settings-card :loading="loading.server" border @saved="onSettingsSaved" />
+          <data-provider-settings-card border class="mt-4" />
+          <kv-database-card border class="mt-4" />
+          <sync-settings-card border class="mt-4" />
+          <settings-link-generator border class="mt-4" />
         </v-tabs-window-item>
 
         <v-tabs-window-item value="subject">
           <subject-management-card border />
-          <homework-template-card
-            border
-            class="mt-4"
-          />
+          <homework-template-card border class="mt-4" />
         </v-tabs-window-item>
 
         <v-tabs-window-item value="people">
-          <student-list-card
-            :is-mobile="isMobile"
-            border
-          />
-          <teacher-list-card
-            :is-mobile="isMobile"
-            border
-            class="mt-4"
-          />
-          <auto-attendance-card
-            border
-            class="mt-4"
-          />
+          <student-list-card :is-mobile="isMobile" border />
+          <teacher-list-card :is-mobile="isMobile" border class="mt-4" />
+          <auto-attendance-card border class="mt-4" />
         </v-tabs-window-item>
 
         <v-tabs-window-item value="display">
@@ -193,58 +119,27 @@
             class="mt-4"
             @saved="onSettingsSaved"
           />
-          <background-settings-card
-            border
-            class="mt-4"
-          />
-          <notification-sound-settings
-            border
-            class="mt-4"
-          />
-          <hitokoto-settings
-            border
-            class="mt-4"
-          />
+          <background-settings-card border class="mt-4" />
+          <notification-sound-settings border class="mt-4" />
+          <hitokoto-settings border class="mt-4" />
         </v-tabs-window-item>
 
         <v-tabs-window-item value="edit">
-          <homework-edit-settings-card
-            :loading="loading.edit"
-            border
-            @saved="onSettingsSaved"
-          />
+          <homework-edit-settings-card :loading="loading.edit" border @saved="onSettingsSaved" />
           <refresh-settings-card class="mt-4" />
-          <random-picker-card
-            :is-mobile="isMobile"
-            border
-            class="mt-4"
-          />
+          <random-picker-card :is-mobile="isMobile" border class="mt-4" />
         </v-tabs-window-item>
 
         <v-tabs-window-item value="developer">
-          <settings-card
-            border
-            :icon="ICON.DEVELOPER_MODE"
-            title="开发者选项"
-          >
-            <v-alert
-              class="mb-4 rounded-xl"
-              color="info"
-              :icon="ICON.INFO"
-              variant="tonal"
-            >
-              <p class="mb-2">
-                开发者选项用于高级调试，普通用户无需开启。
-              </p>
+          <settings-card border :icon="ICON.DEVELOPER_MODE" title="开发者选项">
+            <v-alert class="mb-4 rounded-xl" color="info" :icon="ICON.INFO" variant="tonal">
+              <p class="mb-2">开发者选项用于高级调试，普通用户无需开启。</p>
               <p>开启后可查看设置的技术键名、复制设置值、访问完整设置列表。</p>
             </v-alert>
             <v-list>
               <v-list-item>
                 <template #prepend>
-                  <v-icon
-                    class="mr-3"
-                    :icon="ICON.CODE_TAGS"
-                  />
+                  <v-icon class="mr-3" :icon="ICON.CODE_TAGS" />
                 </template>
                 <v-list-item-title>开发者选项</v-list-item-title>
                 <v-list-item-subtitle>
@@ -270,10 +165,7 @@
             class="mt-4 rounded-xl"
           >
             <v-card-title class="d-flex align-center">
-              <v-icon
-                class="mr-2"
-                :icon="ICON.COG_OUTLINE"
-              />
+              <v-icon class="mr-2" :icon="ICON.COG_OUTLINE" />
               所有设置
             </v-card-title>
             <v-card-subtitle> 浏览和修改所有可用设置</v-card-subtitle>
@@ -288,10 +180,7 @@
     <!-- 消息记录组件 -->
     <message-log ref="messageLog" />
 
-    <v-dialog
-      v-model="confirmDialog.show"
-      max-width="420"
-    >
+    <v-dialog v-model="confirmDialog.show" max-width="420">
       <v-card>
         <v-card-title class="text-headline-small">
           {{ confirmDialog.title }}
@@ -300,13 +189,7 @@
         <v-card-actions class="pa-4">
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="cancelSave()"
-            >
-              取消
-            </v-btn>
+            <v-btn color="neutral-surface" variant="elevated" @click="cancelSave()"> 取消 </v-btn>
             <v-btn
               :color="confirmDialog.color || 'warning'"
               variant="elevated"

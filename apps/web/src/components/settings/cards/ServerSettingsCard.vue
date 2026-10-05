@@ -1,9 +1,5 @@
 <template>
-  <settings-card
-    :loading="loading"
-    :icon="ICON.DATABASE"
-    title="数据提供者与服务器"
-  >
+  <settings-card :loading="loading" :icon="ICON.DATABASE" title="数据提供者与服务器">
     <v-form>
       <v-select
         v-model="serverSettings.provider"
@@ -23,22 +19,12 @@
         variant="outlined"
       />
 
-      <v-alert
-        v-if="isDualMode"
-        class="mt-0 mb-2"
-        color="info"
-        variant="tonal"
-      >
+      <v-alert v-if="isDualMode" class="mt-0 mb-2" color="info" variant="tonal">
         <v-alert-title>双存储模式</v-alert-title>
         <p>数据同时保存在云端和本地，云端不可用时自动使用本地数据。</p>
       </v-alert>
 
-      <v-alert
-        v-if="isKvProvider"
-        class="mb-2"
-        color="info"
-        variant="tonal"
-      >
+      <v-alert v-if="isKvProvider" class="mb-2" color="info" variant="tonal">
         <v-alert-title>{{ kvProviderTitle }}</v-alert-title>
         <p>使用本机唯一标识符区分不同设备的数据。</p>
         <p v-if="currentProvider === 'kv-server' || currentProvider === 'dual-server'">
@@ -46,12 +32,7 @@
         </p>
       </v-alert>
 
-      <v-alert
-        v-if="isClassworksCloud"
-        class="mb-2"
-        color="info"
-        variant="tonal"
-      >
+      <v-alert v-if="isClassworksCloud" class="mb-2" color="info" variant="tonal">
         <v-alert-title>Classworks 云端存储</v-alert-title>
         <p>官方提供的云端存储，自动配置访问设置。</p>
       </v-alert>
@@ -59,9 +40,9 @@
       <template
         v-if="
           isClassworksCloud ||
-            isDualCloud ||
-            currentProvider === 'kv-server' ||
-            currentProvider === 'dual-server'
+          isDualCloud ||
+          currentProvider === 'kv-server' ||
+          currentProvider === 'dual-server'
         "
       >
         <v-divider class="my-2" />
@@ -78,10 +59,7 @@
             variant="outlined"
           />
 
-          <cloud-namespace-info-card
-            :visible="isClassworksCloud || isDualCloud"
-            class="mt-4"
-          />
+          <cloud-namespace-info-card :visible="isClassworksCloud || isDualCloud" class="mt-4" />
         </div>
 
         <div v-else-if="currentProvider === 'kv-server' || currentProvider === 'dual-server'">
@@ -112,10 +90,7 @@
       <v-divider class="my-2" />
 
       <div class="d-flex align-center mb-2">
-        <v-icon
-          :icon="ICON.ACCOUNT_GROUP"
-          class="mr-3"
-        />
+        <v-icon :icon="ICON.ACCOUNT_GROUP" class="mr-3" />
         <span class="text-body-large font-weight-bold">班级编号设置</span>
         <v-spacer />
         <v-radio-group
@@ -125,25 +100,13 @@
           hide-details
           inline
         >
-          <v-radio
-            value="cloud"
-            label="云端"
-          />
-          <v-radio
-            value="local"
-            label="本地"
-          />
+          <v-radio value="cloud" label="云端" />
+          <v-radio value="local" label="本地" />
         </v-radio-group>
       </div>
 
-      <div
-        v-if="serverSettings.classNumberSource === 'local'"
-        class="d-flex align-center mb-2"
-      >
-        <v-icon
-          :icon="ICON.ACCOUNT_GROUP"
-          class="mr-3"
-        />
+      <div v-if="serverSettings.classNumberSource === 'local'" class="d-flex align-center mb-2">
+        <v-icon :icon="ICON.ACCOUNT_GROUP" class="mr-3" />
         <v-text-field
           v-model="serverSettings.classNumber"
           class="flex-grow-1"
@@ -166,24 +129,16 @@
       </v-alert>
     </v-form>
 
-    <v-dialog
-      v-model="showEnableSyncDialog"
-      max-width="400"
-      persistent
-    >
+    <v-dialog v-model="showEnableSyncDialog" max-width="400" persistent>
       <v-card>
         <v-card-title class="d-flex align-center">
-          <v-icon
-            class="mr-2"
-            color="primary"
-            :icon="ICON.SYNC_CIRCLE"
-          />
+          <v-icon class="mr-2" color="primary" :icon="ICON.SYNC_CIRCLE" />
           推荐开启双存储同步
         </v-card-title>
         <v-card-text>
           检测到您已切换到双存储模式，推荐开启后台同步功能以获得更好的体验和稳定性。
-          <br>
-          <br>
+          <br />
+          <br />
           开启后，系统会自动将本地独有数据同步到云端，确保数据一致性。
         </v-card-text>
         <v-card-actions>
@@ -196,11 +151,7 @@
             >
               取消
             </v-btn>
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="handleEnableSyncDialog(true)"
-            >
+            <v-btn color="success" variant="elevated" @click="handleEnableSyncDialog(true)">
               允许
             </v-btn>
           </div>

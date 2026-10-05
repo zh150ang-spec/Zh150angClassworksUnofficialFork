@@ -2,32 +2,14 @@
   <v-card class="auth-card">
     <v-card-text class="pa-8">
       <div class="text-center mb-6">
-        <v-icon
-          class="mb-4"
-          color="success"
-          size="80"
-        >
-          mdi-account-key
-        </v-icon>
-        <h2 class="text-headline-large mb-3">
-          设备认证
-        </h2>
-        <p class="text-body-large text-medium-emphasis">
-          输入你在 Classworks KV 获取的认证信息
-        </p>
+        <v-icon class="mb-4" color="success" size="80"> mdi-account-key </v-icon>
+        <h2 class="text-headline-large mb-3">设备认证</h2>
+        <p class="text-body-large text-medium-emphasis">输入你在 Classworks KV 获取的认证信息</p>
       </div>
 
-      <v-card
-        class="pa-4 mb-6"
-        color="info"
-        variant="tonal"
-      >
+      <v-card class="pa-4 mb-6" color="info" variant="tonal">
         <div class="text-body-medium">
-          <v-icon
-            size="20"
-            start
-            :icon="ICON.INFO"
-          />
+          <v-icon size="20" start :icon="ICON.INFO" />
           对于已有UUID的用户，您应当使用UUID与您的密码登录。
         </div>
       </v-card>
@@ -64,14 +46,7 @@
     </v-card-text>
 
     <v-card-actions class="pa-6 pt-0">
-      <v-btn
-        v-if="showCancel"
-        size="large"
-        variant="text"
-        @click="$emit('cancel')"
-      >
-        取消
-      </v-btn>
+      <v-btn v-if="showCancel" size="large" variant="text" @click="$emit('cancel')"> 取消 </v-btn>
       <v-spacer />
       <v-btn
         :disabled="!form.namespace || authenticating"
@@ -82,12 +57,7 @@
         variant="elevated"
         @click="authenticate"
       >
-        <v-icon
-          size="24"
-          start
-        >
-          :icon="ICON.LOGIN"
-        </v-icon>
+        <v-icon size="24" start> :icon="ICON.LOGIN" </v-icon>
         <span class="text-headline-small">认证并登录</span>
       </v-btn>
     </v-card-actions>

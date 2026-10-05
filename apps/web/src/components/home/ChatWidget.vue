@@ -1,32 +1,15 @@
 <template>
   <!-- Floating toggle button -->
-  <div
-    v-if="showToggleButton"
-    :style="toggleStyle"
-    class="chat-toggle"
-  >
-    <v-btn
-      color="primary"
-      icon
-      variant="flat"
-      @click="open()"
-    >
-      <v-badge
-        :content="unreadCount || undefined"
-        :model-value="unreadCount > 0"
-        color="error"
-      >
+  <div v-if="showToggleButton" :style="toggleStyle" class="chat-toggle">
+    <v-btn color="primary" icon variant="flat" @click="open()">
+      <v-badge :content="unreadCount || undefined" :model-value="unreadCount > 0" color="error">
         <v-icon :icon="ICON.CHAT" />
       </v-badge>
     </v-btn>
   </div>
 
   <!-- Chat panel -->
-  <div
-    v-show="visible"
-    :style="panelStyle"
-    class="chat-panel"
-  >
+  <div v-show="visible" :style="panelStyle" class="chat-panel">
     <v-card
       border
       class="chat-card"
@@ -38,10 +21,7 @@
       "
     >
       <v-card-title class="d-flex align-center">
-        <v-icon
-          start
-          :icon="ICON.CHAT_PROCESSING"
-        />
+        <v-icon start :icon="ICON.CHAT_PROCESSING" />
         <span class="text-body-large">{{ modeTitle }}</span>
         <v-spacer />
         <!-- 模式切换按钮 -->
@@ -52,10 +32,7 @@
           variant="text"
           @click="currentMode = 'chat'"
         >
-          <v-icon
-            :icon="ICON.CHAT"
-            start
-          />
+          <v-icon :icon="ICON.CHAT" start />
           聊天
         </v-btn>
         <v-btn
@@ -65,10 +42,7 @@
           variant="text"
           @click="currentMode = 'events'"
         >
-          <v-icon
-            :icon="ICON.FORMAT_LIST"
-            start
-          />
+          <v-icon :icon="ICON.FORMAT_LIST" start />
           事件
         </v-btn>
         <v-tooltip location="top">
@@ -84,11 +58,7 @@
           </template>
           <span>Socket {{ socketId || '-' }}</span>
         </v-tooltip>
-        <v-btn
-          icon
-          variant="text"
-          @click="close()"
-        >
+        <v-btn icon variant="text" @click="close()">
           <v-icon :icon="ICON.CLOSE" />
         </v-btn>
       </v-card-title>
@@ -97,55 +67,30 @@
 
       <v-card-text class="chat-body">
         <!-- 聊天模式 -->
-        <div
-          v-if="currentMode === 'chat'"
-          ref="listRef"
-          class="messages"
-        >
-          <template
-            v-for="msg in decoratedMessages"
-            :key="msg._id"
-          >
-            <div
-              v-if="msg._type === 'divider'"
-              class="divider-row"
-            >
+        <div v-if="currentMode === 'chat'" ref="listRef" class="messages">
+          <template v-for="msg in decoratedMessages" :key="msg._id">
+            <div v-if="msg._type === 'divider'" class="divider-row">
               <v-divider class="my-2" />
-              <div class="divider-text">
-                今天 - 上次访问
-              </div>
+              <div class="divider-text">今天 - 上次访问</div>
               <v-divider class="my-2" />
             </div>
-            <div
-              v-else
-              :class="{ self: msg.self }"
-              class="message-row"
-            >
+            <div v-else :class="{ self: msg.self }" class="message-row">
               <div class="avatar">
-                <v-avatar
-                  :color="msg.self ? 'primary' : 'grey'"
-                  size="24"
-                >
+                <v-avatar :color="msg.self ? 'primary' : 'grey'" size="24">
                   <v-icon size="small">
                     {{ msg.self ? ICON.ACCOUNT : ICON.ACCOUNT_OUTLINE }}
                   </v-icon>
                 </v-avatar>
               </div>
               <div class="bubble">
-                <div
-                  v-if="!msg.self && msg.deviceName"
-                  class="sender-name"
-                >
+                <div v-if="!msg.self && msg.deviceName" class="sender-name">
                   {{ msg.deviceName }}
                 </div>
                 <div class="text">
                   {{ msg.text }}
                 </div>
                 <div class="meta">
-                  <span
-                    v-if="msg.self && msg.deviceName"
-                    class="device-name"
-                  >
+                  <span v-if="msg.self && msg.deviceName" class="device-name">
                     {{ msg.deviceName }} •
                   </span>
                   {{ formatTime(msg.at) }}
@@ -156,58 +101,37 @@
         </div>
 
         <!-- 事件模式 -->
-        <div
-          v-else
-          class="events-container"
-        >
+        <div v-else class="events-container">
           <!-- 事件统计 -->
           <div class="event-stats mb-3">
             <v-row density="compact">
               <v-col cols="4">
-                <v-card
-                  color="success"
-                  dark
-                  size="small"
-                >
+                <v-card color="success" dark size="small">
                   <v-card-text class="text-center pa-2">
                     <div class="text-headline-small">
                       {{ eventStats.chat }}
                     </div>
-                    <div class="text-body-small">
-                      聊天
-                    </div>
+                    <div class="text-body-small">聊天</div>
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="4">
-                <v-card
-                  color="info"
-                  dark
-                  size="small"
-                >
+                <v-card color="info" dark size="small">
                   <v-card-text class="text-center pa-2">
                     <div class="text-headline-small">
                       {{ eventStats.kvChanged }}
                     </div>
-                    <div class="text-body-small">
-                      KV变化
-                    </div>
+                    <div class="text-body-small">KV变化</div>
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="4">
-                <v-card
-                  color="warning"
-                  dark
-                  size="small"
-                >
+                <v-card color="warning" dark size="small">
                   <v-card-text class="text-center pa-2">
                     <div class="text-headline-small">
                       {{ eventStats.other }}
                     </div>
-                    <div class="text-body-small">
-                      其他
-                    </div>
+                    <div class="text-body-small">其他</div>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -216,22 +140,11 @@
 
           <!-- 事件列表 -->
           <div class="events-list">
-            <div
-              v-for="event in paginatedEvents"
-              :key="event._id"
-              class="event-item mb-2"
-            >
-              <v-card
-                :color="getEventColor(event.type)"
-                size="small"
-                variant="outlined"
-              >
+            <div v-for="event in paginatedEvents" :key="event._id" class="event-item mb-2">
+              <v-card :color="getEventColor(event.type)" size="small" variant="outlined">
                 <v-card-text class="pa-2">
                   <div class="d-flex align-center mb-1">
-                    <v-chip
-                      :color="getEventColor(event.type)"
-                      size="x-small"
-                    >
+                    <v-chip :color="getEventColor(event.type)" size="x-small">
                       {{ getEventTypeLabel(event.type) }}
                     </v-chip>
                     <v-spacer />
@@ -240,10 +153,7 @@
                     }}</span>
                   </div>
 
-                  <div
-                    v-if="event.senderInfo"
-                    class="mb-1 text-body-small"
-                  >
+                  <div v-if="event.senderInfo" class="mb-1 text-body-small">
                     <strong>发送者:</strong> {{ formatDeviceInfo(event.senderInfo) }}
                   </div>
 
@@ -263,19 +173,13 @@
               </v-card>
             </div>
 
-            <div
-              v-if="allEvents.length === 0"
-              class="text-center text-medium-emphasis pa-4"
-            >
+            <div v-if="allEvents.length === 0" class="text-center text-medium-emphasis pa-4">
               暂无事件
             </div>
           </div>
 
           <!-- 分页控件 -->
-          <div
-            v-if="totalPages > 1"
-            class="pagination mt-2"
-          >
+          <div v-if="totalPages > 1" class="pagination mt-2">
             <v-pagination
               v-model="currentPage"
               :length="totalPages"
@@ -288,16 +192,8 @@
 
       <v-divider v-if="currentMode === 'chat'" />
 
-      <v-card-actions
-        v-if="currentMode === 'chat'"
-        class="chat-input"
-      >
-        <v-btn
-          class="mr-1"
-          icon
-          variant="text"
-          @click="insertEmoji('😄')"
-        >
+      <v-card-actions v-if="currentMode === 'chat'" class="chat-input">
+        <v-btn class="mr-1" icon variant="text" @click="insertEmoji('😄')">
           <v-icon :icon="ICON.EMOTICON_OUTLINE" />
         </v-btn>
         <v-textarea
@@ -312,16 +208,8 @@
           @keydown.enter.prevent="handleEnter"
           @keydown.shift.enter.stop
         />
-        <v-btn
-          :disabled="!canSend"
-          class="ml-2"
-          color="primary"
-          @click="send"
-        >
-          <v-icon
-            :icon="ICON.SEND"
-            start
-          />
+        <v-btn :disabled="!canSend" class="ml-2" color="primary" @click="send">
+          <v-icon :icon="ICON.SEND" start />
           发送
         </v-btn>
       </v-card-actions>

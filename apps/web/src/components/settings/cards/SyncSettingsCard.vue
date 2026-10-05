@@ -1,28 +1,16 @@
 <template>
   <div class="sync-settings-group">
     <!-- 双存储同步卡片 -->
-    <settings-card
-      :icon="ICON.SYNC_CIRCLE"
-      title="双存储同步"
-    >
+    <settings-card :icon="ICON.SYNC_CIRCLE" title="双存储同步">
       <v-list>
         <!-- 非双存储模式提示 -->
-        <v-alert
-          v-if="!isDualMode"
-          class="mb-2"
-          color="warning"
-          density="compact"
-          variant="tonal"
-        >
+        <v-alert v-if="!isDualMode" class="mb-2" color="warning" density="compact" variant="tonal">
           当前不是双存储模式，后台同步功能已自动关闭
         </v-alert>
 
         <v-list-item :disabled="!isDualMode">
           <template #prepend>
-            <v-icon
-              :color="isDualMode ? 'primary' : 'grey'"
-              :icon="ICON.SYNC_CIRCLE"
-            />
+            <v-icon :color="isDualMode ? 'primary' : 'grey'" :icon="ICON.SYNC_CIRCLE" />
           </template>
           <v-list-item-title>启用同步</v-list-item-title>
           <v-list-item-subtitle v-if="!isDualMode">
@@ -130,16 +118,9 @@
           <div v-show="queueExpanded && offlineQueueItems.length > 0">
             <v-divider class="my-1" />
             <v-list density="compact">
-              <v-list-item
-                v-for="item in offlineQueueItems"
-                :key="item.id"
-              >
+              <v-list-item v-for="item in offlineQueueItems" :key="item.id">
                 <template #prepend>
-                  <v-icon
-                    size="small"
-                    color="medium-emphasis"
-                    :icon="ICON.KEY_VARIANT"
-                  />
+                  <v-icon size="small" color="medium-emphasis" :icon="ICON.KEY_VARIANT" />
                 </template>
                 <v-list-item-title class="text-body-medium font-mono">
                   {{ item.key }}
@@ -156,10 +137,7 @@
                     title="从队列移除（不影响本地数据）"
                     @click="removeQueueItem(item.id)"
                   >
-                    <v-icon
-                      size="small"
-                      :icon="ICON.CLOSE"
-                    />
+                    <v-icon size="small" :icon="ICON.CLOSE" />
                   </v-btn>
                 </template>
               </v-list-item>
@@ -169,10 +147,7 @@
 
         <v-list-item v-if="syncStatus && syncStatus.syncedCount > 0">
           <template #prepend>
-            <v-icon
-              color="success"
-              :icon="ICON.COUNTER"
-            />
+            <v-icon color="success" :icon="ICON.COUNTER" />
           </template>
           <v-list-item-title> 累计已同步: {{ syncStatus.syncedCount }} 项 </v-list-item-title>
         </v-list-item>

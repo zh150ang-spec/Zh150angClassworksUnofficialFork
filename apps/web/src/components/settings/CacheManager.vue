@@ -3,71 +3,37 @@
     <v-card-title class="d-flex align-center">
       <span>缓存管理</span>
       <v-spacer />
-      <v-btn
-        :loading="loading"
-        color="error"
-        @click="clearAllCaches"
-      >
-        清除所有缓存
-      </v-btn>
-      <v-btn
-        class="ml-2"
-        icon
-        @click="refreshCaches"
-      >
+      <v-btn :loading="loading" color="error" @click="clearAllCaches"> 清除所有缓存 </v-btn>
+      <v-btn class="ml-2" icon @click="refreshCaches">
         <v-icon :icon="ICON.REFRESH" />
       </v-btn>
     </v-card-title>
 
     <v-card-text>
-      <v-alert
-        v-if="!serviceWorkerActive"
-        class="mb-4"
-        type="warning"
-      >
+      <v-alert v-if="!serviceWorkerActive" class="mb-4" type="warning">
         Service Worker 未激活，缓存管理功能不可用。
       </v-alert>
 
-      <v-alert
-        v-if="message"
-        :type="messageType"
-        class="mb-4"
-      >
+      <v-alert v-if="message" :type="messageType" class="mb-4">
         {{ message }}
       </v-alert>
 
       <v-expansion-panels v-if="caches.length > 0">
-        <v-expansion-panel
-          v-for="cache in caches"
-          :key="cache.name"
-        >
+        <v-expansion-panel v-for="cache in caches" :key="cache.name">
           <v-expansion-panel-title>
             <div class="d-flex align-center">
               <span>{{ formatCacheName(cache.name) }}</span>
-              <v-chip
-                class="ml-2"
-                size="small"
-              >
-                {{ cache.urls.length }} 个文件
-              </v-chip>
+              <v-chip class="ml-2" size="small"> {{ cache.urls.length }} 个文件 </v-chip>
             </div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <div class="d-flex justify-end mb-2">
-              <v-btn
-                :loading="loading"
-                color="error"
-                size="small"
-                @click="clearCache(cache.name)"
-              >
+              <v-btn :loading="loading" color="error" size="small" @click="clearCache(cache.name)">
                 清除此缓存
               </v-btn>
             </div>
             <v-list lines="two">
-              <v-list-item
-                v-for="(url, index) in cache.urls"
-                :key="index"
-              >
+              <v-list-item v-for="(url, index) in cache.urls" :key="index">
                 <v-list-item-title class="text-truncate">
                   {{ getFileName(url) }}
                 </v-list-item-title>
@@ -91,23 +57,12 @@
         </v-expansion-panel>
       </v-expansion-panels>
 
-      <v-skeleton-loader
-        v-else-if="loading"
-        type="article"
-      />
+      <v-skeleton-loader v-else-if="loading" type="article" />
 
-      <v-alert
-        v-else
-        type="info"
-      >
-        没有找到缓存数据。
-      </v-alert>
+      <v-alert v-else type="info"> 没有找到缓存数据。 </v-alert>
     </v-card-text>
 
-    <v-dialog
-      v-model="confirmDialog.show"
-      max-width="420"
-    >
+    <v-dialog v-model="confirmDialog.show" max-width="420">
       <v-card>
         <v-card-title class="text-headline-small">
           {{ confirmDialog.title }}
@@ -116,13 +71,7 @@
         <v-card-actions class="pa-4">
           <v-spacer />
           <div class="d-flex gap-2">
-            <v-btn
-              color="neutral-surface"
-              variant="elevated"
-              @click="cancelSave()"
-            >
-              取消
-            </v-btn>
+            <v-btn color="neutral-surface" variant="elevated" @click="cancelSave()"> 取消 </v-btn>
             <v-btn
               :color="confirmDialog.color || 'warning'"
               variant="elevated"

@@ -1,18 +1,12 @@
 <template>
   <!-- 统一姓名设置对话框（学生 / 教师） -->
-  <v-dialog
-    v-model="showDialog"
-    max-width="720"
-    persistent
-  >
+  <v-dialog v-model="showDialog" max-width="720" persistent>
     <v-card>
       <v-card-title>{{ dialogTitle }}</v-card-title>
       <v-card-text>
         <!-- 学生模式 -->
         <template v-if="isStudentToken">
-          <div class="mb-2">
-            请从列表中选择您的姓名：
-          </div>
+          <div class="mb-2">请从列表中选择您的姓名：</div>
           <v-autocomplete
             v-model="selectedName"
             :items="studentList"
@@ -23,10 +17,7 @@
             label="学生姓名"
             placeholder="选择您的姓名"
           />
-          <div
-            v-if="studentList.length > 0"
-            class="mt-2 text-body-small text-medium-emphasis"
-          >
+          <div v-if="studentList.length > 0" class="mt-2 text-body-small text-medium-emphasis">
             共 {{ studentList.length }} 位学生
           </div>
         </template>
@@ -50,10 +41,7 @@
                 @click="selectTeacherFromSuggestion(teacher)"
               >
                 {{ teacher.name }}
-                <span
-                  v-if="teacher.isHeadTeacher"
-                  class="ms-1 text-error"
-                > 👨‍🏫 </span>
+                <span v-if="teacher.isHeadTeacher" class="ms-1 text-error"> 👨‍🏫 </span>
               </v-chip>
             </div>
           </div>
@@ -78,22 +66,12 @@
           />
         </template>
 
-        <v-alert
-          v-if="error"
-          class="mt-3"
-          type="error"
-          variant="tonal"
-        >
+        <v-alert v-if="error" class="mt-3" type="error" variant="tonal">
           {{ error }}
         </v-alert>
       </v-card-text>
       <v-card-actions>
-        <v-btn
-          variant="text"
-          @click="skipSetting"
-        >
-          稍后设置
-        </v-btn>
+        <v-btn variant="text" @click="skipSetting"> 稍后设置 </v-btn>
         <v-spacer />
         <v-btn
           v-if="isStudentToken"

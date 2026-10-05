@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    fullscreen-breakpoint="sm"
-    max-width="600"
-    persistent
-  >
+  <v-dialog v-model="dialog" fullscreen-breakpoint="sm" max-width="600" persistent>
     <v-card
       border
       class="random-picker-card"
@@ -12,26 +7,14 @@
       :style="$vuetify.display.smAndDown ? { borderRadius: 0, border: 'none' } : {}"
     >
       <v-card-title class="text-headline-medium d-flex align-center">
-        <v-icon
-          class="mr-2"
-          :icon="ICON.ACCOUNT_QUESTION"
-        />
+        <v-icon class="mr-2" :icon="ICON.ACCOUNT_QUESTION" />
         随机点名
         <v-spacer />
-        <v-btn
-          :icon="ICON.CLOSE"
-          variant="text"
-          @click="dialog = false"
-        />
+        <v-btn :icon="ICON.CLOSE" variant="text" @click="dialog = false" />
       </v-card-title>
 
-      <v-card-text
-        v-if="!isPickingStarted"
-        class="text-center py-6"
-      >
-        <div class="text-headline-small mb-4">
-          请选择抽取人数
-        </div>
+      <v-card-text v-if="!isPickingStarted" class="text-center py-6">
+        <div class="text-headline-small mb-4">请选择抽取人数</div>
 
         <div class="d-flex justify-center align-center counter-container">
           <v-btn
@@ -62,31 +45,15 @@
 
         <!-- 添加模式切换 -->
         <div class="mode-switch-container mt-6">
-          <v-radio-group
-            v-model="pickerMode"
-            density="compact"
-            hide-details
-            inline
-          >
-            <v-radio
-              value="name"
-              label="姓名模式"
-            />
-            <v-radio
-              value="number"
-              label="学号模式"
-            />
+          <v-radio-group v-model="pickerMode" density="compact" hide-details inline>
+            <v-radio value="name" label="姓名模式" />
+            <v-radio value="number" label="学号模式" />
           </v-radio-group>
         </div>
 
         <!-- 学号范围设置 -->
-        <div
-          v-if="pickerMode === 'number'"
-          class="number-range-container mt-4"
-        >
-          <div class="text-body-large mb-2">
-            学号范围设置
-          </div>
+        <div v-if="pickerMode === 'number'" class="number-range-container mt-4">
+          <div class="text-body-large mb-2">学号范围设置</div>
           <div class="d-flex justify-center align-center gap-4">
             <v-text-field
               v-model.number="minNumber"
@@ -125,39 +92,20 @@
           </v-btn>
         </div>
 
-        <div
-          v-if="filteredStudents.length === 0"
-          class="mt-4 text-error"
-        >
-          <template v-if="pickerMode === 'name'">
-            没有可抽取的学生，请调整过滤选项
-          </template>
-          <template v-else>
-            请设置有效的学号范围
-          </template>
+        <div v-if="filteredStudents.length === 0" class="mt-4 text-error">
+          <template v-if="pickerMode === 'name'"> 没有可抽取的学生，请调整过滤选项 </template>
+          <template v-else> 请设置有效的学号范围 </template>
         </div>
 
         <div class="mt-4 text-body-small">
           当前可抽取学生: {{ filteredStudents.length }}人
-          <v-tooltip
-            v-if="pickerMode === 'name'"
-            location="bottom"
-          >
+          <v-tooltip v-if="pickerMode === 'name'" location="bottom">
             <template #activator="{ props }">
-              <v-icon
-                class="ml-1"
-                :icon="ICON.INFORMATION_OUTLINE"
-                size="small"
-                v-bind="props"
-              />
+              <v-icon class="ml-1" :icon="ICON.INFORMATION_OUTLINE" size="small" v-bind="props" />
             </template>
             <div class="pa-2">
-              <div v-if="tempFilters.excludeAbsent">
-                • 已排除请假学生 ({{ absentCount }}人)
-              </div>
-              <div v-if="tempFilters.excludeLate">
-                • 已排除迟到学生 ({{ lateCount }}人)
-              </div>
+              <div v-if="tempFilters.excludeAbsent">• 已排除请假学生 ({{ absentCount }}人)</div>
+              <div v-if="tempFilters.excludeLate">• 已排除迟到学生 ({{ lateCount }}人)</div>
               <div v-if="tempFilters.excludeExcluded">
                 • 已排除不参与学生 ({{ excludedCount }}人)
               </div>
@@ -165,10 +113,7 @@
           </v-tooltip>
 
           <!-- 添加临时过滤选项 -->
-          <div
-            v-if="pickerMode === 'name'"
-            class="d-flex flex-wrap justify-center gap-2 mt-4"
-          >
+          <div v-if="pickerMode === 'name'" class="d-flex flex-wrap justify-center gap-2 mt-4">
             <v-chip
               :color="tempFilters.excludeLate ? 'warning' : 'default'"
               :variant="tempFilters.excludeLate ? 'elevated' : 'text'"
@@ -201,25 +146,11 @@
         </div>
       </v-card-text>
 
-      <v-card-text
-        v-else
-        class="text-center py-6"
-      >
-        <transition
-          mode="out-in"
-          name="result-fade"
-        >
-          <div
-            v-if="isAnimating"
-            key="animation"
-            class="animation-container"
-          >
+      <v-card-text v-else class="text-center py-6">
+        <transition mode="out-in" name="result-fade">
+          <div v-if="isAnimating" key="animation" class="animation-container">
             <div class="animation-wrapper">
-              <transition-group
-                class="shuffle-container"
-                name="shuffle"
-                tag="div"
-              >
+              <transition-group class="shuffle-container" name="shuffle" tag="div">
                 <div
                   v-for="(student, index) in animationStudents"
                   :key="student.id"
@@ -232,14 +163,8 @@
             </div>
           </div>
 
-          <div
-            v-else
-            key="result"
-            class="result-container"
-          >
-            <div class="text-headline-small mb-4">
-              抽取结果
-            </div>
+          <div v-else key="result" class="result-container">
+            <div class="text-headline-small mb-4">抽取结果</div>
             <v-card
               v-for="(student, index) in pickedStudents"
               :key="index"

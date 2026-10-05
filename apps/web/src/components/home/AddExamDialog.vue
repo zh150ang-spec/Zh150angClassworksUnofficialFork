@@ -5,9 +5,7 @@
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <v-card>
-      <v-card-title class="text-headline-small">
-        预览考试看板
-      </v-card-title>
+      <v-card-title class="text-headline-small"> 预览考试看板 </v-card-title>
       <v-card-text>
         <v-list v-if="examList.length > 0">
           <v-list-item
@@ -18,10 +16,7 @@
             @click="$emit('add-exam', exam.id)"
           >
             <template #prepend>
-              <v-icon
-                color="primary"
-                :icon="ICON.CALENDAR_TEXT"
-              />
+              <v-icon color="primary" :icon="ICON.CALENDAR_TEXT" />
             </template>
             <template #append>
               <v-btn
@@ -32,20 +27,11 @@
             </template>
           </v-list-item>
         </v-list>
-        <div
-          v-else
-          class="text-center py-4 text-medium-emphasis"
-        >
-          暂无考试配置
-        </div>
+        <div v-else class="text-center py-4 text-medium-emphasis">暂无考试配置</div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="$emit('update:modelValue', false)"
-        >
+        <v-btn color="primary" variant="text" @click="$emit('update:modelValue', false)">
           关闭
         </v-btn>
       </v-card-actions>
