@@ -11,7 +11,7 @@
       <v-icon class="mr-3" :icon="ICON.UPDATE" />
       <div>
         <div class="font-weight-bold">发现新版本</div>
-        <div class="text-body-small">点击更新按钮以使用最新版本</div>
+        <div class="text-body-small">{{ bannerHint }}</div>
       </div>
     </div>
     <template #actions>
@@ -26,31 +26,51 @@
 <script setup>
 import { ICON } from '@/utils/icons'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { hasUnsavedWork } from '@/utils/updateGate'
 
 const showUpdateBanner = ref(false)
 const isUpdating = ref(false)
+const bannerHint = ref('点击更新按钮以使用最新版本')
 let registration = null
 let refreshing = false
-// 保存定时器 ID 以便在组件卸载时清理，避免内存泄漏和在已卸载组件上访问 ref
+// 只有用户确认（或确认过）才允许刷新；否则任何 controllerchange 都不许打断课堂
+let reloadApproved = false
 let updateCheckTimeoutId = null
 let updateCheckIntervalId = null
+// 监听器只注册一次：checkForUpdate 每小时调用，注册在函数体内会持续累积（P1-9）
+let updateFoundHandler = null
 
-const handleNewServiceWorker = (waitingWorker) => {
-  if (waitingWorker) {
-    showUpdateBanner.value = true
-  }
+const refreshNow = () => {
+  if (refreshing) return
+  refreshing = true
+  window.location.reload()
+}
+
+const markUpdateAvailable = (worker) => {
+  if (!worker) return
+  bannerHint.value = hasUnsavedWork()
+    ? '有未保存的内容，请先保存后再更新'
+    : '点击更新按钮以使用最新版本'
+  showUpdateBanner.value = true
 }
 
 const updateServiceWorker = async () => {
+  if (hasUnsavedWork()) {
+    bannerHint.value = '有未保存的内容，请先保存后再更新'
+    return
+  }
+
   isUpdating.value = true
+  reloadApproved = true
 
   if (registration && registration.waiting) {
     registration.waiting.postMessage({ type: 'SKIP_WAITING' })
   }
 
+  // 兜底：controllerchange 未触发时（浏览器差异/无等待中的 SW）也完成更新
   setTimeout(() => {
-    window.location.reload()
-  }, 1000)
+    if (!refreshing) refreshNow()
+  }, 2000)
 }
 
 const dismissUpdate = () => {
@@ -58,46 +78,55 @@ const dismissUpdate = () => {
 }
 
 const checkForUpdate = async () => {
-  if ('serviceWorker' in navigator) {
-    try {
-      registration = await navigator.serviceWorker.ready
+  if (!('serviceWorker' in navigator)) return
+  try {
+    registration = await navigator.serviceWorker.ready
 
-      if (registration.waiting) {
-        handleNewServiceWorker(registration.waiting)
-      }
-
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing
-        if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              handleNewServiceWorker(newWorker)
-            }
-          })
-        }
-      })
-
-      await registration.update()
-    } catch (error) {
-      console.error('Service Worker 更新检查失败:', error)
+    if (registration.waiting) {
+      markUpdateAvailable(registration.waiting)
     }
+
+    if (!updateFoundHandler) {
+      updateFoundHandler = () => {
+        const newWorker = registration.installing
+        if (!newWorker) return
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            markUpdateAvailable(newWorker)
+          }
+        })
+      }
+      registration.addEventListener('updatefound', updateFoundHandler)
+    }
+
+    await registration.update()
+  } catch (error) {
+    console.error('Service Worker 更新检查失败:', error)
   }
 }
 
 const handleControllerChange = () => {
   if (refreshing) return
-  refreshing = true
-  window.location.reload()
+
+  if (reloadApproved) {
+    refreshNow()
+    return
+  }
+
+  // 未经本页用户确认就换了 controller（例如另一个标签页点了更新）：
+  // 只在"没有未保存内容且页面不可见"时静默刷新，绝不打断正在使用的大屏
+  markUpdateAvailable(navigator.serviceWorker.controller)
+  if (!hasUnsavedWork() && document.visibilityState === 'hidden') {
+    refreshNow()
+  }
 }
 
 onMounted(() => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+  if (!('serviceWorker' in navigator)) return
 
-    updateCheckTimeoutId = setTimeout(checkForUpdate, 3000)
-
-    updateCheckIntervalId = setInterval(checkForUpdate, 60 * 60 * 1000)
-  }
+  navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+  updateCheckTimeoutId = setTimeout(checkForUpdate, 3000)
+  updateCheckIntervalId = setInterval(checkForUpdate, 60 * 60 * 1000)
 })
 
 onBeforeUnmount(() => {

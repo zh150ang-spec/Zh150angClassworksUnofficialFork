@@ -9,9 +9,15 @@
  * applyLoaded / applyDefault 由调用方传入，以适配各自数据结构与文案（不重写调用方 API 风格）。
  */
 import dataProvider from '@/utils/dataProvider'
+import { networkStatus } from '@/utils/networkStatus'
 
-// 键不存在时各数据源返回的"找不到"错误码
-const NOT_FOUND_CODES = ['NOT_FOUND', 'DATA_NOT_FOUND', 'DATA_UNAVAILABLE']
+// 「确证缺失」：数据源明确回答「这个键不存在」（服务端 404）。
+// 只有这种情况才允许回退默认配置。
+const CONFIRMED_MISSING_CODES = ['NOT_FOUND']
+// 「离线无法判定」：离线时本地没有副本，无法知道云端到底有没有这个键。
+// 仅在当前确实离线时才当作缺失——否则一旦把认证失败/网络故障当成缺失，
+// 就会静默套用默认配置，用户下一次保存即用默认值覆盖云端真实配置。
+const OFFLINE_INDETERMINATE_CODES = ['DATA_NOT_FOUND']
 
 export function useConfigDefaults({ configKey, kind = 'object' } = {}) {
   // 分析 loadData 响应：是否有效 / 内容是否为空 / 键是否缺失
@@ -26,7 +32,10 @@ export function useConfigDefaults({ configKey, kind = 'object' } = {}) {
           typeof response !== 'object' || response === null || Object.keys(response).length === 0
       }
     }
-    const isMissing = NOT_FOUND_CODES.includes(response?.error?.code)
+    const code = response?.error?.code
+    const isMissing =
+      CONFIRMED_MISSING_CODES.includes(code) ||
+      (!networkStatus.isOnline() && OFFLINE_INDETERMINATE_CODES.includes(code))
     return { loaded, isEmpty, isMissing }
   }
 

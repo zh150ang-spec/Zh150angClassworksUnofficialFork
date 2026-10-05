@@ -21,6 +21,8 @@
     "preview": "vite preview",
     "lint": "oxlint --fix && eslint \"src/**/*.vue\" --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:check": "oxlint && eslint \"src/**/*.vue\" --cache --cache-location node_modules/.cache/.eslintcache",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "scan:ui": "node scripts/scan-ui-issues.js",
     "pwa:validate": "node scripts/validate-pwa-build.js",
     "prebuild": "node scripts/generate-sound-list.js",
@@ -74,7 +76,8 @@
     "vite-plugin-pwa": "^1.3.0",
     "vite-plugin-vue-devtools": "^8.2.1",
     "vite-plugin-vue-layouts-next": "^2.1.0",
-    "vite-plugin-vuetify": "^2.1.3"
+    "vite-plugin-vuetify": "^2.1.3",
+    "vitest": "^5.0.3"
   },
   "packageManager": "pnpm@11.24.0",
   "engines": {

@@ -89,24 +89,52 @@ export function additiveMerge(server, local) {
   return { mergedData: local, conflicts: [] }
 }
 
-export async function rmwWriteServer(key, data) {
+/**
+ * 读-改-写云端。
+ *
+ * 关键修复（fail-closed）：此前任何读失败都被当成「云端没有数据」，直接跳过合并写入，
+ * 于是一次云端读取故障就会把云端已有数据整份冲掉。
+ * 现在只有两种情况允许写入：
+ *   1. 读取成功 → 正常合并（additiveMerge）后写入；
+ *   2. provider 明确返回 NOT_FOUND（404，键确实不存在）→ 新建写入。
+ * 其余读失败一律拒绝写入并返回 SERVER_READ_FAILED，由离线队列 / 内存暂存稍后重试。
+ *
+ * @param {string} key
+ * @param {any} data
+ * @param {{loadData:Function, saveData:Function}} [provider] 可注入（测试用）
+ * @param {{retryPolicy?:object, signal?:AbortSignal}} [requestOptions] 透传给 provider 的请求级选项
+ *        （后台同步传 BACKGROUND_RETRY_POLICY，并带租约 signal 以便锁丢失时中止在途请求）
+ */
+export async function rmwWriteServer(key, data, provider = kvServerProvider, requestOptions = {}) {
   let attempt = 0
   while (attempt <= RMW_MAX_RETRIES) {
-    const current = await kvServerProvider.loadData(key)
-    if (
-      current &&
-      current.success !== false &&
-      computeDataHash(current) === computeDataHash(data)
-    ) {
+    const current = await provider.loadData(key, requestOptions)
+
+    const readFailed =
+      current === undefined ||
+      current === null ||
+      (current.success === false && current.error?.code !== 'NOT_FOUND')
+
+    if (readFailed) {
+      console.warn('RMW 读取失败，放弃覆盖写入以避免云端数据丢失:', key, current?.error?.code)
+      return {
+        success: false,
+        error: {
+          code: 'SERVER_READ_FAILED',
+          message: current?.error?.message || '云端读取失败，已放弃覆盖写入',
+          retryable: true,
+        },
+      }
+    }
+
+    if (current.success !== false && computeDataHash(current) === computeDataHash(data)) {
       return { success: true, skipped: true }
     }
     const mergeResult =
-      current && current.success !== false
-        ? additiveMerge(current, data)
-        : { mergedData: data, conflicts: [] }
+      current.success !== false ? additiveMerge(current, data) : { mergedData: data, conflicts: [] }
     const merged = mergeResult.mergedData
     const conflicts = mergeResult.conflicts
-    const result = await kvServerProvider.saveData(key, merged)
+    const result = await provider.saveData(key, merged, requestOptions)
     if (result && result.success !== false) {
       return { ...result, conflicts, serverOriginal: current }
     }

@@ -5,39 +5,98 @@ import { getEffectiveServerUrl } from '@/utils/serverRotation'
 import { networkStatus } from '@/utils/networkStatus'
 import backgroundSync from '@/utils/backgroundSync'
 import { rmwWriteServer, computeDataHash } from '@/utils/rmw'
+import { spoolWrite, setSpoolFlushHandler } from '@/utils/pendingWriteSpool'
 import messageService from '@/utils/message'
 import { loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY } from '@/utils/syncHelpers'
 
+// 云端单存储模式的暂存补写实现：用 RMW 补写，避免把云端已有数据直接覆盖
+setSpoolFlushHandler((key, data) => rmwWriteServer(key, data))
+
+/**
+ * 本地副本写入失败登记表（P0-6）。
+ *
+ * 背景：双存储下"云端成功、本地失败"以前只是把 localFailed 放进返回值，而全仓没有任何消费方，
+ * 于是本地副本静默过期（离线时读到旧数据），用户与设置页都看不到。
+ * 这里记录失败项供设置页展示；不做应用内通知，以免违反"自动保存不得通知"的约定。
+ */
+const localWriteFailures = new Map()
+
+function recordLocalWriteFailure(key) {
+  const previous = localWriteFailures.get(key)
+  localWriteFailures.set(key, {
+    key,
+    count: (previous?.count || 0) + 1,
+    lastAt: Date.now(),
+  })
+}
+
+function clearLocalWriteFailure(key) {
+  if (localWriteFailures.has(key)) {
+    localWriteFailures.delete(key)
+  }
+}
+
 export const formatResponse = (data) => data
 
-export const formatError = (message, code = 'UNKNOWN_ERROR') => ({
-  success: false,
-  error: { code, message },
-})
+// 「重试有意义」的错误码：网络类故障与服务器 5xx。业务拒绝（未授权/无权限/不存在）不在此列，
+// 它们必须快速失败并把错误码原样交给调用方，否则会被误判成「键不存在」而套用默认配置。
+const RETRYABLE_ERROR_CODES = new Set([
+  'NETWORK_ERROR',
+  'SERVER_LOAD_ERROR',
+  'SERVER_SAVE_ERROR',
+  'SERVER_READ_FAILED',
+  'RETRY_EXHAUSTED',
+  'LOAD_ERROR',
+  'QUEUE_ERROR',
+])
+
+export const formatError = (message, code = 'UNKNOWN_ERROR', options = {}) => {
+  const { retryable, ...extra } = options
+  return {
+    success: false,
+    error: {
+      code,
+      message,
+      retryable: retryable ?? RETRYABLE_ERROR_CODES.has(code),
+      ...extra,
+    },
+  }
+}
 
 const DEFAULT_RETRY_ATTEMPTS = 2
 const RETRY_DELAY_BASE = 100
 
+/**
+ * 有限次重试。
+ *
+ * 修复点：此前循环耗尽后隐式返回 undefined，调用方把 undefined 一律折叠成 NOT_FOUND，
+ * 于是「服务器拒绝（401/403/400）」被显示成「数据不存在」，甚至会触发默认配置回退。
+ * 现在：**返回最后一次的错误对象（保留原错误码）**，并且只对 retryable 的失败重试
+ * （NOT_FOUND 等确定性结果不再重复请求 3 次）。
+ */
 async function retryOperation(operation, maxRetries = DEFAULT_RETRY_ATTEMPTS) {
+  let lastResult
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const result = await operation()
       if (result && result.success !== false) {
         return result
       }
-      if (attempt < maxRetries) {
-        const delay = RETRY_DELAY_BASE * (attempt + 1)
-        await new Promise((resolve) => setTimeout(resolve, delay))
+      lastResult = result
+      const canRetry = attempt < maxRetries && result?.error?.retryable === true
+      if (!canRetry) {
+        return result ?? formatError('操作失败', 'RETRY_EXHAUSTED')
       }
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_BASE * (attempt + 1)))
     } catch (error) {
       if (attempt < maxRetries) {
-        const delay = RETRY_DELAY_BASE * (attempt + 1)
-        await new Promise((resolve) => setTimeout(resolve, delay))
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_BASE * (attempt + 1)))
       } else {
         throw error
       }
     }
   }
+  return lastResult ?? formatError('操作失败', 'RETRY_EXHAUSTED')
 }
 
 let _isReadOnly = false
@@ -108,11 +167,17 @@ function notifyRmwConflict(key, conflicts, localData, serverData) {
     },
   ]
 
-  messageService.warning('数据冲突', `你刚才修改的内容已被他人先修改过。${conflictDescriptions}`, {
-    timeout: 15000,
-    closable: false,
-    actions,
-  })
+  messageService.warning(
+    '数据冲突',
+    `你刚才修改的内容已被他人先修改过，已按「你的修改优先」合并写入云端。${conflictDescriptions}`,
+    {
+      // 冲突结果**已经落地**，15s 自动消失会让用户来不及选择就默认接受本地覆盖云端。
+      // 因此改为常驻，直到用户明确选择「使用云端」或「换用我的修改」。
+      timeout: -1,
+      closable: false,
+      actions,
+    },
+  )
 }
 
 /**
@@ -187,6 +252,20 @@ export default {
     return _isReadOnly
   },
 
+  /** 本地副本写入失败的 key 列表（P0-6 可见性；设置页读取） */
+  getLocalWriteFailures() {
+    return [...localWriteFailures.values()]
+  },
+
+  getLocalWriteFailureCount() {
+    return localWriteFailures.size
+  },
+
+  /** 清空本地写失败登记（例如用户主动全量同步后） */
+  clearLocalWriteFailures() {
+    localWriteFailures.clear()
+  },
+
   checkNamespaceChange() {
     const currentNamespace = getSetting('device.uuid') || ''
     const lastKnown = getSetting('device.lastKnownNamespace') || ''
@@ -241,7 +320,9 @@ export default {
         if (result && result.success !== false) {
           return result
         }
-        return formatError('本地数据不存在', 'DATA_NOT_FOUND')
+        // 本地存储对「缺失」是权威的：保留 provider 的 NOT_FOUND（确证缺失），
+        // 否则上层（useConfigDefaults）无法区分「键不存在」与「读取故障」。
+        return result ?? formatError('本地数据不存在', 'DATA_NOT_FOUND')
       } catch (error) {
         return formatError('本地数据加载失败: ' + error.message, 'LOCAL_LOAD_ERROR')
       }
@@ -255,9 +336,12 @@ export default {
       try {
         const result = await retryOperation(() => kvServerProvider.loadData(key))
         if (result && result.success !== false) {
+          networkStatus.noteRequestSuccess()
           return result
         }
-        return formatError('云端数据不存在', 'DATA_NOT_FOUND')
+        // 错误码保真：只有 provider 明确返回 NOT_FOUND 才是「不存在」，
+        // 其余失败（401/403/5xx/网络）必须原样上抛，不能被折叠成「数据不存在」。
+        return result ?? formatError('云端数据加载失败', 'SERVER_LOAD_ERROR')
       } catch (error) {
         return formatError('云端数据加载失败: ' + error.message, 'SERVER_LOAD_ERROR')
       }
@@ -275,6 +359,10 @@ export default {
           const localOk = localResult && localResult.success !== false
           const serverOk = serverResult && serverResult.success !== false
 
+          if (serverOk) {
+            networkStatus.noteRequestSuccess()
+          }
+
           if (serverOk && localOk) {
             const merged = mergeData(localResult, serverResult, _isReadOnly)
             if (computeDataHash(merged) !== computeDataHash(localResult)) {
@@ -289,13 +377,24 @@ export default {
           }
 
           if (localOk) {
-            networkStatus.markServerUnreachable()
+            // 只是「本次云端读取失败」，不足以判定整个服务器不可达：
+            // 交给 noteRequestFailure 记录证据 + 触发一次去抖探测，由心跳决定是否进入离线模式。
+            networkStatus.noteRequestFailure()
             return localResult
           }
 
-          return formatError('无法加载数据：云端和本地均不可用', 'DATA_UNAVAILABLE')
+          // 双失败：区分「两边都确认没有该键（真缺失）」与「两边都故障」。
+          // 前者必须返回 NOT_FOUND，后者的错误码不得被上层当成缺失（否则会套用默认配置覆盖云端）。
+          const localMissing = localResult?.error?.code === 'NOT_FOUND'
+          const serverMissing = serverResult?.error?.code === 'NOT_FOUND'
+          if (localMissing && serverMissing) {
+            return formatError('数据不存在', 'NOT_FOUND')
+          }
+          return formatError('无法加载数据：云端和本地均不可用', 'DATA_UNAVAILABLE', {
+            retryable: true,
+          })
         } catch (error) {
-          networkStatus.markServerUnreachable()
+          networkStatus.noteRequestFailure()
           try {
             const localResult = await kvLocalProvider.loadData(key)
             if (localResult && localResult.success !== false) {
@@ -326,7 +425,7 @@ export default {
       if (result && result.success !== false) {
         return result
       }
-      return formatError('本地数据不存在', 'DATA_NOT_FOUND')
+      return result ?? formatError('本地数据不存在', 'DATA_NOT_FOUND')
     } catch (error) {
       return formatError('本地数据加载失败: ' + error.message, 'LOCAL_LOAD_ERROR')
     }
@@ -356,15 +455,41 @@ export default {
       try {
         const result = await rmwWriteServer(key, data)
         if (result && result.success !== false) {
+          networkStatus.noteRequestSuccess()
           // 检查并通知冲突
           if (result.conflicts && result.conflicts.length > 0) {
             notifyRmwConflict(key, result.conflicts, data, result.serverOriginal)
           }
           return { success: true, source: 'cloud' }
         }
-        return formatError('云端保存失败', 'SERVER_SAVE_ERROR')
+
+        // 该模式没有本地副本：确认无法写入时把数据暂存在本页，避免用户输入直接丢失。
+        // 只暂存可重试的失败；401/403 这类确定性拒绝入暂存只会永远补写不上。
+        const retryable = result?.error?.retryable === true
+        if (retryable) {
+          networkStatus.noteRequestFailure()
+          spoolWrite(key, data)
+          return formatError(
+            '云端保存失败，内容已暂存于本页，联网后自动补写',
+            'SERVER_SAVE_ERROR',
+            {
+              retryable: true,
+              spooled: true,
+            },
+          )
+        }
+        return formatError(
+          result?.error?.message || '云端保存失败',
+          result?.error?.code || 'SERVER_SAVE_ERROR',
+        )
       } catch (error) {
-        return formatError('云端保存失败: ' + error.message, 'SERVER_SAVE_ERROR')
+        networkStatus.noteRequestFailure()
+        spoolWrite(key, data)
+        return formatError(
+          '云端保存失败，内容已暂存于本页，联网后自动补写：' + error.message,
+          'SERVER_SAVE_ERROR',
+          { retryable: true, spooled: true },
+        )
       }
     }
 
@@ -380,8 +505,13 @@ export default {
           const localOk = localResult && localResult.success !== false
           const serverOk = serverResult && serverResult.success !== false
 
+          if (serverOk) {
+            networkStatus.noteRequestSuccess()
+          }
+
           if (serverOk && localOk) {
             await kvLocalProvider.removeKeyFromOfflineQueue(key).catch(() => {})
+            clearLocalWriteFailure(key)
             // 检查并通知冲突
             if (serverResult.conflicts && serverResult.conflicts.length > 0) {
               notifyRmwConflict(key, serverResult.conflicts, data, serverResult.serverOriginal)
@@ -390,28 +520,49 @@ export default {
           }
 
           if (serverOk) {
+            // 云端已成功、本地失败：先原地重试一次（IndexedDB 失败常是瞬时/配额问题）
+            const retryLocal = await kvLocalProvider.saveData(key, data).catch(() => null)
+            if (retryLocal && retryLocal.success !== false) {
+              await kvLocalProvider.removeKeyFromOfflineQueue(key).catch(() => {})
+              clearLocalWriteFailure(key)
+              if (serverResult.conflicts && serverResult.conflicts.length > 0) {
+                notifyRmwConflict(key, serverResult.conflicts, data, serverResult.serverOriginal)
+              }
+              return { success: true, source: 'dual', localRetried: true }
+            }
+
+            // 重试仍失败 → 登记（设置页可见），但不做应用内通知（遵守自动保存不通知的约定）
+            recordLocalWriteFailure(key)
             // 检查并通知冲突
             if (serverResult.conflicts && serverResult.conflicts.length > 0) {
               notifyRmwConflict(key, serverResult.conflicts, data, serverResult.serverOriginal)
             }
+            // 本地写失败（IndexedDB 异常等）不再静默：数据在云端是安全的，
+            // 但本地副本已过期，必须让上层可见（localFailed 由调用方决定如何提示）
             return { success: true, source: 'cloud', localFailed: true }
           }
 
           if (localOk) {
             await kvLocalProvider.addToOfflineQueue(key).catch(() => {})
             backgroundSync.scheduleImmediate()
+            // 产品要求：**云端写入失败 + 本地写入成功 → 立即把整个应用标记为离线**。
+            // 目的：立刻切到「离线：仅本地 + 入队」快路径，后续保存不必每次都为云端失败等满超时，
+            // 同时让离线横幅明确告知"数据已保存到本地"。恢复交给心跳（≤30s，一次成功即恢复）。
+            // 例外说明：读取失败（loadData）不走这条路，只记证据，避免一次读故障就宣告离线。
             networkStatus.markServerUnreachable()
             return { success: true, source: 'local', serverFailed: true }
           }
 
-          return formatError('保存失败：云端和本地均不可用', 'SAVE_FAILED')
+          return formatError('保存失败：云端和本地均不可用', 'SAVE_FAILED', { retryable: true })
         } catch (error) {
-          networkStatus.markServerUnreachable()
+          networkStatus.noteRequestFailure()
           try {
             const localResult = await kvLocalProvider.saveData(key, data)
             if (localResult && localResult.success !== false) {
               await kvLocalProvider.addToOfflineQueue(key).catch(() => {})
               backgroundSync.scheduleImmediate()
+              // 与上一分支同义：云端写入抛错 + 本地写入成功 → 立即标记离线，切本地优先快路径
+              networkStatus.markServerUnreachable()
               return { success: true, source: 'local', serverFailed: true }
             }
           } catch (e) {

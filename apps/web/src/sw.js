@@ -18,7 +18,10 @@ cleanupOutdatedCaches()
 
 self.addEventListener('install', () => {
   console.log('[SW] 安装中，版本:', CACHE_VERSION, '资源数量:', manifest?.length || 0)
-  self.skipWaiting()
+  // ⚠️ 这里**不**调用 self.skipWaiting()。
+  // 一旦无条件 skipWaiting，新 SW 会立刻接管并触发 controllerchange，
+  // 页面（含教室大屏）就会在用户没有确认、可能还有未保存内容时直接刷新——发版后闪屏的根因。
+  // 现在改为等待：由页面在用户点击"更新"后 postMessage({ type: 'SKIP_WAITING' }) 触发（见下方 message 处理）。
 })
 
 self.addEventListener('activate', (event) => {
@@ -248,6 +251,13 @@ self.addEventListener('message', async (event) => {
 
   try {
     switch (event.data.type) {
+      case 'SKIP_WAITING': {
+        // 页面（SwUpdateNotification）在用户确认更新后才会发这个消息。
+        // 缺失这个 handler 会导致"更新"按钮点了没反应，只能靠 controllerchange 兜底。
+        console.log('[SW] 收到 SKIP_WAITING，立即接管')
+        await self.skipWaiting()
+        break
+      }
       case 'CACHE_KEYS': {
         const cacheNames = await caches.keys()
         safePostMessage(port, { success: true, cacheNames })

@@ -3,47 +3,18 @@ import { getSetting } from '@/utils/settings'
 import { parseRateLimit } from 'ratelimit-header-parser'
 import RateLimitModal from '@/components/system/RateLimitModal.vue'
 import { Base64 } from 'js-base64'
+import { DEFAULT_RETRY_POLICY, resolveRetryPolicy, planRetry } from '@/utils/netRetryPolicy'
 
 const DEFAULT_TIMEOUT = 15000
-// 重试策略：指数退避（2s → 4s → 8s → 16s → 32s → ... → 上限 30 分钟），
-// 达到上限后稳定每 30 分钟重试一次，永不放弃直到请求成功。
-// 这样既能在瞬时故障时快速恢复，又能在长期故障时保持温和的重试频率，避免对后端造成压力。
-const RETRY_DELAY_BASE = 2000
-const MAX_RETRY_DELAY = 30 * 60 * 1000 // 30 分钟上限
-
-const RETRYABLE_ERRORS = [
-  'ECONNABORTED',
-  'ETIMEDOUT',
-  'ENOTFOUND',
-  'ENETUNREACH',
-  'ECONNRESET',
-  'EAI_AGAIN',
-]
-
-const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504]
-
-const shouldRetry = (error) => {
-  if (!error) return false
-
-  if (error.code && RETRYABLE_ERRORS.includes(error.code)) {
-    return true
-  }
-
-  if (error.response && RETRYABLE_STATUS_CODES.includes(error.response.status)) {
-    return true
-  }
-
-  if (
-    error.message &&
-    (error.message.includes('timeout') ||
-      error.message.includes('Network Error') ||
-      error.message.includes('net::ERR'))
-  ) {
-    return true
-  }
-
-  return false
-}
+// 重试策略：**有界**指数退避，默认最多 2 次尝试、总预算 12s（见 netRetryPolicy.js）。
+// 单次请求超时 15s > 预算 12s，因此「请求整体超时」不会重试，UI 的等待时间保持有界。
+//
+// 重要：这里**不再**做「永不放弃」的持久重试。持久重试属于离线队列 / backgroundSync 的职责，
+// 传输层若永不失败，上层的失败处理（心跳阈值、离线队列、RMW 降级、退避）全部无法生效。
+// 调用方可用 `config.metadata.retryPolicy` 覆盖（心跳 maxAttempts:1，后台同步见 BACKGROUND_RETRY_POLICY）。
+//
+// 幂等性说明：KV 写入是服务端无条件 upsert（apps/server/routes/kv-token.js），重试安全；
+// 若将来新增非幂等端点，必须显式设置 maxAttempts:1。
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -76,9 +47,12 @@ axiosInstance.interceptors.request.use(
     }
 
     requestConfig.metadata = {
+      // 保留调用方传入的 metadata（retryPolicy 等）与响应拦截器写入的 attempt，
+      // 否则重试时会丢失策略并导致计数器被重置
+      ...(requestConfig.metadata || {}),
       startTime: requestConfig.metadata?.startTime ?? Date.now(),
-      // 保留响应拦截器写入的 retryCount，避免重试时计数器被重置为 0 导致死循环
-      retryCount: requestConfig.metadata?.retryCount ?? 0,
+      attempt: requestConfig.metadata?.attempt ?? 0,
+      retryPolicy: resolveRetryPolicy(requestConfig.metadata?.retryPolicy),
     }
 
     return requestConfig
@@ -99,9 +73,11 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     const config = error.config || {}
-    const retryCount = config.metadata?.retryCount || 0
+    const metadata = config.metadata || {}
+    const attempt = metadata.attempt ?? 0
+    const elapsedMs = Date.now() - (metadata.startTime ?? Date.now())
 
-    if (error.response && error.response.status === 429) {
+    if (error.response && error.response.status === 429 && attempt === 0) {
       try {
         const rateLimitInfo = parseRateLimit(error.response)
         if (rateLimitInfo) {
@@ -116,25 +92,35 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    if (shouldRetry(error)) {
-      const nextRetryCount = retryCount + 1
-      // 指数退避：2s → 4s → 8s → 16s → 32s → 64s → ... → 上限 30 分钟
-      // 达到上限后稳定每 30 分钟重试一次，永不放弃直到请求成功
-      const delay = Math.min(RETRY_DELAY_BASE * Math.pow(2, retryCount), MAX_RETRY_DELAY)
-      console.log(`请求失败，${delay}ms 后重试 (第 ${nextRetryCount} 次):`, error.message)
+    const decision = planRetry({
+      error,
+      attempt,
+      elapsedMs,
+      policy: metadata.retryPolicy ?? DEFAULT_RETRY_POLICY,
+    })
 
-      await sleep(delay)
+    if (decision.retry) {
+      const nextAttempt = attempt + 1
+      console.log(`请求失败，${decision.delayMs}ms 后重试 (第 ${nextAttempt} 次):`, error.message)
+
+      await sleep(decision.delayMs)
 
       const newConfig = {
         ...config,
         metadata: {
-          ...config.metadata,
-          retryCount: nextRetryCount,
+          ...metadata,
+          attempt: nextAttempt,
         },
       }
 
       return axiosInstance(newConfig)
     }
+
+    // 有界重试已结束：把「已尝试次数 / 放弃原因」原样交给上层，
+    // 由离线队列等持久层决定是否继续重试。
+    error.retryAttempts = attempt
+    error.retryExhausted = true
+    error.retryStoppedReason = decision.reason
 
     if (error.code === 'ECONNABORTED') {
       error.message = '请求超时，请检查网络连接'

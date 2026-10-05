@@ -20,6 +20,27 @@ const getHeaders = () => {
   return headers
 }
 
+/**
+ * 把调用方传入的"请求级选项"翻译成 axios 配置。
+ *
+ * - `retryPolicy`：覆盖默认的有界重试策略（后台同步用 BACKGROUND_RETRY_POLICY）
+ * - `signal`：租约失效时中止在途请求（跨标签锁丢失后立刻停止打服务器）
+ *
+ * 不传 options 时行为与以前完全一致（走默认交互策略）。
+ * @param {{retryPolicy?:object, signal?:AbortSignal}} [options]
+ * @returns {object} 可直接展开进 axios config 的对象
+ */
+const getRequestConfig = (options = {}) => {
+  const config = {}
+  if (options.retryPolicy) {
+    config.metadata = { retryPolicy: options.retryPolicy }
+  }
+  if (options.signal) {
+    config.signal = options.signal
+  }
+  return config
+}
+
 export const kvServerProvider = {
   async loadNamespaceInfo() {
     try {
@@ -72,13 +93,14 @@ export const kvServerProvider = {
     }
   },
 
-  async loadData(key) {
+  async loadData(key, options = {}) {
     try {
       // Use rotation for classworkscloud provider
       if (isRotationEnabled()) {
         return await tryWithRotation(async (serverUrl) => {
           const res = await axios.get(`${serverUrl}/kv/${key}`, {
             headers: getHeaders(),
+            ...getRequestConfig(options),
           })
           return formatResponse(res.data)
         })
@@ -87,6 +109,7 @@ export const kvServerProvider = {
       const serverUrl = getSetting('server.domain')
       const res = await axios.get(`${serverUrl}/kv/${key}`, {
         headers: getHeaders(),
+        ...getRequestConfig(options),
       })
 
       return formatResponse(res.data)
@@ -100,13 +123,14 @@ export const kvServerProvider = {
     }
   },
 
-  async saveData(key, data) {
+  async saveData(key, data, options = {}) {
     try {
       // Use rotation for classworkscloud provider
       if (isRotationEnabled()) {
         return await tryWithRotation(async (serverUrl) => {
           await axios.post(`${serverUrl}/kv/${key}`, data, {
             headers: getHeaders(),
+            ...getRequestConfig(options),
           })
           return formatResponse(true)
         })
@@ -115,6 +139,7 @@ export const kvServerProvider = {
       const serverUrl = getSetting('server.domain')
       await axios.post(`${serverUrl}/kv/${key}`, data, {
         headers: getHeaders(),
+        ...getRequestConfig(options),
       })
       return formatResponse(true)
     } catch (error) {
@@ -145,7 +170,7 @@ export const kvServerProvider = {
    *   load_more: "/api/kv/namespace/_keys?sortBy=key&sortDir=asc&limit=10&skip=10"
    * }
    */
-  async loadKeys(options = {}) {
+  async loadKeys(options = {}, requestOptions = {}) {
     try {
       // 设置默认参数
       const { sortBy = 'key', sortDir = 'asc', limit = 100, skip = 0 } = options
@@ -163,6 +188,7 @@ export const kvServerProvider = {
         return await tryWithRotation(async (serverUrl) => {
           const res = await axios.get(`${serverUrl}/kv/_keys?${params}`, {
             headers: getHeaders(),
+            ...getRequestConfig(requestOptions),
           })
           return formatResponse(res.data)
         })
@@ -171,6 +197,7 @@ export const kvServerProvider = {
       const serverUrl = getSetting('server.domain')
       const res = await axios.get(`${serverUrl}/kv/_keys?${params}`, {
         headers: getHeaders(),
+        ...getRequestConfig(requestOptions),
       })
 
       return formatResponse(res.data)

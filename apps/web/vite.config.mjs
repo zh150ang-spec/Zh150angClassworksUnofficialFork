@@ -31,7 +31,10 @@ export default defineConfig(({ mode }) => ({
       template: { transformAssetUrls },
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 提示式更新：本站未 import virtual:pwa-register，页面刷新完全由
+      // SwUpdateNotification + src/sw.js 的 SKIP_WAITING 流程控制。
+      // 不要改回 autoUpdate —— 那会与"用户确认后才更新"的策略冲突。
+      registerType: 'prompt',
       devOptions: {
         navigateFallback: 'index.html',
         enabled: false,
@@ -135,7 +138,9 @@ export default defineConfig(({ mode }) => ({
         ],
         additionalManifestEntries: [],
         clientsClaim: true,
-        skipWaiting: true,
+        // SW 生命周期由 src/sw.js 自行控制。injectManifest 策略下这些选项不会注入你的 SW，
+        // 但保持与源码一致，避免将来切换策略时被悄悄注入"发版即自动刷新"的行为（见 src/sw.js）。
+        skipWaiting: false,
       },
       manifest: {
         lang: 'zh-CN',

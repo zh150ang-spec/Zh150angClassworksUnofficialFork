@@ -381,6 +381,7 @@ import { useTokenDisplay } from '@/composables/useTokenDisplay'
 import { useRealtimeChannel } from '@/composables/useRealtimeChannel'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { registerUnsavedCheck } from '@/utils/updateGate'
 import HomeAppBar from '@/components/home/HomeAppBar.vue'
 import NotificationArea from '@/components/home/NotificationArea.vue'
 import ConfirmDialog from '@/components/home/ConfirmDialog.vue'
@@ -850,6 +851,11 @@ export default {
   },
 
   async mounted() {
+    // 登记"是否有未保存内容"：SW 更新（会刷新页面）前据此拒绝打断用户
+    this.unregisterUnsavedCheck = registerUnsavedCheck(
+      () => this.state.synced === false || this.loading.upload === true,
+    )
+
     try {
       // 注入 examCards composable 的外部依赖（延迟绑定）
       this.setContext({
@@ -934,6 +940,12 @@ export default {
   beforeUnmount() {
     if (this.unwatchSettings) {
       this.unwatchSettings()
+    }
+
+    // 注销"未保存内容"登记，避免 SW 更新门禁引用已销毁的实例
+    if (this.unregisterUnsavedCheck) {
+      this.unregisterUnsavedCheck()
+      this.unregisterUnsavedCheck = null
     }
 
     // 清理 debounce/throttle 定时器，避免组件卸载后回调仍访问已销毁实例
@@ -1158,21 +1170,21 @@ export default {
             const isDualMode = provider === 'dual-cloud' || provider === 'dual-server'
             const isLocalOnly = provider === 'local'
 
-            if (isDualMode || isLocalOnly) {
-              this.state.showNoDataMessage = true
-              this.state.noDataMessage = isDualMode ? '暂无本地数据，请先联网同步' : '暂无本地数据'
-              if (
-                forceClear ||
-                !this.state.boardData ||
-                (!this.state.boardData.homework && !this.state.boardData.attendance)
-              ) {
-                this.state.boardData = {
-                  homework: {},
-                  attendance: { absent: [], late: [], exclude: [] },
-                }
+            this.state.showNoDataMessage = true
+            this.state.noDataMessage = isDualMode
+              ? '暂无本地数据，请先联网同步'
+              : isLocalOnly
+                ? '暂无本地数据'
+                : response.error.message || '暂时无法连接云端，请稍后重试'
+            if (
+              forceClear ||
+              !this.state.boardData ||
+              (!this.state.boardData.homework && !this.state.boardData.attendance)
+            ) {
+              this.state.boardData = {
+                homework: {},
+                attendance: { absent: [], late: [], exclude: [] },
               }
-            } else {
-              throw new Error(response.error.message)
             }
           } else if (response.error.code === 'DATA_NOT_FOUND') {
             this.state.showNoDataMessage = true
@@ -1180,6 +1192,26 @@ export default {
             this.state.boardData = {
               homework: {},
               attendance: { absent: [], late: [], exclude: [] },
+            }
+          } else if (
+            response.error.code === 'SERVER_LOAD_ERROR' ||
+            response.error.code === 'DATA_UNAVAILABLE' ||
+            response.error.code === 'LOAD_ERROR'
+          ) {
+            // 服务器/本地故障：不能当成「没有数据」（那会让用户以为看板被清空），
+            // 保留已有内容并明确告知失败原因。
+            console.error('数据加载失败:', response.error.code, response.error.message)
+            this.state.showNoDataMessage = true
+            this.state.noDataMessage = response.error.message || '暂时无法加载数据，请稍后重试'
+            if (
+              forceClear ||
+              !this.state.boardData ||
+              (!this.state.boardData.homework && !this.state.boardData.attendance)
+            ) {
+              this.state.boardData = {
+                homework: {},
+                attendance: { absent: [], late: [], exclude: [] },
+              }
             }
           } else {
             throw new Error(response.error.message)

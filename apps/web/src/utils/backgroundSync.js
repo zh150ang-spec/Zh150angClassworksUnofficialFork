@@ -5,12 +5,26 @@ import { networkStatus } from '@/utils/networkStatus'
 import { rmwWriteServer } from '@/utils/rmw'
 import { loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY } from '@/utils/syncHelpers'
 import { acquireLock } from '@/utils/crossTabLock'
+import { BACKGROUND_RETRY_POLICY } from '@/utils/netRetryPolicy'
 
 const IMMEDIATE_BACKOFF_DELAYS = [30000, 60000, 120000, 300000]
 const MAX_IMMEDIATE_ATTEMPTS = 4
-// 跨标签页同步锁超时（30s，一次同步通常 <10s，留 3 倍余量）
+// 跨标签页同步锁：租约超时后通知调用方停手，再给宽限期收尾（见 crossTabLock.js）
 const SYNC_LOCK_TIMEOUT = 30000
+const SYNC_LOCK_GRACE_MS = 15000
 const SYNC_LOCK_NAME = 'classworks-background-sync'
+// 密集保存时的最小同步间隔：避免"每次保存都立刻打一次服务器"（P1-8）
+const IMMEDIATE_MIN_GAP_MS = 10000
+
+/**
+ * 后台同步的请求级选项：后台可以比交互慢一些（3 次 / 45s），
+ * 并带上租约 signal —— 锁失效时在途请求会被中止，而不是跑完才停手。
+ * @param {AbortSignal} [signal]
+ */
+const backgroundRequestOptions = (signal) => ({
+  retryPolicy: BACKGROUND_RETRY_POLICY,
+  signal,
+})
 
 const BackgroundSyncService = {
   _intervalId: null,
@@ -23,6 +37,9 @@ const BackgroundSyncService = {
   _isSyncing: false,
   _immediateTimerId: null,
   _immediateAttempts: 0,
+  _immediateRunning: false,
+  _lastImmediateAt: 0,
+  _lastLeaseLostReason: null,
   _networkUnsubscribe: null,
 
   _getMinInterval() {
@@ -78,33 +95,44 @@ const BackgroundSyncService = {
     if (!this._isDualMode()) return
     if (!networkStatus.isBrowserOnline()) return
 
-    // 尝试获取跨标签页独占锁，防止多标签页同时同步放大服务器负载
-    const releaseLock = await acquireLock(SYNC_LOCK_NAME, SYNC_LOCK_TIMEOUT)
-    if (!releaseLock) {
+    // 可中止租约：超时只通知调用方停手，锁由本函数在 finally 里真正释放。
+    // 不允许"超时就替调用方释放锁"——那会让两个标签页同时同步（P1-7）。
+    const lease = await acquireLock(SYNC_LOCK_NAME, {
+      timeoutMs: SYNC_LOCK_TIMEOUT,
+      graceMs: SYNC_LOCK_GRACE_MS,
+      onLeaseLost: (reason) => {
+        this._lastLeaseLostReason = reason
+      },
+    })
+    if (!lease) {
       // 其他标签页正在同步，跳过本次（数据一致性由 RMW 保障）
       return
     }
 
     this._isSyncing = true
     try {
-      await this._doSyncPhases()
+      await this._doSyncPhases(lease.signal)
     } catch (error) {
       console.error('后台同步出错:', error)
     } finally {
       this._isSyncing = false
-      releaseLock()
+      lease.release()
     }
   },
 
-  async _doSyncPhases() {
+  async _doSyncPhases(signal) {
+    const aborted = () => signal?.aborted === true
+
     // 阶段1：处理离线队列（上行，仅非只读角色）
-    if (!this._isReadOnly) {
-      await this._syncOfflineQueue()
+    if (!this._isReadOnly && !aborted()) {
+      await this._syncOfflineQueue(signal)
     }
+    if (aborted()) return
 
     // 获取双方键列表（阶段2和阶段3共用）
+    const requestOptions = backgroundRequestOptions(signal)
     const [cloudKeysResult, localKeysResult] = await Promise.all([
-      loadAllKeys((opts) => kvServerProvider.loadKeys(opts)),
+      loadAllKeys((opts) => kvServerProvider.loadKeys(opts, requestOptions)),
       loadAllKeys((opts) => kvLocalProvider.loadKeys(opts)),
     ])
 
@@ -125,15 +153,16 @@ const BackgroundSyncService = {
     const localKeysSet = new Set(localKeys)
 
     // 阶段2：上行 - 本地有云端没有的，上传（仅非只读角色）
-    if (!this._isReadOnly) {
-      await this._syncMissingToCloud(localKeys, cloudKeysSet)
+    if (!this._isReadOnly && !aborted()) {
+      await this._syncMissingToCloud(localKeys, cloudKeysSet, signal)
     }
+    if (aborted()) return
 
     // 阶段3：下行 - 云端有本地没有的，下载到本地（所有角色）
-    await this._syncMissingToLocal(cloudKeys, localKeysSet)
+    await this._syncMissingToLocal(cloudKeys, localKeysSet, signal)
   },
 
-  async _syncOfflineQueue() {
+  async _syncOfflineQueue(signal) {
     const offlineQueueResult = await kvLocalProvider.getOfflineQueue()
     if (
       !offlineQueueResult ||
@@ -147,15 +176,18 @@ const BackgroundSyncService = {
 
     this._lastQueueLength = offlineQueueResult.data.length
 
+    const requestOptions = backgroundRequestOptions(signal)
     const results = await runWithConcurrency(
       offlineQueueResult.data,
       SYNC_CONCURRENCY,
       async (item) => {
+        // 租约失效：尽快停手，不再发起新的请求
+        if (signal?.aborted) return 0
         try {
           const localData = await kvLocalProvider.loadData(item.key)
           if (localData && localData.success !== false) {
             const saveResult = await this._retryWithBackoff(
-              () => rmwWriteServer(item.key, localData),
+              () => rmwWriteServer(item.key, localData, kvServerProvider, requestOptions),
               1,
             )
             if (saveResult && saveResult.success !== false) {
@@ -183,15 +215,20 @@ const BackgroundSyncService = {
     }
   },
 
-  async _syncMissingToCloud(localKeys, cloudKeysSet) {
+  async _syncMissingToCloud(localKeys, cloudKeysSet, signal) {
     const missingInCloud = localKeys.filter((key) => !cloudKeysSet.has(key))
     if (missingInCloud.length === 0) return
 
+    const requestOptions = backgroundRequestOptions(signal)
     const results = await runWithConcurrency(missingInCloud, SYNC_CONCURRENCY, async (key) => {
+      if (signal?.aborted) return 0
       try {
         const localData = await kvLocalProvider.loadData(key)
         if (localData && localData.success !== false) {
-          const saveResult = await this._retryWithBackoff(() => rmwWriteServer(key, localData), 1)
+          const saveResult = await this._retryWithBackoff(
+            () => rmwWriteServer(key, localData, kvServerProvider, requestOptions),
+            1,
+          )
           if (saveResult && saveResult.success !== false) {
             return 1
           }
@@ -209,14 +246,16 @@ const BackgroundSyncService = {
     }
   },
 
-  async _syncMissingToLocal(cloudKeys, localKeysSet) {
+  async _syncMissingToLocal(cloudKeys, localKeysSet, signal) {
     const missingInLocal = cloudKeys.filter((key) => !localKeysSet.has(key))
     if (missingInLocal.length === 0) return
 
+    const requestOptions = backgroundRequestOptions(signal)
     const results = await runWithConcurrency(missingInLocal, SYNC_CONCURRENCY, async (key) => {
+      if (signal?.aborted) return 0
       try {
         const cloudData = await this._retryWithBackoff(
-          () => kvServerProvider.loadData(key),
+          () => kvServerProvider.loadData(key, requestOptions),
           this._maxRetryAttempts,
         )
         if (cloudData && cloudData.success !== false) {
@@ -240,37 +279,69 @@ const BackgroundSyncService = {
     if (!this._isDualMode() || !this._isEnabled()) return
     if (!networkStatus.isBrowserOnline()) return
 
+    // ⚠️ 这里**不重置** _immediateAttempts。退避是"失败回合"的状态，
+    // 每次编辑都归零会让 30s→60s→120s→300s 的阶梯永远爬不上去（P1-8），
+    // 表现为持续编辑时每 30s（甚至每次保存）就打一次服务器。
+    const sinceLast = Date.now() - this._lastImmediateAt
+    if (sinceLast < IMMEDIATE_MIN_GAP_MS) {
+      // 已有待跑的同步（退避定时器或补跑定时器）→ 吸收本次触发，不动退避状态
+      if (this._immediateTimerId) return
+      this._immediateTimerId = setTimeout(() => {
+        this._immediateTimerId = null
+        this._doImmediateSync()
+      }, IMMEDIATE_MIN_GAP_MS - sinceLast)
+      return
+    }
+
+    // 立刻执行：先清掉待跑的退避定时器，避免叠加出多个并发同步
     if (this._immediateTimerId) {
       clearTimeout(this._immediateTimerId)
       this._immediateTimerId = null
     }
-
-    this._immediateAttempts = 0
+    this._lastImmediateAt = Date.now()
     this._doImmediateSync()
   },
 
+  /** 开启新的失败回合：退避从 30s 重新起算（仅网络恢复 / 手动同步时调用） */
+  _resetImmediateBackoff() {
+    this._immediateAttempts = 0
+    this._lastImmediateAt = 0
+  },
+
   async _doImmediateSync() {
-    await this._checkAndSync()
+    // 重入保护：本轮未结束时不再并发发起（否则会排出多个定时器）
+    if (this._immediateRunning) return
+    this._immediateRunning = true
+    try {
+      await this._checkAndSync()
 
-    const queueResult = await kvLocalProvider.getOfflineQueue().catch(() => null)
-    const queueLen = queueResult && queueResult.data ? queueResult.data.length : 0
+      const queueResult = await kvLocalProvider.getOfflineQueue().catch(() => null)
+      const queueLen = queueResult && queueResult.data ? queueResult.data.length : 0
 
-    if (
-      queueLen > 0 &&
-      this._immediateAttempts < MAX_IMMEDIATE_ATTEMPTS &&
-      networkStatus.isBrowserOnline()
-    ) {
-      this._immediateAttempts++
-      const delay =
-        IMMEDIATE_BACKOFF_DELAYS[
-          Math.min(this._immediateAttempts - 1, IMMEDIATE_BACKOFF_DELAYS.length - 1)
-        ]
-      this._immediateTimerId = setTimeout(() => {
-        this._immediateTimerId = null
-        this._doImmediateSync()
-      }, delay)
-    } else {
-      this._immediateAttempts = 0
+      if (
+        queueLen > 0 &&
+        this._immediateAttempts < MAX_IMMEDIATE_ATTEMPTS &&
+        networkStatus.isBrowserOnline()
+      ) {
+        this._immediateAttempts++
+        const delay =
+          IMMEDIATE_BACKOFF_DELAYS[
+            Math.min(this._immediateAttempts - 1, IMMEDIATE_BACKOFF_DELAYS.length - 1)
+          ]
+        // 防叠加：覆盖前先清掉可能已存在的定时器
+        if (this._immediateTimerId) {
+          clearTimeout(this._immediateTimerId)
+        }
+        this._immediateTimerId = setTimeout(() => {
+          this._immediateTimerId = null
+          this._doImmediateSync()
+        }, delay)
+      } else {
+        // 队列已清空 / 达到尝试上限 / 离线 → 结束本轮失败回合
+        this._immediateAttempts = 0
+      }
+    } finally {
+      this._immediateRunning = false
     }
   },
 
@@ -298,6 +369,8 @@ const BackgroundSyncService = {
 
     this._networkUnsubscribe = networkStatus.subscribe((event) => {
       if (event.type === 'online' && event.wasOffline) {
+        // 网络恢复是新的失败回合：退避重新从 30s 起算
+        this._resetImmediateBackoff()
         this.scheduleImmediate()
       }
     })
@@ -313,7 +386,7 @@ const BackgroundSyncService = {
       clearTimeout(this._immediateTimerId)
       this._immediateTimerId = null
     }
-    this._immediateAttempts = 0
+    this._resetImmediateBackoff()
     if (this._networkUnsubscribe) {
       this._networkUnsubscribe()
       this._networkUnsubscribe = null
@@ -339,6 +412,8 @@ const BackgroundSyncService = {
 
   async forceSyncNow() {
     if (this._isDualMode()) {
+      // 用户手动同步视为新的失败回合
+      this._resetImmediateBackoff()
       await this._checkAndSync()
     }
   },
@@ -357,6 +432,7 @@ const BackgroundSyncService = {
       isReadOnly: this._isReadOnly,
       isSyncing: this._isSyncing,
       immediateAttempts: this._immediateAttempts,
+      lastLeaseLostReason: this._lastLeaseLostReason,
       browserOnline: netStatus.browserOnline,
       serverReachable: netStatus.serverReachable,
     }

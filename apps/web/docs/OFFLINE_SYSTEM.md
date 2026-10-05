@@ -6,6 +6,30 @@
 
 ---
 
+## 〇、修复状态（必须与代码一起读）
+
+离线系统曾因**传输层无限重试**而整体失效：axios 响应拦截器的 Promise 永不 settle，
+导致本文档中所有失败分支（心跳阈值、`retryOperation`、RMW 降级、离线队列、后台退避）
+都成为**不可达的死代码**。以下批次已完成：
+
+| 批次 | 内容                                                                       | 状态      |
+| ---- | -------------------------------------------------------------------------- | --------- |
+| 1    | 传输层有界重试（`netRetryPolicy.js`）、心跳成为 `serverReachable` 唯一权威 | ✅ 已实施 |
+| 2    | 错误码保真、RMW fail-closed、云端单存储内存暂存、冲突通知常驻              | ✅ 已实施 |
+| 3    | 跨标签可中止租约、`scheduleImmediate` 退避不再重置、本地写失败可见性       | ✅ 已实施 |
+| 4    | SW 提示式更新（去掉无条件 skipWaiting、补 SKIP_WAITING、未保存守卫）       | ✅ 已实施 |
+
+**三条不可违反的不变量**（改动离线系统前请先读这一段）：
+
+1. **有界**：任何对外可见的 `await` 都有时间预算。交互请求 ≤ 12s、心跳 ≤ 6s、单次后台请求 ≤ 45s。
+2. **单一时钟真相（有一个明确的例外）**：`serverReachable = false` 默认**只能**由心跳连续失败触发；
+   业务请求失败只提供"证据"（`noteRequestFailure`）。**唯一例外**：双存储模式下
+   **云端写入失败 + 本地写入成功**时，`saveData` 立即 `markServerUnreachable()`
+   （见 §4.1，产品要求：立刻切到本地优先快路径，避免每次保存都为云端失败等满超时）。
+3. **持久重试只在队列层**：传输层有界快速失败，持久重试由离线队列 / `backgroundSync` 承担。
+
+---
+
 ## 阅读指南：本文档的结构
 
 本文档**严格区分**通用机制和双存储专属机制，分为三部分：
@@ -140,8 +164,14 @@
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ networkStatus.js ← 【通用】网络状态检测               │   │
 │  │  ├─ browserOnline (navigator.onLine)                │   │
-│  │  ├─ serverReachable (30s心跳+2次失败阈值)            │   │
+│  │  ├─ serverReachable (30s心跳+2次失败阈值，唯一权威)   │   │
+│  │  ├─ noteRequestFailure/Success (只记证据)            │   │
 │  │  └─ subscribe (事件订阅，L3网络恢复触发)             │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ netRetryPolicy.js ← 【通用】传输层有界重试策略         │   │
+│  │  └─ planRetry: 尝试上限 + 预算 + 错误分类            │   │
 │  └─────────────────────────────────────────────────────┘   │
 │                                                              │
 │  ┌─────────────────────────────────────────────────────┐   │
@@ -189,20 +219,34 @@ PWA（Progressive Web App）层负责保障**应用本身**在离线时仍可加
 
 - 其他请求失败 → 返回 503
 
-### 2.2 应用更新机制（system/SwUpdateNotification.vue）
+### 2.2 应用更新机制（system/SwUpdateNotification.vue + src/sw.js）
 
 - **检测时机**：页面加载后 3 秒首次检查，之后每 1 小时检查一次
 
 - **检测方式**：`navigator.serviceWorker.ready` + `registration.update()`
 
-- **更新流程**：
+- **更新流程（提示式，绝不自动刷新）**：
 
-  1. 检测到 `updatefound` 事件
-  2. 新 SW 进入 `installed` 状态且有 controller → 显示更新横幅
-  3. 用户点击"更新" → `postMessage({type: 'SKIP_WAITING'})` 给等待中的 SW
-  4. `controllerchange` 事件触发 → 页面自动刷新
+  1. `sw.js` 在 `install` 中**不**调用 `skipWaiting()` → 新 SW 进入 `waiting`（等待）状态
+  2. 页面检测到 `updatefound` / `registration.waiting` → 显示"发现新版本"横幅
+  3. 用户点击"更新" → 若 `hasUnsavedWork()` 为真则**拒绝更新**并提示先保存；
+     否则 `postMessage({ type: 'SKIP_WAITING' })` → SW 端 `self.skipWaiting()` 接管
+  4. `controllerchange` 事件触发 → 页面刷新（仅用户已确认时）
 
-- **用户可控**：可点击"稍后"推迟更新
+- **用户可控**：可点击"稍后"推迟更新；未确认时页面不会刷新
+
+- **未确认却换了 controller**（例如另一个标签页点了更新）：只在"没有未保存内容
+  **且**页面不可见（`document.visibilityState === 'hidden'`）"时才静默刷新，
+  正在上课的大屏绝不会闪
+
+- **未保存守卫来源**：`src/utils/updateGate.js`。页面用 `registerUnsavedCheck(fn)` 登记
+  "是否有未保存内容"（`index.vue` 登记的是 `state.synced === false || loading.upload`）
+
+- **监听器只注册一次**：`updatefound` 监听器在 `checkForUpdate` 中只挂一次，
+  避免每小时累积（旧实现每次调用都 `addEventListener`）
+
+> 构建配置：`vite.config.mjs` 中 `registerType: 'prompt'`（曾误设为 `autoUpdate`，
+> 但该值在本项目里从未生效——未 import `virtual:pwa-register`，注入的只是朴素注册脚本）。
 
 ### 2.3 缓存管理（settings/CacheManager.vue）
 
@@ -279,22 +323,36 @@ effectiveOnline = browserOnline && serverReachable
 
 - **超时**：5 秒
 
+- **重试**：**不重试**（`metadata.retryPolicy.maxAttempts = 1`）。失败必须立刻计数，
+  下一次 30s 心跳就是它的重试——否则"连续失败"永远数不满，阈值形同虚设。
+
+- **在途守卫**：上一次心跳未落地时，本次直接跳过。否则挂起的心跳会每 30s 叠一条，造成内存上涨。
+
 - **失败阈值**：连续 2 次失败才标记 `serverReachable = false`
 
 - **实现**：`axios.get` + `validateStatus`（2xx 才算成功）
 
-- **恢复**：任意一次成功立即 `markServerReachable()`
+- **恢复**：任意一次成功（心跳或任意业务请求成功）立即 `markServerReachable()`
+
+- **即时探测**：`probeNow()`（去抖 5s）在业务失败、页面重新可见、浏览器网络恢复时立刻探一次，
+  离线判定与恢复都不必等满 30s
 
 ### 3.3 事件订阅
 
 通过 `subscribe(callback)` 订阅网络状态变化事件：
 
-| 事件类型  | reason               | 触发条件           |
-| --------- | -------------------- | ------------------ |
-| `online`  | `browser_online`     | 浏览器网络恢复     |
-| `online`  | `server_reachable`   | 心跳检测服务器恢复 |
-| `offline` | `browser_offline`    | 浏览器断网         |
-| `offline` | `server_unreachable` | 心跳连续失败 2 次  |
+| 事件类型  | reason               | 触发条件                                                            |
+| --------- | -------------------- | ------------------------------------------------------------------- |
+| `online`  | `browser_online`     | 浏览器网络恢复                                                      |
+| `online`  | `server_reachable`   | 心跳成功 / 任意业务请求成功                                         |
+| `offline` | `browser_offline`    | 浏览器断网                                                          |
+| `offline` | `server_unreachable` | 心跳连续失败 2 次，**或**双存储下"云端写失败+本地写成功"（见 §4.1） |
+
+> ⚠️ **读取**失败**不会**产生 `offline` 事件：一次读故障只意味着"这次没读到"，本地通常还有副本，
+> 直接宣告离线会让"一阵一阵突然离线又自己好"复现。读取失败只调用 `noteRequestFailure()`。
+>
+> 唯一的写入例外见 §4.1：云端写入失败且本地写入成功时立即标记离线，
+> 目的是让后续保存走本地快路径（不必每次为云端失败等满超时）。恢复仍由心跳负责（≤30s）。
 
 **双存储专属行为**：backgroundSync 订阅 `online` 事件（且 `wasOffline=true`）触发 L3 恢复同步。
 单存储模式下无人订阅此事件，事件发出但不触发任何同步。
@@ -328,7 +386,8 @@ dataProvider.saveData(key, data)
       │   │
       │   ├─ 双成功 → removeKeyFromOfflineQueue → 完成 (source: dual)
       │   ├─ 云端成功，本地失败 → 完成 (source: cloud, localFailed)
-      │   ├─ 本地成功，云端失败 → addToOfflineQueue + scheduleImmediate → 完成 (source: local)
+      │   ├─ 本地成功，云端失败 → addToOfflineQueue + scheduleImmediate
+      │   │                      + **markServerUnreachable（立即离线）** → 完成 (source: local)
       │   └─ 双失败 → 返回错误
       │
       └─ 离线
@@ -343,6 +402,27 @@ dataProvider.saveData(key, data)
 - 云端失败时**入队**而非丢弃，由 backgroundSync 异步重试（仅双存储）
 
 - `scheduleImmediate()` 触发 L0 立即同步，无需等待定时器（仅双存储）
+
+- **云端写入失败 + 本地写入成功 → 立即 `markServerUnreachable()`**（产品要求）。
+  这样做的好处：整个应用立刻切到"离线：仅本地 + 入队"快路径，后续保存不会每次都等云端失败，
+  离线横幅也会明确显示"数据已保存到本地"。恢复由心跳负责（≤30s，一次成功即恢复）。
+  异常兜底分支（云端写入抛错、随后本地写入成功）同样立即标记离线。
+
+- **读取**失败只调用 `networkStatus.noteRequestFailure()`：只记证据 + 触发一次去抖探测，
+  **不翻转全局离线状态**（判定权在心跳）
+
+#### 4.1.1 云端单存储模式的写入暂存（kv-server / classworkscloud）
+
+这两种模式没有本地副本。传输层改为有界快速失败后，写入失败必须有明确落点：
+
+| 情形                      | 行为                                                                              |
+| ------------------------- | --------------------------------------------------------------------------------- |
+| 写入成功                  | 正常返回                                                                          |
+| 可重试失败（网络/5xx）    | 存入**内存暂存** `pendingWriteSpool`（同 key 后写覆盖前写），错误信息含 `spooled` |
+| 确定性拒绝（401/403）     | **不暂存**，原样返回错误码（暂存只会永远补写不上）                                |
+| 网络恢复（`online` 事件） | 自动补写，补写走 RMW（避免覆盖云端已有数据）；第一项仍失败即停手，保留剩余        |
+
+> ⚠️ 内存暂存**刷新页面即丢失**。需要跨会话不丢，应使用 `dual-*` 模式（本地 IndexedDB + 离线队列）。
 
 ### 4.2 读取数据（loadData）
 
@@ -439,7 +519,10 @@ mergeData(local, cloud, isReadOnly)
 #### 5.2.2 RMW 工作流程
 
 ```
-rmwWriteServer(key, data)
+rmwWriteServer(key, data, provider = kvServerProvider)
+  │
+  ├─ ⚠️ Read 失败（非 404）→ **拒绝写入**，返回 SERVER_READ_FAILED（fail-closed）
+  │   （读不到 ≠ 云端没有；写入交给离线队列/内存暂存稍后重试）
   │
   ├─ 第1次尝试
   │   ├─ Read  → kvServerProvider.loadData(key) → current（云端当前值）
@@ -461,6 +544,14 @@ rmwWriteServer(key, data)
 ```
 
 **重试上限**：`RMW_MAX_RETRIES = 2`，即最多尝试 3 次（1 次原始 + 2 次重试）。
+
+**读失败的判定（fail-closed）**：只有两种情况允许写入——
+
+1. 读取成功 → 正常合并后写入；
+2. provider 明确返回 `NOT_FOUND`（404，键确实不存在）→ 新建写入。
+
+`current` 为 `undefined`/`null`（provider 未返回任何内容）同样视为读失败。
+修复前所有读失败都会被当成"云端没有数据"而跳过合并直接覆盖，一次读取故障即可冲掉云端数据。
 
 #### 5.2.3 合并策略：additiveMerge
 
@@ -499,6 +590,9 @@ RMW 在合并过程中会检测数据冲突，并返回冲突信息供上层处�
 - **"换用我的修改"**：用本地数据覆盖云端（直接调用 `kvServerProvider.saveData`）
 
 冲突通知仅用于告知用户，不影响 RMW 的合并结果（`additiveMerge` 已按本地优先策略合并了数据）。
+
+**通知不会自动消失**（`timeout: -1`）：冲突结果**已经落地**（云端已按本地优先合并写入），
+若 15s 后静默消失，等于用户来不及选择就默认接受了"本地覆盖云端"。
 
 #### 5.2.5 RMW 的使用范围
 
@@ -559,28 +653,58 @@ _doSyncPhases()
 
 ### 6.2 触发机制（多级触发）
 
-| 级别 | 触发条件              | 说明                                      |
-| ---- | --------------------- | ----------------------------------------- |
-| L0   | `scheduleImmediate()` | saveData 失败时立即触发，无延迟           |
-| L1   | L0 失败后退避         | 30s → 60s → 120s → 300s，最多 4 次        |
-| L2   | 定时器                | 600-1200s 随机间隔，避免多设备同时同步    |
-| L3   | 网络恢复              | 离线→在线时自动触发 `scheduleImmediate()` |
+| 级别 | 触发条件              | 说明                                                     |
+| ---- | --------------------- | -------------------------------------------------------- |
+| L0   | `scheduleImmediate()` | saveData 失败时立即触发；10s 去抖窗口内的重复触发被吸收  |
+| L1   | L0 失败后退避         | 30s → 60s → 120s → 300s，最多 4 次；**不被新的编辑重置** |
+| L2   | 定时器                | 600-1200s 随机间隔，避免多设备同时同步                   |
+| L3   | 网络恢复              | 离线→在线时重置退避并触发 `scheduleImmediate()`          |
+
+**退避状态的归零时机**（只有这三种，缺一不可）：
+
+1. 队列清空 / 一轮同步完全成功；
+2. 网络从离线恢复到在线（`_resetImmediateBackoff()`）；
+3. 用户手动 `forceSyncNow()`。
+
+> ⚠️ 不要在 `scheduleImmediate()` 里重置 `_immediateAttempts`（历史缺陷 P1-8）：
+> 持续编辑时退避会永远从 30s 起算，甚至每次保存都立刻打一次服务器。
+> 现在 10s 窗口内的重复触发会被"吸收"到已有的待跑定时器上。
 
 ### 6.3 并发控制
 
-- **同步锁**：`_isSyncing` 标志，防止多轮同步重叠执行
+- **跨标签租约**：`crossTabLock.js` 提供**可中止租约**。租约超时只做两件事——
+  中止 `signal` + 回调 `onLeaseLost`；**不替调用方释放锁**。调用方在 `finally` 里
+  `lease.release()` 之后锁才真正释放；超时后再等 `graceMs`（15s）仍未释放才强制释放并告警。
 
-- **批量并发**：`_runWithConcurrency` 5 个并发，平衡速度和服务器压力
+  > 历史缺陷（勿回退）：旧实现在超时回调里直接 `releaseFn()`，同时把 `AbortSignal` 交给 Web Locks，
+  > 于是"调用方以为持有、实际已释放"；更严重的是旧 `acquireLock` 会 `await` **整个持锁过程**，
+  > 导致每次后台同步都要等满 30s 超时才开跑、且开跑时锁已经没了。
 
-- **键扫描分页**：`_loadAllKeys` 每页 1000，突破服务端 1000 条限制
+- **同步重入**：`_isSyncing` 标志防止多轮同步重叠执行；`_immediateRunning` 防止 L0 重入。
+
+- **批量并发**：`_runWithConcurrency` 5 个并发，平衡速度和服务器压力；每个任务开始时检查
+  `signal.aborted`，租约失效即停手。
+
+- **键扫描分页**：`_loadAllKeys` 每页 1000，突破服务端 1000 条限制。
 
 ### 6.4 重试策略
+
+重试被明确分成两层，**不要混淆**：
+
+| 层级           | 位置                                 | 策略                                             |
+| -------------- | ------------------------------------ | ------------------------------------------------ |
+| 传输层（有界） | `axios` 拦截器 + `netRetryPolicy.js` | 交互默认最多 2 次尝试、预算 12s；心跳 1 次       |
+| 持久层（无限） | 离线队列 + `backgroundSync`          | 队列项永不删除，失败留在队列，下次再试，直到成功 |
+
+> `BACKGROUND_RETRY_POLICY`（3 次 / 45s）已在 `netRetryPolicy.js` 中定义，但**尚未接入**
+> `backgroundSync`——目前后台同步走的是默认交互策略（队列会兜底重试）。
 
 - **队列项重试**：无限重试直到成功，永不删除（保证数据不丢）
 
 - **单次操作重试**：`_retryWithBackoff` 最多 3 次，指数退避（1s/2s/4s，上限 5s）
 
-- **服务器标记**：上传成功时 `markServerReachable()`，失败时不标记（让心跳决定）
+- **服务器标记**：上传成功时 `markServerReachable()`；**读取**失败只调用 `noteRequestFailure()`
+  （由心跳决定是否离线）；**双存储下云端写入失败而本地写入成功**则立即 `markServerUnreachable()`
 
 ---
 
@@ -847,6 +971,9 @@ _仅适用于 dual-_ 模式\*。单存储模式没有双向同步需求。
 | `src/utils/providers/kvLocalProvider.js`         | 数据层 | IndexedDB 本地存储                         |
 | `src/utils/providers/kvServerProvider.js`        | 数据层 | HTTP 云端存储 API（非 local 模式）         |
 | `src/utils/networkStatus.js`                     | 协调层 | 网络状态检测、心跳、事件订阅               |
+| `src/utils/netRetryPolicy.js`                    | 传输层 | 有界重试策略（纯函数，可单测）             |
+| `src/utils/pendingWriteSpool.js`                 | 数据层 | 云端单存储模式的写入内存暂存与补写         |
+| `src/utils/updateGate.js`                        | 资源层 | "是否有未保存内容"登记（SW 更新门禁）      |
 | `src/utils/dataProvider.js`                      | 协调层 | 数据读写入口（所有模式）                   |
 
 ### 双存储专属层（仅 dual-\* 模式生效）
@@ -887,6 +1014,8 @@ _仅适用于 dual-_ 模式\*。单存储模式没有双向同步需求。
 | RMW 只做累加不做删除                       | KV 存储无 tombstone，前端不能要求后端改                       | 数组删除无法跨设备同步                   |
 | RMW 对象递归深合并                         | 通过 `additiveMerge` 递归合并嵌套对象，非浅层 `Object.assign` | 深层字段递归合并，同层级字段本地覆盖云端 |
 | 手动全量同步不使用 RMW                     | 减少请求量，全量上传语义为"推送"而非"合并"                    | 极端并发下全量上传可能覆盖他端数据       |
+| 传输层重试有界（不追求"永不放弃"）         | 无界重试会让上层所有失败分支变成死代码                        | 短暂故障会快速失败并落到本地/队列重试    |
+| 云端单存储的暂存只在内存                   | 不为单存储模式引入新的持久化结构                              | 刷新/关闭页面即丢失暂存内容              |
 
 ### 12.3 不在本系统范围内的
 
@@ -895,3 +1024,40 @@ _仅适用于 dual-_ 模式\*。单存储模式没有双向同步需求。
 - 实时频道 WebSocket（属于实时通信层）
 
 - Token 鉴权与角色配置（属于后端鉴权层，本系统仅消费 isReadOnly 字段）
+
+---
+
+## 十三、批次 3 / 4 实施记录（已落地，勿回退）
+
+以下问题均已修复。**每条都有对应的单元测试作为守护**——回退这些行为会让测试立刻失败。
+运行：`pnpm run test`（在 `apps/web` 内）
+
+### 批次 3：后台同步与锁
+
+| 问题（已修复）             | 曾经的错误行为                                                                                           | 现在的行为                                                                       | 守护测试                                                             |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 跨标签锁是"假租约"（P1-7） | 超时回调直接释放锁、且把 `AbortSignal` 交给 Web Locks；`acquireLock` 还 `await` 整个持锁过程（等满 30s） | 超时只 `abort()` + `onLeaseLost`；调用方 `release()` 后才释放，宽限期后强制释放  | `crossTabLock.test.js`（7 例）                                       |
+| L1 退避被重置（P1-8）      | `scheduleImmediate()` 每次归零 `_immediateAttempts` 并立刻同步，阶梯爬不上去                             | 只有队列清空／网络恢复／手动同步才归零；10s 去抖窗口内吸收重复触发               | `backgroundSync.test.js`（4 例）                                     |
+| 本地写失败静默（P0-6）     | `localFailed` 全仓无消费方；本地副本静默过期                                                             | 原地重试一次；仍失败则登记，设置页"同步"卡片可见"本地副本写入异常"               | `dataProvider.test.js`（2 例）                                       |
+| `_isSyncing` 无超时        | 卡在挂起请求上会永久为 true                                                                              | 租约 `signal` 贯穿三个阶段与每个 key，失效即停手；传输层有界保证 ~15s 内收尾     | `backgroundSync.test.js`（租约失效即停手用例）                       |
+| 后台未接入专用重试策略     | `BACKGROUND_RETRY_POLICY` 无调用方                                                                       | 后台请求（loadKeys/loadData/rmwWriteServer）显式携带 3 次/45s 策略 + 租约 signal | `backgroundSync.test.js`（3 例）+ `kvServerProvider.test.js`（4 例） |
+
+### 批次 4：Service Worker 更新策略（P0-2、P1-9）
+
+| 问题（已修复）           | 曾经的错误行为                                                              | 现在的行为                                                                    | 守护测试                     |
+| ------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------- |
+| 发版后所有标签页自动刷新 | `sw.js` install 里无条件 `skipWaiting()` → `controllerchange` → 立即 reload | install 不接管；只有用户点击"更新"后 `SKIP_WAITING` 才接管                    | `sw.test.js`（4 例）         |
+| `SKIP_WAITING` 无人处理  | 组件一直在 postMessage，但 sw.js 没有对应 handler                           | 新增 message handler：`SKIP_WAITING` → `self.skipWaiting()`（跨源消息仍拒绝） | `sw.test.js`                 |
+| `updatefound` 监听器累积 | 监听器注册在每小时调用的 `checkForUpdate` 内，同一 registration 只增不减    | 只注册一次（`updateFoundHandler` 记忆化）                                     | 代码审查项                   |
+| 刷新时机不考虑未保存内容 | `controllerchange` 处理器无条件 `location.reload()`                         | 仅"用户已确认"或"无未保存内容且页面不可见"时刷新，否则横幅提示先保存          | `updateGate.test.js`（5 例） |
+
+### 回归清单（改离线系统前后都该跑）
+
+```bash
+pnpm run test          # 73 例：重试策略/心跳/RMW/暂存/锁/退避/SW/门禁/provider 透传
+pnpm run lint:check && pnpm --filter @classworks/web run lint:check
+pnpm run format:check
+pnpm --filter @classworks/web run build
+```
+
+`test` 已接入 CI（`.github/workflows/ci.yml` 的 `test-web` job）。

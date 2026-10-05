@@ -113,6 +113,24 @@
           </template>
         </v-list-item>
 
+        <!-- 本地副本写入异常（P0-6：本地写失败不再静默） -->
+        <v-list-item v-if="isDualMode && localWriteFailures.length > 0">
+          <template #prepend>
+            <v-icon color="error" :icon="ICON.ALERT_CIRCLE_OUTLINE" />
+          </template>
+          <v-list-item-title>
+            本地副本写入异常: {{ localWriteFailures.length }} 项
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            云端已保存，但本地存储写入失败；离线时可能读到旧内容
+          </v-list-item-subtitle>
+          <template #append>
+            <v-btn icon size="small" variant="text" title="刷新状态" @click="updateSyncStatus">
+              <v-icon :icon="ICON.REFRESH" />
+            </v-btn>
+          </template>
+        </v-list-item>
+
         <!-- 队列展开区 -->
         <v-expand-transition>
           <div v-show="queueExpanded && offlineQueueItems.length > 0">
@@ -173,6 +191,7 @@ import { ICON } from '@/utils/icons'
 import SettingsCard from '@/components/settings/SettingsCard.vue'
 import SettingItem from '@/components/settings/SettingItem.vue'
 import BackgroundSyncService from '@/utils/backgroundSync'
+import dataProvider from '@/utils/dataProvider'
 import { kvLocalProvider } from '@/utils/providers/kvLocalProvider'
 import { watchSettings, getSetting, setSetting } from '@/utils/settings'
 import { formatTime as formatDate } from '@/utils/dateUtils'
@@ -190,6 +209,7 @@ export default {
       settingsRevision: 0,
       lastProvider: null,
       offlineQueueItems: [],
+      localWriteFailures: [],
       queueExpanded: false,
       queueLoading: false,
     }
@@ -253,6 +273,7 @@ export default {
     updateSyncStatus() {
       this.syncStatus = BackgroundSyncService.getStatus()
       this.internalSyncEnabled = getSetting('sync.enabled') !== false
+      this.localWriteFailures = dataProvider.getLocalWriteFailures()
       this.loadOfflineQueue()
     },
     async loadOfflineQueue() {
