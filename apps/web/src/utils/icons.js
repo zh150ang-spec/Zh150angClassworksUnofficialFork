@@ -163,6 +163,7 @@ export const ICON = {
   PALETTE: 'mdi-palette',
   AUTO_FIX: 'mdi-auto-fix',
   CONTENT_COPY: 'mdi-content-copy',
+  CONTENT_PASTE: 'mdi-content-paste',
   CONTENT_SAVE: 'mdi-content-save',
   RESTORE: 'mdi-restore',
   COUNTER: 'mdi-counter',

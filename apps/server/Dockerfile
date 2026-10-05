@@ -31,6 +31,10 @@ RUN pnpm --filter @classworks/server run build
 FROM base
 
 ENV NODE_ENV=production
+# classworks.js 的启动流程为「迁移 → (可选 generate) → 启动」。
+# 镜像构建阶段已用仓库构建脚本生成 Prisma 客户端，运行时不需要再 generate；
+# 且运行时只装生产依赖（无 prisma CLI），因此必须跳过（上游 998b29f 引入该开关）。
+ENV SKIP_PRISMA_GENERATE=1
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules

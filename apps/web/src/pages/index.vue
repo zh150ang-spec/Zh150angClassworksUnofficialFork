@@ -842,6 +842,8 @@ export default {
   },
 
   created() {
+    // 尽早解析预配 query，避免异步组件挂载时还读到空数据（上游 5625842）
+    this.parsePreconfigData(this.$route?.query)
     this.debouncedUpload = debounce(this.uploadData, 2000)
     this.debouncedAttendanceSave = debounce(async () => {
       if (this.autoSave) {
@@ -1073,9 +1075,6 @@ export default {
     },
 
     async initializeData() {
-      // 解析预配数据
-      this.parsePreconfigData()
-
       const configApplied = await this.parseUrlConfig()
 
       const dateFromUrl = getUrlParam('date')

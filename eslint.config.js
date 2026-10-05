@@ -63,6 +63,31 @@ const BROWSER_GLOBALS = {
   location: 'readonly',
   screen: 'readonly',
   performance: 'readonly',
+  // 以下项来自上游 998b29f 的 globals 清单（并集，避免 dashboard 使用时报 no-undef）
+  Blob: 'readonly',
+  File: 'readonly',
+  FileReader: 'readonly',
+  FileList: 'readonly',
+  FormData: 'readonly',
+  Headers: 'readonly',
+  Request: 'readonly',
+  Response: 'readonly',
+  TextDecoder: 'readonly',
+  TextEncoder: 'readonly',
+  MessageChannel: 'readonly',
+  crypto: 'readonly',
+  structuredClone: 'readonly',
+  indexedDB: 'readonly',
+  IDBKeyRange: 'readonly',
+  Image: 'readonly',
+  Audio: 'readonly',
+  AudioContext: 'readonly',
+  MediaRecorder: 'readonly',
+  HTMLElement: 'readonly',
+  HTMLCanvasElement: 'readonly',
+  DOMParser: 'readonly',
+  ClipboardItem: 'readonly',
+  ServiceWorkerRegistration: 'readonly',
 }
 
 // Node 全局（apps/server）
@@ -77,6 +102,10 @@ const NODE_GLOBALS = {
   Blob: 'readonly',
   FormData: 'readonly',
   EventSource: 'readonly',
+  // 上游 998b29f 的 Node globals 并集
+  structuredClone: 'readonly',
+  TextDecoder: 'readonly',
+  TextEncoder: 'readonly',
 }
 
 export default [

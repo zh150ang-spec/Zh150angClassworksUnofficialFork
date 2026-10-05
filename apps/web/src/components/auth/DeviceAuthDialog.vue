@@ -92,6 +92,8 @@ const authenticating = ref(false)
 const error = ref('')
 // 保存自动认证定时器 ID，组件卸载时清理，避免在已卸载组件上调用 authenticate() 访问 ref 时崩溃
 let autoAuthTimerId = null
+// 自动执行只允许触发一次（上游 5625842）：预配数据多次变化时避免重复自动认证
+let autoExecuteStarted = false
 
 // 监听预配置数据变化
 watch(
@@ -103,7 +105,8 @@ watch(
       form.value.password = newPreconfig.password || ''
 
       // 如果启用自动执行且有命名空间，自动尝试认证
-      if (newPreconfig.autoExecute && newPreconfig.namespace) {
+      if (newPreconfig.autoExecute && newPreconfig.namespace && !autoExecuteStarted) {
+        autoExecuteStarted = true
         console.log('检测到自动执行标志且有命名空间，自动执行认证')
         // 延迟一下确保UI已更新
         // 清理上一次未触发的定时器，避免重复执行或组件卸载后触发

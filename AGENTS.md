@@ -79,7 +79,7 @@ pnpm run test:web         # 同上（等价写法，便于与 build:web 等对�
 
 Exports constants used across all three apps:
 
-- `HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`
+- `HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`, `HEADER_DEVICE_PASSWORD`
 
 - `DEFAULT_KV_SERVER`, `DEFAULT_LOCAL_SERVER`, `CLOUD_SERVERS`
 
@@ -125,7 +125,7 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 
 - Docker builds use repo root as context (Dockerfile references `packages/shared`)
 
-- Env files gitignored；模板文件为 `apps/web/.env.example`、`apps/dashboard/.env.example`、`apps/server/.env.oauth.example`（`apps/server` 暂无 `.env.example`）
+- Env files gitignored；模板文件为 `apps/web/.env.example`、`apps/dashboard/.env.example`、`apps/server/.env.example`、`apps/server/.env.oauth.example`
 
 ## 执行纪律（本项目已发生的错误复盘）
 

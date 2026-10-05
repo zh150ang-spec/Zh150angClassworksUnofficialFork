@@ -20,11 +20,17 @@ export function usePreconfig() {
     autoExecute: false,
   })
 
-  const parsePreconfigData = () => {
+  /**
+   * @param {object} [routeQuery] vue-router 的 query（可选）。
+   *   来自上游 5625842：仅读 window.location 时，经 router 跳转（而非整页加载）带来的
+   *   预配链接可能拿不到参数，导致"预配认证链接不被自动处理"。
+   */
+  const parsePreconfigData = (routeQuery) => {
     try {
-      const namespace = getUrlParam('namespace')
-      const authCode = getUrlParam('authCode') || getUrlParam('auth_code')
-      const autoExecute = getUrlParam('autoExecute') || getUrlParam('auto_execute')
+      const pickParam = (key) => getUrlParam(key) || routeQuery?.[key] || null
+      const namespace = pickParam('namespace')
+      const authCode = pickParam('authCode') || pickParam('auth_code')
+      const autoExecute = pickParam('autoExecute') || pickParam('auto_execute')
 
       if (namespace) {
         preconfigData.namespace = namespace

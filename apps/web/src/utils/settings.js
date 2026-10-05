@@ -183,6 +183,13 @@ const settingsDefinitions = {
     description: '快捷输入键盘',
     icon: ICON.DIALPAD,
   },
+  // 来自上游 74be238：控制作业编辑对话框里的「粘贴」与「粘贴并完成」按钮
+  'display.showPasteButtons': {
+    type: 'boolean',
+    default: true,
+    description: '作业编辑粘贴按钮',
+    icon: ICON.CONTENT_PASTE,
+  },
   'display.forceDesktopMode': {
     type: 'boolean',
     default: false,

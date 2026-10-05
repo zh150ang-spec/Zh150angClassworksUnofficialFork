@@ -290,7 +290,6 @@ const exportAll = async () => {
       // 忽略单项失败
     }
   }
-  // eslint-disable-next-line no-undef
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
