@@ -124,3 +124,70 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 - Docker builds use repo root as context (Dockerfile references `packages/shared`)
 
 - Env files gitignored；模板文件为 `apps/web/.env.example`、`apps/dashboard/.env.example`、`apps/server/.env.oauth.example`（`apps/server` 暂无 `.env.example`）
+
+## 执行纪律（本项目已发生的错误复盘）
+
+以下错误在本仓库的真实工作中发生过，代价从「浪费数小时」到「险些丢失 426 个文件」。
+它们有一个共同病因：**先形成根因假设、直接写进汇报，事后才验证**。请对照执行。
+
+### 1. 文档里的描述不是事实
+
+`AGENTS.md` 自己曾写着「Hoisted deps (`node-linker=hoisted` in `.npmrc`)」，而 pnpm 11 根本不读
+`.npmrc` 的这些项（`pnpm config get node-linker` 返回 `undefined`），hoisted 从未生效，
+导致后续排查在完全错误的因果链上耗费很久。
+
+**规则**：根因进入汇报前必须有可复现证据。文档中的配置、路径、命令一律先当作待验证假设，
+尤其留意「意图」与「实际」分叉之处——写了却没生效的东西不会产生任何报错。
+
+### 2. 破坏性操作先问「这步失败了会怎样」
+
+曾用「删除全部已跟踪文件 → `git checkout -- .` 恢复」来刷新工作区：删除成功、恢复失败，
+426 个文件（含 `AGENTS.md`、`CLAUDE.md`）瞬间从磁盘消失。当时的依据只是「工作区现在是干净的」，
+没有考虑恢复步骤自身会失败。
+
+**规则**：批量删除、`git reset --hard`、`git clean` 之前先确认恢复手段可用；
+优先选择**不删除任何文件**的做法（例如原地做字节级归一化行尾，而不是删掉再恢复）。
+
+### 3. 新增守护必须做负向测试
+
+**规则**：新增校验脚本、CI 步骤或断言后，必须故意制造一次违规、确认它真的失败，再恢复。
+只跑一遍「通过」不算验证。`pnpm run check:agent-docs` 是正面示例，它经过双向验证。
+
+### 4. 测量方法本身要先自证
+
+已发生的测量错误：
+
+- 用 `Select-Object -First N` 截断输出，掩盖了命令退出码，把「检测成功」误读为「未检出」；
+- 用 `require.resolve(name, { paths: [junction 路径] })` 探测模块解析——该 API 不对起始路径做
+  realpath，据此得到的结论是错的；
+- 探针文件内容太弱，无法区分正反两种结果，却据此下了结论；
+- `git ls-files -c core.quotepath=false` 参数位置写错（`-c` 必须在子命令之前），返回空结果。
+
+**规则**：测退出码不要经过 `Select-Object -First`；探针必须先跑一次「必然失败」的对照，
+确认它真的能失败，再相信它的「通过」。
+
+### 5. 报告「仓库有 bug」之前，先排除是输出转义
+
+`git ls-files` 会对非 ASCII 路径做 C 风格转义，文件名会显示成 `...mp3"` 这样，
+看起来像文件名里多了引号。这曾被当作仓库缺陷准备上报，实为输出转义造成的错觉。
+
+**规则**：要拿真实路径用 `git -c core.quotepath=false ls-files`（或 `-z`）。
+
+### 6. 验证不得改变被验证的对象
+
+根 `lint` 带 `--fix`，用 `pnpm run lint` 做「发布前验证」会把文件改脏。
+已新增 `lint:check`（根与 web），**验证与 CI 一律用 `lint:check`**。
+
+### 7. 既有规则即使动机正当也要先问
+
+`apps/web/AGENTS.md` 的危险操作清单要求 `git checkout` / `git reset` / `git clean` 先获用户同意。
+曾为回滚自己造成的生成物脏改动直接执行 `git checkout -- <paths>`，只有事后报告——这不合规。
+
+例外仅限：回滚 **agent 自身在本轮造成的、未提交的意外改动**，且必须限定在受影响路径上
+（见 `apps/web/AGENTS.md` 的例外条款）。
+
+### 8. 提交信息一律用 `-F` 传文件
+
+本仓库文档与提交信息都是中文。PowerShell 会把 `“ ”` 当作字符串定界符，
+`git commit -m "…“…”…"` 会直接报 `pathspec … did not match any file(s) known to git`。
+把信息写进临时文件再用 `-F` 传入。
