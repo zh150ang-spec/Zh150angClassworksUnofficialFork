@@ -25,12 +25,18 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 │   └── dashboard/      # Admin dashboard (Vue + Tailwind + reka-ui)
 ├── packages/
 │   └── shared/         # Shared constants (@classworks/shared)
+├── scripts/
+│   └── check-agent-docs.mjs  # 校验 AGENTS.md 与 CLAUDE.md 正文同步
 ├── .github/
 │   ├── actions/setup-pnpm/   # Reusable CI composite action
 │   └── workflows/
 ├── package.json              # Root workspace scripts + shared dev deps
-├── pnpm-workspace.yaml
+├── pnpm-workspace.yaml       # 工作区定义 + pnpm 11 项目级配置（nodeLinker 等）
+├── pnpm-lock.yaml
 ├── eslint.config.js          # Shared ESLint flat config
+├── .gitattributes            # 统一行尾为 LF
+├── .gitignore
+├── .prettierignore
 ├── .prettierrc.json
 └── .editorconfig
 ```
@@ -41,11 +47,13 @@ All commands run from the **repo root**.
 
 ```bash
 pnpm install              # Install all workspace dependencies
-pnpm run dev              # All apps in parallel (web :3031, server :3000, dashboard vite)
-pnpm run build            # Build all apps
-pnpm run lint             # ESLint with auto-fix
+pnpm run dev              # All apps in parallel (web :3031, server :3000, dashboard :5173)
+pnpm run build            # Build all apps（server 的 build 即 prisma generate，需联网下载引擎）
+pnpm run lint             # ESLint（自动修复，本地随手用）
+pnpm run lint:check       # ESLint 仅检查、不改文件（CI 与验证用这条）
 pnpm run format           # Prettier write
 pnpm run format:check     # Prettier check
+pnpm run check:agent-docs # 校验 AGENTS.md 与 CLAUDE.md 正文同步
 
 pnpm run dev:web          # Single app
 pnpm run dev:server
@@ -85,7 +93,7 @@ All apps depend via `"@classworks/shared": "workspace:*"`.
 
 ## Code Style
 
-- 2-space indent, no TypeScript, ESM throughout
+- 2-space indent, no TypeScript, ESM throughout。手写源码一律 JS；唯一的 `.ts` 是 `prisma generate` 的产物 `apps/server/generated/`（不入库、已被 `.prettierignore` 排除），`apps/server/utils/prisma.js` 按 Prisma 生成器约定 import 其 `.ts` 入口
 
 - `@/` alias → each app's `src/`
 
@@ -99,13 +107,13 @@ All apps depend via `"@classworks/shared": "workspace:*"`.
 
 All workflows use `.github/actions/setup-pnpm` composite action.
 
-| Workflow               | Trigger                           | Action                                                     |
-| ---------------------- | --------------------------------- | ---------------------------------------------------------- |
-| `ci.yml`               | push/PR to main                   | Lint（根 + web 双链）、format check、build web + dashboard |
-| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages                                         |
-| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact                                   |
-| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub                                 |
-| `store-pwa.yml`        | PR to main (web)                  | PWA store validation                                       |
+| Workflow               | Trigger                           | Action                                                                                              |
+| ---------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `ci.yml`               | push/PR to main                   | Lint（根 + web 双链，检查态）、format check、AGENTS/CLAUDE 同步校验、build web + dashboard + server |
+| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages                                                                                  |
+| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact                                                                            |
+| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub                                                                          |
+| `store-pwa.yml`        | PR to main (web)                  | PWA store validation                                                                                |
 
 ## Notes
 

@@ -28,7 +28,8 @@ pnpm install          # 安装依赖
 pnpm run dev          # 开发服务器，localhost:3031（局域网可访问）
 pnpm run build        # 生产构建（自动执行 prebuild 重新生成声音列表）
 pnpm run preview      # 预览生产构建
-pnpm run lint         # oxlint 主检查（JS/script）+ ESLint 补充检查 Vue 模板规则
+pnpm run lint         # oxlint 主检查（JS/script）+ ESLint 补充检查 Vue 模板规则（自动修复）
+pnpm run lint:check   # 同上，但不加 --fix，仅检查、不改文件（CI 与验证用这条）
 ```
 
 > 注：以上命令在 `apps/web` 目录内执行；或从仓库根用 `pnpm --filter @classworks/web run <script>`。
@@ -144,6 +145,13 @@ pnpm run lint         # oxlint 主检查（JS/script）+ ESLint 补充检查 Vue
 9. 批量修改多个组件文件的 import 语句
 10. 安装新的 npm 包
 11. 将任何 Options API 文件重写为 Composition API
+12. 批量重写或格式化 ≥10 个文件（例如全仓 `prettier --write`、成批调整模板结构）
+13. 修改 lint 或 CI 配置（`eslint.config.js`、`.oxlintrc.json`、`.github/workflows/**`）
+
+### 无需事先批准、但事后必须报告的例外
+
+- 回滚 **agent 自身在当前轮次造成的、未提交的意外改动**。典型场景：跑构建或测试污染了生成物（如 `apps/server/generated/`），或某条命令改写了本不该改的文件。
+- 要求：回滚必须限定在受影响的路径上（例如 `git checkout -- apps/server/generated`），**不得**使用无路径限定的 `git checkout .`、`git reset --hard` 或 `git clean`；完成后必须说明改了什么、为什么改。
 
 ---
 
