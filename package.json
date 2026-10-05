@@ -14,6 +14,8 @@
     "build:server": "pnpm --filter @classworks/server run build",
     "build:dashboard": "pnpm --filter @classworks/dashboard run build",
     "preview": "pnpm --parallel --filter \"./apps/*\" run preview",
+    "test": "pnpm --filter @classworks/web run test",
+    "test:web": "pnpm --filter @classworks/web run test",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "format": "prettier --write \"**/*.{js,mjs,jsx,vue,json,css,scss,md}\"",

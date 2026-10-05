@@ -30,6 +30,8 @@ pnpm run build        # 生产构建（自动执行 prebuild 重新生成声音�
 pnpm run preview      # 预览生产构建
 pnpm run lint         # oxlint 主检查（JS/script）+ ESLint 补充检查 Vue 模板规则（自动修复）
 pnpm run lint:check   # 同上，但不加 --fix，仅检查、不改文件（CI 与验证用这条）
+pnpm run test         # 单元测试（vitest run）——离线系统回归守护，见 docs/OFFLINE_SYSTEM.md §13
+pnpm run test:watch   # 单元测试 watch 模式（本地开发用）
 ```
 
 > 注：以上命令在 `apps/web` 目录内执行；或从仓库根用 `pnpm --filter @classworks/web run <script>`。

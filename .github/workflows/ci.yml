@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
-    branches: ["main"]
+    branches: ['main']
   workflow_dispatch:
 
 permissions:
@@ -33,6 +33,18 @@ jobs:
 
       - name: Format check (Prettier)
         run: pnpm run format:check
+
+  test-web:
+    name: Test web (vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+
+      # 离线系统的回归守护：重试策略 / 心跳 / RMW fail-closed / 暂存 / 跨标签租约 /
+      # 后台退避 / SW 更新时序 / 未保存门禁（每项都做过负向验证）
+      - name: Test web
+        run: pnpm --filter @classworks/web run test
 
   build-web:
     name: Build web (PWA)

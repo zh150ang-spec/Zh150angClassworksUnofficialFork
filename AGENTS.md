@@ -54,6 +54,7 @@ pnpm run lint:check       # ESLint 仅检查、不改文件（CI 与验证用这
 pnpm run format           # Prettier write
 pnpm run format:check     # Prettier check
 pnpm run check:agent-docs # 校验 AGENTS.md 与 CLAUDE.md 正文同步
+pnpm run test             # 单元测试（= `pnpm --filter @classworks/web run test`；离线系统回归守护）
 
 pnpm run dev:web          # Single app
 pnpm run dev:server
@@ -61,6 +62,7 @@ pnpm run dev:dashboard
 pnpm run build:web
 pnpm run build:server     # prisma generate
 pnpm run build:dashboard
+pnpm run test:web         # 同上（等价写法，便于与 build:web 等对齐）
 ```
 
 > 注：`apps/web` 的内部命令与规范以 `apps/web/AGENTS.md` 为准；根层调用单个 web 命令用 `pnpm --filter @classworks/web run <script>`。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的 `pnpm run lint`（ESLint）是两套，各自独立、互不覆盖。
@@ -107,13 +109,13 @@ All apps depend via `"@classworks/shared": "workspace:*"`.
 
 All workflows use `.github/actions/setup-pnpm` composite action.
 
-| Workflow               | Trigger                           | Action                                                                                              |
-| ---------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `ci.yml`               | push/PR to main                   | Lint（根 + web 双链，检查态）、format check、AGENTS/CLAUDE 同步校验、build web + dashboard + server |
-| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages                                                                                  |
-| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact                                                                            |
-| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub                                                                          |
-| `store-pwa.yml`        | PR to main (web)                  | PWA store validation                                                                                |
+| Workflow               | Trigger                           | Action                                                                                                                 |
+| ---------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `ci.yml`               | push/PR to main                   | Lint（根 + web 双链，检查态）、format check、AGENTS/CLAUDE 同步校验、Test web (vitest)、build web + dashboard + server |
+| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages                                                                                                     |
+| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact                                                                                               |
+| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub                                                                                             |
+| `store-pwa.yml`        | PR to main (web)                  | PWA store validation                                                                                                   |
 
 ## Notes
 
