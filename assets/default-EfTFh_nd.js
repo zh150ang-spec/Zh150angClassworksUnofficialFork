@@ -1,0 +1,1 @@
+import{$ as e,A as t,I as n,T as r,Y as i,at as a}from"./vendor-vue-Bnns-_9T.js";import{o}from"./vendor-vuetify-D9Qs7zib.js";n();var s={__name:`default`,setup(n){return(n,s)=>{let c=e(`router-view`);return i(),r(o,null,{default:a(()=>[t(c)]),_:1})}}};export{s as default};
