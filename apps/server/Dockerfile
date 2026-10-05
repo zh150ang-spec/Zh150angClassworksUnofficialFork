@@ -1,6 +1,6 @@
 FROM node:22-alpine AS base
 
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+RUN corepack enable && corepack prepare pnpm@11.24.0 --activate
 WORKDIR /app
 
 # --- dependency layer (changes only when package files change) ---

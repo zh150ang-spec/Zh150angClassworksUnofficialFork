@@ -5,6 +5,10 @@ packages:
 nodeLinker: hoisted
 autoInstallPeers: true
 
+# 关闭运行前的依赖状态检查。该检查在任一 postinstall 失败时，会让随后的每条
+# `pnpm run` / `pnpm exec` 都先执行一次失败的 install，把单点小故障放大成全线不可用。
+verifyDepsBeforeRun: false
+
 allowBuilds:
   '@parcel/watcher': false
   '@prisma/engines': true

@@ -22,11 +22,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
 
-      - name: Lint (ESLint)
-        run: pnpm run lint
+      - name: Lint (ESLint, check only)
+        run: pnpm run lint:check
 
-      - name: Lint web (oxlint + ESLint)
-        run: pnpm --filter @classworks/web exec oxlint && pnpm --filter @classworks/web exec eslint "src/**/*.vue"
+      - name: Lint web (oxlint + ESLint, check only)
+        run: pnpm --filter @classworks/web run lint:check
+
+      - name: Agent docs in sync (AGENTS.md / CLAUDE.md)
+        run: pnpm run check:agent-docs
 
       - name: Format check (Prettier)
         run: pnpm run format:check
@@ -68,3 +71,16 @@ jobs:
           name: dashboard-dist
           path: apps/dashboard/dist
           if-no-files-found: error
+
+  build-server:
+    name: Build server (prisma generate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+
+      # 根 `pnpm run build` 会构建全部 apps，此前 CI 只覆盖 web 与 dashboard，
+      # 于是 server 构建损坏时 CI 依然是绿的。这里补上覆盖。
+      # 注：生成物 apps/server/generated/ 已不入库，本步骤负责重新生成。
+      - name: Build server
+        run: pnpm --filter @classworks/server run build

@@ -154,6 +154,17 @@ export default [
     },
   },
 
+  // ===== Root maintenance scripts (Node) =====
+  // 根 scripts/ 下是仓库维护脚本（如 AGENTS.md / CLAUDE.md 同步校验），运行在 Node 上，
+  // 需要 Node 全局变量；此前该目录没有对应的配置块，新增脚本会直接报 no-undef。
+  {
+    name: 'monorepo/root-scripts',
+    files: ['scripts/**/*.{js,mjs,cjs}'],
+    languageOptions: {
+      globals: NODE_GLOBALS,
+    },
+  },
+
   // ===== Turn off formatting rules that conflict with Prettier =====
   prettier,
 ]
