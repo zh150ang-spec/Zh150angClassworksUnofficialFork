@@ -1,299 +1,282 @@
 <template>
-  <v-container class="fill-height">
-    <v-row>
-      <v-col cols="12">
-        <v-card border class="elevation-5">
-          <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-            <v-icon start color="white" :icon="ICON.CALENDAR_CHECK" />
-            考试看板
-          </v-card-title>
-          <v-card-subtitle> 不只是考试看板。 </v-card-subtitle>
+  <v-dialog v-model="dialog" fullscreen-breakpoint="sm" max-width="1100" scrollable>
+    <v-card border rounded="xl">
+      <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
+        <v-icon start color="white" :icon="ICON.CALENDAR_CHECK" />
+        考试看板
+        <v-spacer />
+        <v-btn :icon="ICON.CLOSE" variant="text" color="white" @click="dialog = false" />
+      </v-card-title>
+      <v-card-subtitle> 不只是考试看板。 </v-card-subtitle>
+      <v-card-text>
+        <!-- 错误提示 -->
+        <v-alert
+          v-if="error"
+          border="start"
+          class="mb-4 mt-3 mx-2"
+          closable
+          type="error"
+          variant="tonal"
+          @click:close="error = ''"
+        >
+          {{ error }}
+        </v-alert>
+
+        <!-- 成功提示 -->
+        <v-alert
+          v-if="success"
+          border="start"
+          class="mb-4 mt-3 mx-2"
+          closable
+          type="success"
+          variant="tonal"
+          @click:close="success = ''"
+        >
+          {{ success }}
+        </v-alert>
+
+        <!-- 操作按钮 -->
+        <div class="d-flex justify-space-between align-center mb-4">
+          <div class="d-flex align-center">
+            <v-btn class="mr-2" color="primary" :prepend-icon="ICON.PLUS" @click="createNewConfig">
+              新建配置
+            </v-btn>
+            <v-btn
+              class="mr-2"
+              color="success"
+              :prepend-icon="ICON.IMPORT_ICON"
+              variant="outlined"
+              @click="showImportDialog"
+            >
+              导入配置
+            </v-btn>
+            <v-btn
+              class="mr-2"
+              color="purple"
+              :prepend-icon="ICON.BRAIN"
+              variant="outlined"
+              @click="showAIDialog"
+            >
+              AI生成
+            </v-btn>
+            <v-btn
+              :loading="loading"
+              color="info"
+              :prepend-icon="ICON.REFRESH"
+              variant="outlined"
+              @click="loadConfigs"
+            >
+              刷新
+            </v-btn>
+          </div>
+          <v-chip
+            v-if="configs.length > 0"
+            color="primary"
+            :prepend-icon="ICON.FORMAT_LIST_NUMBERED"
+          >
+            {{ configs.length }} 个配置
+          </v-chip>
+        </div>
+
+        <!-- 加载状态 -->
+        <v-card v-if="loading" class="my-4" border>
           <v-card-text>
-            <!-- 错误提示 -->
+            <v-skeleton-loader class="mx-auto" type="list-item-avatar-two-line@3" />
+          </v-card-text>
+        </v-card>
+
+        <!-- 配置列表 -->
+        <v-card v-if="!loading && configs.length > 0" class="my-4" elevation="1">
+          <v-card-title class="d-flex align-center pa-4 bg-primary-lighten-5">
+            <v-icon start :icon="ICON.FORMAT_LIST" />
+            <span class="font-weight-bold">配置列表</span>
+          </v-card-title>
+          <v-list>
+            <v-list-item
+              v-for="config in configs"
+              :key="config.id"
+              class="border-b"
+              style="cursor: pointer"
+              @click="showEditDialog(config)"
+            >
+              <template #prepend>
+                <v-avatar class="mr-2" color="primary">
+                  <v-icon color="white" :icon="ICON.CALENDAR_TEXT" />
+                </v-avatar>
+              </template>
+
+              <v-list-item-title class="font-weight-medium">
+                {{ config.examName || `配置 ${config.id}` }}
+              </v-list-item-title>
+              <v-list-item-subtitle class="text-body-small mt-1">
+                <div class="d-flex align-center">
+                  <v-icon class="mr-1" size="small" :icon="ICON.INFORMATION_OUTLINE" />
+                  {{ config.message || '无描述' }}
+                </div>
+                <div class="d-flex align-center mt-1">
+                  <v-icon class="mr-1" size="small" :icon="ICON.BOOK_MULTIPLE" />
+                  {{ config.examInfos ? config.examInfos.length : 0 }} 堂考试
+                </div>
+              </v-list-item-subtitle>
+
+              <template #append>
+                <div class="d-flex align-center">
+                  <v-btn
+                    class="mr-1"
+                    color="primary"
+                    :icon="ICON.EDIT"
+                    size="small"
+                    variant="text"
+                    @click="showEditDialog(config)"
+                  >
+                    <v-icon :icon="ICON.EDIT" />
+                  </v-btn>
+
+                  <v-btn
+                    class="mr-1"
+                    color="info"
+                    :icon="ICON.EYE"
+                    size="small"
+                    variant="text"
+                    @click="showEditDialog(config)"
+                  >
+                    <v-icon :icon="ICON.EYE" />
+                  </v-btn>
+                </div>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-card>
+
+        <!-- 空状态 -->
+        <v-card v-if="!loading && configs.length === 0" class="my-4" elevation="1">
+          <v-card-text class="text-center py-8">
+            <v-icon class="mb-4" color="medium-emphasis" size="64" :icon="ICON.CALENDAR_BLANK" />
+            <h3 class="text-headline-small mb-2 text-medium-emphasis">暂无配置</h3>
+            <p class="text-body-medium text-medium-emphasis mb-4">
+              点击"新建配置"按钮创建您的第一个考试配置
+            </p>
+            <v-btn color="primary" :prepend-icon="ICON.PLUS" @click="createNewConfig">
+              新建配置
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-card-text>
+
+      <!-- 重命名对话框 -->
+      <v-dialog v-model="renameDialog" max-width="500">
+        <v-card>
+          <v-card-title class="d-flex align-center">
+            <v-icon start color="primary" :icon="ICON.RENAME_BOX" />
+            重命名配置
+          </v-card-title>
+          <v-card-text>
+            <v-text-field
+              v-model="newConfigName"
+              :rules="[(v) => !!v || '配置名称不能为空']"
+              label="配置名称"
+              :prepend-inner-icon="ICON.CALENDAR_TEXT"
+              variant="outlined"
+              @keyup.enter="renameConfig"
+            />
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="medium-emphasis" variant="text" @click="renameDialog = false">
+              取消
+            </v-btn>
+            <v-btn
+              :disabled="!newConfigName"
+              :loading="renaming"
+              color="primary"
+              variant="outlined"
+              @click="renameConfig"
+            >
+              确认
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- 编辑配置弹框 -->
+      <v-dialog v-model="editDialog" max-width="1200" persistent>
+        <v-card>
+          <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
+            <v-icon start color="white" :icon="ICON.EDIT" />
+            编辑考试配置
+            <v-spacer />
+            <v-chip v-if="editingConfig" class="mr-2 text-primary" color="white" size="small">
+              ID: {{ editingConfig.id }}
+            </v-chip>
+
+            <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeEditDialog">
+              <v-icon :icon="ICON.CLOSE" />
+            </v-btn>
+          </v-card-title>
+          <v-card-text class="pa-4" style="max-height: 70vh; overflow-y: auto">
+            <ExamConfigEditor
+              v-if="editingConfig"
+              ref="configEditor"
+              :config-id="editingConfig.id"
+              :dialog-mode="true"
+              @deleted="onConfigDeleted"
+              @error="onConfigError"
+              @opened="onConfigOpened"
+              @saved="onConfigSaved"
+            />
+          </v-card-text>
+          <v-card-actions class="pa-4">
+            <v-btn
+              color="medium-emphasis"
+              :prepend-icon="ICON.CLOSE"
+              variant="outlined"
+              @click="closeEditDialog"
+            >
+              关闭
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              :loading="saving"
+              color="success"
+              :prepend-icon="ICON.CONTENT_SAVE"
+              variant="outlined"
+              @click="saveConfigInDialog"
+            >
+              保存配置
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- 导入配置弹框 -->
+      <v-dialog v-model="importDialog" max-width="800" persistent>
+        <v-card>
+          <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
+            <v-icon start color="white" :icon="ICON.IMPORT_ICON" />
+            导入考试配置
+            <v-spacer />
+            <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeImportDialog">
+              <v-icon :icon="ICON.CLOSE" />
+            </v-btn>
+          </v-card-title>
+          <v-card-text class="pa-4">
             <v-alert
-              v-if="error"
+              v-if="importError"
               border="start"
-              class="mb-4 mt-3 mx-2"
+              class="mb-4"
               closable
               type="error"
               variant="tonal"
-              @click:close="error = ''"
+              @click:close="importError = ''"
             >
-              <div class="d-flex align-center">
-                <v-icon start :icon="ICON.ERROR" />
-                {{ error }}
-              </div>
+              {{ importError }}
             </v-alert>
 
-            <!-- 成功提示 -->
-            <v-alert
-              v-if="success"
-              border="start"
-              class="mb-4 mt-3 mx-2"
-              closable
-              type="success"
-              variant="tonal"
-              @click:close="success = ''"
-            >
-              <div class="d-flex align-center">
-                <v-icon start :icon="ICON.SUCCESS" />
-                {{ success }}
-              </div>
-            </v-alert>
-
-            <!-- 操作按钮 -->
-            <div class="d-flex justify-space-between align-center mb-4">
-              <div class="d-flex align-center">
-                <v-btn
-                  class="mr-2"
-                  color="primary"
-                  :prepend-icon="ICON.PLUS"
-                  @click="createNewConfig"
-                >
-                  新建配置
-                </v-btn>
-                <v-btn
-                  class="mr-2"
-                  color="success"
-                  :prepend-icon="ICON.IMPORT_ICON"
-                  variant="outlined"
-                  @click="showImportDialog"
-                >
-                  导入配置
-                </v-btn>
-                <v-btn
-                  class="mr-2"
-                  color="purple"
-                  :prepend-icon="ICON.BRAIN"
-                  variant="outlined"
-                  @click="showAIDialog"
-                >
-                  AI生成
-                </v-btn>
-                <v-btn
-                  :loading="loading"
-                  color="info"
-                  :prepend-icon="ICON.REFRESH"
-                  variant="outlined"
-                  @click="loadConfigs"
-                >
-                  刷新
-                </v-btn>
-              </div>
-              <v-chip
-                v-if="configs.length > 0"
-                color="primary"
-                :prepend-icon="ICON.FORMAT_LIST_NUMBERED"
-              >
-                {{ configs.length }} 个配置
-              </v-chip>
-            </div>
-
-            <!-- 加载状态 -->
-            <v-card v-if="loading" class="my-4" border>
-              <v-card-text>
-                <v-skeleton-loader class="mx-auto" type="list-item-avatar-two-line@3" />
-              </v-card-text>
-            </v-card>
-
-            <!-- 配置列表 -->
-            <v-card v-if="!loading && configs.length > 0" class="my-4" elevation="1">
-              <v-card-title class="d-flex align-center pa-4 bg-primary-lighten-5">
-                <v-icon start :icon="ICON.FORMAT_LIST" />
-                <span class="font-weight-bold">配置列表</span>
-              </v-card-title>
-              <v-list>
-                <v-list-item
-                  v-for="config in configs"
-                  :key="config.id"
-                  class="border-b"
-                  style="cursor: pointer"
-                  @click="showEditDialog(config)"
-                >
-                  <template #prepend>
-                    <v-avatar class="mr-2" color="primary">
-                      <v-icon color="white" :icon="ICON.CALENDAR_TEXT" />
-                    </v-avatar>
-                  </template>
-
-                  <v-list-item-title class="font-weight-medium">
-                    {{ config.examName || `配置 ${config.id}` }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle class="text-body-small mt-1">
-                    <div class="d-flex align-center">
-                      <v-icon class="mr-1" size="small" :icon="ICON.INFORMATION_OUTLINE" />
-                      {{ config.message || '无描述' }}
-                    </div>
-                    <div class="d-flex align-center mt-1">
-                      <v-icon class="mr-1" size="small" :icon="ICON.BOOK_MULTIPLE" />
-                      {{ config.examInfos ? config.examInfos.length : 0 }} 堂考试
-                    </div>
-                  </v-list-item-subtitle>
-
-                  <template #append>
-                    <div class="d-flex align-center">
-                      <v-btn
-                        class="mr-1"
-                        color="primary"
-                        :icon="ICON.EDIT"
-                        size="small"
-                        variant="text"
-                        @click="showEditDialog(config)"
-                      >
-                        <v-icon :icon="ICON.EDIT" />
-                      </v-btn>
-
-                      <v-btn
-                        class="mr-1"
-                        color="info"
-                        :icon="ICON.EYE"
-                        size="small"
-                        variant="text"
-                        @click="showEditDialog(config)"
-                      >
-                        <v-icon :icon="ICON.EYE" />
-                      </v-btn>
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-list>
-            </v-card>
-
-            <!-- 空状态 -->
-            <v-card v-if="!loading && configs.length === 0" class="my-4" elevation="1">
-              <v-card-text class="text-center py-8">
-                <v-icon
-                  class="mb-4"
-                  color="medium-emphasis"
-                  size="64"
-                  :icon="ICON.CALENDAR_BLANK"
-                />
-                <h3 class="text-headline-small mb-2 text-medium-emphasis">暂无配置</h3>
-                <p class="text-body-medium text-medium-emphasis mb-4">
-                  点击"新建配置"按钮创建您的第一个考试配置
-                </p>
-                <v-btn color="primary" :prepend-icon="ICON.PLUS" @click="createNewConfig">
-                  新建配置
-                </v-btn>
-              </v-card-text>
-            </v-card>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- 重命名对话框 -->
-    <v-dialog v-model="renameDialog" max-width="500">
-      <v-card>
-        <v-card-title class="d-flex align-center">
-          <v-icon start color="primary" :icon="ICON.RENAME_BOX" />
-          重命名配置
-        </v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="newConfigName"
-            :rules="[(v) => !!v || '配置名称不能为空']"
-            label="配置名称"
-            :prepend-inner-icon="ICON.CALENDAR_TEXT"
-            variant="outlined"
-            @keyup.enter="renameConfig"
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="medium-emphasis" variant="text" @click="renameDialog = false"> 取消 </v-btn>
-          <v-btn
-            :disabled="!newConfigName"
-            :loading="renaming"
-            color="primary"
-            variant="outlined"
-            @click="renameConfig"
-          >
-            确认
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- 编辑配置弹框 -->
-    <v-dialog v-model="editDialog" max-width="1200" persistent>
-      <v-card>
-        <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-          <v-icon start color="white" :icon="ICON.EDIT" />
-          编辑考试配置
-          <v-spacer />
-          <v-chip v-if="editingConfig" class="mr-2 text-primary" color="white" size="small">
-            ID: {{ editingConfig.id }}
-          </v-chip>
-
-          <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeEditDialog">
-            <v-icon :icon="ICON.CLOSE" />
-          </v-btn>
-        </v-card-title>
-        <v-card-text class="pa-4" style="max-height: 70vh; overflow-y: auto">
-          <ExamConfigEditor
-            v-if="editingConfig"
-            ref="configEditor"
-            :config-id="editingConfig.id"
-            :dialog-mode="true"
-            @deleted="onConfigDeleted"
-            @error="onConfigError"
-            @opened="onConfigOpened"
-            @saved="onConfigSaved"
-          />
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-btn
-            color="medium-emphasis"
-            :prepend-icon="ICON.CLOSE"
-            variant="outlined"
-            @click="closeEditDialog"
-          >
-            关闭
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            :loading="saving"
-            color="success"
-            :prepend-icon="ICON.CONTENT_SAVE"
-            variant="outlined"
-            @click="saveConfigInDialog"
-          >
-            保存配置
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- 导入配置弹框 -->
-    <v-dialog v-model="importDialog" max-width="800" persistent>
-      <v-card>
-        <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-          <v-icon start color="white" :icon="ICON.IMPORT_ICON" />
-          导入考试配置
-          <v-spacer />
-          <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeImportDialog">
-            <v-icon :icon="ICON.CLOSE" />
-          </v-btn>
-        </v-card-title>
-        <v-card-text class="pa-4">
-          <v-alert
-            v-if="importError"
-            border="start"
-            class="mb-4"
-            closable
-            type="error"
-            variant="tonal"
-            @click:close="importError = ''"
-          >
-            {{ importError }}
-          </v-alert>
-
-          <v-textarea
-            v-model="importJson"
-            :rules="[(v) => !!v || 'JSON内容不能为空']"
-            label="请输入JSON配置"
-            placeholder='{
+            <v-textarea
+              v-model="importJson"
+              :rules="[(v) => !!v || 'JSON内容不能为空']"
+              label="请输入JSON配置"
+              placeholder='{
   "examName": "期末考试",
   "message": "考试信息",
   "room": "01",
@@ -305,165 +288,167 @@
     }
   ]
 }'
-            :prepend-inner-icon="ICON.CODE_JSON"
-            rows="15"
-            variant="outlined"
-          />
+              :prepend-inner-icon="ICON.CODE_JSON"
+              rows="15"
+              variant="outlined"
+            />
 
-          <v-alert border="start" class="mt-2" density="compact" type="info" variant="tonal">
-            <div class="text-body-small">
-              <strong>提示:</strong>
-              <ul class="mt-1">
-                <li>日期格式支持: YYYY/MM/DD HH:mm 或 YYYY-MM-DD HH:mm:ss</li>
-                <li>虚拟日期格式: 0000-00-01 (表示第1天), 0000-00-02 (第2天)...</li>
-                <li>如使用虚拟日期,系统会要求您指定起始日期</li>
-                <li>缺省字段将自动填充默认值</li>
-              </ul>
-            </div>
-          </v-alert>
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-btn
-            color="medium-emphasis"
-            :prepend-icon="ICON.CLOSE"
-            variant="outlined"
-            @click="closeImportDialog"
-          >
-            取消
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            :disabled="!importJson"
-            :loading="importing"
-            color="success"
-            :prepend-icon="ICON.CHECK"
-            variant="outlined"
-            @click="processImport"
-          >
-            导入
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- 日期选择弹框 -->
-    <v-dialog v-model="datePickerDialog" max-width="500" persistent>
-      <v-card>
-        <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
-          <v-icon start color="white" :icon="ICON.CALENDAR" />
-          选择起始日期
-        </v-card-title>
-        <v-card-text class="pa-4">
-          <p class="mb-4 text-body-medium">
-            检测到配置中使用了虚拟日期格式
-            (0000-00-XX)，请选择第一天的日期，系统将自动推算其他日期。
-          </p>
-
-          <v-text-field
-            v-model="baseDate"
-            label="起始日期"
-            :prepend-inner-icon="ICON.CALENDAR"
-            type="date"
-            variant="outlined"
-          />
-
-          <v-alert
-            v-if="virtualDateInfo"
-            border="start"
-            class="mt-2"
-            density="compact"
-            type="info"
-            variant="tonal"
-          >
-            <div class="text-body-small">
-              检测到 {{ virtualDateInfo.count }} 个虚拟日期，跨度 {{ virtualDateInfo.span }} 天
-            </div>
-          </v-alert>
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-btn
-            color="medium-emphasis"
-            :prepend-icon="ICON.CLOSE"
-            variant="outlined"
-            @click="cancelDatePicker"
-          >
-            取消
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            :disabled="!baseDate"
-            color="primary"
-            :prepend-icon="ICON.CHECK"
-            variant="outlined"
-            @click="confirmDatePicker"
-          >
-            确认
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- AI生成提示词弹框 -->
-    <v-dialog v-model="aiDialog" max-width="900" persistent>
-      <v-card>
-        <v-card-title class="d-flex align-center bg-primary py-3 px-4">
-          <v-icon start color="white" :icon="ICON.BRAIN" />
-          AI生成考试配置
-          <v-spacer />
-          <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeAIDialog">
-            <v-icon :icon="ICON.CLOSE" />
-          </v-btn>
-        </v-card-title>
-        <v-card-text class="pa-4">
-          <v-alert border="start" class="mb-4" type="info" variant="tonal">
-            <div class="d-flex align-center">
-              <div>
-                将下方提示词复制到 AI 工具中，描述考试安排后生成 JSON 配置，然后通过"导入配置"导入。
+            <v-alert border="start" class="mt-2" density="compact" type="info" variant="tonal">
+              <div class="text-body-small">
+                <strong>提示:</strong>
+                <ul class="mt-1">
+                  <li>日期格式支持: YYYY/MM/DD HH:mm 或 YYYY-MM-DD HH:mm:ss</li>
+                  <li>虚拟日期格式: 0000-00-01 (表示第1天), 0000-00-02 (第2天)...</li>
+                  <li>如使用虚拟日期,系统会要求您指定起始日期</li>
+                  <li>缺省字段将自动填充默认值</li>
+                </ul>
               </div>
-            </div>
-          </v-alert>
+            </v-alert>
+          </v-card-text>
+          <v-card-actions class="pa-4">
+            <v-btn
+              color="medium-emphasis"
+              :prepend-icon="ICON.CLOSE"
+              variant="outlined"
+              @click="closeImportDialog"
+            >
+              取消
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              :disabled="!importJson"
+              :loading="importing"
+              color="success"
+              :prepend-icon="ICON.CHECK"
+              variant="outlined"
+              @click="processImport"
+            >
+              导入
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
-          <div class="mb-3">
-            <div class="d-flex justify-space-between align-center mb-2">
-              <h3 class="text-headline-small">提示词模板</h3>
-              <v-btn
-                :color="copied ? 'success' : 'primary'"
-                :prepend-icon="copied ? ICON.CHECK : ICON.CONTENT_COPY"
-                size="small"
-                variant="tonal"
-                @click="copyPrompt"
-              >
-                {{ copied ? '已复制' : '复制提示词' }}
-              </v-btn>
-            </div>
+      <!-- 日期选择弹框 -->
+      <v-dialog v-model="datePickerDialog" max-width="500" persistent>
+        <v-card>
+          <v-card-title class="d-flex align-center bg-primary-lighten-1 text-white py-3 px-4">
+            <v-icon start color="white" :icon="ICON.CALENDAR" />
+            选择起始日期
+          </v-card-title>
+          <v-card-text class="pa-4">
+            <p class="mb-4 text-body-medium">
+              检测到配置中使用了虚拟日期格式
+              (0000-00-XX)，请选择第一天的日期，系统将自动推算其他日期。
+            </p>
 
-            <v-card class="pa-4" variant="outlined">
-              <pre class="ai-prompt-text">{{ aiPrompt }}</pre>
-            </v-card>
-          </div>
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-btn
-            color="medium-emphasis"
-            :prepend-icon="ICON.CLOSE"
-            variant="outlined"
-            @click="closeAIDialog"
-          >
-            关闭
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            color="success"
-            :prepend-icon="ICON.IMPORT_ICON"
-            variant="outlined"
-            @click="goToImport"
-          >
-            去导入配置
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-container>
+            <v-text-field
+              v-model="baseDate"
+              label="起始日期"
+              :prepend-inner-icon="ICON.CALENDAR"
+              type="date"
+              variant="outlined"
+            />
+
+            <v-alert
+              v-if="virtualDateInfo"
+              border="start"
+              class="mt-2"
+              density="compact"
+              type="info"
+              variant="tonal"
+            >
+              <div class="text-body-small">
+                检测到 {{ virtualDateInfo.count }} 个虚拟日期，跨度 {{ virtualDateInfo.span }} 天
+              </div>
+            </v-alert>
+          </v-card-text>
+          <v-card-actions class="pa-4">
+            <v-btn
+              color="medium-emphasis"
+              :prepend-icon="ICON.CLOSE"
+              variant="outlined"
+              @click="cancelDatePicker"
+            >
+              取消
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              :disabled="!baseDate"
+              color="primary"
+              :prepend-icon="ICON.CHECK"
+              variant="outlined"
+              @click="confirmDatePicker"
+            >
+              确认
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- AI生成提示词弹框 -->
+      <v-dialog v-model="aiDialog" max-width="900" persistent>
+        <v-card>
+          <v-card-title class="d-flex align-center bg-primary py-3 px-4">
+            <v-icon start color="white" :icon="ICON.BRAIN" />
+            AI生成考试配置
+            <v-spacer />
+            <v-btn color="white" :icon="ICON.CLOSE" variant="text" @click="closeAIDialog">
+              <v-icon :icon="ICON.CLOSE" />
+            </v-btn>
+          </v-card-title>
+          <v-card-text class="pa-4">
+            <v-alert border="start" class="mb-4" type="info" variant="tonal">
+              <div class="d-flex align-center">
+                <div>
+                  将下方提示词复制到 AI 工具中，描述考试安排后生成 JSON
+                  配置，然后通过"导入配置"导入。
+                </div>
+              </div>
+            </v-alert>
+
+            <div class="mb-3">
+              <div class="d-flex justify-space-between align-center mb-2">
+                <h3 class="text-headline-small">提示词模板</h3>
+                <v-btn
+                  :color="copied ? 'success' : 'primary'"
+                  :prepend-icon="copied ? ICON.CHECK : ICON.CONTENT_COPY"
+                  size="small"
+                  variant="tonal"
+                  @click="copyPrompt"
+                >
+                  {{ copied ? '已复制' : '复制提示词' }}
+                </v-btn>
+              </div>
+
+              <v-card class="pa-4" variant="outlined">
+                <pre class="ai-prompt-text">{{ aiPrompt }}</pre>
+              </v-card>
+            </div>
+          </v-card-text>
+          <v-card-actions class="pa-4">
+            <v-btn
+              color="medium-emphasis"
+              :prepend-icon="ICON.CLOSE"
+              variant="outlined"
+              @click="closeAIDialog"
+            >
+              关闭
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              color="success"
+              :prepend-icon="ICON.IMPORT_ICON"
+              variant="outlined"
+              @click="goToImport"
+            >
+              去导入配置
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -481,6 +466,8 @@ export default {
   data() {
     return {
       ICON,
+      dialog: false,
+      loadedOnce: false,
       configs: [],
       loading: false,
       error: '',
@@ -554,10 +541,19 @@ Date and Time Handling:
 Now please generate the exam configuration based on the above rules:`
     },
   },
-  async mounted() {
-    await this.loadConfigs()
-  },
   methods: {
+    /** 由外部通过模板 ref 调用打开弹窗（与 RandomPicker 一致） */
+    open() {
+      this.dialog = true
+      // 常驻首页，仅在首次打开时才拉取配置，避免无谓请求
+      if (!this.loadedOnce) {
+        this.loadedOnce = true
+        this.loadConfigs()
+      }
+    },
+    close() {
+      this.dialog = false
+    },
     /**
      * 根据当前日期推算考试类型
      * @returns {Object} { examName: string, message: string }

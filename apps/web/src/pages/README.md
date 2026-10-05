@@ -8,7 +8,6 @@
 | -------------------------------- | -------------------- | -------------- |
 | `index.vue`                      | `/`                  | 首页（作业板） |
 | `settings.vue`                   | `/settings`          | 设置页         |
-| `examschedule.vue`               | `/examschedule`      | 考试看板       |
 | `list/index.vue` `list/[id].vue` | `/list`、`/list/:id` | 列表           |
 | `exam-editor/[id].vue`           | `/exam-editor/:id`   | 考试编辑器     |
 | `authorize.vue`                  | `/authorize`         | OAuth 授权回调 |

@@ -92,7 +92,7 @@
           :prepend-icon="ICON.CALENDAR_CHECK"
           color="primary"
           size="large"
-          @click="$router.push('/examschedule')"
+          @click="$emit('open-exam-schedule')"
         >
           考试看板
         </v-btn>
@@ -184,6 +184,7 @@ export default {
     'upload',
     'show-sync-message',
     'open-random-picker',
+    'open-exam-schedule',
     'toggle-fullscreen',
     'add-test-card',
     'add-exam-card',

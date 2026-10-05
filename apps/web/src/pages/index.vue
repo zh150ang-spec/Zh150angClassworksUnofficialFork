@@ -65,6 +65,7 @@
         @upload="manualUpload"
         @show-sync-message="showSyncMessage"
         @open-random-picker="openRandomPicker"
+        @open-exam-schedule="openExamSchedule"
         @toggle-fullscreen="toggleFullscreen"
         @add-test-card="addTestCard"
         @add-exam-card="showAddExamDialog = true"
@@ -191,6 +192,9 @@
     :student-list="state.studentList"
   />
 
+  <!-- 考试看板弹窗（替代原 /examschedule 路由页） -->
+  <exam-schedule-dialog ref="examScheduleDialog" />
+
   <!-- 添加URL配置确认对话框 -->
   <UrlConfigDialog
     v-model="urlConfigDialog.show"
@@ -298,6 +302,7 @@ import AsyncLoadingPlaceholder from '@/components/common/AsyncLoadingPlaceholder
 // ===== 首屏核心组件（同步加载）=====
 import HomeworkGrid from '@/components/home/HomeworkGrid.vue'
 import HomeActions from '@/components/home/HomeActions.vue'
+import ExamScheduleDialog from '@/components/home/ExamScheduleDialog.vue'
 import FloatingICP from '@/components/home/FloatingICP.vue'
 import HomeSkeleton from '@/components/home/HomeSkeleton.vue'
 
@@ -404,6 +409,7 @@ export default {
     AttendanceManagementDialog,
     HomeworkGrid,
     HomeActions,
+    ExamScheduleDialog,
     PwaInstallCard,
     HomeSkeleton,
     HomeAppBar,
@@ -1589,6 +1595,12 @@ export default {
     openRandomPicker() {
       if (this.$refs.randomPicker) {
         this.$refs.randomPicker.open()
+      }
+    },
+
+    openExamSchedule() {
+      if (this.$refs.examScheduleDialog) {
+        this.$refs.examScheduleDialog.open()
       }
     },
 
