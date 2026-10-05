@@ -8,6 +8,39 @@
 
 ---
 
+## \[0.13.1\] - 2026-10-05
+
+> 自 v0.13.0 以来的工程治理批次：不含任何业务代码改动，也没有新增功能。核心是修好一处长期静默失效的 pnpm 配置，并统一 monorepo 的依赖、lint、CI 与文档口径。
+
+### 修复
+
+- 修复 pnpm 配置从未生效：`nodeLinker: hoisted` 与 `autoInstallPeers` 原先写在 `.npmrc`，而 pnpm 11 不读取该文件的这些项（`pnpm config get node-linker` 返回 `undefined`，`store-dir` 因写在 `pnpm-workspace.yaml` 才生效），实际长期运行在 isolated 布局下。现移入 `pnpm-workspace.yaml`，并删除已失效的 `.npmrc`。该问题此前会导致 ESLint 启动即崩溃、Vite 解析不到 `local-pkg` 与 `sass-embedded`。
+- 根 `README.md` 修正指向不存在的 `apps/server/.env.example`，改指 `apps/server/.env.oauth.example`。
+
+### 一致性
+
+- 移除确认无引用的依赖：根 `eslint-plugin-import` / `eslint-plugin-n` / `eslint-plugin-promise`，`apps/web` 的 `@oxlint/migrate` / `baseline-browser-mapping`，`apps/dashboard` 的 `radix-vue`；`pnpm-lock.yaml` 同步且无版本漂移。
+- `apps/web/package.json`：删除重复且过期的 `engines`；`vite` 归入 `devDependencies`，`pinia` / `vue-router` 归入 `dependencies`。
+- `apps/server/package.json` 去重 `dotenv`；`apps/server`、`apps/dashboard`、`packages/shared` 补齐 `packageManager` 与 `engines`。
+- 根 `eslint.config.js` 的 globals 抽成 `COMMON` / `BROWSER` / `NODE_GLOBALS`，并删除指向 `apps/web` 的死配置；`apps/web/eslint.config.js` 的 globals 收敛到 `.oxlintrc.json` 单一真源。
+- 按 Prettier 统一 81 个 Vue 单文件组件格式（经 `prettier(HEAD)` 逐字节比对确认纯排版，无逻辑改动）。
+
+### 工程与 CI
+
+- `ci.yml` 新增 web 双 lint（oxlint + ESLint，使用 `exec`、不加 `--fix`），未改动包内 `scripts`。
+- `.prettierignore` 排除 prebuild 生成物 `apps/web/src/utils/soundList.js`。
+- `.gitignore` 与 `.prettierignore` 新增 `.dsh/` 与 `.agents/`（机器本地的 harness 技能目录，不应发布）。
+- 根 `package.json` 删除空壳脚本 `install:all`。
+
+### 文档
+
+- 根 `AGENTS.md` 与 `CLAUDE.md` 整份同步：如实声明各 app 自治理、补全 `utils/socketClient.js` 与 `utils/socket.js`、env 模板指向真实文件、修正 `format:check` 说明与 CI 表格；两份文件保持一致（仅标题一行不同）。
+- `apps/web/AGENTS.md`：修正后端描述三处、Git push 规则、两份 `vercel.json` 分工、`.eslintrc-auto-import.json` 例外说明，并补全文档路由表。
+- 新增 `apps/web/README.md`。
+- 10 篇散落文档归位：`apps/dashboard/docs/`（4 篇）与 `apps/server/docs/`（6 篇）。
+
+---
+
 ## \[0.13.0\] - 2026-08-31
 
 > 从 `v0.12.0-beta`（旧单应用版本线）跨越式整理后的首个正式版标志提交：完成迁移为 pnpm monorepo、清理无效残留、补齐文档并把本仓库确立为公开 Fork 的里程碑节点。
