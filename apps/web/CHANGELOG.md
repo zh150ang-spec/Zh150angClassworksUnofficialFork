@@ -8,6 +8,57 @@
 
 ---
 
+## \[0.14.0-dev\] - 2026-10-05
+
+> 本周期的**主线是架构治理**：把长期靠约定维持的工程基线（行尾、生成物边界、验证链路、镜像构建）改成有守护、可复现的状态；同时修掉离线系统一处会让整条容错链路失效的架构缺陷，并同步上游 9 个提交。
+> `-dev` 表示这是开发构建节点：架构层面已收敛，但已知仍有若干软件内问题待后续会话处理，**不适合作为正式发布对外**。
+
+### 重构
+
+- **离线系统**：确立三条不变量——传输层有界（交互 ≤12s、心跳 ≤6s、后台 ≤45s）、`serverReachable` 由心跳唯一裁决、持久重试只属于离线队列。新增 `netRetryPolicy.js`（纯函数、可单测）替换原先"无限重试、永不放弃"的 axios 拦截器；后者曾让心跳阈值、离线队列、RMW 降级、退避等**所有上层失败分支沦为死代码**。
+- **跨标签锁**：`crossTabLock.js` 改为可中止租约。此前超时回调会替调用方释放锁，且 `acquireLock` 还会 `await` 整个持锁过程——实测导致每次后台同步要等满 30s 才开跑，而且开跑时锁已失效。
+- **Service Worker 更新**：改为提示式更新。`install` 不再无条件 `skipWaiting()`，补上一直缺失的 `SKIP_WAITING` handler；刷新前经 `updateGate.js` 询问"是否有未保存内容"，未确认且页面可见时绝不打断。
+
+### 新增
+
+- 作业编辑对话框新增「粘贴」「粘贴并完成」按钮，并可在 设置 → 显示 用 `display.showPasteButtons` 关闭（同步自上游）；实现复用本仓已有的 textarea 判空保护，图标走 `ICON.CONTENT_PASTE`。
+- 云端单存储模式（`kv-server` / `classworkscloud`）新增写入内存暂存 `pendingWriteSpool`：可重试失败时暂存于本页并明确报错，网络恢复后用 RMW 自动补写。
+- 新增 `apps/server/.env.example` 环境变量模板。
+
+### 修复
+
+- **axios 拦截器无限重试**：延迟虽有上限，但永不放弃，Promise 永不 settle——保存按钮永久转圈、`isOnline()` 失真、挂起请求持续累积。现改为有界重试，并让 429 尊重 `Retry-After`。
+- **心跳阈值失效**：心跳与业务请求共用同一实例，超时被当作可重试，失败永不计数，"连续 2 次失败"形同虚设。现心跳禁重试、加在途守卫与去抖探测；业务失败只记证据（`noteRequestFailure`），不再把整个应用一句话切成离线。
+- **错误码失真**：`retryOperation` 穷尽后隐式返回 `undefined`，被上层折叠成"数据不存在"，甚至会触发默认配置回退、进而用默认值覆盖云端真实配置。现返回最后一次错误对象、错误码保真，且只对可重试失败重试。
+- **RMW fail-open**：云端读失败被当成"云端没有数据"而跳过合并直接覆盖。现 fail-closed——只有读成功或确认 404 才允许写入。
+- **本地写失败静默**：`localFailed` 全仓无消费方，本地副本静默过期。现原地重试一次，仍失败则登记并在设置页"同步"卡片可见。
+- **退避被重置**：`scheduleImmediate()` 每次归零尝试计数并立刻同步，30s→60s→120s→300s 的阶梯形同不存在。现只在队列清空／网络恢复／手动同步时归零，10s 窗口内吸收重复触发。
+- **冲突通知 15s 自动消失**：冲突结果此时已落地（云端已按本地优先合并写入），用户来不及选择就默认接受。现改为常驻直至明确选择。
+- **镜像构建失败**：`build` 阶段复用 `--prod` 安装出的 `node_modules` 会触发 `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`；且 `prisma` 属 devDependency，而容器启动要执行 `npx prisma migrate deploy`——原运行时只装生产依赖，等于镜像里没有 prisma CLI。现改为单次全量安装、运行时复用，prisma 必然存在。
+- 同步上游带来的修复：预配认证链接不被自动处理（`parsePreconfigData` 提前到 `created()` 并支持路由 query，`DeviceAuthDialog` 增加一次性守卫）；CORS 补齐 `x-app-token` / `x-site-key` / `x-device-uuid` / `x-device-password`（此前跨域预检会被拒）；`DEFAULT_LOCAL_SERVER` 由 3030 修正为 3000；`classworks.js` 改用 `node ./bin/www` 启动（原先调用 `npm install` / `npm run start`）且数据库迁移不再重复执行两次。
+- 删除两个无引用死文件：`apps/server/middleware/device.js`、`apps/dashboard/src/components/HelloWorld.vue`。
+
+### 工程与 CI
+
+- 接入 **vitest**（73 例 / 10 个测试文件），守护重试策略、心跳、RMW、暂存、跨标签租约、后台退避、SW 更新时序、未保存门禁与 provider 透传；新增断言均经过"故意破坏 → 确认失败 → 还原"的负向验证。
+- 新增 `test` / `test:web` / `test:watch` 脚本；`ci.yml` 新增 `test-web` job（不改动既有 job 名称，避免影响分支保护的必需检查）。
+- `docker-publish.yml` 适配 fork：GHCR 命名空间改用 `github.repository_owner`，Docker Hub 登录仅在配置了变量时执行，镜像目标动态拼接。
+- 新增 `.gitattributes` 统一行尾为 LF；`.gitignore` / `.prettierignore` 收敛（生成物与机器本地 harness 目录）。
+- 停止跟踪 `apps/server/generated/`（Prisma 生成物）与 agent 草稿目录。
+
+### 一致性
+
+- 根 `eslint.config.js` 并入上游的浏览器／Node 全局变量并集，并清理两条因此失效的 `no-undef` 抑制指令；保留本仓更严格的规则级别与 `apps/web/**` 自治理忽略。
+- 根 `AGENTS.md` 与 `CLAUDE.md` 同步更新：命令表、CI 表格、`packages/shared` 导出的第 4 个头、env 模板指向。
+- `apps/web/docs/OFFLINE_SYSTEM.md` 重写：新增"修复状态／三条不变量"章节，并如实标注刻意保留的本地分歧与已知未接入项。
+
+### 文档
+
+- 根 `AGENTS.md` 新增"执行纪律"章节，复盘本项目已发生的错误（文档描述≠事实、破坏性操作、负向测试、测量的自证等）。
+- `apps/web/AGENTS.md` 补充 `test` 命令；`apps/server/README.md` 与 `cli/README.md` 的端口由 3030 修正为 3000。
+
+---
+
 ## \[0.13.1\] - 2026-10-05
 
 > 自 v0.13.0 以来的工程治理批次：不含任何业务代码改动，也没有新增功能。核心是修好一处长期静默失效的 pnpm 配置，并统一 monorepo 的依赖、lint、CI 与文档口径。
