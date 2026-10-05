@@ -83,14 +83,19 @@ package-lock.json
 # Server / Prisma local data
 apps/server/prisma/database/data
 apps/server/data/
+# prisma generate 的产物（prisma-client 生成器输出到 ../generated/prisma）。
+# Dockerfile 在 build 层自行执行 prisma generate，因此无需入库。
+apps/server/generated/
 
 # OS
 .DS_Store
 Thumbs.db
 
 # Agent / harness local directories (machine-local, never publish)
+# 这些目录同时被 Prettier 默认读取的 .gitignore 覆盖，无需在 .prettierignore 里重复。
 .dsh/
 .agents/
+.claude/
 
 # Misc
 /.trae

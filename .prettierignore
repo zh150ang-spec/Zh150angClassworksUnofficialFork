@@ -17,6 +17,7 @@ apps/web/public/pwa/**
 # prebuild 自动生成（scripts/generate-sound-list.js），非手写源码
 apps/web/src/utils/soundList.js
 pnpm-workspace.yaml
-.claude/
-.dsh/
-.agents/
+
+# 注意：Prettier 3 默认同时读取 .gitignore 与 .prettierignore（--ignore-path 默认值为两者）。
+# 机器本地的 agent 目录（.dsh/、.agents/、.claude/）已在 .gitignore 声明，此处不再重复，
+# 以免同一份忽略规则维护两遍、悄悄分叉。
