@@ -292,7 +292,7 @@
 
 <script>
 import { ICON } from '@/utils/icons'
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, toRaw } from 'vue'
 import AsyncLoadingPlaceholder from '@/components/common/AsyncLoadingPlaceholder.vue'
 
 // ===== 首屏核心组件（同步加载）=====
@@ -839,6 +839,11 @@ export default {
         this.handleAttendanceDialogClose(newValue)
       },
     },
+    // hash 路由下深链改为 query 触发（如 #/?randomPicker=1），
+    // 覆盖 PWA 快捷方式 navigate-existing 复用已打开窗口的场景
+    '$route.query.randomPicker'(newValue) {
+      if (newValue) this.checkQueryForRandomPicker()
+    },
   },
 
   created() {
@@ -901,9 +906,7 @@ export default {
         this.bindStudentNameManager(this.$refs.studentNameManager)
       })
 
-      this.checkHashForRandomPicker()
-
-      window.addEventListener('hashchange', this.checkHashForRandomPicker)
+      this.checkQueryForRandomPicker()
 
       // 并行执行彼此独立的初始化请求，减少页面加载总时间
       await Promise.all([
@@ -957,8 +960,6 @@ export default {
     if (this.debouncedAttendanceSave) {
       this.debouncedAttendanceSave.cancel()
     }
-
-    window.removeEventListener('hashchange', this.checkHashForRandomPicker)
 
     // 退出设备房间
     try {
@@ -1591,14 +1592,16 @@ export default {
       }
     },
 
-    checkHashForRandomPicker() {
-      if (window.location.hash === '#random-picker') {
-        this.$nextTick(() => {
-          console.log('打开随机点名')
-          window.location.hash = ''
-          this.openRandomPicker()
-        })
-      }
+    checkQueryForRandomPicker() {
+      if (!this.$route.query.randomPicker) return
+      this.$nextTick(() => {
+        console.log('打开随机点名')
+        // 清理 query，避免刷新时重复弹出
+        const query = { ...this.$route.query }
+        delete query.randomPicker
+        this.$router.replace({ path: this.$route.path, query })
+        this.openRandomPicker()
+      })
     },
 
     parseUrlConfig() {
@@ -1811,7 +1814,8 @@ export default {
 
         // 1. 保存当前选中日期的作业数据
         const sourceDate = this.state.dateString
-        const sourceHomework = structuredClone(this.state.boardData.homework)
+        // state.boardData 是 reactive 代理，structuredClone 无法克隆，需先 toRaw
+        const sourceHomework = structuredClone(toRaw(this.state.boardData.homework))
 
         // 2. 切换到今天并加载今天的数据（主要是为了获取考勤等其他数据）
         // 必须 forceClear：今天无数据时清空源日期的残留 boardData（含源日期考勤），

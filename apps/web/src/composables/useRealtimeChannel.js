@@ -81,9 +81,11 @@ export function useRealtimeChannel() {
             return
           }
           const boardData = ctx.getBoardData()
+          // toRaw 解出 Vue reactive 的原始对象：structuredClone 无法克隆 reactive 代理
+          // （会抛 DataCloneError: could not be cloned）。toRaw 后嵌套值也是原始值，可安全克隆。
           // 空值保护：boardData.homework 在初始化期间可能为 undefined，
           // structuredClone(undefined) 返回 undefined，后续 oldHomework[key] 会抛错
-          const oldHomework = structuredClone(boardData.homework || {})
+          const oldHomework = structuredClone(toRaw(boardData.homework) || {})
           await ctx.downloadData()
           const now = new Date()
           const hh = String(now.getHours()).padStart(2, '0')

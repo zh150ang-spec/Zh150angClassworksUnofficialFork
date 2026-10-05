@@ -5,12 +5,12 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
+import { createRouter, createWebHashHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes),
 })
 
@@ -59,7 +59,9 @@ router.onError((err, to) => {
       )
       setReloadAttempts(count + 1)
       setTimeout(() => {
-        location.assign(to.fullPath)
+        // hash 模式下 fullPath 不是真实路径，必须写回 hash 再整页重载
+        location.hash = to.fullPath
+        location.reload()
       }, 500)
     } else {
       console.error('Dynamic import error: max reload attempts reached', err)

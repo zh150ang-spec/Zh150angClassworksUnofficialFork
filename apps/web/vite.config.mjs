@@ -220,7 +220,8 @@ export default defineConfig(({ mode }) => ({
           {
             name: '随机点名',
             short_name: '随机点名',
-            url: './#random-picker',
+            // hash 路由下 # 已被路由占用，随机点名改由 query 触发（index.vue 读取 randomPicker）
+            url: './#/?randomPicker=1',
             icons: [
               {
                 src: './pwa/image/pwa-64x64.png',

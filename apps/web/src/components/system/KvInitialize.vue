@@ -66,7 +66,8 @@ const goToAuthorize = () => {
   const authDomain = getSetting('server.authDomain')
   const appId = 'd158067f53627d2b98babe8bffd2fd7d'
   const currentDomain = window.location.origin
-  const callbackUrl = encodeURIComponent(`${currentDomain}/authorize`)
+  // hash 路由下回调必须带上 #/，否则会落到首页而丢失 token
+  const callbackUrl = encodeURIComponent(`${currentDomain}/#/authorize`)
 
   const uuid = getSetting('device.uuid') || '00000000-0000-4000-8000-000000000000'
   const remark = encodeURIComponent(

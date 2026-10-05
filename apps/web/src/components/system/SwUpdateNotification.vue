@@ -37,7 +37,7 @@ let refreshing = false
 let reloadApproved = false
 let updateCheckTimeoutId = null
 let updateCheckIntervalId = null
-// 监听器只注册一次：checkForUpdate 每小时调用，注册在函数体内会持续累积（P1-9）
+// 监听器只注册一次：checkForUpdate 每小时调用，注册在函数体内会持续累积
 let updateFoundHandler = null
 
 const refreshNow = () => {
@@ -79,6 +79,15 @@ const dismissUpdate = () => {
 
 const checkForUpdate = async () => {
   if (!('serviceWorker' in navigator)) return
+
+  // 离线时直接跳过：更新探测的 fetch 必然失败，而浏览器只会给出
+  // "An unknown error occurred when fetching the script" 这种无从排查的模糊信息，
+  // 当成故障刷屏会误导人。
+  if (navigator.onLine === false) {
+    console.info('Service Worker 更新检查已跳过：当前处于离线状态')
+    return
+  }
+
   try {
     registration = await navigator.serviceWorker.ready
 
@@ -101,7 +110,25 @@ const checkForUpdate = async () => {
 
     await registration.update()
   } catch (error) {
-    console.error('Service Worker 更新检查失败:', error)
+    // registration.update() 的失败原因由浏览器规范化，message 往往很含糊。
+    // 这里补上可判别的上下文（错误名 / 作用域 / 脚本地址 / 在线状态），
+    // 让日志能定位问题，而不是只剩一句“未知错误”。
+    const details = {
+      name: error?.name || 'UnknownError',
+      message: error?.message || String(error),
+      online: navigator.onLine,
+      scope: registration?.scope,
+      scriptURL:
+        registration?.active?.scriptURL ||
+        registration?.installing?.scriptURL ||
+        registration?.waiting?.scriptURL,
+    }
+    if (error?.name === 'TypeError') {
+      // 浏览器在网络不可达、脚本暂时取不到等情况下统一抛 TypeError
+      console.warn('Service Worker 更新检查失败（通常为网络不可达）:', details)
+    } else {
+      console.error('Service Worker 更新检查失败:', details)
+    }
   }
 }
 

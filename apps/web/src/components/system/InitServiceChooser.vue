@@ -134,6 +134,7 @@
 <script setup>
 import { ICON } from '@/utils/icons'
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { getSetting, setSetting } from '@/utils/settings'
 import DeviceAuthDialog from '@/components/auth/DeviceAuthDialog.vue'
 import TokenInputDialog from '@/components/auth/TokenInputDialog.vue'
@@ -153,6 +154,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['done'])
+const route = useRoute()
 
 // 控制显示：仅首页且无 kvToken（且 provider 不是 kv-local）显示
 const visible = ref(false)
@@ -185,8 +187,8 @@ const deviceAuthPreconfig = computed(() => {
 })
 
 const evaluateVisibility = () => {
-  const path = window.location.pathname
-  const onHome = path === '/' || path === '/index' || path === '/index.html'
+  // hash 路由下 window.location.pathname 始终是部署路径，改用路由 path 判断是否首页
+  const onHome = route.path === '/'
   const need = isKvProvider.value && (!kvToken.value || kvToken.value === '')
   visible.value = onHome && need
 }
@@ -214,7 +216,8 @@ const handleAutoAuthorize = () => {
   const authDomain = getSetting('server.authDomain')
   const appId = 'd158067f53627d2b98babe8bffd2fd7d'
   const currentDomain = window.location.origin
-  const callbackUrl = encodeURIComponent(`${currentDomain}/authorizecallback`)
+  // hash 路由下回调必须带上 #/，否则会落到首页而丢失 token
+  const callbackUrl = encodeURIComponent(`${currentDomain}/#/authorizecallback`)
   const uuid = getSetting('device.uuid') || '00000000-0000-4000-8000-000000000000'
 
   const remark = encodeURIComponent(
