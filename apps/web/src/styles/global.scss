@@ -74,6 +74,25 @@ html {
   color: rgb(var(--v-theme-on-surface));
 }
 
+/* ── 中性半透明面：容器类 tonal 的统一原则 ────────────────────
+   原则：填充取中性色（on-surface，经 underlay 的 currentColor 得到），
+   文字取 on-surface，强调色只落在图标/边框上。
+   注意 underlay 的背景是 currentColor，因此把根节点颜色改成 on-surface
+   即可让"填充色 = 中性色"且"文字 = on-surface"同时成立，二者不再同色。
+   v-list-item 是 7 个 tonal 组件中唯一未被既有规则覆盖的，
+   它的文字与填充原本同色，对比度随 alpha 升高反而下降。 */
+.v-list-item--variant-tonal {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* 容器类 tonal 的轮廓：纯填充在数学上无法与页面背景拉开（0.3 也只有 2.35:1），
+   故用 1px 中性描边来界定。用 outline + 负 offset 而非 border，避免改变盒模型、
+   也不覆盖卡片自身的 elevation 阴影；已带 border 的卡片不重复加。 */
+.v-card--variant-tonal:not(.v-card--border) {
+  outline: 1px solid var(--color-border);
+  outline-offset: -1px;
+}
+
 /* ── v-snackbar tonal text contrast (global) ──────────────── */
 /* Same rationale as v-alert/v-card: tonal snackbars with color="warning"
    etc. cause text to inherit the semantic color, reducing contrast

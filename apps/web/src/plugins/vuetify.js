@@ -109,10 +109,19 @@ export default createVuetify({
       dark: {
         dark: true,
         colors: appleColors.dark,
+        // tonal 变体的填充不透明度（Vuetify 默认 0.12，约 88% 透过去）。
+        // 抬到 0.18：保留半透明质感，同时让中性填充可辨；卡片与页面的
+        // 分隔主要靠边框/阴影（纯填充在数学上到不了 3:1）。
+        variables: {
+          'activated-opacity': 0.18,
+        },
       },
       light: {
         dark: false,
         colors: appleColors.light,
+        variables: {
+          'activated-opacity': 0.18,
+        },
       },
     },
   },

@@ -10,7 +10,10 @@
       <div class="main-card-row">
         <!-- 初次使用 -->
         <v-card
-          class="main-service-card gradient-new clickable"
+          class="main-service-card clickable"
+          color="primary"
+          variant="tonal"
+          border
           elevation="4"
           @click="showGuideDialog = true"
         >
@@ -33,7 +36,10 @@
 
         <!-- 已注册设备 -->
         <v-card
-          class="main-service-card gradient-registered clickable"
+          class="main-service-card clickable"
+          color="success"
+          variant="tonal"
+          border
           elevation="4"
           @click="showDeviceAuthDialog = true"
         >
@@ -55,7 +61,14 @@
         </v-card>
 
         <!-- Classworks KV 控制台 -->
-        <v-card class="main-service-card clickable" elevation="4" @click="openClassworksKV">
+        <v-card
+          class="main-service-card clickable"
+          color="info"
+          variant="tonal"
+          border
+          elevation="4"
+          @click="openClassworksKV"
+        >
           <v-card-item>
             <div class="card-horizontal-layout">
               <div class="card-icon-wrapper">
@@ -330,21 +343,6 @@ const openClassworksKV = () => {
 .card-content {
   flex: 1;
   text-align: left;
-}
-
-.gradient-new {
-  background: linear-gradient(135deg, rgba(33, 150, 243, 0.12), rgba(103, 80, 164, 0.08) 60%);
-  border: 2px solid rgba(33, 150, 243, 0.2);
-}
-
-.gradient-registered {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(0, 184, 212, 0.08) 60%);
-  border: 2px solid rgba(76, 175, 80, 0.2);
-}
-
-.gradient-kv {
-  background: linear-gradient(135deg, rgba(0, 184, 212, 0.12), rgba(33, 150, 243, 0.08) 60%);
-  border: 2px solid rgba(0, 184, 212, 0.2);
 }
 
 /* 其他选项 */
