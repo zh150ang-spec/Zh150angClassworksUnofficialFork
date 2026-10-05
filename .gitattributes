@@ -1,0 +1,28 @@
+# 统一行尾：文本文件在仓库内一律以 LF 存储、以 LF 检出。
+#
+# 目的：消除 Windows 上 core.autocrlf=true 造成的两类噪音
+#   1. 内容与 HEAD 完全一致、git status 却报已修改的「假脏」；
+#   2. 每条 git 命令都会刷屏的 "LF will be replaced by CRLF" 警告。
+#
+# 本文件优先于 core.autocrlf，因此无需再改全局配置。
+
+* text=auto eol=lf
+
+# 二进制：禁止行尾转换与文本 diff
+*.mp3   binary
+*.png   binary
+*.ico   binary
+*.jpeg  binary
+*.jpg   binary
+*.gif   binary
+*.webp  binary
+*.ttf   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary
+*.wasm  binary
+*.zip   binary
+*.pdf   binary
+
+# 锁文件固定 LF，避免跨平台重装产生无意义 diff
+pnpm-lock.yaml text eol=lf
