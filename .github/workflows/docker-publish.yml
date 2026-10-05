@@ -2,24 +2,27 @@ name: Docker Build and Push (Server)
 
 on:
   push:
-    branches: ["main"]
-    tags: ["v*"]
+    branches: ['main']
+    tags: ['v*']
     paths:
-      - "apps/server/**"
-      - "packages/shared/**"
-      - ".github/workflows/docker-publish.yml"
+      - 'apps/server/**'
+      - 'packages/shared/**'
+      - '.github/workflows/docker-publish.yml'
   pull_request:
-    branches: ["main"]
+    branches: ['main']
     paths:
-      - "apps/server/**"
-      - "packages/shared/**"
-      - ".github/workflows/docker-publish.yml"
+      - 'apps/server/**'
+      - 'packages/shared/**'
+      - '.github/workflows/docker-publish.yml'
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
+  # 保留上游默认值，便于与上游行为对齐（实际推送用户名取自 vars.DOCKERHUB_USERNAME）
   DOCKERHUB_USERNAME: zerocatdev
-  OWNER: zerocatdev
+  # 用仓库所属账号作为 GHCR 命名空间：只有本仓库的 GITHUB_TOKEN 才有权限推自己的命名空间。
+  # 上游（Moonrend/*）与 fork（zh150ang-spec/*）都能正确解析，无需各自硬编码。
+  OWNER: ${{ github.repository_owner }}
   PROJECT_NAME: classworks
 
 concurrency:
@@ -49,19 +52,33 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
+        # 仅在上游配置了 vars.DOCKERHUB_USERNAME（并配套 secrets.DOCKERHUB_TOKEN）时执行。
+        # fork 上没有这些凭据；此前无条件登录会直接以 "Username and password required" 失败。
+        if: github.event_name != 'pull_request' && vars.DOCKERHUB_USERNAME != ''
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Determine image targets
+        # Docker Hub 目标仅在配置了用户名时加入，避免生成 "/classworks" 这类非法镜像名。
+        id: targets
+        env:
+          DOCKERHUB_NAMESPACE: ${{ vars.DOCKERHUB_USERNAME }}
+        run: |
+          set -euo pipefail
+          images="${REGISTRY}/${OWNER}/${PROJECT_NAME}"
+          if [ -n "${DOCKERHUB_NAMESPACE}" ]; then
+            images="${images},${DOCKERHUB_NAMESPACE}/${PROJECT_NAME}"
+          fi
+          echo "images=${images}" >> "$GITHUB_OUTPUT"
+          echo "image targets: ${images}"
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.PROJECT_NAME }}
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}
+          images: ${{ steps.targets.outputs.images }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
