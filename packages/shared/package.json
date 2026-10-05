@@ -8,5 +8,10 @@
     "./constants": "./constants.js",
     "./headers": "./headers.js"
   },
-  "main": "index.js"
+  "main": "index.js",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=11"
+  }
 }

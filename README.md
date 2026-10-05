@@ -43,7 +43,7 @@ Classworks 是一个适用于班级大屏的作业板小工具。本 Fork 以自
 3. 为软件适配简单的动画；
 4. 优化工作流速度，加快效率；
 5. 使软件的几个小细节更适合公有化使用；
-6. 提供一个经过重新设计的设置界面；
+6. **提供一个经过重新设计的设置界面，质量较高**；
 7. 对主界面进行一些细节调整，包括一些负优化；
 8. 磨合用户体验，推出作业本功能；
 9. 优化各功能实现细节；基本统一通知渠道；以及构建经过简单统一的其他架构设计；
@@ -85,11 +85,11 @@ pnpm run format:check
 
 ### 后端配置
 
-`apps/server` 需要 PostgreSQL 数据库。复制环境变量模板后配置：
+`apps/server` 需要 PostgreSQL 数据库。仓库提供的模板为 `apps/server/.env.oauth.example`（只含 OAuth 变量），复制后需自行补齐数据库配置：
 
 ```bash
-cp apps/server/.env.example apps/server/.env
-# 编辑 .env 设置 DATABASE_URL 等
+cp apps/server/.env.oauth.example apps/server/.env
+# 编辑 .env，补充 DATABASE_URL 等（OAuth 变量见该模板注释）
 ```
 
 ### Docker 部署

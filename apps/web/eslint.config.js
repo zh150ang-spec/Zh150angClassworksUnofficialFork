@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
 import oxlint from 'eslint-plugin-oxlint'
+import prettier from 'eslint-config-prettier'
 
 // unplugin-auto-import 生成的自动导入声明（ref、computed 等），供 no-undef 识别
 let autoImportGlobals = {}
@@ -12,6 +13,10 @@ try {
 } catch {
   // 首次未生成时忽略
 }
+
+// 浏览器全局的唯一真源：复用 oxlint 配置里的 globals，避免同一份清单维护两遍
+const oxlintGlobals =
+  JSON.parse(fs.readFileSync(new URL('./.oxlintrc.json', import.meta.url), 'utf8')).globals || {}
 
 // ESLint 只需补充 oxlint 不支持的部分：Vue 模板解析规则。
 // 全部规则块都限定为 .vue，使 ESLint 在文件枚举/匹配阶段就排除 js/mjs/jsx，
@@ -56,61 +61,13 @@ export default [
     files: VUE_FILES,
     languageOptions: {
       globals: {
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly',
-        console: 'readonly',
-        alert: 'readonly',
-        confirm: 'readonly',
-        prompt: 'readonly',
-        setTimeout: 'readonly',
-        clearTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
-        fetch: 'readonly',
-        XMLHttpRequest: 'readonly',
-        URL: 'readonly',
-        URLSearchParams: 'readonly',
-        atob: 'readonly',
-        btoa: 'readonly',
-        import: 'readonly',
-        process: 'readonly',
-        self: 'readonly',
-        caches: 'readonly',
-        Notification: 'readonly',
-        ServiceWorker: 'readonly',
-        PushManager: 'readonly',
-        PushSubscription: 'readonly',
-        Storage: 'readonly',
-        StorageEvent: 'readonly',
-        WebSocket: 'readonly',
-        Worker: 'readonly',
-        SharedWorker: 'readonly',
-        AbortController: 'readonly',
-        Event: 'readonly',
-        location: 'readonly',
-        screen: 'readonly',
-        Blob: 'readonly',
-        FileReader: 'readonly',
-        TextEncoder: 'readonly',
-        TextDecoder: 'readonly',
-        MessageChannel: 'readonly',
-        requestAnimationFrame: 'readonly',
-        cancelAnimationFrame: 'readonly',
-        indexedDB: 'readonly',
-        Response: 'readonly',
-        Headers: 'readonly',
-        Request: 'readonly',
-        clients: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
-        structuredClone: 'readonly',
-        AbortSignal: 'readonly',
-        ICON: 'readonly',
+        ...oxlintGlobals,
         ...autoImportGlobals,
       },
     },
   },
+
+  // 关闭与 Prettier 冲突的格式类规则（如 vue/max-attributes-per-line）。
+  // 否则 `eslint --fix` 会重排模板，与 Prettier 的 printWidth 折行互相打架。
+  prettier,
 ]

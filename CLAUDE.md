@@ -1,4 +1,4 @@
-# AGENTS.md
+# CLAUDE.md
 
 This file provides guidance to AI agents working with code in this repository.
 
@@ -13,7 +13,7 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 | `@classworks/dashboard` | `apps/dashboard`  | Vue 3 + Tailwind 4             | Admin UI for the KV backend                           |
 | `@classworks/shared`    | `packages/shared` | Pure JS (ESM)                  | Shared constants (headers, URLs)                      |
 
-> **各 app 自治理**：每个 app 的细节以其自身的 `AGENTS.md` 为准（`apps/web/AGENTS.md`、`apps/server/AGENTS.md`、`apps/dashboard/AGENTS.md`）。尤其涉及 `apps/web`（命令、lint、数据层、部署约定）时，**以** **`apps/web/AGENTS.md`** **为权威**；本根文档只做笼统说明并透传引用，避免与子文档冲突或重复。
+> **各 app 自治理**：目前仅有 `apps/web` 提供了独立的 `apps/web/AGENTS.md`；`apps/server`、`apps/dashboard` 暂无独立 `AGENTS.md`，其细节见各自的 `README.md`。尤其涉及 `apps/web`（命令、lint、数据层、部署约定）时，**以** **`apps/web/AGENTS.md`** **为权威**；本根文档只做笼统说明并透传引用，避免与子文档冲突或重复。
 
 ## Monorepo Layout
 
@@ -32,8 +32,7 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 ├── pnpm-workspace.yaml
 ├── eslint.config.js          # Shared ESLint flat config
 ├── .prettierrc.json
-├── .editorconfig
-└── .npmrc
+└── .editorconfig
 ```
 
 ## Commands
@@ -60,61 +59,60 @@ pnpm run build:dashboard
 
 ### Per-app
 
-* **apps/web**: `prebuild` (sound list), `build:store` (PWA store validation)
+- **apps/web**: `prebuild` (sound list), `build:store` (PWA store validation)
 
-* **apps/server**: `start`, `dev` (nodemon), `build` (prisma generate), `get-token`. Requires `.env` with `DATABASE_URL`.
+- **apps/server**: `start`, `dev` (nodemon), `build` (prisma generate), `get-token`. Requires `.env` with `DATABASE_URL`.
 
-* **apps/dashboard**: `dev` / `build` / `preview`
+- **apps/dashboard**: `dev` / `build` / `preview`
 
 ## Shared Package (packages/shared)
 
 Exports constants used across all three apps:
 
-* `HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`
+- `HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`
 
-* `DEFAULT_KV_SERVER`, `DEFAULT_LOCAL_SERVER`, `CLOUD_SERVERS`
+- `DEFAULT_KV_SERVER`, `DEFAULT_LOCAL_SERVER`, `CLOUD_SERVERS`
 
 All apps depend via `"@classworks/shared": "workspace:*"`.
 
 ## Architecture
 
-* **Data layer** (web): `dataProvider.js` → `kvLocalProvider.js` (IndexedDB) or `kvServerProvider.js` (HTTP). Failover via `serverRotation.js`.
+- **Data layer** (web): `dataProvider.js` → `kvLocalProvider.js` (IndexedDB) or `kvServerProvider.js` (HTTP). Failover via `serverRotation.js`.
 
-* **Real-time**: Client `socketClient.js` ↔ Server `socket.js` (Socket.IO rooms)
+- **Real-time**: Client `utils/socketClient.js` (web) ↔ Server `utils/socket.js` (server) — Socket.IO rooms
 
-* **Settings** (web): `settings.js` — localStorage with typed definitions and migration
+- **Settings** (web): `settings.js` — localStorage with typed definitions and migration
 
 ## Code Style
 
-* 2-space indent, no TypeScript, ESM throughout
+- 2-space indent, no TypeScript, ESM throughout
 
-* `@/` alias → each app's `src/`
+- `@/` alias → each app's `src/`
 
-* 根：ESLint 9 flat config + Prettier（全仓已统一为 Prettier 格式，`format:check` 通过）
+- 根：ESLint 9 flat config + Prettier。`format:check` 全绿；`apps/web/src/utils/soundList.js` 为 prebuild 生成物，已加入 `.prettierignore`
 
-* `apps/web` 使用自己的「oxlint + ESLint」双链（见 `apps/web/AGENTS.md`），根工具不覆盖其规范
+- `apps/web` 使用自己的「oxlint + ESLint」双链（见 `apps/web/AGENTS.md`），根工具不覆盖其规范
 
-* Mixed Composition API / Options API in Vue apps
+- Mixed Composition API / Options API in Vue apps
 
 ## CI/CD
 
 All workflows use `.github/actions/setup-pnpm` composite action.
 
-| Workflow               | Trigger                           | Action                      |
-| ---------------------- | --------------------------------- | --------------------------- |
-| `ci.yml`               | push/PR to main                   | Lint, build web + dashboard |
-| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages          |
-| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact    |
-| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub  |
-| `store-pwa.yml`        | PR to main (web)                  | PWA store validation        |
+| Workflow               | Trigger                           | Action                                                     |
+| ---------------------- | --------------------------------- | ---------------------------------------------------------- |
+| `ci.yml`               | push/PR to main                   | Lint（根 + web 双链）、format check、build web + dashboard |
+| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages                                         |
+| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact                                   |
+| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub                                 |
+| `store-pwa.yml`        | PR to main (web)                  | PWA store validation                                       |
 
 ## Notes
 
-* Hoisted deps (`node-linker=hoisted` in `.npmrc`)
+- Hoisted deps（`nodeLinker: hoisted`）与 `autoInstallPeers: true` 都写在 `pnpm-workspace.yaml`。pnpm 11 不读取 `.npmrc` 里的同名项，放那里等于未生效
 
-* Server native modules (`bcrypt`, `@prisma/client`): run `pnpm rebuild` if needed
+- Server native modules (`bcrypt`, `@prisma/client`): run `pnpm rebuild` if needed
 
-* Docker builds use repo root as context (Dockerfile references `packages/shared`)
+- Docker builds use repo root as context (Dockerfile references `packages/shared`)
 
-* Env files gitignored; copy `.env.example` / `.env.oauth.example` per app
-
+- Env files gitignored；模板文件为 `apps/web/.env.example`、`apps/dashboard/.env.example`、`apps/server/.env.oauth.example`（`apps/server` 暂无 `.env.example`）

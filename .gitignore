@@ -88,5 +88,9 @@ apps/server/data/
 .DS_Store
 Thumbs.db
 
+# Agent / harness local directories (machine-local, never publish)
+.dsh/
+.agents/
+
 # Misc
 /.trae

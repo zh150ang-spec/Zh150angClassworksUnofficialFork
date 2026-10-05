@@ -14,5 +14,9 @@ apps/server/public/**
 apps/web/public/sounds/**
 apps/web/public/uaf/**
 apps/web/public/pwa/**
+# prebuild 自动生成（scripts/generate-sound-list.js），非手写源码
+apps/web/src/utils/soundList.js
 pnpm-workspace.yaml
 .claude/
+.dsh/
+.agents/

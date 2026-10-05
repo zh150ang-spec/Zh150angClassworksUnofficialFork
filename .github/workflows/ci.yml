@@ -25,6 +25,9 @@ jobs:
       - name: Lint (ESLint)
         run: pnpm run lint
 
+      - name: Lint web (oxlint + ESLint)
+        run: pnpm --filter @classworks/web exec oxlint && pnpm --filter @classworks/web exec eslint "src/**/*.vue"
+
       - name: Format check (Prettier)
         run: pnpm run format:check
 
