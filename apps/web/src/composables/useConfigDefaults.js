@@ -15,8 +15,7 @@ import { networkStatus } from '@/utils/networkStatus'
 // 只有这种情况才允许回退默认配置。
 const CONFIRMED_MISSING_CODES = ['NOT_FOUND']
 // 「离线无法判定」：离线时本地没有副本，无法知道云端到底有没有这个键。
-// 仅在当前确实离线时才当作缺失——否则一旦把认证失败/网络故障当成缺失，
-// 就会静默套用默认配置，用户下一次保存即用默认值覆盖云端真实配置。
+// 仅在当前确实离线时才当作缺失，因为一旦把认证失败/网络故障当成缺失，就会静默套用默认配置，用户下一次保存即用默认值覆盖云端真实配置。
 const OFFLINE_INDETERMINATE_CODES = ['DATA_NOT_FOUND']
 
 export function useConfigDefaults({ configKey, kind = 'object' } = {}) {

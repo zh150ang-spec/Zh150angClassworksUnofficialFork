@@ -1,5 +1,3 @@
-# AGENTS.md
-
 This file provides guidance to AI agents working with code in this repository.
 
 ## Project Overview
@@ -13,7 +11,7 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 | `@classworks/dashboard` | `apps/dashboard`  | Vue 3 + Tailwind 4             | Admin UI for the KV backend                           |
 | `@classworks/shared`    | `packages/shared` | Pure JS (ESM)                  | Shared constants (headers, URLs)                      |
 
-> **各 app 自治理**：目前仅有 `apps/web` 提供了独立的 `apps/web/AGENTS.md`；`apps/server`、`apps/dashboard` 暂无独立 `AGENTS.md`，其细节见各自的 `README.md`。尤其涉及 `apps/web`（命令、lint、数据层、部署约定）时，**以** **`apps/web/AGENTS.md`** **为权威**；本根文档只做笼统说明并透传引用，避免与子文档冲突或重复。
+> **各 app 自治理**：目前仅有 `apps/web` 提供了独立的 `apps/web/AGENTS.md`；`apps/server`、`apps/dashboard` 暂无独立 `AGENTS.md`，其细节见各自的 `README.md`。尤其涉及 `apps/web`（命令、lint、数据层、部署约定）时，**以** **`apps/web/AGENTS.md`** **为权威**；本根文档只做透传的笼统说明，避免与子文档冲突或重复。
 
 ## Monorepo Layout
 
@@ -26,7 +24,7 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 ├── packages/
 │   └── shared/         # Shared constants (@classworks/shared)
 ├── scripts/
-│   └── check-agent-docs.mjs  # 校验 AGENTS.md 与 CLAUDE.md 正文同步
+│   └── check-agent-docs.mjs  # 校验 AGENTS.md 与 CLAUDE.md 内容一致
 ├── .github/
 │   ├── actions/setup-pnpm/   # Reusable CI composite action
 │   └── workflows/
@@ -43,29 +41,31 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 
 ## Commands
 
-All commands run from the **repo root**.
+These commands run from the **repo root**.
 
 ```bash
+# For all apps
 pnpm install              # Install all workspace dependencies
-pnpm run dev              # All apps in parallel (web :3031, server :3000, dashboard :5173)
-pnpm run build            # Build all apps（server 的 build 即 prisma generate，需联网下载引擎）
-pnpm run lint             # ESLint（自动修复，本地随手用）
+pnpm run dev              # Start all apps in parallel (web :3031, server :3000, dashboard :5173)
+pnpm run build            # Build all apps（server 的 build 仅为 prisma generate）
+pnpm run lint             # ESLint, auto-fix（本地随手用）
 pnpm run lint:check       # ESLint 仅检查、不改文件（CI 与验证用这条）
-pnpm run format           # Prettier write
-pnpm run format:check     # Prettier check
-pnpm run check:agent-docs # 校验 AGENTS.md 与 CLAUDE.md 正文同步
-pnpm run test             # 单元测试（= `pnpm --filter @classworks/web run test`；离线系统回归守护）
+pnpm run format           # Prettier write for all apps
+pnpm run format:check     # Prettier check for all apps
+pnpm run check:agent-docs # 校验 AGENTS.md 与 CLAUDE.md 内容一致
+pnpm run test             # Web 单元测试（= `pnpm --filter @classworks/web run test`；离线系统回归守护）
 
-pnpm run dev:web          # Single app
+# Per app
+pnpm run dev:web
 pnpm run dev:server
 pnpm run dev:dashboard
 pnpm run build:web
-pnpm run build:server     # prisma generate
+pnpm run build:server     # Only prisma generate
 pnpm run build:dashboard
-pnpm run test:web         # 同上（等价写法，便于与 build:web 等对齐）
+pnpm run test:web         # 同上（等价写法，与 build:web 等对齐）
 ```
 
-> 注：`apps/web` 的内部命令与规范以 `apps/web/AGENTS.md` 为准；根层调用单个 web 命令用 `pnpm --filter @classworks/web run <script>`。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的 `pnpm run lint`（ESLint）是两套，各自独立、互不覆盖。
+> 注：`apps/web` 的内部命令与规范以 `apps/web/AGENTS.md` 为准；根层调用单个 web 命令用 `pnpm --filter @classworks/web run <script>`。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的 `pnpm run lint`（ESLint）是两套，各自独立、互不覆盖。考虑到性能问题，当仅进行 web 开发时，应当特意使用 web 内的策略。
 
 ### Per-app
 
@@ -127,30 +127,24 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 
 - Env files gitignored；模板文件为 `apps/web/.env.example`、`apps/dashboard/.env.example`、`apps/server/.env.example`、`apps/server/.env.oauth.example`
 
-## 执行纪律（本项目已发生的错误复盘）
+## 执行纪律
 
-以下错误在本仓库的真实工作中发生过，代价从「浪费数小时」到「险些丢失 426 个文件」。
-它们有一个共同病因：**先形成根因假设、直接写进汇报，事后才验证**。请对照执行。
+以下错误在本仓库的真实工作中发生过。
+它们有一个共同病因：**先形成根因假设、直接写进汇报，事后才验证**。
 
-### 1. 文档里的描述不是事实
+### 1. 文档里的描述可能不是事实
 
-`AGENTS.md` 自己曾写着「Hoisted deps (`node-linker=hoisted` in `.npmrc`)」，而 pnpm 11 根本不读
-`.npmrc` 的这些项（`pnpm config get node-linker` 返回 `undefined`），hoisted 从未生效，
-导致后续排查在完全错误的因果链上耗费很久。
-
-**规则**：根因进入汇报前必须有可复现证据。文档中的配置、路径、命令一律先当作待验证假设，
-尤其留意「意图」与「实际」分叉之处——写了却没生效的东西不会产生任何报错。
+**规则**：汇报根因前必须有可复现证据，最主要以当前代码为准。一切常规方法无法检查出问题时，以实机写错误代码测试和直接使用浏览器抓取为准。
+本项目的所有文档需以低置信度看待。
+另外，经常有写了却没生效的东西不会产生任何报错的情况。可以做极端负向测试来查看当前代码是否真的起作用。
 
 ### 2. 破坏性操作先问「这步失败了会怎样」
 
-曾用「删除全部已跟踪文件 → `git checkout -- .` 恢复」来刷新工作区：删除成功、恢复失败，
-426 个文件（含 `AGENTS.md`、`CLAUDE.md`）瞬间从磁盘消失。当时的依据只是「工作区现在是干净的」，
-没有考虑恢复步骤自身会失败。
-
+删除全部已跟踪文件 → `git checkout -- .` 恢复流程可能导致文件全部丢失。
 **规则**：批量删除、`git reset --hard`、`git clean` 之前先确认恢复手段可用；
-优先选择**不删除任何文件**的做法（例如原地做字节级归一化行尾，而不是删掉再恢复）。
+优先选择**不删除任何文件**的做法。
 
-### 3. 新增守护必须做负向测试
+### 3. 新增守护需要做负向测试
 
 **规则**：新增校验脚本、CI 步骤或断言后，必须故意制造一次违规、确认它真的失败，再恢复。
 只跑一遍「通过」不算验证。`pnpm run check:agent-docs` 是正面示例，它经过双向验证。
@@ -165,13 +159,12 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 - 探针文件内容太弱，无法区分正反两种结果，却据此下了结论；
 - `git ls-files -c core.quotepath=false` 参数位置写错（`-c` 必须在子命令之前），返回空结果。
 
-**规则**：测退出码不要经过 `Select-Object -First`；探针必须先跑一次「必然失败」的对照，
-确认它真的能失败，再相信它的「通过」。
+**规则**：测退出码不要经过 `Select-Object -First`；探针必须先跑一次「必然失败」的对照，确认它真的能失败，再相信它的「通过」。
 
 ### 5. 报告「仓库有 bug」之前，先排除是输出转义
 
 `git ls-files` 会对非 ASCII 路径做 C 风格转义，文件名会显示成 `...mp3"` 这样，
-看起来像文件名里多了引号。这曾被当作仓库缺陷准备上报，实为输出转义造成的错觉。
+看起来像文件名里多了引号。这实为输出转义造成的错觉。
 
 **规则**：要拿真实路径用 `git -c core.quotepath=false ls-files`（或 `-z`）。
 
@@ -183,13 +176,11 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 ### 7. 既有规则即使动机正当也要先问
 
 `apps/web/AGENTS.md` 的危险操作清单要求 `git checkout` / `git reset` / `git clean` 先获用户同意。
-曾为回滚自己造成的生成物脏改动直接执行 `git checkout -- <paths>`，只有事后报告——这不合规。
+AI 曾为回滚生成物 `git checkout -- <paths>`，只有事后报告——这不合规。
 
 例外仅限：回滚 **agent 自身在本轮造成的、未提交的意外改动**，且必须限定在受影响路径上
 （见 `apps/web/AGENTS.md` 的例外条款）。
 
 ### 8. 提交信息一律用 `-F` 传文件
 
-本仓库文档与提交信息都是中文。PowerShell 会把 `“ ”` 当作字符串定界符，
-`git commit -m "…“…”…"` 会直接报 `pathspec … did not match any file(s) known to git`。
-把信息写进临时文件再用 `-F` 传入。
+本仓库文档与提交信息都是中文。PowerShell 会把 `“ ”` 当作字符串定界符，`git commit -m "…“…”…"` 会直接报 `pathspec … did not match any file(s) known to git`。把信息写进临时文件再用 `-F` 传入。

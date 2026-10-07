@@ -13,7 +13,7 @@ import { loadAllKeys, runWithConcurrency, SYNC_CONCURRENCY } from '@/utils/syncH
 setSpoolFlushHandler((key, data) => rmwWriteServer(key, data))
 
 /**
- * 本地副本写入失败登记表（P0-6）。
+ * 本地副本写入失败登记表。
  *
  * 背景：双存储下"云端成功、本地失败"以前只是把 localFailed 放进返回值，而全仓没有任何消费方，
  * 于是本地副本静默过期（离线时读到旧数据），用户与设置页都看不到。
@@ -252,7 +252,7 @@ export default {
     return _isReadOnly
   },
 
-  /** 本地副本写入失败的 key 列表（P0-6 可见性；设置页读取） */
+  /** 本地副本写入失败的 key 列表（设置页读取） */
   getLocalWriteFailures() {
     return [...localWriteFailures.values()]
   },

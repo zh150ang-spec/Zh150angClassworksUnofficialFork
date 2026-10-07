@@ -21,7 +21,7 @@ const AUDIO_EXTS = ['.mp3', '.wav', '.ogg', '.m4a', '.aac']
 const DEFAULT_SINGLE = 'Teams 默认.mp3'
 const DEFAULT_URGENT = 'Teams 默认通话铃.mp3'
 
-// 读取音频文件名列表（一次性读取）
+// 一次性读取音频文件名列表
 function getSoundFiles() {
   try {
     return fs
@@ -99,7 +99,7 @@ export function playSound(filename, loop = false) {
   }
 }
 
-// 播放音频文件（Promise版本，用于更好的错误处理）
+// 播放音频文件
 export function playSoundAsync(filename, loop = false) {
   return new Promise((resolve, reject) => {
     const path = getSoundPath(filename);
@@ -135,7 +135,8 @@ export function stopSound(audio) {
 `
 }
 
-// 写入文件（内容无变化时跳过写入，避免不必要的磁盘 IO 与构建缓存失效）
+// 写入文件
+// 内容无变化时跳过写入，避免不必要的磁盘 IO
 function writeSoundList() {
   try {
     const content = generateSoundList()

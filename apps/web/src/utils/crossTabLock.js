@@ -11,12 +11,9 @@
  * - 超时后再等 `graceMs` 仍未释放，才强制释放并告警（防调用方彻底卡死导致锁泄漏）
  * - **不把 AbortSignal 传给 Web Locks**：交给浏览器的话，abort 会让浏览器直接释放锁，
  *   于是又会退化成"调用方以为持有、实际已释放"的假租约
- *
- * 历史缺陷（勿回退）：
- * - 旧实现 `await navigator.locks.request(...)` 把**整个持锁过程**都 await 了，
- *   而持锁回调又在等 `release()`；`release()` 却要等 acquireLock 返回后才可能被调用，
- *   形成循环等待：acquireLock 直到 30s 超时才返回，且那时锁已被超时回调释放，
- *   结果是"每次后台同步延迟 30s 才开始，并且全程无锁"。
+ * - **不能 await 整个持锁过程**：`release()` 要等 acquireLock 返回后才可能被调用，
+ *   若把 `navigator.locks.request(...)` 的持锁回调整个 await，会形成循环等待——
+ *   直到 30s 超时才返回，且那时锁已被超时回调释放，表现为"每次同步延迟 30s 且全程无锁"
  *
  * 兼容性：Chrome 69+ / Firefox 96+ / Safari 15.4+ / Edge 79+
  */
@@ -121,7 +118,7 @@ export async function acquireLock(name, options = {}) {
     }
   }
 
-  // 注意：这里**不** await request()，否则会等到锁释放才返回（见文件头"历史缺陷"）
+  // 注意：这里**不** await request()，否则会等到锁释放才返回（见文件头设计说明）
   const requestPromise = navigator.locks
     .request(name, { mode: 'exclusive', ifAvailable: true }, async (lock) => {
       if (!lock) {

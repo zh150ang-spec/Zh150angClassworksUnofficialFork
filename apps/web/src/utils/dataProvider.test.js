@@ -138,7 +138,7 @@ describe('dataProvider.saveData 离线状态与暂存', () => {
     networkStatus.markServerReachable()
   })
 
-  it('云端成功 + 本地失败：先原地重试一次，成功则不登记（P0-6）', async () => {
+  it('云端成功 + 本地失败：先原地重试一次，成功则不登记', async () => {
     useProvider('dual-cloud')
     kvLocalProvider.saveData.mockResolvedValueOnce({
       success: false,

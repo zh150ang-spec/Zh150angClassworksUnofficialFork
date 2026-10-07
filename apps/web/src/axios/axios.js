@@ -6,11 +6,10 @@ import { Base64 } from 'js-base64'
 import { DEFAULT_RETRY_POLICY, resolveRetryPolicy, planRetry } from '@/utils/netRetryPolicy'
 
 const DEFAULT_TIMEOUT = 15000
-// 重试策略：**有界**指数退避，默认最多 2 次尝试、总预算 12s（见 netRetryPolicy.js）。
+// 重试策略：有界退避，默认最多 2 次尝试、总预算 12s（见 netRetryPolicy.js）。
 // 单次请求超时 15s > 预算 12s，因此「请求整体超时」不会重试，UI 的等待时间保持有界。
 //
-// 重要：这里**不再**做「永不放弃」的持久重试。持久重试属于离线队列 / backgroundSync 的职责，
-// 传输层若永不失败，上层的失败处理（心跳阈值、离线队列、RMW 降级、退避）全部无法生效。
+// 不做「永不放弃」的持久重试：持久重试属于离线队列 / backgroundSync 的职责，传输层若永不失败，上层的失败处理（心跳阈值、离线队列、RMW 降级、退避）全部无法生效。
 // 调用方可用 `config.metadata.retryPolicy` 覆盖（心跳 maxAttempts:1，后台同步见 BACKGROUND_RETRY_POLICY）。
 //
 // 幂等性说明：KV 写入是服务端无条件 upsert（apps/server/routes/kv-token.js），重试安全；
