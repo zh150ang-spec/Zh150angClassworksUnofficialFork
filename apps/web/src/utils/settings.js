@@ -180,7 +180,7 @@ const settingsDefinitions = {
   'display.showQuickTools': {
     type: 'boolean',
     default: true,
-    description: '快捷输入键盘',
+    description: '快捷工具面板',
     icon: ICON.DIALPAD,
   },
   // 来自上游 74be238：控制作业编辑对话框里的「粘贴」与「粘贴并完成」按钮
@@ -346,6 +346,43 @@ const settingsDefinitions = {
     default: false,
     description: '禁止编辑过往数据',
     icon: ICON.LOCK_CLOCK,
+  },
+  // 编辑界面特性（HomeworkEditDialog）
+  'edit.showNumericKeypad': {
+    type: 'boolean',
+    default: true,
+    description: '编辑界面小键盘',
+    icon: ICON.NUMERIC_ICON,
+  },
+  'edit.showQuickTexts': {
+    type: 'boolean',
+    default: true,
+    description: '编辑界面快捷小按钮',
+    icon: ICON.TEXT_BOX_OUTLINE,
+  },
+  'edit.showTemplates': {
+    type: 'boolean',
+    default: true,
+    description: '编辑界面作业模板',
+    icon: ICON.BOOK_EDIT,
+  },
+  'edit.notebookEnabled': {
+    type: 'boolean',
+    default: true,
+    description: '作业本填写功能',
+    icon: ICON.BOOK_NOTEBOOK,
+  },
+  'edit.mdToolbarEnabled': {
+    type: 'boolean',
+    default: true,
+    description: '简易 Markdown 快捷输入',
+    icon: ICON.CODE_TAGS,
+  },
+  'edit.customNotebooks': {
+    type: 'string',
+    default: '[]',
+    description: '自定义作业本（内部）',
+    hidden: true,
   },
   'edit.autoSavePromptText': {
     type: 'string',

@@ -36,12 +36,6 @@
 
       <v-list-subheader class="font-weight-bold text-primary"> 交互 </v-list-subheader>
 
-      <setting-item :setting-key="'display.showQuickTools'" />
-
-      <v-divider class="my-2" />
-      <setting-item :setting-key="'display.showPasteButtons'" />
-
-      <v-divider class="my-2" />
       <setting-item :setting-key="'display.enhancedTouchMode'" />
 
       <v-divider class="my-2" />

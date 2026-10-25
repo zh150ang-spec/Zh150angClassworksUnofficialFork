@@ -7,6 +7,7 @@
           :icon="ICON.ARROW_LEFT"
           variant="text"
           class="mr-2"
+          aria-label="关闭作业本"
           @click="handleClose"
         />
         <v-icon v-else class="mr-2" color="primary">
@@ -20,6 +21,7 @@
           :icon="ICON.CLOSE"
           variant="text"
           class="ml-2"
+          aria-label="关闭作业本"
           @click="handleClose"
         />
       </v-card-title>
@@ -157,6 +159,7 @@
                       min="1"
                       type="number"
                       variant="outlined"
+                      @focus="activePageInput = 'start'"
                     />
                     <v-btn
                       density="comfortable"
@@ -186,6 +189,7 @@
                       min="1"
                       type="number"
                       variant="outlined"
+                      @focus="activePageInput = 'start'"
                     />
                     <v-btn
                       density="comfortable"
@@ -211,6 +215,7 @@
                       min="1"
                       type="number"
                       variant="outlined"
+                      @focus="activePageInput = 'end'"
                     />
                     <v-btn
                       density="comfortable"
@@ -220,6 +225,19 @@
                       @click="form.pageEnd = (form.pageEnd || form.pageStart || 1) + 1"
                     />
                     <div class="input-label">页</div>
+                  </div>
+
+                  <div v-if="pageMode === 'range'" class="d-flex justify-center mb-2">
+                    <v-btn-toggle
+                      v-model="activePageInput"
+                      mandatory
+                      density="compact"
+                      divided
+                      variant="outlined"
+                    >
+                      <v-btn value="start" size="small">起始页</v-btn>
+                      <v-btn value="end" size="small">结束页</v-btn>
+                    </v-btn-toggle>
                   </div>
 
                   <div class="numpad">
@@ -329,6 +347,7 @@
                       min="1"
                       type="number"
                       variant="outlined"
+                      @focus="activeQuestionInput = 'start'"
                     />
                     <v-btn
                       density="comfortable"
@@ -358,6 +377,7 @@
                       min="1"
                       type="number"
                       variant="outlined"
+                      @focus="activeQuestionInput = 'start'"
                     />
                     <v-btn
                       density="comfortable"
@@ -388,6 +408,7 @@
                       min="1"
                       type="number"
                       variant="outlined"
+                      @focus="activeQuestionInput = 'end'"
                     />
                     <v-btn
                       density="comfortable"
@@ -414,19 +435,66 @@
                         {{ n }}
                       </v-btn>
                     </div>
-                    <div class="d-flex align-center justify-center mt-2">
+                    <div class="d-flex align-center justify-center mt-2 flex-wrap gap-2">
+                      <v-text-field
+                        v-model.number="customQuestionInput"
+                        class="input-field"
+                        density="comfortable"
+                        hide-details
+                        label="其他题号"
+                        min="1"
+                        style="max-width: 120px"
+                        type="number"
+                        variant="outlined"
+                        @keyup.enter="addCustomQuestion"
+                      />
                       <v-btn
                         density="comfortable"
                         size="small"
                         variant="tonal"
+                        @click="addCustomQuestion"
+                      >
+                        添加
+                      </v-btn>
+                      <v-btn
+                        density="comfortable"
+                        size="small"
+                        variant="text"
                         @click="selectedQuestions = []"
                       >
                         清空
                       </v-btn>
-                      <span v-if="selectedQuestions.length" class="ml-2 text-body-medium"
+                      <span v-if="selectedQuestions.length" class="text-body-medium"
                         >已选 {{ selectedQuestions.length }} 题</span
                       >
                     </div>
+                    <div v-if="sortedSelectedQuestions.length" class="d-flex flex-wrap mt-1">
+                      <v-chip
+                        v-for="n in sortedSelectedQuestions"
+                        :key="n"
+                        class="ma-1"
+                        closable
+                        color="primary"
+                        size="small"
+                        variant="tonal"
+                        @click:close="toggleQuestion(n)"
+                      >
+                        {{ n }}
+                      </v-chip>
+                    </div>
+                  </div>
+
+                  <div v-if="questionMode === 'range'" class="d-flex justify-center mt-2 mb-2">
+                    <v-btn-toggle
+                      v-model="activeQuestionInput"
+                      mandatory
+                      density="compact"
+                      divided
+                      variant="outlined"
+                    >
+                      <v-btn value="start" size="small">起始题</v-btn>
+                      <v-btn value="end" size="small">结束题</v-btn>
+                    </v-btn-toggle>
                   </div>
 
                   <div v-if="questionMode !== 'multi'" class="numpad">
@@ -530,8 +598,17 @@
             </div>
           </div>
 
+          <div v-if="formError && form.content" class="text-error text-body-small text-right mb-2">
+            {{ formError }}
+          </div>
+
           <div class="d-flex justify-end mt-4">
-            <v-btn :disabled="!form.content" color="primary" type="submit" variant="elevated">
+            <v-btn
+              :disabled="!form.content.trim() || !!formError"
+              color="primary"
+              type="submit"
+              variant="elevated"
+            >
               <v-icon class="mr-1">
                 {{ ICON.PLUS }}
               </v-icon>
@@ -569,11 +646,11 @@
                     class="drag-handle mr-2"
                     color="medium-emphasis"
                     size="small"
+                    aria-hidden="true"
                   />
-                  <v-chip color="primary" size="small" variant="flat"> 第{{ index + 1 }}次 </v-chip>
                 </template>
                 <v-list-item-title class="ml-2">
-                  {{ element.text }}
+                  {{ formatNotebookItem(element, index + 1) }}
                 </v-list-item-title>
                 <template #append>
                   <v-btn
@@ -632,7 +709,14 @@
 <script>
 import { ICON } from '@/utils/icons'
 import { useDisplay } from 'vuetify'
-import { getSetting } from '@/utils/settings'
+import { getSetting, setSetting } from '@/utils/settings'
+import {
+  formatNotebookItem,
+  mergeNotebookOptions,
+  parseCustomNotebooks,
+  toPositiveInt,
+  validateNotebookItem,
+} from '@/utils/notebookHomework'
 import draggable from 'vuedraggable'
 
 export default {
@@ -653,7 +737,7 @@ export default {
   emits: ['update:modelValue', 'insert'],
   setup() {
     const { mobile } = useDisplay()
-    return { mobile, ICON }
+    return { mobile, ICON, formatNotebookItem }
   },
   data() {
     return {
@@ -671,9 +755,11 @@ export default {
       activePageInput: 'start',
       activeQuestionInput: 'start',
       selectedQuestions: [],
+      customQuestionInput: null,
       pendingItems: [],
       showCustomNotebook: false,
       customNotebookName: '',
+      customNotebooks: [],
       notebookConfig: null,
       templateData: null,
       itemIdCounter: 0,
@@ -697,30 +783,7 @@ export default {
       return this.pendingItems.length + 1
     },
     availableNotebooks() {
-      const notebooks = []
-      if (this.notebookConfig?.notebookTemplates?.[this.subject]?.notebooks) {
-        notebooks.push(
-          ...this.notebookConfig.notebookTemplates[this.subject].notebooks.map((n) => ({
-            name: n,
-          })),
-        )
-      }
-      if (!notebooks.length) {
-        const defaults = {
-          语文: ['作业本', '作文本'],
-          数学: ['作业本'],
-          英语: ['作业本'],
-          物理: ['作业本'],
-          化学: ['作业本'],
-          生物: ['作业本'],
-          历史: ['作业本'],
-          地理: ['作业本'],
-          政治: ['作业本'],
-        }
-        const subjectDefaults = defaults[this.subject] || ['作业本']
-        notebooks.push(...subjectDefaults.map((n) => ({ name: n })))
-      }
-      return notebooks
+      return mergeNotebookOptions(this.notebookConfig, this.subject, this.customNotebooks)
     },
     hasTemplates() {
       return !!(this.subjectBooks || this.commonBooks)
@@ -737,52 +800,57 @@ export default {
       }
       return this.templateData.commonSubject.books
     },
-    pageText() {
-      if (this.pageMode === 'single' && this.form.pageStart) {
-        return `第${this.form.pageStart}页`
-      }
-      if (this.pageMode === 'range' && this.form.pageStart && this.form.pageEnd) {
-        return `第${this.form.pageStart}-${this.form.pageEnd}页`
-      }
-      return ''
+    sortedSelectedQuestions() {
+      return [...new Set(this.selectedQuestions)].sort((a, b) => a - b)
     },
-    questionText() {
-      if (this.questionMode === 'single' && this.form.questionStart) {
-        return `第${this.form.questionStart}题`
+    draftItem() {
+      return {
+        notebook: this.form.notebook,
+        content: this.form.content,
+        pageMode: this.pageMode,
+        pageStart: this.form.pageStart,
+        pageEnd: this.form.pageEnd,
+        questionMode: this.questionMode,
+        questionStart: this.form.questionStart,
+        questionEnd: this.form.questionEnd,
+        questions: this.selectedQuestions,
+        repeat: this.form.repeat,
       }
-      if (this.questionMode === 'range' && this.form.questionStart && this.form.questionEnd) {
-        return `第${this.form.questionStart}-${this.form.questionEnd}题`
-      }
-      if (this.questionMode === 'multi' && this.selectedQuestions.length) {
-        return `第${[...this.selectedQuestions].sort((a, b) => a - b).join(',')}题`
-      }
-      return ''
+    },
+    formError() {
+      return validateNotebookItem(this.draftItem)
     },
     previewText() {
-      if (!this.form.content) return ''
-      const parts = []
-      if (this.form.notebook) {
-        parts.push(`📖 ${this.form.notebook}`)
-      }
-      parts.push(this.form.content)
-      if (this.pageText) {
-        parts.push(this.pageText)
-      }
-      if (this.questionText) {
-        parts.push(this.questionText)
-      }
-      if (this.form.repeat) {
-        parts.push(`写${this.form.repeat}遍`)
-      }
-      return parts.join(' | ')
+      if (!this.form.content.trim()) return ''
+      return formatNotebookItem(this.draftItem, this.currentTimes)
     },
   },
   watch: {
-    modelValue(newValue) {
-      if (newValue) {
-        this.loadConfig()
-        this.resetForm()
+    async modelValue(newValue) {
+      if (!newValue) return
+      this.customNotebooks = parseCustomNotebooks(getSetting('edit.customNotebooks'))
+      // 先按当前可用项初始化，保证弹窗可立即输入；配置返回后只校正作业本选项，
+      // 不整体 resetForm，避免把用户已经输入的内容清掉。
+      this.resetForm()
+      this.$nextTick(() => {
+        if (this.$refs.contentInput) {
+          this.$refs.contentInput.focus()
+        }
+      })
+      await this.loadConfig()
+      if (!this.availableNotebooks.some((item) => item.name === this.form.notebook)) {
+        this.form.notebook = this.availableNotebooks[0]?.name || ''
       }
+    },
+    pageMode() {
+      this.form.pageEnd = null
+      this.activePageInput = 'start'
+    },
+    questionMode() {
+      this.form.questionEnd = null
+      this.selectedQuestions = []
+      this.customQuestionInput = null
+      this.activeQuestionInput = 'start'
     },
   },
   methods: {
@@ -800,6 +868,8 @@ export default {
       this.questionMode = 'single'
       this.activePageInput = 'start'
       this.activeQuestionInput = 'start'
+      this.selectedQuestions = []
+      this.customQuestionInput = null
     },
     async loadConfig() {
       try {
@@ -808,9 +878,6 @@ export default {
           'classworks-config-homework-template',
         )
         this.templateData = this.notebookConfig
-        if (this.availableNotebooks.length && !this.form.notebook) {
-          this.form.notebook = this.availableNotebooks[0].name
-        }
       } catch (error) {
         console.error('Failed to load notebook template config:', error)
         this.notebookConfig = null
@@ -822,12 +889,21 @@ export default {
       this.form.content = this.form.content.trim() + (hasContent ? ' ' : '') + text
     },
     toggleQuestion(n) {
-      const index = this.selectedQuestions.indexOf(n)
+      const value = toPositiveInt(n)
+      if (!value) return
+      const index = this.selectedQuestions.indexOf(value)
       if (index > -1) {
         this.selectedQuestions.splice(index, 1)
       } else {
-        this.selectedQuestions.push(n)
+        this.selectedQuestions.push(value)
       }
+    },
+    addCustomQuestion() {
+      const value = toPositiveInt(this.customQuestionInput)
+      if (value && !this.selectedQuestions.includes(value)) {
+        this.selectedQuestions.push(value)
+      }
+      this.customQuestionInput = null
     },
     inputPageNumber(n) {
       if (this.pageMode === 'single') {
@@ -902,11 +978,23 @@ export default {
       }
     },
     addHomework() {
-      if (!this.form.content) return
+      const content = this.form.content.trim()
+      if (!content || this.formError) return
 
+      // 保存结构化条目，最终文本只在 confirmAdd 时统一格式化，
+      // 不再把预览文本用正则反解回字段。
       this.pendingItems.push({
         id: ++this.itemIdCounter,
-        text: this.previewText,
+        notebook: this.form.notebook,
+        content,
+        pageMode: this.pageMode,
+        pageStart: toPositiveInt(this.form.pageStart),
+        pageEnd: toPositiveInt(this.form.pageEnd),
+        questionMode: this.questionMode,
+        questionStart: toPositiveInt(this.form.questionStart),
+        questionEnd: toPositiveInt(this.form.questionEnd),
+        questions: this.sortedSelectedQuestions,
+        repeat: this.form.repeat || null,
       })
 
       this.form.content = ''
@@ -915,6 +1003,8 @@ export default {
       this.form.questionStart = null
       this.form.questionEnd = null
       this.form.repeat = null
+      this.selectedQuestions = []
+      this.customQuestionInput = null
     },
     removePending(index) {
       this.pendingItems.splice(index, 1)
@@ -923,45 +1013,42 @@ export default {
       this.pendingItems = []
     },
     confirmAdd() {
-      if (this.pendingItems.length) {
-        const text = this.pendingItems
-          .map((item, index) => {
-            const parts = []
-            if (item.text.includes('📖')) {
-              const notebookMatch = item.text.match(/📖\s*(\S+)/)
-              if (notebookMatch) {
-                parts.push(`📖 ${notebookMatch[1]}`)
-              }
-            }
-            parts.push(`第${index + 1}次`)
-            const contentWithoutNotebook = item.text.replace(/📖\s*\S+\s*\|\s*/, '')
-            parts.push(contentWithoutNotebook)
-            return parts.join(' | ')
-          })
-          .join('\n')
-        this.$emit('insert', text)
-        this.pendingItems = []
-        this.dialogVisible = false
-      }
+      if (!this.pendingItems.length) return
+      const text = this.pendingItems
+        .map((item, index) => formatNotebookItem(item, index + 1))
+        .join('\n')
+      this.$emit('insert', text)
+      this.pendingItems = []
+      this.dialogVisible = false
     },
     handleClose() {
+      // 取消即丢弃未确认条目，避免“取消后重开仍在”的假取消。
+      this.pendingItems = []
+      this.selectedQuestions = []
+      this.customQuestionInput = null
       this.dialogVisible = false
     },
     confirmCustomNotebook() {
-      if (this.customNotebookName.trim()) {
-        this.form.notebook = this.customNotebookName.trim()
-        this.showCustomNotebook = false
-        this.customNotebookName = ''
+      const name = this.customNotebookName.trim()
+      if (!name) return
+      if (!this.customNotebooks.includes(name)) {
+        this.customNotebooks = [...this.customNotebooks, name]
+        setSetting('edit.customNotebooks', JSON.stringify(this.customNotebooks))
       }
+      this.form.notebook = name
+      this.showCustomNotebook = false
+      this.customNotebookName = ''
     },
   },
 }
 </script>
 
 <style scoped>
-.v-card-text {
-  max-height: 70vh;
-  overflow-y: auto;
+@media (min-width: 600px) {
+  .v-card-text {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
 }
 
 .number-input {

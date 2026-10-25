@@ -14,8 +14,9 @@
         <div class="d-flex">
           <div class="flex-grow-1">
             <!-- Markdown Toolbar -->
-            <div class="md-toolbar mb-2">
+            <div v-if="notebookEnabled || mdToolbarEnabled" class="md-toolbar mb-2">
               <v-btn
+                v-if="notebookEnabled"
                 class="md-tool-btn notebook-btn"
                 color="primary"
                 size="small"
@@ -28,19 +29,21 @@
                   技术预览
                 </v-chip>
               </v-btn>
-              <v-divider class="mx-2" vertical />
-              <v-btn
-                v-for="tool in mdTools"
-                :key="tool.name"
-                :title="tool.tooltip"
-                class="md-tool-btn"
-                size="small"
-                variant="text"
-                density="comfortable"
-                @click="insertMdSyntax(tool)"
-              >
-                {{ tool.label }}
-              </v-btn>
+              <v-divider v-if="notebookEnabled && mdToolbarEnabled" class="mx-2" vertical />
+              <template v-if="mdToolbarEnabled">
+                <v-btn
+                  v-for="tool in mdTools"
+                  :key="tool.name"
+                  :title="tool.tooltip"
+                  class="md-tool-btn"
+                  size="small"
+                  variant="text"
+                  density="comfortable"
+                  @click="insertMdSyntax(tool)"
+                >
+                  {{ tool.label }}
+                </v-btn>
+              </template>
             </div>
 
             <v-textarea
@@ -76,7 +79,7 @@
             </div>
 
             <!-- Template Buttons Section -->
-            <div v-if="templateData" class="mt-4">
+            <div v-if="showTemplates && templateData" class="mt-4">
               <div v-if="hasTemplates">
                 <div class="template-books">
                   <!-- Subject specific books -->
@@ -157,9 +160,13 @@
           </div>
 
           <!-- Quick Tools Section -->
-          <div v-if="showQuickTools && !isMobile" class="quick-tools ml-4" style="min-width: 180px">
+          <div
+            v-if="showQuickTools && !isMobile && (showNumericKeypad || showQuickTexts)"
+            class="quick-tools ml-4"
+            style="min-width: 180px"
+          >
             <!-- Numeric Keypad -->
-            <div class="numeric-keypad mb-4">
+            <div v-if="showNumericKeypad" class="numeric-keypad mb-4">
               <div class="keypad-row">
                 <v-btn
                   v-for="n in 3"
@@ -233,7 +240,7 @@
               </div>
             </div>
 
-            <div class="d-flex flex-wrap gap-1">
+            <div v-if="showQuickTexts" class="d-flex flex-wrap gap-1">
               <v-btn
                 v-for="text in quickTexts"
                 :key="text"
@@ -279,6 +286,7 @@
   </v-dialog>
 
   <NotebookHomeworkDialog
+    v-if="notebookEnabled"
     v-model="showNotebookDialog"
     :subject="subject"
     @insert="handleNotebookInsert"
@@ -399,6 +407,21 @@ export default {
     },
     showQuickTools() {
       return getSetting('display.showQuickTools')
+    },
+    showNumericKeypad() {
+      return getSetting('edit.showNumericKeypad')
+    },
+    showQuickTexts() {
+      return getSetting('edit.showQuickTexts')
+    },
+    showTemplates() {
+      return getSetting('edit.showTemplates')
+    },
+    notebookEnabled() {
+      return getSetting('edit.notebookEnabled')
+    },
+    mdToolbarEnabled() {
+      return getSetting('edit.mdToolbarEnabled')
     },
     showPasteButtons() {
       return getSetting('display.showPasteButtons')

@@ -15,6 +15,29 @@
 
       <v-divider class="my-2" />
 
+      <v-list-subheader class="font-weight-bold text-primary"> 编辑界面 </v-list-subheader>
+      <setting-item :setting-key="'display.showQuickTools'" />
+
+      <v-divider class="my-2" />
+      <setting-item :setting-key="'edit.showNumericKeypad'" />
+
+      <v-divider class="my-2" />
+      <setting-item :setting-key="'edit.showQuickTexts'" />
+
+      <v-divider class="my-2" />
+      <setting-item :setting-key="'edit.showTemplates'" />
+
+      <v-divider class="my-2" />
+      <setting-item :setting-key="'edit.notebookEnabled'" />
+
+      <v-divider class="my-2" />
+      <setting-item :setting-key="'edit.mdToolbarEnabled'" />
+
+      <v-divider class="my-2" />
+      <setting-item :setting-key="'display.showPasteButtons'" />
+
+      <v-divider class="my-2" />
+
       <v-list-subheader class="font-weight-bold text-primary"> 提示语 </v-list-subheader>
       <setting-item :setting-key="'edit.autoSavePromptText'" />
 
