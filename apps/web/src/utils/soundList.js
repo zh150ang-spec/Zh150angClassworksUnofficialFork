@@ -86,7 +86,7 @@ export function playSound(filename, loop = false) {
   }
 }
 
-// 播放音频文件（Promise版本，用于更好的错误处理）
+// 播放音频文件
 export function playSoundAsync(filename, loop = false) {
   return new Promise((resolve, reject) => {
     const path = getSoundPath(filename);

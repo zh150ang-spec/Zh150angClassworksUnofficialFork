@@ -666,7 +666,7 @@ _doSyncPhases()
 2. 网络从离线恢复到在线（`_resetImmediateBackoff()`）；
 3. 用户手动 `forceSyncNow()`。
 
-> ⚠️ 不要在 `scheduleImmediate()` 里重置 `_immediateAttempts`（历史缺陷 P1-8）：
+> ⚠️ 不要在 `scheduleImmediate()` 里重置 `_immediateAttempts`：
 > 持续编辑时退避会永远从 30s 起算，甚至每次保存都立刻打一次服务器。
 > 现在 10s 窗口内的重复触发会被"吸收"到已有的待跑定时器上。
 
@@ -676,9 +676,9 @@ _doSyncPhases()
   中止 `signal` + 回调 `onLeaseLost`；**不替调用方释放锁**。调用方在 `finally` 里
   `lease.release()` 之后锁才真正释放；超时后再等 `graceMs`（15s）仍未释放才强制释放并告警。
 
-  > 历史缺陷（勿回退）：旧实现在超时回调里直接 `releaseFn()`，同时把 `AbortSignal` 交给 Web Locks，
-  > 于是"调用方以为持有、实际已释放"；更严重的是旧 `acquireLock` 会 `await` **整个持锁过程**，
-  > 导致每次后台同步都要等满 30s 超时才开跑、且开跑时锁已经没了。
+  > 约束：不能在超时回调里直接 `releaseFn()`，也不能把 `AbortSignal` 交给 Web Locks，
+  > 否则会退化成"调用方以为持有、实际已释放"的假租约；`acquireLock` 也不能
+  > `await` 整个持锁过程，否则每次后台同步都要等满 30s 才开跑、且开跑时锁已经没了。
 
 - **同步重入**：`_isSyncing` 标志防止多轮同步重叠执行；`_immediateRunning` 防止 L0 重入。
 
@@ -696,8 +696,8 @@ _doSyncPhases()
 | 传输层（有界） | `axios` 拦截器 + `netRetryPolicy.js` | 交互默认最多 2 次尝试、预算 12s；心跳 1 次       |
 | 持久层（无限） | 离线队列 + `backgroundSync`          | 队列项永不删除，失败留在队列，下次再试，直到成功 |
 
-> `BACKGROUND_RETRY_POLICY`（3 次 / 45s）已在 `netRetryPolicy.js` 中定义，但**尚未接入**
-> `backgroundSync`——目前后台同步走的是默认交互策略（队列会兜底重试）。
+> `BACKGROUND_RETRY_POLICY`（3 次 / 45s）由 `backgroundSync` 的后台请求
+> （loadKeys/loadData/rmwWriteServer）携带，并附带租约 signal，锁失效时在途请求会被中止。
 
 - **队列项重试**：无限重试直到成功，永不删除（保证数据不丢）
 
@@ -1027,31 +1027,9 @@ _仅适用于 dual-_ 模式\*。单存储模式没有双向同步需求。
 
 ---
 
-## 十三、批次 3 / 4 实施记录（已落地，勿回退）
+## 十三、回归清单
 
-以下问题均已修复。**每条都有对应的单元测试作为守护**——回退这些行为会让测试立刻失败。
-运行：`pnpm run test`（在 `apps/web` 内）
-
-### 批次 3：后台同步与锁
-
-| 问题（已修复）             | 曾经的错误行为                                                                                           | 现在的行为                                                                       | 守护测试                                                             |
-| -------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| 跨标签锁是"假租约"（P1-7） | 超时回调直接释放锁、且把 `AbortSignal` 交给 Web Locks；`acquireLock` 还 `await` 整个持锁过程（等满 30s） | 超时只 `abort()` + `onLeaseLost`；调用方 `release()` 后才释放，宽限期后强制释放  | `crossTabLock.test.js`（7 例）                                       |
-| L1 退避被重置（P1-8）      | `scheduleImmediate()` 每次归零 `_immediateAttempts` 并立刻同步，阶梯爬不上去                             | 只有队列清空／网络恢复／手动同步才归零；10s 去抖窗口内吸收重复触发               | `backgroundSync.test.js`（4 例）                                     |
-| 本地写失败静默（P0-6）     | `localFailed` 全仓无消费方；本地副本静默过期                                                             | 原地重试一次；仍失败则登记，设置页"同步"卡片可见"本地副本写入异常"               | `dataProvider.test.js`（2 例）                                       |
-| `_isSyncing` 无超时        | 卡在挂起请求上会永久为 true                                                                              | 租约 `signal` 贯穿三个阶段与每个 key，失效即停手；传输层有界保证 ~15s 内收尾     | `backgroundSync.test.js`（租约失效即停手用例）                       |
-| 后台未接入专用重试策略     | `BACKGROUND_RETRY_POLICY` 无调用方                                                                       | 后台请求（loadKeys/loadData/rmwWriteServer）显式携带 3 次/45s 策略 + 租约 signal | `backgroundSync.test.js`（3 例）+ `kvServerProvider.test.js`（4 例） |
-
-### 批次 4：Service Worker 更新策略（P0-2、P1-9）
-
-| 问题（已修复）           | 曾经的错误行为                                                              | 现在的行为                                                                    | 守护测试                     |
-| ------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------- |
-| 发版后所有标签页自动刷新 | `sw.js` install 里无条件 `skipWaiting()` → `controllerchange` → 立即 reload | install 不接管；只有用户点击"更新"后 `SKIP_WAITING` 才接管                    | `sw.test.js`（4 例）         |
-| `SKIP_WAITING` 无人处理  | 组件一直在 postMessage，但 sw.js 没有对应 handler                           | 新增 message handler：`SKIP_WAITING` → `self.skipWaiting()`（跨源消息仍拒绝） | `sw.test.js`                 |
-| `updatefound` 监听器累积 | 监听器注册在每小时调用的 `checkForUpdate` 内，同一 registration 只增不减    | 只注册一次（`updateFoundHandler` 记忆化）                                     | 代码审查项                   |
-| 刷新时机不考虑未保存内容 | `controllerchange` 处理器无条件 `location.reload()`                         | 仅"用户已确认"或"无未保存内容且页面不可见"时刷新，否则横幅提示先保存          | `updateGate.test.js`（5 例） |
-
-### 回归清单（改离线系统前后都该跑）
+改动离线系统前后建议跑一遍：
 
 ```bash
 pnpm run test          # 73 例：重试策略/心跳/RMW/暂存/锁/退避/SW/门禁/provider 透传

@@ -1,7 +1,7 @@
 /**
- * scan-ui-issues.js — UI 工业级质量门扫描
+ * scan-ui-issues.js — UI 问题扫描
  *
- * 在 pnpm lint 前运行，扫描并警告三类"不达工业级"的问题：
+ * 在 pnpm lint 前运行，扫描并警告以下问题：
  *  1. 裸写 mdi- 图标（应通过 @/utils/icons.js 的 ICON 引用）
  *  2. 原生 confirm() 确认框（应使用 useConfirmDialog 统一确认）
  *  3. 硬编码颜色（应使用 vuetify 主题 token：primary/success/error/warning/neutral-surface 等）
@@ -132,7 +132,7 @@ function main() {
   report('硬编码颜色', all.color)
 
   if (exitCode === 0) {
-    console.log('✓ UI 质量门通过：无裸 mdi、无原生 confirm()、无硬编码颜色。')
+    console.log('✓ UI 扫描通过：无裸 mdi、无原生 confirm()、无硬编码颜色。')
   }
   process.exit(exitCode)
 }

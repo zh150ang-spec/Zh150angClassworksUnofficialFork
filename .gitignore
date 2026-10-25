@@ -90,6 +90,7 @@ apps/server/generated/
 # OS
 .DS_Store
 Thumbs.db
+*.bak
 
 # Agent / harness local directories (machine-local, never publish)
 # 这些目录同时被 Prettier 默认读取的 .gitignore 覆盖，无需在 .prettierignore 里重复。

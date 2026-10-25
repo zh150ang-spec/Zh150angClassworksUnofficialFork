@@ -113,7 +113,7 @@
           </template>
         </v-list-item>
 
-        <!-- 本地副本写入异常（P0-6：本地写失败不再静默） -->
+        <!-- 本地副本写入异常 -->
         <v-list-item v-if="isDualMode && localWriteFailures.length > 0">
           <template #prepend>
             <v-icon color="error" :icon="ICON.ALERT_CIRCLE_OUTLINE" />

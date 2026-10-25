@@ -31,7 +31,7 @@ pnpm run preview      # 预览生产构建
 pnpm run lint         # oxlint 主检查（JS/script）+ ESLint 补充检查 Vue 模板规则（自动修复）
 pnpm run lint:check   # 同上，但不加 --fix，仅检查、不改文件（CI 与验证用这条）
 pnpm run test         # 单元测试（vitest run）——离线系统回归守护，见 docs/OFFLINE_SYSTEM.md §13
-pnpm run test:watch   # 单元测试 watch 模式（本地开发用）
+pnpm run test:watch   # 单元测试 watch 模式
 ```
 
 > 注：以上命令在 `apps/web` 目录内执行；或从仓库根用 `pnpm --filter @classworks/web run <script>`。
@@ -168,7 +168,7 @@ pnpm run test:watch   # 单元测试 watch 模式（本地开发用）
 路径: @/ = src/
 图标: MDI (@mdi/font)，集中定义在 src/utils/icons.js 的 ICON 对象中
 自动导入: Vue API / Vuetify 组件 / 自定义组件均已配置
-主题: Apple Design System 配色，定义在 src/plugins/vuetify.js
+主题: 配色定义在 src/plugins/vuetify.js
 组件风格: 新增用 Composition API (script setup)，旧文件保持 Options API 不动
 部署: 静态站点 (GitHub Pages / Vercel)
 Git: push 需用户明确同意（只推 fork，绝不推 origin） / 禁止 git merge 合并 PR

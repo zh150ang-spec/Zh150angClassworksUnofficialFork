@@ -43,8 +43,8 @@ export const HEARTBEAT_RETRY_POLICY = Object.freeze({
 
 /**
  * 后台同步 / 队列上传：可以慢一些，但仍必须有界。
- * ⚠️ 目前尚无调用方接入（backgroundSync 仍走默认交互策略），接入属于批次 3；
- * 在此之前不要把它当成已生效的行为。
+ * 由 `backgroundSync` 的后台请求（loadKeys/loadData/rmwWriteServer）携带，
+ * 同时传入租约 signal，锁失效时在途请求会被中止。
  */
 export const BACKGROUND_RETRY_POLICY = Object.freeze({
   maxAttempts: 3,

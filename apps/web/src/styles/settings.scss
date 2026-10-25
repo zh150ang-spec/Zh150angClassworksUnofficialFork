@@ -1,7 +1,7 @@
 /**
  * src/styles/settings.scss
  *
- * Vuetify SASS configuration — Apple Design System overrides.
+ * Vuetify SASS configuration overrides.
  * This file is loaded by vite-plugin-vuetify (configFile) BEFORE Vuetify compiles.
  * All !default variables here win over Vuetify's built-in defaults.
  *
@@ -9,7 +9,7 @@
  */
 
 @use 'vuetify/settings' with (
-  // ── Border Radius (Apple: 1.2rem = 19.2px) ─────────────
+  // ── Border Radius (1.2rem = 19.2px) ─────────────────────
   // Unify all rounded-* variants to 19.2px;
   // only 0 / pill / circle keep their special meanings.
   // Input fields use a smaller radius to avoid SVG outline asymmetry.
@@ -26,11 +26,11 @@
     'circle': 50%
   ),
 
-  // ── Typography (Apple: DM Sans + JetBrains Mono) ────────
+  // ── Typography (DM Sans + JetBrains Mono) ───────────────
   $body-font-family: ('DM Sans', ui-sans-serif, sans-serif, system-ui),
   $heading-font-family: ('DM Sans', ui-sans-serif, sans-serif, system-ui),
 
-  // ── Motion (Apple: cubic-bezier(0.32, 0.72, 0, 1)) ────
+  // ── Motion (cubic-bezier(0.32, 0.72, 0, 1)) ────────────
   $standard-easing: cubic-bezier(0.32, 0.72, 0, 1),
   $decelerated-easing: cubic-bezier(0.32, 0.72, 0, 1),
   $accelerated-easing: cubic-bezier(0.32, 0.72, 0, 1),

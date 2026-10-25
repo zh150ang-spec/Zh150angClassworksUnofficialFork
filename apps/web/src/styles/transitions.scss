@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   transitions.scss — Apple motion system
+   transitions.scss — motion system
    cubic-bezier(0.32, 0.72, 0, 1) / 150ms / 250ms / 350ms
    Subtle, purposeful, no visible flourish.
    ═══════════════════════════════════════════════════════════ */
@@ -64,7 +64,7 @@
   }
 }
 
-/* ── Card hover (Apple: border-color highlight on hover) ──── */
+/* ── Card hover (border-color highlight on hover) ───────── */
 .v-card {
   touch-action: manipulation;
 

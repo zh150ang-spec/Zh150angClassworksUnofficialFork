@@ -13,7 +13,7 @@ const MAX_IMMEDIATE_ATTEMPTS = 4
 const SYNC_LOCK_TIMEOUT = 30000
 const SYNC_LOCK_GRACE_MS = 15000
 const SYNC_LOCK_NAME = 'classworks-background-sync'
-// 密集保存时的最小同步间隔：避免"每次保存都立刻打一次服务器"（P1-8）
+// 密集保存时的最小同步间隔：避免"每次保存都立刻打一次服务器"
 const IMMEDIATE_MIN_GAP_MS = 10000
 
 /**
@@ -96,7 +96,7 @@ const BackgroundSyncService = {
     if (!networkStatus.isBrowserOnline()) return
 
     // 可中止租约：超时只通知调用方停手，锁由本函数在 finally 里真正释放。
-    // 不允许"超时就替调用方释放锁"——那会让两个标签页同时同步（P1-7）。
+    // 不允许"超时就替调用方释放锁"——那会让两个标签页同时同步。
     const lease = await acquireLock(SYNC_LOCK_NAME, {
       timeoutMs: SYNC_LOCK_TIMEOUT,
       graceMs: SYNC_LOCK_GRACE_MS,
@@ -280,7 +280,7 @@ const BackgroundSyncService = {
     if (!networkStatus.isBrowserOnline()) return
 
     // ⚠️ 这里**不重置** _immediateAttempts。退避是"失败回合"的状态，
-    // 每次编辑都归零会让 30s→60s→120s→300s 的阶梯永远爬不上去（P1-8），
+    // 每次编辑都归零会让 30s→60s→120s→300s 的阶梯永远爬不上去，
     // 表现为持续编辑时每 30s（甚至每次保存）就打一次服务器。
     const sinceLast = Date.now() - this._lastImmediateAt
     if (sinceLast < IMMEDIATE_MIN_GAP_MS) {

@@ -2,7 +2,6 @@
  * plugins/vuetify.js
  *
  * Framework documentation: https://vuetifyjs.com`
- * Theme: Apple/Pinguo design system palette
  */
 
 // Styles
@@ -13,7 +12,6 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { zhHans } from 'vuetify/locale'
 
-// Apple Design System color palette (Pinguo)
 // Extended with surface-container hierarchy for elevation-aware surfaces.
 // Text hierarchy is handled via CSS custom properties in tokens.scss,
 // NOT here — Vuetify's theme colors are for component base colors only.

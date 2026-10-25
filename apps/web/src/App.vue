@@ -126,7 +126,7 @@ onUnmounted(() => {
 @import '@/styles/transitions.scss';
 @import '@/styles/global.scss';
 
-/* Apple-style page transitions */
+/* 页面切换过渡 */
 .md3-enter-active,
 .md3-leave-active {
   transition:

@@ -1,5 +1,4 @@
 /* ═══════════════════════════════════════════════════════════
-   tokens.scss — Apple / Pinguo Design Token Overrides
    Applied globally; Vuetify component overrides are in radius.scss
    ═══════════════════════════════════════════════════════════ */
 
@@ -32,7 +31,7 @@
   --tracking-display: 0.25em; /* ~8px at 32px, for large time numerals */
 
   /* ── Radius ─────────────────────────────────────────────── */
-  /* 3-tier Apple radius system + pill.
+  /* 3-tier radius system + pill.
      lg/xl — floating surfaces (toolbar, panels)
      md    — cards, dialogs (also $border-radius-root in Vuetify)
      sm    — inner panels, chips, message bubbles, tool groups
@@ -142,7 +141,7 @@
   --space-touch-min: 48px; /* 48px  minimum touch target size    */
 
   /* ── Shadows (Light Mode) ───────────────────────────────── */
-  /* 8-level Apple-style shadow scale (2xs → 2xl).
+  /* 8-level shadow scale (2xs → 2xl).
      All multi-layer, X=0 (top light), negative spread.
      Consumed by .hover-card, .grid-item, .touch-card, .anti-burn-card, etc. */
   --shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.04);
@@ -188,7 +187,7 @@
 
   /* ── Vuetify Elevation Alignment ─────────────────────────── */
   /* Override Vuetify runtime shadow opacities so that
-     elevation="0".."5" outputs visually match the Apple shadow scale.
+     elevation="0".."5" outputs visually match the intended shadow scale.
      Vuetify's spatial values (px offsets, blur, spread) remain
      Material Design defaults — only the alpha is adjusted. */
   --v-shadow-key-opacity: 0.06; /* Vuetify default 0.30 → 0.06 */

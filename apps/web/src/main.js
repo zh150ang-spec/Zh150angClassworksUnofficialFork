@@ -4,7 +4,7 @@
  * 精简启动流水线：快速挂载 Vue app，重型依赖（Sentry/Clarity）异步加载
  */
 
-// Fonts — Apple Design System (DM Sans + JetBrains Mono)
+// 字体（DM Sans + JetBrains Mono）
 import '@fontsource/dm-sans/400.css'
 import '@fontsource/dm-sans/500.css'
 import '@fontsource/dm-sans/600.css'
