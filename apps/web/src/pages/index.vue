@@ -1114,12 +1114,20 @@ export default {
       }
       await Promise.all([this.downloadData(), this.loadConfig()])
 
-      // Load exam data
-      await this.examStore.fetchExamList()
-      // Preload details for list items to show names in dialog（并行预取）
-      await Promise.all(this.examStore.examList.map((exam) => this.examStore.fetchExam(exam.id)))
+      // 考试数据不再阻塞首屏：先渲染作业板，考试列表与详情在后台加载完成后刷新卡片。
+      // 否则 N 场考试的 es_<id> 请求会把 dataReady 拖慢成“1 + N”个请求的串行观感。
+      this.loadExamDataInBackground()
+    },
 
-      this.checkUpcomingExams()
+    async loadExamDataInBackground() {
+      try {
+        await this.examStore.fetchExamList()
+        // Preload details for list items to show names in dialog（并行预取）
+        await Promise.all(this.examStore.examList.map((exam) => this.examStore.fetchExam(exam.id)))
+        await this.checkUpcomingExams()
+      } catch (e) {
+        console.warn('后台加载考试数据失败:', e)
+      }
     },
 
     async downloadData(forceClear = false) {

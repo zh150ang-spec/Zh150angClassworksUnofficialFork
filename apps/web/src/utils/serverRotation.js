@@ -15,6 +15,16 @@ const CLASSWORKS_CLOUD_SERVERS = [
 // Cache TTL for server preference (5 minutes)
 const SERVER_PREFERENCE_TTL = 5 * 60 * 1000
 
+// 备站被记住的时间要短：一次故障切换成功后不能把不稳定的镜像钉住 5 分钟。
+// 60 秒后重新探测，主站恢复就立刻切回。
+const FALLBACK_PREFERENCE_TTL = 60 * 1000
+
+// 主站（第一个）优先；备站只有在主站不可达时才会被选为 preferred。
+const PRIMARY_SERVER = CLASSWORKS_CLOUD_SERVERS[0]
+
+// 用应用层的 /check 而不是静态首页做探针：更轻、且能反映真实服务可用性（HEAD / 会遇到 HTML/CF 挑战页）。
+const PROBE_PATH = '/check'
+
 // Probe timeout (3 seconds)
 const PROBE_TIMEOUT_MS = 3000
 
@@ -22,16 +32,19 @@ const PROBE_TIMEOUT_MS = 3000
 const serverPreference = {
   preferred: null,
   cachedAt: 0,
+  ttlMs: SERVER_PREFERENCE_TTL,
   probing: false,
 }
 
 /**
  * Update the preference cache to mark the given server URL as preferred.
  * @param {string} url
+ * @param {number} [ttlMs] - 该项偏好有效期；主站默认 5 分钟，备站只保留 60 秒
  */
-function setCachedPreference(url) {
+function setCachedPreference(url, ttlMs = SERVER_PREFERENCE_TTL) {
   serverPreference.preferred = url
   serverPreference.cachedAt = Date.now()
+  serverPreference.ttlMs = ttlMs
 }
 
 /**
@@ -61,7 +74,7 @@ async function probeServer(serverUrl) {
   const timeoutId = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS)
   const start = Date.now()
   try {
-    await fetch(`${serverUrl}/`, { method: 'HEAD', signal: controller.signal })
+    await fetch(`${serverUrl}${PROBE_PATH}`, { method: 'HEAD', signal: controller.signal })
     return Date.now() - start
   } catch {
     return Infinity
@@ -84,11 +97,19 @@ async function updateServerPreference() {
         latency: await probeServer(url),
       })),
     )
-    const reachable = results
-      .filter((r) => r.latency < Infinity)
-      .sort((a, b) => a.latency - b.latency)
+    const reachable = results.filter((r) => r.latency < Infinity)
     if (reachable.length > 0) {
-      setCachedPreference(reachable[0].url)
+      // 主站可达时永远优先主站：Cloudflare 镜像的 TLS/丢包抖动会偶尔让 HEAD 更快，
+      // 但实际 API 延迟高一个数量级，不能凭一次探针把全局请求切过去。
+      const primary = results.find((r) => r.url === PRIMARY_SERVER)
+      const chosen =
+        primary && primary.latency < Infinity
+          ? primary
+          : reachable.sort((a, b) => a.latency - b.latency)[0]
+      setCachedPreference(
+        chosen.url,
+        chosen.url === PRIMARY_SERVER ? SERVER_PREFERENCE_TTL : FALLBACK_PREFERENCE_TTL,
+      )
     }
   } catch {
     // Probe failure is non-fatal; keep existing preference
@@ -104,13 +125,14 @@ async function updateServerPreference() {
  */
 function getOrderedCloudServers() {
   const now = Date.now()
-  const cacheStale = now - serverPreference.cachedAt > SERVER_PREFERENCE_TTL
+  const preferred = serverPreference.preferred
+  const ttl = serverPreference.ttlMs ?? SERVER_PREFERENCE_TTL
+  const cacheStale = now - serverPreference.cachedAt > ttl
 
   if (cacheStale && !serverPreference.probing) {
     updateServerPreference().catch(() => {})
   }
 
-  const preferred = serverPreference.preferred
   if (preferred && CLASSWORKS_CLOUD_SERVERS.includes(preferred)) {
     return [preferred, ...CLASSWORKS_CLOUD_SERVERS.filter((s) => s !== preferred)]
   }
@@ -172,7 +194,10 @@ export async function tryWithRotation(operation, options = {}) {
       }
 
       if (provider === 'classworkscloud' || provider === 'dual-cloud') {
-        setCachedPreference(serverUrl)
+        setCachedPreference(
+          serverUrl,
+          serverUrl === PRIMARY_SERVER ? SERVER_PREFERENCE_TTL : FALLBACK_PREFERENCE_TTL,
+        )
       }
 
       return result

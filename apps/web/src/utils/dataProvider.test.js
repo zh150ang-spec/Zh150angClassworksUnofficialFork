@@ -111,6 +111,19 @@ describe('dataProvider.loadData 错误码保真', () => {
     expect(kvServerProvider.loadData).toHaveBeenCalledTimes(1)
   })
 
+  it('传输层已耗尽（retryExhausted）时外层不再重试，避免超时被放大', async () => {
+    useProvider('classworkscloud')
+    kvServerProvider.loadData.mockResolvedValue({
+      success: false,
+      error: { code: 'NETWORK_ERROR', message: '请求超时', retryable: true, retryExhausted: true },
+    })
+
+    const result = await dataProvider.loadData('board')
+
+    expect(result.error.retryExhausted).toBe(true)
+    expect(kvServerProvider.loadData).toHaveBeenCalledTimes(1)
+  })
+
   it('双模式：两边都确认缺失才是 NOT_FOUND，一边故障则不是', async () => {
     useProvider('dual-cloud')
     kvLocalProvider.loadData.mockResolvedValue(notFound())

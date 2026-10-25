@@ -83,7 +83,12 @@ async function retryOperation(operation, maxRetries = DEFAULT_RETRY_ATTEMPTS) {
         return result
       }
       lastResult = result
-      const canRetry = attempt < maxRetries && result?.error?.retryable === true
+      // 传输层（axios 拦截器）已经按预算重试过并明确标记 retryExhausted 时，这里不再重试，
+      // 否则一次 15s 超时会被外层再放大 3 倍（最坏约 45s）。持久重试交给离线队列。
+      const canRetry =
+        attempt < maxRetries &&
+        result?.error?.retryable === true &&
+        result?.error?.retryExhausted !== true
       if (!canRetry) {
         return result ?? formatError('操作失败', 'RETRY_EXHAUSTED')
       }

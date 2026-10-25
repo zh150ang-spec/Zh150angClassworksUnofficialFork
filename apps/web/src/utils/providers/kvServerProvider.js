@@ -41,7 +41,81 @@ const getRequestConfig = (options = {}) => {
   return config
 }
 
+/**
+ * 交互读取的 in-flight 去重表。
+ *
+ * 只缓存「尚未完成」的 Promise，完成后立即删除，因此不会引入陈旧数据；
+ * 带 signal / retryPolicy 的调用（后台同步）不参与共享，避免取消互相影响。
+ */
+const inflightLoads = new Map()
+
+async function loadDataUncached(key, options = {}) {
+  try {
+    // Use rotation for classworkscloud provider
+    if (isRotationEnabled()) {
+      return await tryWithRotation(async (serverUrl) => {
+        const res = await axios.get(`${serverUrl}/kv/${key}`, {
+          headers: getHeaders(),
+          ...getRequestConfig(options),
+        })
+        return formatResponse(res.data)
+      })
+    }
+
+    const serverUrl = getSetting('server.domain')
+    const res = await axios.get(`${serverUrl}/kv/${key}`, {
+      headers: getHeaders(),
+      ...getRequestConfig(options),
+    })
+
+    return formatResponse(res.data)
+  } catch (error) {
+    const status = error.response?.status
+    const message = error.response?.data?.message
+    // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 x-app-token
+    console.error('loadData 失败:', error.message, status)
+
+    // 错误码保真：业务拒绝不能被折叠成 NETWORK_ERROR，否则会被上层当成瞬时故障反复重试。
+    if (status === 404) return formatError('数据不存在', 'NOT_FOUND', { retryable: false })
+    if (status === 401)
+      return formatError(message || '未授权访问', 'UNAUTHORIZED', { retryable: false })
+    if (status === 403)
+      return formatError(message || '无权限访问', 'FORBIDDEN', { retryable: false })
+    if (error.code === 'ERR_CANCELED') {
+      return formatError('请求已取消', 'CANCELLED', { retryable: false })
+    }
+
+    const serverSide = typeof status === 'number' && status >= 500
+    return formatError(
+      message || (serverSide ? '服务器错误' : '服务器连接失败'),
+      serverSide ? 'SERVER_LOAD_ERROR' : 'NETWORK_ERROR',
+      {
+        retryable: true,
+        // 传输层已按预算重试过：上层 retryOperation 必须据此停止，避免再放大 3 倍。
+        retryExhausted: error.retryExhausted === true,
+      },
+    )
+  }
+}
+
 export const kvServerProvider = {
+  loadData(key, options = {}) {
+    const canDedupe = !options.signal && !options.retryPolicy
+    if (canDedupe) {
+      const existing = inflightLoads.get(key)
+      if (existing) return existing
+    }
+
+    const promise = loadDataUncached(key, options)
+    if (canDedupe) {
+      inflightLoads.set(key, promise)
+      const cleanup = () => {
+        if (inflightLoads.get(key) === promise) inflightLoads.delete(key)
+      }
+      promise.then(cleanup, cleanup)
+    }
+    return promise
+  },
   async loadNamespaceInfo() {
     try {
       // Use rotation for classworkscloud provider
@@ -90,36 +164,6 @@ export const kvServerProvider = {
       return formatResponse(res.data)
     } catch (error) {
       return formatError(error.response?.data?.message || '更新命名空间信息失败', 'NAMESPACE_ERROR')
-    }
-  },
-
-  async loadData(key, options = {}) {
-    try {
-      // Use rotation for classworkscloud provider
-      if (isRotationEnabled()) {
-        return await tryWithRotation(async (serverUrl) => {
-          const res = await axios.get(`${serverUrl}/kv/${key}`, {
-            headers: getHeaders(),
-            ...getRequestConfig(options),
-          })
-          return formatResponse(res.data)
-        })
-      }
-
-      const serverUrl = getSetting('server.domain')
-      const res = await axios.get(`${serverUrl}/kv/${key}`, {
-        headers: getHeaders(),
-        ...getRequestConfig(options),
-      })
-
-      return formatResponse(res.data)
-    } catch (error) {
-      if (error.response?.status === 404) {
-        return formatError('数据不存在', 'NOT_FOUND')
-      }
-      // 安全日志：仅记录 message 和 status，避免泄漏 error.config.headers 中的 x-app-token
-      console.error('loadData 失败:', error.message, error.response?.status)
-      return formatError(error.response?.data?.message || '服务器连接失败', 'NETWORK_ERROR')
     }
   },
 

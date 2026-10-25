@@ -69,7 +69,9 @@ export function getSocket() {
     // Note: Socket.IO's built-in reconnection will retry the same server URL.
     // Server rotation is handled at the HTTP request level, not Socket.IO level.
     // If the Socket.IO server goes down, the connection will fail until the server recovers.
-    socket = io(serverUrl, { transports: ['polling', 'websocket'] })
+    // Websocket-first：轮询握手要 2~3 个额外 HTTP 往返，在丢包链路上实测 0.4~5s；
+    // tryAllTransports 保证 websocket 不可用时仍会回退到 polling，兼容受限代理。
+    socket = io(serverUrl, { transports: ['websocket', 'polling'], tryAllTransports: true })
 
     // Re-attach previously registered event handlers on new socket instance
     listeners.forEach(({ event, handler }) => {

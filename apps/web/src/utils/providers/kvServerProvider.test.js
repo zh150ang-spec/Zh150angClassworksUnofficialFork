@@ -13,7 +13,10 @@ vi.mock('@/axios/axios', () => ({
 
 vi.mock('@/utils/dataProvider', () => ({
   formatResponse: (data) => data,
-  formatError: (message, code) => ({ success: false, error: { code, message } }),
+  formatError: (message, code, options = {}) => ({
+    success: false,
+    error: { code, message, ...options },
+  }),
 }))
 
 vi.mock('@/utils/settings', () => ({
@@ -96,5 +99,32 @@ describe('kvServerProvider 请求级选项', () => {
     const [, config] = axios.get.mock.calls[0]
     expect(config.metadata).toBeUndefined()
     expect(config.signal).toBeUndefined()
+  })
+
+  it('同 key 并发交互读取共享一个 in-flight 请求', async () => {
+    let release
+    axios.get.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = () => resolve({ data: { ok: true } })
+        }),
+    )
+
+    const p1 = kvServerProvider.loadData('board')
+    const p2 = kvServerProvider.loadData('board')
+    await vi.waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1))
+    release()
+
+    await Promise.all([p1, p2])
+    expect(axios.get).toHaveBeenCalledTimes(1)
+  })
+
+  it('401 保真为 UNAUTHORIZED 且不可重试', async () => {
+    axios.get.mockRejectedValue({ response: { status: 401, data: { message: 'bad token' } } })
+
+    const result = await kvServerProvider.loadData('board')
+
+    expect(result.error.code).toBe('UNAUTHORIZED')
+    expect(result.error.retryable).toBe(false)
   })
 })
