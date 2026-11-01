@@ -100,12 +100,12 @@ export default defineComponent({
 <style scoped>
 .message-stack {
   position: fixed;
-  top: var(--space-4);
-  right: var(--space-4);
-  z-index: var(--z-toast);
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 0.5rem;
   max-width: 400px;
   pointer-events: none;
 }
@@ -114,9 +114,11 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-hover);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  box-shadow:
+    0 4px 8px -2px rgba(0, 0, 0, 0.06),
+    0 2px 4px -2px rgba(0, 0, 0, 0.05);
   pointer-events: auto;
   min-width: 280px;
   backdrop-filter: blur(8px);
@@ -155,7 +157,7 @@ export default defineComponent({
 }
 
 .message-title {
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
   font-size: 14px;
   line-height: 1.4;
 }
@@ -180,7 +182,7 @@ export default defineComponent({
 
 .message-enter-active,
 .message-leave-active {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .message-enter-from {
@@ -194,13 +196,13 @@ export default defineComponent({
 }
 
 .message-move {
-  transition: transform var(--duration-normal) var(--ease-apple);
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @media (max-width: 480px) {
   .message-stack {
-    left: var(--space-4);
-    right: var(--space-4);
+    left: 1rem;
+    right: 1rem;
     max-width: none;
   }
 

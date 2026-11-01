@@ -1,18 +1,15 @@
 /**
  * src/styles/settings.scss
  *
- * Vuetify SASS configuration overrides.
- * This file is loaded by vite-plugin-vuetify (configFile) BEFORE Vuetify compiles.
- * All !default variables here win over Vuetify's built-in defaults.
+ * Vuetify SASS 编译期配置（主题框架的唯一入口）。
+ * 本文件由 vite-plugin-vuetify（configFile）在 Vuetify 组件编译前加载，
+ * 所有 !default 变量在此覆盖 Vuetify 内置默认值。
  *
  * https://vuetifyjs.com/features/sass-variables/
  */
 
 @use 'vuetify/settings' with (
-  // ── Border Radius (1.2rem = 19.2px) ─────────────────────
-  // Unify all rounded-* variants to 19.2px;
-  // only 0 / pill / circle keep their special meanings.
-  // Input fields use a smaller radius to avoid SVG outline asymmetry.
+  // ── Border Radius ────────────────────────────────────────
   $border-radius-root: 19.2px,
   $field-border-radius: 12px,
   $rounded: (
@@ -26,11 +23,100 @@
     'circle': 50%
   ),
 
-  // ── Typography (DM Sans + JetBrains Mono) ───────────────
+  // ── 组件级圆角（编译期覆盖，替代运行时补丁） ──
+  $button-border-radius: 25.6px,
+  $button-rounded-border-radius: 25.6px,
+  $button-pagination-border-radius: 25.6px,
+  $btn-group-border-radius: 25.6px,
+  $list-border-radius: 19.2px,
+  $list-rounded-border-radius: 19.2px,
+  $list-item-border-radius: 19.2px,
+  $list-item-rounded-border-radius: 19.2px,
+
+  // ── Typography (DM Sans) ─────────────────────────────────
   $body-font-family: ('DM Sans', ui-sans-serif, sans-serif, system-ui),
   $heading-font-family: ('DM Sans', ui-sans-serif, sans-serif, system-ui),
 
-  // ── Motion (cubic-bezier(0.32, 0.72, 0, 1)) ────────────
+  // 15 个 preset 的字重/行高/字距（字号沿用 Vuetify 默认）
+  $typography: (
+      'display-large': (
+        'weight': 700,
+        'line-height': 1.2,
+        'letter-spacing': -0.02em,
+      ),
+      'display-medium': (
+        'weight': 700,
+        'line-height': 1.2,
+        'letter-spacing': -0.02em,
+      ),
+      'display-small': (
+        'weight': 700,
+        'line-height': 1.2,
+        'letter-spacing': -0.02em,
+      ),
+      'headline-large': (
+        'weight': 700,
+        'line-height': 1.2,
+        'letter-spacing': -0.02em,
+      ),
+      'headline-medium': (
+        'weight': 700,
+        'line-height': 1.2,
+        'letter-spacing': -0.02em,
+      ),
+      'headline-small': (
+        'weight': 700,
+        'line-height': 1.2,
+        'letter-spacing': -0.02em,
+      ),
+      'title-large': (
+        'weight': 700,
+        'line-height': 1.2,
+        'letter-spacing': -0.02em,
+      ),
+      'title-medium': (
+        'weight': 600,
+        'line-height': 1.2,
+        'letter-spacing': 0em,
+      ),
+      'title-small': (
+        'weight': 600,
+        'line-height': 1.2,
+        'letter-spacing': 0em,
+      ),
+      'body-large': (
+        'weight': 400,
+        'line-height': 1.6,
+        'letter-spacing': 0em,
+      ),
+      'body-medium': (
+        'weight': 400,
+        'line-height': 1.6,
+        'letter-spacing': 0em,
+      ),
+      'body-small': (
+        'weight': 400,
+        'line-height': 1.6,
+        'letter-spacing': 0em,
+      ),
+      'label-large': (
+        'weight': 600,
+        'line-height': 1.4,
+        'letter-spacing': 0em,
+      ),
+      'label-medium': (
+        'weight': 600,
+        'line-height': 1.4,
+        'letter-spacing': 0em,
+      ),
+      'label-small': (
+        'weight': 600,
+        'line-height': 1.4,
+        'letter-spacing': 0em,
+      )
+    ),
+
+  // ── Motion ───────────────────────────────────────────────
   $standard-easing: cubic-bezier(0.32, 0.72, 0, 1),
   $decelerated-easing: cubic-bezier(0.32, 0.72, 0, 1),
   $accelerated-easing: cubic-bezier(0.32, 0.72, 0, 1),

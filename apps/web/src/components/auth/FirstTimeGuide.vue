@@ -610,7 +610,7 @@ const applyTokenAndClose = () => {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
-  gap: var(--space-5);
+  gap: 1.25rem;
   flex-wrap: wrap;
 }
 
@@ -640,7 +640,7 @@ const applyTokenAndClose = () => {
 
   .diagram-connector {
     transform: rotate(90deg);
-    margin: var(--space-5) 0;
+    margin: 1.25rem 0;
   }
 }
 
@@ -659,9 +659,9 @@ const applyTokenAndClose = () => {
 
 .progressive-register-card code {
   background: var(--color-fill);
-  padding: var(--space-compat-2px) var(--space-compat-6px);
-  border-radius: var(--radius-xs);
-  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 0.5rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
 }
 
 /* 渐进式注册页面样式 */
@@ -669,8 +669,8 @@ const applyTokenAndClose = () => {
   height: 140px;
   overflow: auto;
   background: var(--color-fill-soft);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-3);
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
 }
 
 .log-line + .log-line {
@@ -679,9 +679,9 @@ const applyTokenAndClose = () => {
 
 .device-code {
   background: var(--color-fill);
-  padding: var(--space-compat-2px) var(--space-compat-6px);
-  border-radius: var(--radius-xs);
-  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 0.5rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   font-size: 0.875rem;
 }
 </style>

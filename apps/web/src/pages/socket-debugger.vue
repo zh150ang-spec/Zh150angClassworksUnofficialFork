@@ -774,23 +774,23 @@ onUnmounted(() => {
 
 <style scoped>
 .log-container {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   font-size: 12px;
-  line-height: var(--line-height-body);
+  line-height: 1.6;
 }
 
 .log-container-box {
   height: 400px;
   overflow-y: auto;
   background: rgb(var(--v-theme-surface));
-  border-radius: var(--radius-xs);
-  padding: var(--space-3);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
 }
 
 .log-entry {
   margin-bottom: 8px;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .log-time {
@@ -830,15 +830,15 @@ onUnmounted(() => {
 .log-data {
   margin-top: 4px;
   margin-left: 24px;
-  padding: var(--space-2);
+  padding: 0.5rem;
   background: rgba(var(--v-theme-surface-variant), 0.5);
-  border-radius: var(--radius-xs);
+  border-radius: 0.5rem;
   color: rgba(var(--v-theme-on-surface), 0.7);
   font-size: 11px;
   overflow-x: auto;
 }
 
 .gap-2 {
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 </style>

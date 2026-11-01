@@ -790,12 +790,12 @@ export default {
 <style scoped>
 .chat-toggle {
   position: fixed;
-  z-index: var(--z-chat);
+  z-index: 1100;
 }
 
 .chat-panel {
   position: fixed;
-  z-index: var(--z-chat-panel);
+  z-index: 1101;
 }
 
 .chat-card {
@@ -806,7 +806,7 @@ export default {
 }
 
 .chat-body {
-  padding: var(--space-2) var(--space-3);
+  padding: 0.5rem 0.75rem;
   height: calc(100% - 120px);
 }
 
@@ -818,7 +818,7 @@ export default {
 .message-row {
   display: flex;
   align-items: flex-end;
-  margin: var(--space-2) 0;
+  margin: 0.5rem 0;
 }
 
 .message-row.self {
@@ -834,9 +834,9 @@ export default {
 .message-row .bubble {
   max-width: 70%;
   background: var(--color-fill-soft);
-  border-radius: var(--radius-md);
-  padding: var(--space-compat-6px) var(--space-compat-10px);
-  margin: 0 var(--space-2);
+  border-radius: 1.2rem;
+  padding: 6px 10px;
+  margin: 0 0.5rem;
 }
 
 .message-row.self .bubble {
@@ -859,7 +859,7 @@ export default {
   font-size: 11px;
   color: var(--text-secondary);
   margin-bottom: 2px;
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
 }
 
 .message-row.self .bubble .sender-name {
@@ -867,7 +867,7 @@ export default {
 }
 
 .device-name {
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
   opacity: 0.8;
 }
 
@@ -878,11 +878,11 @@ export default {
 }
 
 .divider-text {
-  margin: var(--space-1) 0;
+  margin: 0.25rem 0;
 }
 
 .chat-input {
-  padding: var(--space-2);
+  padding: 0.5rem;
 }
 
 /* 事件相关样式 */
@@ -899,7 +899,7 @@ export default {
 }
 
 .event-item {
-  transition: all var(--duration-fast) var(--ease-apple);
+  transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .event-item:hover {
@@ -912,15 +912,15 @@ export default {
 
 .chat-content {
   background: var(--color-fill-soft);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
   word-break: break-word;
 }
 
 .event-data {
   background: var(--color-fill-soft);
-  padding: var(--space-1);
-  border-radius: var(--radius-xs);
+  padding: 0.25rem;
+  border-radius: 0.5rem;
   font-size: 10px;
   max-height: 100px;
   overflow-y: auto;
@@ -940,8 +940,8 @@ export default {
 /* 模式切换按钮样式 */
 .mode-btn {
   min-width: 0;
-  padding: 0 var(--space-2);
-  font-weight: var(--font-weight-emphasis);
-  transition: color var(--duration-fast) var(--ease-apple);
+  padding: 0 0.5rem;
+  font-weight: 500;
+  transition: color 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 </style>

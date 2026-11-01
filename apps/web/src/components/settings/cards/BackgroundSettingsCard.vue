@@ -398,7 +398,7 @@ export default {
 
 <style scoped>
 .preview-area {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .preview-text {
@@ -409,16 +409,16 @@ export default {
   justify-content: center;
   color: white;
   font-size: 1.1rem;
-  font-weight: var(--font-weight-label);
+  font-weight: 600;
   text-shadow: var(--shadow-text);
-  z-index: var(--z-inner);
+  z-index: 2;
   pointer-events: none;
 }
 
 .upload-area {
   border: 2px dashed var(--color-border-strong);
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-apple);
+  transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
   background: var(--color-fill-weakest);
 }
 
@@ -429,6 +429,6 @@ export default {
 }
 
 .gap-2 {
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 </style>

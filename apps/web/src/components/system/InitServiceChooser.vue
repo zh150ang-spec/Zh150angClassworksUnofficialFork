@@ -296,13 +296,13 @@ const openClassworksKV = () => {
 
 .init-container {
   max-width: 900px;
-  margin: var(--space-6) auto;
-  padding: var(--space-2) var(--space-4);
+  margin: 1.5rem auto;
+  padding: 0.5rem 1rem;
 }
 
 .init-header .title {
   font-size: 28px;
-  font-weight: var(--font-weight-heading);
+  font-weight: 700;
   text-align: left;
   margin-bottom: 8px;
 }
@@ -317,7 +317,7 @@ const openClassworksKV = () => {
 .main-card-row {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 1rem;
   margin-top: 32px;
 }
 
@@ -327,13 +327,13 @@ const openClassworksKV = () => {
 }
 
 .main-service-card .v-card-item {
-  padding: var(--space-5) var(--space-6);
+  padding: 1.25rem 1.5rem;
 }
 
 .card-horizontal-layout {
   display: flex;
   align-items: center;
-  gap: var(--space-5);
+  gap: 1.25rem;
 }
 
 .card-icon-wrapper {
@@ -348,14 +348,14 @@ const openClassworksKV = () => {
 /* 其他选项 */
 .alternative-options {
   margin-top: 40px;
-  padding: var(--space-5);
+  padding: 1.25rem;
   background: rgba(var(--v-theme-surface-variant), 0.3);
-  border-radius: var(--radius-md);
+  border-radius: 1.2rem;
 }
 
 .options-title {
   font-size: 14px;
-  font-weight: var(--font-weight-label);
+  font-weight: 600;
   opacity: 0.8;
   margin-bottom: 12px;
   text-align: left;
@@ -364,7 +364,7 @@ const openClassworksKV = () => {
 .options-buttons {
   margin-top: 24px;
   display: flex;
-  gap: var(--space-2);
+  gap: 0.5rem;
   flex-wrap: wrap;
   justify-content: flex-start;
 }
@@ -382,7 +382,7 @@ const openClassworksKV = () => {
 
 @media (max-width: 768px) {
   .card-horizontal-layout {
-    gap: var(--space-4);
+    gap: 1rem;
   }
 
   .card-icon-wrapper .v-icon {

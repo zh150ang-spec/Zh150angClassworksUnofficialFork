@@ -4,7 +4,6 @@
    ═══════════════════════════════════════════════════════════ */
 
 @use 'tokens.scss';
-@use 'radius.scss';
 
 /* ── Card Hover (design rule: cards remain static on hover) ─ */
 .grid-item .v-card {
@@ -13,7 +12,7 @@
 
 /* ── Empty Subject Card ───────────────────────────────────── */
 .empty-subject-card {
-  transition: opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   opacity: 0.85;
 
   &:hover {
@@ -33,9 +32,9 @@
 
 /* ── Search suggestion buttons ────────────────────────────── */
 .suggestion-btn {
-  margin: var(--space-compat-2px);
+  margin: 2px;
   min-width: 0;
-  padding: 0 var(--space-compat-6px);
+  padding: 0 6px;
 
   &:active {
     transform: scale(var(--state-active-scale));
@@ -52,7 +51,7 @@
 @media (max-width: 600px) {
   .student-card {
     .attendance-actions .v-btn {
-      margin: 0 var(--space-compat-1px);
+      margin: 0 1px;
       min-width: 28px;
       width: 28px;
       height: 28px;
@@ -63,7 +62,7 @@
 /* ── Filter chips ─────────────────────────────────────────── */
 .filter-chip {
   cursor: pointer;
-  margin: var(--space-compat-2px);
+  margin: 2px;
 
   &:active {
     transform: scale(var(--state-active-scale));
@@ -74,8 +73,8 @@
 .grid-masonry {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-grid); /* 16px */
-  padding: var(--space-grid-pad); /* 8px  */
+  gap: 1rem; /* 16px */
+  padding: 0.5rem; /* 8px  */
   grid-auto-flow: dense;
   grid-auto-rows: 1px;
   align-items: start;
@@ -84,8 +83,8 @@
 .grid-item {
   width: 100%;
   transition:
-    transform var(--duration-normal) var(--ease-apple),
-    opacity var(--duration-normal) var(--ease-apple);
+    transform 0.25s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .empty-card {
@@ -130,7 +129,7 @@
 
 .main-window::-webkit-scrollbar-thumb {
   background-color: var(--color-scrollbar);
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
 }
 
 .main-window::-webkit-scrollbar-thumb:hover {
@@ -143,7 +142,7 @@
   justify-content: center;
   align-items: center;
   min-height: 200px;
-  margin: var(--space-5) 0; /* 20px 0 */
+  margin: 1.25rem 0; /* 20px 0 */
 }
 
 /* ── Attendance drawer ────────────────────────────────────── */
@@ -165,7 +164,7 @@
 
 .attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-thumb {
   background-color: var(--color-scrollbar);
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
 }
 
 .attendance-drawer .v-navigation-drawer__content::-webkit-scrollbar-thumb:hover {
@@ -198,12 +197,12 @@
 }
 
 .attendance-numbers {
-  padding: var(--space-5) 0; /* 20px 0 */
+  padding: 1.25rem 0; /* 20px 0 */
 }
 
 .total-number {
   border-bottom: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  padding-bottom: var(--space-5); /* 20px */
+  padding-bottom: 1.25rem; /* 20px */
 }
 
 .status-number {
@@ -214,13 +213,13 @@
 .empty-subjects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-grid); /* 16px */
-  padding: var(--space-grid-pad); /* 8px  */
+  gap: 1rem; /* 16px */
+  padding: 0.5rem; /* 8px  */
 }
 
 .empty-subject-card {
   cursor: pointer;
-  transition: opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   opacity: 0.85;
 }
 
@@ -230,7 +229,7 @@
 
 .empty-subjects {
   border-top: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  padding-top: var(--space-4); /* 16px (was 1rem) */
+  padding-top: 1rem; /* 16px (was 1rem) */
 }
 
 .empty-subject-card:not(:disabled):hover {

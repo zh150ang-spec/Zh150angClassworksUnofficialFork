@@ -60,7 +60,7 @@
               <div class="text-error text-body-small mb-1">
                 请假 ({{ item.data.absent.length }})
               </div>
-              <div class="d-flex flex-wrap" style="gap: var(--space-1)">
+              <div class="d-flex flex-wrap" style="gap: 0.25rem">
                 <v-chip
                   v-for="name in item.data.absent"
                   :key="name"
@@ -77,7 +77,7 @@
               <div class="text-warning text-body-small mb-1">
                 迟到 ({{ item.data.late.length }})
               </div>
-              <div class="d-flex flex-wrap" style="gap: var(--space-1)">
+              <div class="d-flex flex-wrap" style="gap: 0.25rem">
                 <v-chip
                   v-for="name in item.data.late"
                   :key="name"
@@ -94,7 +94,7 @@
               <div class="text-medium-emphasis text-body-small mb-1">
                 不参与 ({{ item.data.exclude.length }})
               </div>
-              <div class="d-flex flex-wrap" style="gap: var(--space-1)">
+              <div class="d-flex flex-wrap" style="gap: 0.25rem">
                 <v-chip
                   v-for="name in item.data.exclude"
                   :key="name"
@@ -592,11 +592,11 @@ export default {
 
 .homework-content {
   font-size: inherit;
-  line-height: var(--line-height-body);
+  line-height: 1.6;
 }
 
 .homework-content :deep(.hw-line) {
-  padding: var(--space-compat-2px) 0;
+  padding: 2px 0;
 }
 
 .homework-content :deep(.hw-empty-line) {
@@ -606,7 +606,7 @@ export default {
 .homework-content :deep(.hw-h2) {
   font-size: 1.2em;
   font-weight: bold;
-  margin: var(--space-2) 0 var(--space-1) 0;
+  margin: 0.5rem 0 0.25rem 0;
   padding-bottom: 2px;
   border-bottom: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.15);
 }
@@ -614,11 +614,11 @@ export default {
 .homework-content :deep(.hw-h3) {
   font-size: 1.1em;
   font-weight: bold;
-  margin: var(--space-compat-6px) 0 var(--space-compat-2px) 0;
+  margin: 6px 0 2px 0;
 }
 
 .homework-content :deep(.hw-list-item) {
-  padding: var(--space-compat-2px) 0 var(--space-compat-2px) var(--space-1);
+  padding: 2px 0 2px 0.25rem;
   display: flex;
   align-items: flex-start;
 }
@@ -640,7 +640,7 @@ export default {
   color: rgb(var(--v-theme-on-primary));
   font-weight: bold;
   font-size: 12px;
-  border-radius: var(--radius-circle);
+  border-radius: 50%;
 }
 
 .homework-content :deep(strong) {
@@ -657,35 +657,35 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-compat-6px) var(--space-2);
-  margin: var(--space-1) 0;
+  gap: 0.25rem;
+  padding: 6px 0.5rem;
+  margin: 0.25rem 0;
   background: rgba(var(--v-theme-primary), 0.06);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   border-left: 3px solid rgb(var(--v-theme-primary));
 }
 
 .homework-content :deep(.hw-notebook-name) {
-  font-weight: var(--font-weight-label);
+  font-weight: 600;
   color: rgb(var(--v-theme-primary));
 }
 
 .homework-content :deep(.hw-notebook-page) {
   background: rgba(var(--v-theme-info), 0.15);
   color: rgb(var(--v-theme-info));
-  padding: var(--space-compat-2px) var(--space-2);
-  border-radius: var(--radius-xs);
+  padding: 2px 0.5rem;
+  border-radius: 0.5rem;
   font-size: 0.9em;
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
 }
 
 .homework-content :deep(.hw-notebook-question) {
   background: rgba(var(--v-theme-success), 0.15);
   color: rgb(var(--v-theme-success));
-  padding: var(--space-compat-2px) var(--space-2);
-  border-radius: var(--radius-xs);
+  padding: 2px 0.5rem;
+  border-radius: 0.5rem;
   font-size: 0.9em;
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
 }
 
 .homework-content :deep(.hw-notebook-desc) {
@@ -695,7 +695,7 @@ export default {
 
 .homework-content :deep(.hw-notebook-sep) {
   color: rgba(var(--v-theme-on-surface), 0.3);
-  font-weight: var(--font-weight-light);
+  font-weight: 300;
 }
 
 /* 空科目 chip 在深色模式下使用高不透明度实底语义色背景，

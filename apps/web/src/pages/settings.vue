@@ -219,7 +219,6 @@ import SettingsCard from '@/components/settings/SettingsCard.vue'
 import StudentListCard from '@/components/settings/cards/StudentListCard.vue'
 import TeacherListCard from '@/components/settings/cards/TeacherListCard.vue'
 import AboutCard from '@/components/settings/cards/AboutCard.vue'
-import '../styles/settings.scss'
 import SettingsExplorer from '@/components/settings/SettingsExplorer.vue'
 import SettingsLinkGenerator from '@/components/settings/SettingsLinkGenerator.vue'
 import RandomPickerCard from '@/components/settings/cards/RandomPickerCard.vue'
@@ -683,9 +682,9 @@ export default {
   }
 
   .settings-nav-item {
-    border-radius: var(--radius-xs) !important;
-    margin: var(--space-compat-2px) var(--space-1);
-    transition: all var(--duration-fast) var(--ease-apple);
+    border-radius: 0.5rem !important;
+    margin: 2px 0.25rem;
+    transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 
     &.v-list-item--active {
       background: rgba(var(--v-theme-primary), 0.1);

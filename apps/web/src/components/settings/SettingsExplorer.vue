@@ -215,15 +215,15 @@ export default {
 
 <style scoped>
 .settings-explorer {
-  padding: var(--space-2) 0;
+  padding: 0.5rem 0;
 }
 
 .settings-json {
   background-color: var(--color-fill-soft);
-  padding: var(--space-3);
-  border-radius: var(--radius-xs);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
   overflow-x: auto;
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   white-space: pre-wrap;
   max-height: 300px;
   overflow-y: auto;

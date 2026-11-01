@@ -5,23 +5,23 @@
 
 /* ── Touch Card ───────────────────────────────────────────── */
 .touch-card {
-  border-radius: var(--radius-md);
+  border-radius: 1.2rem;
   overflow: hidden;
   transition:
-    transform var(--duration-normal) var(--ease-apple),
-    box-shadow var(--duration-normal) var(--ease-apple);
+    transform 0.25s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 
   .v-card-title {
     font-size: 1.25rem;
-    padding: var(--space-card-title); /* 16px 20px */
+    padding: 1rem 1.25rem; /* 16px 20px */
   }
 
   .v-card-text {
-    padding: var(--space-card-title); /* 16px 20px (same rhythm as title) */
+    padding: 1rem 1.25rem; /* 16px 20px (same rhythm as title) */
   }
 
   .v-card-actions {
-    padding: var(--space-card-actions); /* 12px 20px */
+    padding: 0.75rem 1.25rem; /* 12px 20px */
   }
 }
 
@@ -30,13 +30,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-auto-rows: 20px;
-  gap: var(--space-grid); /* 16px */
+  gap: 1rem; /* 16px */
 }
 
 /* ── Empty Subjects Grid ──────────────────────────────────── */
 .empty-subjects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-grid); /* 16px */
-  margin-top: var(--space-4); /* 16px */
+  gap: 1rem; /* 16px */
+  margin-top: 1rem; /* 16px */
 }

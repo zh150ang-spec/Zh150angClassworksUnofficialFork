@@ -27,25 +27,25 @@ const cardCount = computed(() => (mobile.value ? 3 : 6))
 .skeleton-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
+  gap: 1rem;
 }
 .skeleton-card {
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity, 0.12));
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+  border-radius: 1.2rem;
+  padding: 1rem;
 }
 .skeleton-heading {
   height: 24px;
   width: 60%;
   background: rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: var(--radius-xs);
+  border-radius: 0.5rem;
   margin-bottom: 12px;
 }
 .skeleton-line {
   height: 14px;
   width: 100%;
   background: rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: var(--radius-xs);
+  border-radius: 0.5rem;
   margin-bottom: 8px;
 }
 .skeleton-line--short {
@@ -55,7 +55,7 @@ const cardCount = computed(() => (mobile.value ? 3 : 6))
   height: 36px;
   width: 100px;
   background: rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
 }
 .skeleton-pulse {
   animation: skeleton-pulse 1.5s ease-in-out infinite;

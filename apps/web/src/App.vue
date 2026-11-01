@@ -130,8 +130,8 @@ onUnmounted(() => {
 .md3-enter-active,
 .md3-leave-active {
   transition:
-    opacity var(--duration-normal) var(--ease-apple),
-    transform var(--duration-normal) var(--ease-apple);
+    opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1),
+    transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .md3-enter-from {
@@ -156,17 +156,17 @@ onUnmounted(() => {
 }
 
 .app-background-image {
-  z-index: var(--z-base);
+  z-index: 0;
   transform-origin: center center;
   will-change: transform, filter;
 }
 
 .app-background-overlay {
-  z-index: var(--z-overlay);
+  z-index: 1;
 }
 
 .app-content {
   position: relative;
-  z-index: var(--z-content);
+  z-index: 2;
 }
 </style>

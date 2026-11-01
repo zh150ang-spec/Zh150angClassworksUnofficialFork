@@ -20,11 +20,11 @@ export default {
 <style scoped>
 .floating-icp-link {
   position: fixed;
-  right: var(--space-1);
+  right: 0.25rem;
   bottom: 0;
-  z-index: var(--z-float);
+  z-index: 100;
   font-size: 14px;
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
   letter-spacing: 0.2px;
   color: var(--text-quaternary);
   text-decoration: none;
@@ -44,7 +44,7 @@ export default {
 
 @media (max-width: 600px) {
   .floating-icp-link {
-    right: var(--space-4);
+    right: 1rem;
     bottom: 0;
     font-size: 14px;
   }

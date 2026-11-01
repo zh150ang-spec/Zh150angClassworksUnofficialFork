@@ -497,9 +497,9 @@ export default {
 
 .close-btn {
   position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  z-index: var(--z-inner);
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
 }
 
 .urgency-icon {
@@ -511,42 +511,42 @@ export default {
   font-size: 2.5rem;
   font-weight: bold;
   color: rgb(var(--v-theme-on-error));
-  line-height: var(--line-height-heading);
+  line-height: 1.2;
 }
 
 .urgent-subtitle {
   font-size: 2rem;
   font-weight: bold;
   color: rgb(var(--v-theme-on-error));
-  line-height: var(--line-height-heading);
+  line-height: 1.2;
 }
 .notification-content {
   font-size: 1.4rem;
   color: rgba(var(--v-theme-on-error), 0.95);
-  line-height: var(--line-height-body);
-  padding: 0 var(--space-5);
+  line-height: 1.6;
+  padding: 0 1.25rem;
 }
 
 .sender-label,
 .target-label {
   font-size: 0.9rem;
   color: rgba(var(--v-theme-on-error), 0.8);
-  font-weight: var(--font-weight-label);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: 0.05em;
 }
 
 .sender-details,
 .target-devices {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 .actions {
   display: flex;
   justify-content: center;
-  gap: var(--space-4);
+  gap: 1rem;
 }
 
 .navigation-controls {
@@ -555,13 +555,13 @@ export default {
 
 .notification-counter {
   color: rgb(var(--v-theme-on-error));
-  font-weight: var(--font-weight-label);
+  font-weight: 600;
 }
 
 .navigation-buttons {
   display: flex;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 /* 动画效果 */
@@ -604,12 +604,12 @@ export default {
 
   .notification-content {
     font-size: 1.2rem;
-    padding: 0 var(--space-compat-10px);
+    padding: 0 10px;
   }
 
   .urgent-notification-card {
     width: 95% !important;
-    margin: var(--space-5);
+    margin: 1.25rem;
   }
 }
 </style>

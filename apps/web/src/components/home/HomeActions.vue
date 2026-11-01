@@ -202,7 +202,7 @@ export default {
 
 <style scoped>
 .home-actions {
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 .action-group {
@@ -212,7 +212,7 @@ export default {
 
 @media (max-width: 600px) {
   .home-actions {
-    gap: var(--space-2);
+    gap: 0.5rem;
   }
 
   .action-group {

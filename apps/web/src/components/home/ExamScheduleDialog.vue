@@ -1305,18 +1305,18 @@ Now please generate the exam configuration based on the above rules:`
 }
 
 .ai-prompt-text {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   font-size: 13px;
-  line-height: var(--line-height-body);
+  line-height: 1.6;
   white-space: pre-wrap;
   word-wrap: break-word;
   margin: 0;
 }
 
 .ai-example-json {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   font-size: 12px;
-  line-height: var(--line-height-code);
+  line-height: 1.5;
   white-space: pre;
   overflow-x: auto;
   margin: 0;

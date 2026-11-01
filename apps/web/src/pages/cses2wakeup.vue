@@ -1307,13 +1307,13 @@ export default {
 }
 
 .course-cell {
-  padding: var(--space-1);
+  padding: 0.25rem;
   font-size: 0.85rem;
   white-space: pre-line;
 }
 
 .course-item {
-  padding: var(--space-compat-2px) 0;
+  padding: 2px 0;
   border-bottom: 1px dashed var(--color-border);
 }
 
@@ -1324,8 +1324,8 @@ export default {
 .week-type {
   font-size: 0.7rem;
   background-color: rgba(var(--v-theme-surface-variant), 0.5);
-  padding: var(--space-compat-1px) var(--space-compat-3px);
-  border-radius: var(--radius-xs);
+  padding: 1px 3px;
+  border-radius: 0.5rem;
   margin-left: 2px;
 }
 
@@ -1333,7 +1333,7 @@ export default {
 .filter-chip {
   min-width: 60px;
   justify-content: center;
-  transition: all var(--duration-fast) var(--ease-apple);
+  transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .filter-chip.v-chip--selected {
@@ -1343,19 +1343,19 @@ export default {
 
 /* 表格美化 */
 .v-data-table {
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   overflow: hidden;
 }
 
 /* 卡片美化 */
 .v-card {
-  border-radius: var(--radius-md);
+  border-radius: 1.2rem;
   overflow: hidden;
 }
 
 /* 美化按钮悬浮效果 */
 .v-btn {
-  transition: transform var(--duration-fast) var(--ease-apple);
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .v-btn:not(:disabled):hover {

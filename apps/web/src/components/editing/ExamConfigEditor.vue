@@ -141,15 +141,12 @@
     <!-- 预览模式 -->
     <div v-if="!loading && !isEditMode">
       <div class="mb-8">
-        <div
-          class="text-display-small font-weight-bold"
-          style="line-height: var(--line-height-heading)"
-        >
+        <div class="text-display-small font-weight-bold" style="line-height: 1.2">
           {{ localConfig.examName || '未设置考试名称' }}
         </div>
         <div
           class="text-body-large text-medium-emphasis"
-          style="white-space: pre-wrap; line-height: var(--line-height-preformatted)"
+          style="white-space: pre-wrap; line-height: 1.8"
         >
           {{ localConfig.message || '未设置考试提示' }}
         </div>
@@ -1853,17 +1850,17 @@ export default {
 }
 
 .json-preview {
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  border-radius: 0.75rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   font-size: 13px;
-  line-height: var(--line-height-code);
+  line-height: 1.5;
   max-height: 400px;
   overflow-y: auto;
-  padding: var(--space-4);
+  padding: 1rem;
 }
 
 .json-preview code {
-  font-weight: var(--font-weight-regular);
+  font-weight: 400;
 }
 
 /* 预览模式样式增强 */
@@ -1887,12 +1884,14 @@ export default {
 
 /* 预览卡片阴影效果 */
 .v-card--variant-elevated {
-  box-shadow: var(--shadow-hover) !important;
+  box-shadow:
+    0 4px 8px -2px rgba(0, 0, 0, 0.06),
+    0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
 }
 
 /* 模式切换按钮样式 */
 .v-btn-toggle {
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   overflow: hidden;
 }
 
@@ -1901,15 +1900,15 @@ export default {
 }
 
 .v-btn-toggle .v-btn:first-child {
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important;
+  border-radius: 0.75rem 0 0 0.75rem !important;
 }
 
 .v-btn-toggle .v-btn:last-child {
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+  border-radius: 0 0.75rem 0.75rem 0 !important;
 }
 
 .v-btn-toggle .v-btn:only-child {
-  border-radius: var(--radius-sm) !important;
+  border-radius: 0.75rem !important;
 }
 
 .cursor-pointer {
@@ -1930,7 +1929,7 @@ export default {
 
 /* 科目编辑项悬停效果 */
 .hover-highlight {
-  transition: background-color var(--duration-fast) var(--ease-apple);
+  transition: background-color 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .hover-highlight:hover {

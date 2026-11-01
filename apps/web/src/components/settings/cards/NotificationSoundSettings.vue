@@ -274,6 +274,6 @@ export default {
 
 <style scoped>
 .notification-sound-settings {
-  margin: var(--space-4) 0;
+  margin: 1rem 0;
 }
 </style>

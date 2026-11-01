@@ -61,7 +61,7 @@ export default {
       return {
         'font-size': `${this.fontSize * HITOKOTO_FONT_RATIO}px`,
         'white-space': 'pre-wrap',
-        'line-height': 'var(--line-height-body)',
+        'line-height': '1.6',
         'text-align': 'left',
       }
     },
@@ -247,9 +247,13 @@ export default {
   cursor: pointer;
 }
 .serif-font {
-  font-family: var(--font-serif);
+  font-family:
+    'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', 'Hiragino Sans GB', SimSun, system-ui,
+    serif;
 }
 .author-font {
-  font-family: var(--font-serif);
+  font-family:
+    'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', 'Hiragino Sans GB', SimSun, system-ui,
+    serif;
 }
 </style>

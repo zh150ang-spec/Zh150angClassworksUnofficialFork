@@ -77,13 +77,15 @@ export default defineComponent({
 
 <style scoped>
 .message-toolbar {
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 1px 2px 0 rgba(0, 0, 0, 0.05),
+    0 1px 3px -1px rgba(0, 0, 0, 0.05);
 }
 
 .v-list-item {
-  margin: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm) !important;
-  transition: background-color var(--duration-fast) var(--ease-apple);
+  margin: 0.25rem 0.5rem;
+  border-radius: 0.75rem !important;
+  transition: background-color 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .v-list-item:hover {

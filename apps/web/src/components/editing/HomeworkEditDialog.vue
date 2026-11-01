@@ -846,18 +846,18 @@ export default {
 .md-toolbar {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   background-color: rgba(var(--v-theme-on-surface), 0.02);
 }
 
 .md-tool-btn {
   min-width: auto !important;
-  padding: var(--space-1) var(--space-compat-10px) !important;
+  padding: 0.25rem 10px !important;
   font-size: 13px;
-  border-radius: var(--radius-xs);
+  border-radius: 0.5rem;
 }
 
 .md-tool-btn:hover {
@@ -865,23 +865,23 @@ export default {
 }
 
 .notebook-btn {
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
 }
 
 .template-books {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 .button-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-compat-6px) var(--space-compat-10px);
+  gap: 0.25rem;
+  padding: 6px 10px;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   background-color: rgba(var(--v-theme-on-surface), 0.02);
 }
 
@@ -891,7 +891,7 @@ export default {
 .pages-container {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: 0.25rem;
   margin-left: 8px;
   padding-left: 8px;
   border-left: 2px solid rgba(var(--v-theme-primary), 0.3);
@@ -901,10 +901,10 @@ export default {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-compat-6px) var(--space-compat-10px);
+  gap: 0.25rem;
+  padding: 6px 10px;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   background-color: rgba(var(--v-theme-primary), 0.05);
   margin-top: 8px;
 }
@@ -927,21 +927,21 @@ export default {
 }
 
 .gap-1 {
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .numeric-keypad {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-2);
+  gap: 0.25rem;
+  padding: 0.5rem;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  border-radius: var(--radius-xs);
+  border-radius: 0.5rem;
 }
 
 .keypad-row {
   display: flex;
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .keypad-btn {

@@ -1052,30 +1052,30 @@ export default {
 }
 
 .number-input {
-  padding: var(--space-2);
+  padding: 0.5rem;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.15);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   background: rgba(var(--v-theme-on-surface), 0.02);
 }
 
 .optional-sections {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: 0.75rem;
 }
 
 .optional-section {
   flex: 1;
   min-width: 180px;
-  padding: var(--space-3);
+  padding: 0.75rem;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.15);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   background: rgba(var(--v-theme-surface-variant), 0.3);
 }
 
 .optional-section-header {
   font-size: 14px;
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
   color: rgba(var(--v-theme-on-surface), 0.7);
   margin-bottom: 8px;
   display: flex;
@@ -1087,16 +1087,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 0.5rem;
   margin-bottom: 12px;
-  padding: var(--space-2);
+  padding: 0.5rem;
   background: rgba(var(--v-theme-surface), 0.5);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
 }
 
 .input-label {
   font-size: 15px;
-  font-weight: var(--font-weight-emphasis);
+  font-weight: 500;
   color: rgba(var(--v-theme-on-surface), 0.8);
   min-width: 20px;
   text-align: center;
@@ -1110,7 +1110,7 @@ export default {
 .repeat-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 0.5rem;
   justify-content: center;
 }
 
@@ -1121,12 +1121,12 @@ export default {
 .numpad {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .numpad-row {
   display: flex;
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .numpad-btn {
@@ -1146,40 +1146,40 @@ export default {
 .template-books {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 .button-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-compat-6px) var(--space-compat-10px);
+  gap: 0.25rem;
+  padding: 6px 10px;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   background: rgba(var(--v-theme-on-surface), 0.02);
 }
 
 .pages-container {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: 0.25rem;
   margin-left: 8px;
   padding-left: 8px;
   border-left: 2px solid rgba(var(--v-theme-primary), 0.3);
 }
 
 .multi-question-section {
-  padding: var(--space-2);
+  padding: 0.5rem;
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.1);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
   background: rgba(var(--v-theme-on-surface), 0.02);
 }
 
 .question-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .question-grid-btn {

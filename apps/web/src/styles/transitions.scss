@@ -7,27 +7,27 @@
 /* ── Grid item enter/leave ────────────────────────────────── */
 .grid-item {
   transition:
-    transform var(--duration-slow) var(--ease-apple),
-    opacity var(--duration-normal) var(--ease-apple);
+    transform 0.35s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   will-change: transform, opacity;
   backface-visibility: hidden;
 
   &.v-enter-active {
     transition:
-      transform var(--duration-slow) var(--ease-apple),
-      opacity var(--duration-normal) var(--ease-apple);
+      transform 0.35s cubic-bezier(0.32, 0.72, 0, 1),
+      opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   &.v-move {
-    transition: transform var(--duration-slow) var(--ease-apple);
-    z-index: var(--z-move);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 3;
   }
 
   &.v-leave-active {
     position: absolute !important;
     transition:
-      transform var(--duration-normal) var(--ease-apple),
-      opacity var(--duration-fast) var(--ease-apple);
+      transform 0.25s cubic-bezier(0.32, 0.72, 0, 1),
+      opacity 0.15s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   &.v-enter-from,
@@ -43,11 +43,11 @@
 
 /* ── List item transitions ────────────────────────────────── */
 .v-list-enter-active {
-  transition: all var(--duration-slow) var(--ease-apple);
+  transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .v-list-leave-active {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .v-list-enter-from,
@@ -60,7 +60,7 @@
 .attendance-area {
   h2,
   h3 {
-    transition: color var(--duration-normal) var(--ease-apple);
+    transition: color 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   }
 }
 
@@ -70,7 +70,7 @@
 
   @media (pointer: coarse) {
     &::before {
-      margin: calc(var(--space-2) * -1); /* -8px */
+      margin: calc(0.5rem * -1); /* -8px */
     }
   }
 }
@@ -93,14 +93,14 @@
 
 .v-dialog-transition-enter-active {
   transition:
-    transform var(--duration-slow) var(--ease-apple),
-    opacity var(--duration-normal) var(--ease-apple);
+    transform 0.35s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .v-dialog-transition-leave-active {
   transition:
-    transform var(--duration-normal) var(--ease-apple),
-    opacity var(--duration-fast) var(--ease-apple);
+    transform 0.25s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* ── Button touch targets (transition handled by Vuetify) ──── */
@@ -110,11 +110,11 @@
   min-width: 40px;
 
   @media (pointer: coarse) {
-    padding: var(--space-2) var(--space-4); /* 8px 16px */
-    margin: var(--space-1); /* 4px */
+    padding: 0.5rem 1rem; /* 8px 16px */
+    margin: 0.25rem; /* 4px */
 
     &::before {
-      margin: calc(var(--space-2) * -1); /* -8px */
+      margin: calc(0.5rem * -1); /* -8px */
     }
   }
 }
@@ -131,7 +131,7 @@
 /* ── Grid transitions ─────────────────────────────────────── */
 .grid-enter-active,
 .grid-leave-active {
-  transition: all var(--duration-slow) var(--ease-apple);
+  transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .grid-enter-from {
@@ -147,7 +147,7 @@
 /* ── List transitions ─────────────────────────────────────── */
 .v-list-enter-active,
 .v-list-leave-active {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .v-list-enter-from {
@@ -164,8 +164,8 @@
 .page-enter-active,
 .page-leave-active {
   transition:
-    opacity var(--duration-normal) var(--ease-apple),
-    transform var(--duration-normal) var(--ease-apple);
+    opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1),
+    transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .page-enter-from {
@@ -181,7 +181,7 @@
 /* ── Fade ─────────────────────────────────────────────────── */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .fade-enter-from,
@@ -192,7 +192,7 @@
 /* ── Scale ────────────────────────────────────────────────── */
 .scale-enter-active,
 .scale-leave-active {
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .scale-enter-from,

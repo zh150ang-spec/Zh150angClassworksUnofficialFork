@@ -487,7 +487,7 @@ export default {
 <style scoped>
 .rules-list {
   border: 1px solid rgba(var(--v-border-color, var(--v-theme-on-surface)), 0.12);
-  border-radius: var(--radius-sm);
+  border-radius: 0.75rem;
 }
 
 .rule-item {

@@ -8,12 +8,14 @@ pre,
 code,
 .v-code,
 .monospace {
-  font-family: var(--font-mono) !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace !important;
 }
 
 /* ── Serif font (for HitokotoCard & poetic content) ─────────── */
 .serif-font {
-  font-family: var(--font-serif);
+  font-family:
+    'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', 'Hiragino Sans GB', SimSun, system-ui,
+    serif;
 }
 
 /* ── Text rendering & smooth scroll ────────────────────────── */
@@ -27,7 +29,7 @@ html {
 /* ── Heading line-height (unified via --line-height-heading) ── */
 .text-h2,
 .text-h3 {
-  line-height: var(--line-height-heading);
+  line-height: 1.2;
 }
 
 /* ── Card hover (design rule: cards remain static on hover) ─ */
@@ -37,10 +39,10 @@ html {
 
 /* ── Touch-friendly button ────────────────────────────────── */
 .touch-button {
-  min-height: var(--space-touch-min);
-  min-width: var(--space-touch-min);
-  border-radius: var(--radius-full);
-  padding: var(--space-3) var(--space-6); /* 12px 24px */
+  min-height: 48px;
+  min-width: 48px;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
 
   &.v-btn--icon {
     min-height: 56px;
@@ -126,22 +128,22 @@ html {
   gap: 0;
 }
 .gap-1 {
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 .gap-2 {
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 .gap-3 {
-  gap: var(--space-3);
+  gap: 0.75rem;
 }
 .gap-4 {
-  gap: var(--space-4);
+  gap: 1rem;
 }
 .gap-6 {
-  gap: var(--space-6);
+  gap: 1.5rem;
 }
 .gap-8 {
-  gap: var(--space-8);
+  gap: 2rem;
 }
 
 /* ── v-chip tonal text contrast (global) ──────────────────── */
@@ -166,7 +168,7 @@ html {
 /* ── Touch-friendly list ──────────────────────────────────── */
 .touch-list-item {
   min-height: 56px;
-  padding: var(--space-3) var(--space-4); /* 12px 16px */
+  padding: 0.75rem 1rem; /* 12px 16px */
 }
 
 .large-touch-target {
@@ -183,7 +185,7 @@ html {
   }
 
   .main-window {
-    padding-top: var(--space-4); /* 16px */
-    padding-bottom: var(--space-4); /* 16px */
+    padding-top: 1rem; /* 16px */
+    padding-bottom: 1rem; /* 16px */
   }
 }

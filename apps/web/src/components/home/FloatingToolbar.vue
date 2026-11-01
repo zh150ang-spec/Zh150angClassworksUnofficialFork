@@ -167,7 +167,7 @@ export default {
   left: 0;
   width: 100%;
   height: 0;
-  z-index: var(--z-float);
+  z-index: 100;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -177,19 +177,21 @@ export default {
   position: absolute;
   bottom: 24px;
 
-  transition: all var(--duration-normal) var(--ease-apple);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   background: rgba(var(--v-theme-surface-container), 0.85) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-raised) !important;
+  box-shadow:
+    0 8px 24px -8px rgba(0, 0, 0, 0.08),
+    0 4px 8px -4px rgba(0, 0, 0, 0.05) !important;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   pointer-events: auto;
   will-change: transform;
-  border-radius: var(--radius-xl) !important;
+  border-radius: 1.6rem !important;
 
   display: flex;
   align-items: center;
@@ -202,7 +204,7 @@ export default {
   min-width: auto !important;
   height: auto !important;
   padding: 6px 10px !important;
-  transition: background-color var(--duration-fast) var(--ease-apple) !important;
+  transition: background-color 0.15s cubic-bezier(0.32, 0.72, 0, 1) !important;
 }
 
 .toolbar-btn:hover {
@@ -239,15 +241,15 @@ export default {
   bottom: 24px;
   right: 24px;
   pointer-events: auto;
-  z-index: var(--z-float-top);
+  z-index: 101;
   background: rgba(var(--v-theme-surface-container-high), 0.92) !important;
   backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg) !important;
+  border-radius: 1.4rem !important;
 }
 
 .date-picker-card {
-  border-radius: var(--radius-md);
+  border-radius: 1.2rem;
   overflow: hidden;
   background: rgba(var(--v-theme-surface-container-high), 0.95) !important;
   backdrop-filter: blur(12px);

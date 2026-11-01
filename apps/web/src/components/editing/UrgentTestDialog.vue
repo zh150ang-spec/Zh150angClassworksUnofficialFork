@@ -659,10 +659,10 @@ export default {
 
 <style scoped>
 .gap-1 {
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .message-history-card .v-chip {
-  margin: var(--space-compat-1px);
+  margin: 1px;
 }
 </style>

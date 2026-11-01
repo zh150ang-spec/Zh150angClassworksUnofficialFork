@@ -513,7 +513,7 @@ export default {
 .counter-btn {
   width: 64px;
   height: 64px;
-  border-radius: var(--radius-circle);
+  border-radius: 50%;
 }
 
 .count-display {
@@ -524,7 +524,7 @@ export default {
 .start-btn {
   min-width: 200px;
   height: 64px;
-  border-radius: var(--radius-lg);
+  border-radius: 1.4rem;
   font-size: 1.2rem;
 }
 
@@ -536,7 +536,7 @@ export default {
 
 .filter-chip {
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-apple);
+  transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 
   &:active {
     transform: scale(0.95);
@@ -569,14 +569,14 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-compat-10px);
+  gap: 10px;
 }
 
 .student-item {
-  padding: var(--space-compat-10px) var(--space-compat-15px);
+  padding: 10px 15px;
   background-color: rgba(var(--v-theme-surface-variant), 0.7);
-  border-radius: var(--radius-sm);
-  transition: all var(--duration-normal) var(--ease-apple);
+  border-radius: 0.75rem;
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   font-size: 1.2rem;
 
   &.highlighted {
@@ -664,7 +664,7 @@ export default {
 
 .refresh-btn {
   opacity: 0.7;
-  transition: opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 
   &:hover {
     opacity: 1;
@@ -693,7 +693,7 @@ export default {
 // 动画效果
 .shuffle-enter-active,
 .shuffle-leave-active {
-  transition: all var(--duration-slow) var(--ease-apple);
+  transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .shuffle-enter-from,
@@ -703,7 +703,7 @@ export default {
 }
 
 .shuffle-move {
-  transition: transform var(--duration-slow) var(--ease-apple);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 // 触摸屏优化
@@ -714,7 +714,7 @@ export default {
   }
 
   .student-item {
-    padding: var(--space-3) var(--space-5);
+    padding: 0.75rem 1.25rem;
     font-size: 1.4rem;
   }
 
@@ -734,19 +734,21 @@ export default {
 .mode-switch-container {
   .mode-toggle {
     border: 1px solid rgba(var(--v-theme-primary), 0.2);
-    border-radius: var(--radius-full);
-    padding: var(--space-1);
-    box-shadow: var(--shadow-hover);
+    border-radius: 9999px;
+    padding: 0.25rem;
+    box-shadow:
+      0 4px 8px -2px rgba(0, 0, 0, 0.06),
+      0 2px 4px -2px rgba(0, 0, 0, 0.05);
 
     .v-btn {
       min-width: 120px;
       height: 40px;
-      font-weight: var(--font-weight-emphasis);
+      font-weight: 500;
       letter-spacing: 0.5px;
 
       &.v-btn--active {
         transform: scale(1.02);
-        font-weight: var(--font-weight-label);
+        font-weight: 600;
       }
     }
   }
@@ -756,17 +758,19 @@ export default {
 .number-range-container {
   max-width: 300px;
   margin: 0 auto;
-  padding: var(--space-4);
+  padding: 1rem;
   background: rgba(var(--v-theme-surface-variant), 0.1);
-  border-radius: var(--radius-md);
+  border-radius: 1.2rem;
   border: 1px solid rgba(var(--v-theme-primary), 0.1);
 
   .number-input {
     width: 100px;
 
     :deep(.v-field) {
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow);
+      border-radius: 0.75rem;
+      box-shadow:
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 1px 2px -1px rgba(0, 0, 0, 0.05);
     }
   }
 }

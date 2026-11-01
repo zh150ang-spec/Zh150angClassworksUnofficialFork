@@ -51,10 +51,7 @@
       <v-divider />
 
       <v-card-text class="pa-6">
-        <div
-          class="text-headline-large font-weight-medium mb-4"
-          style="line-height: var(--line-height-code)"
-        >
+        <div class="text-headline-large font-weight-medium mb-4" style="line-height: 1.5">
           {{ currentNotification.message }}
         </div>
         <div class="text-body-large text-medium-emphasis">发布时间：{{ formattedTime }}</div>
@@ -116,7 +113,7 @@ defineEmits(['update:modelValue', 'show-detail', 'remove'])
 
 .notification-item {
   cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-apple);
+  transition: background-color 0.15s cubic-bezier(0.32, 0.72, 0, 1);
   border-left: 3px solid transparent;
 }
 

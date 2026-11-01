@@ -129,7 +129,7 @@ export default {
 
 <style scoped>
 .gap-1 {
-  gap: var(--space-compat-0px);
+  gap: 0;
 }
 .border-b-sm {
   border-bottom: 1px solid var(--color-border-weak);

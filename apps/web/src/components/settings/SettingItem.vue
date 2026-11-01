@@ -507,8 +507,8 @@ export default {
 }
 
 .setting-item {
-  border-radius: var(--radius-sm);
-  transition: background-color var(--duration-fast) var(--ease-apple);
+  border-radius: 0.75rem;
+  transition: background-color 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .setting-item-developer .setting-item {
@@ -518,14 +518,14 @@ export default {
 .setting-title-row {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .setting-text-field,
 .setting-select,
 .setting-number-field {
   min-width: 180px;
-  border-radius: var(--radius-xs);
+  border-radius: 0.5rem;
 }
 
 .text-wrap {
@@ -535,7 +535,7 @@ export default {
 }
 
 .setting-menu-btn {
-  transition: opacity var(--duration-fast) var(--ease-apple);
+  transition: opacity 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* 桌面端（支持悬停的设备） */

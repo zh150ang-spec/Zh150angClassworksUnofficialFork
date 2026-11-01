@@ -128,7 +128,7 @@ export default {
 .attendance-sidebar {
   width: 160px;
   min-width: 160px;
-  padding: var(--space-4);
+  padding: 1rem;
   border-left: 1px solid var(--color-border);
   background: rgba(var(--v-theme-surface-container-low), 0.5);
   display: flex;
@@ -139,14 +139,14 @@ export default {
 .attendance-header {
   display: flex;
   align-items: center;
-  margin-bottom: var(--space-3);
+  margin-bottom: 0.75rem;
 }
 
 .attendance-number-block {
   display: flex;
   align-items: baseline;
-  gap: var(--space-2);
-  margin-bottom: var(--space-1);
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .attendance-label {
@@ -156,7 +156,7 @@ export default {
 
 .attendance-number {
   font-size: 1.5rem;
-  font-weight: var(--font-weight-heading);
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -168,26 +168,26 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 .attendance-count {
   font-size: 0.9rem;
-  font-weight: var(--font-weight-label);
+  font-weight: 600;
   opacity: 0.9;
 }
 
 .attendance-name {
   color: rgba(var(--v-theme-on-surface), 0.7);
-  padding-left: var(--space-2);
-  margin-top: var(--space-compat-2px);
+  padding-left: 0.5rem;
+  margin-top: 2px;
 }
 
 @media (max-width: 1199px) {
   .attendance-sidebar {
     width: 140px;
     min-width: 140px;
-    padding: var(--space-3);
+    padding: 0.75rem;
   }
 }
 

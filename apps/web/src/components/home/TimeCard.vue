@@ -10,7 +10,7 @@
     @touchmove="handleTouchMove"
   >
     <v-card-text class="pa-6 d-flex flex-column" style="height: 100%">
-      <div class="d-flex align-center" style="gap: var(--space-4)">
+      <div class="d-flex align-center" style="gap: 1rem">
         <!-- 左侧：时间显示 -->
         <div class="flex-grow-1">
           <div class="time-display" :style="timeStyle">
@@ -855,17 +855,17 @@ export default {
 }
 
 .time-display {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   white-space: nowrap;
 }
 
 .seconds-text {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
 }
 
 .date-line {
   opacity: 0.75;
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: 0.05em;
 }
 
 /* 全屏样式 */
@@ -882,7 +882,7 @@ export default {
   top: 0;
   left: 0;
   right: 0;
-  z-index: var(--z-toolbar);
+  z-index: 10;
   display: flex;
   justify-content: center;
   padding-top: 16px;
@@ -890,14 +890,14 @@ export default {
 
 .fullscreen-tabs {
   background: transparent;
-  border-radius: var(--radius-md);
+  border-radius: 1.2rem;
 }
 
 .toolbar-fade-enter-active,
 .toolbar-fade-leave-active {
   transition:
-    opacity var(--duration-slow) var(--ease-apple),
-    transform var(--duration-slow) var(--ease-apple);
+    opacity 0.35s cubic-bezier(0.32, 0.72, 0, 1),
+    transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .toolbar-fade-enter-from,
@@ -912,12 +912,12 @@ export default {
 
 .fullscreen-time-body {
   user-select: none;
-  padding: 0 var(--space-6);
+  padding: 0 1.5rem;
 }
 
 .fullscreen-time-display {
-  font-weight: var(--font-weight-heading);
-  letter-spacing: var(--tracking-display);
+  font-weight: 700;
+  letter-spacing: 0.25em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   font-size: clamp(2rem, 12vw, 8rem);
@@ -939,7 +939,7 @@ export default {
 .fullscreen-date-line {
   font-size: clamp(1rem, 3vw, 2.2rem);
   opacity: 0.7;
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: 0.05em;
 }
 
 .fullscreen-progress {
@@ -959,7 +959,7 @@ export default {
   display: flex;
   align-items: center;
   opacity: 0.5;
-  transition: opacity var(--duration-normal) var(--ease-apple);
+  transition: opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .fullscreen-actions:hover {
@@ -973,7 +973,7 @@ export default {
 
 .countdown-digit {
   font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: var(--font-weight-heading);
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   min-width: 1.2em;
@@ -982,7 +982,7 @@ export default {
 
 .countdown-sep {
   font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: var(--font-weight-light);
+  font-weight: 300;
   line-height: 1;
   opacity: 0.4;
   padding-bottom: 1.8em;
@@ -1011,7 +1011,7 @@ export default {
 
 .stopwatch-laps-table {
   background: transparent !important;
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
   font-variant-numeric: tabular-nums;
 }
 </style>

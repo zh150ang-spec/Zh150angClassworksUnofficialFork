@@ -1195,13 +1195,13 @@ export default {
 
 <style scoped>
 .font-monospace {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
 }
 
 code {
   background-color: rgba(var(--v-theme-surface-variant), 0.5);
-  padding: var(--space-compat-2px) var(--space-1);
-  border-radius: var(--radius-xs);
+  padding: 2px 0.25rem;
+  border-radius: 0.5rem;
   font-size: 0.875em;
 }
 </style>
