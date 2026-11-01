@@ -12,14 +12,23 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2 } from 'lucide-vue-next'
+import { Loader2 } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 const props = defineProps({
   modelValue: Boolean,
-  deviceUuid: String,
-  currentNamespace: String,
-  accountToken: String,
+  deviceUuid: {
+    type: String,
+    default: '',
+  },
+  currentNamespace: {
+    type: String,
+    default: '',
+  },
+  accountToken: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'success'])

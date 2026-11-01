@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Smartphone, RefreshCw, Trash2, Edit, User, ArrowLeft } from 'lucide-vue-next'
+import { Smartphone, RefreshCw, Trash2, Edit, User, ArrowLeft } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import EditDeviceNameDialog from '@/components/EditDeviceNameDialog.vue'
 

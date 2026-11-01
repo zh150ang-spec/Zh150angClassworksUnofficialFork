@@ -2,7 +2,7 @@
 import { execSync } from 'child_process'
 import dotenv from 'dotenv'
 
-dotenv.config()
+dotenv.config({ quiet: true })
 
 function run(command, failMessage) {
   try {

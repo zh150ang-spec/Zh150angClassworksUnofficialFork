@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Shuffle, Download, Plus, AlertTriangle } from 'lucide-vue-next'
+import { Shuffle, Download, Plus, AlertTriangle } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 const props = defineProps({

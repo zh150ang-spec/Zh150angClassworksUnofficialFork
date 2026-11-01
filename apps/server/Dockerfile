@@ -1,7 +1,7 @@
-FROM node:22-alpine AS base
+FROM node:26-alpine AS base
 
-# 与仓库其它地方保持一致（pnpm 11.24.0），不要退回上游的 9.15.0
-RUN corepack enable && corepack prepare pnpm@11.24.0 --activate
+# 与仓库其它地方保持一致（pnpm 12.16.1），不要退回上游的 9.15.0
+RUN corepack enable && corepack prepare pnpm@12.16.1 --activate
 WORKDIR /app
 
 # --- build：全量安装（含 devDependencies：prisma CLI）+ 生成 Prisma 客户端 ---

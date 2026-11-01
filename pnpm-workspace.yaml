@@ -13,9 +13,22 @@ allowBuilds:
   '@parcel/watcher': false
   '@prisma/engines': true
   bcrypt: true
-  electron: true
   esbuild: false
   prisma: true
   protobufjs: true
   sharp: false
   vue-demi: true
+
+# 安全审计修复：只把传递依赖抬到 advisory 的 patched 版本。
+# glob / minimatch / brace-expansion 三者必须配套升级：新版 minimatch 使用
+# brace-expansion 5 的 CJS 构建，旧 minimatch 则把 brace-expansion 当函数调用。
+overrides:
+  brace-expansion: ^5.0.12
+  fast-uri: ^3.1.9
+  glob: ^14.0.3
+  lodash: ^4.18.1
+  minimatch: ^11.0.3
+  postcss-selector-parser: ^6.1.5
+  serialize-javascript: ^7.1.4
+patchedDependencies:
+  brace-expansion@5.0.12: patches/brace-expansion@5.0.12.patch

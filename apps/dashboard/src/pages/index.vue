@@ -33,7 +33,7 @@ import {
   ChevronDown,
   TestTube2,
   Edit,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import DropdownMenu from '@/components/ui/dropdown-menu/DropdownMenu.vue'
 import DropdownItem from '@/components/ui/dropdown-menu/DropdownItem.vue'
 import AppCard from '@/components/AppCard.vue'

@@ -11,7 +11,45 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 | `@classworks/dashboard` | `apps/dashboard`  | Vue 3 + Tailwind 4             | Admin UI for the KV backend                           |
 | `@classworks/shared`    | `packages/shared` | Pure JS (ESM)                  | Shared constants (headers, URLs)                      |
 
-> **各 app 自治理**：目前仅有 `apps/web` 提供了独立的 `apps/web/AGENTS.md`；`apps/server`、`apps/dashboard` 暂无独立 `AGENTS.md`，其细节见各自的 `README.md`。尤其涉及 `apps/web`（命令、lint、数据层、部署约定）时，**以** **`apps/web/AGENTS.md`** **为权威**；本根文档只做透传的笼统说明，避免与子文档冲突或重复。
+> **各 app 自治理**
+>
+> ：目前仅有
+>
+> `apps/web`
+>
+> 提供了独立的
+>
+> `apps/web/AGENTS.md`
+>
+> ；
+>
+> `apps/server`
+>
+> 、
+>
+> `apps/dashboard`
+>
+> 暂无独立
+>
+> `AGENTS.md`
+>
+> ，其细节见各自的
+>
+> `README.md`
+>
+> 。尤其涉及
+>
+> `apps/web`
+>
+> （命令、lint、数据层、部署约定）时，
+>
+> **以**
+>
+> `apps/web/AGENTS.md`
+>
+> **为权威**
+>
+> ；本根文档只做透传的笼统说明，避免与子文档冲突或重复。
 
 ## Monorepo Layout
 
@@ -29,7 +67,7 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 │   ├── actions/setup-pnpm/   # Reusable CI composite action
 │   └── workflows/
 ├── package.json              # Root workspace scripts + shared dev deps
-├── pnpm-workspace.yaml       # 工作区定义 + pnpm 11 项目级配置（nodeLinker 等）
+├── pnpm-workspace.yaml       # 工作区定义 + pnpm 12 项目级配置（nodeLinker 等）
 ├── pnpm-lock.yaml
 ├── eslint.config.js          # Shared ESLint flat config
 ├── .gitattributes            # 统一行尾为 LF
@@ -43,7 +81,7 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 
 These commands run from the **repo root**.
 
-```bash
+```
 # For all apps
 pnpm install              # Install all workspace dependencies
 pnpm run dev              # Start all apps in parallel (web :3031, server :3000, dashboard :5173)
@@ -65,7 +103,23 @@ pnpm run build:dashboard
 pnpm run test:web         # 同上（等价写法，与 build:web 等对齐）
 ```
 
-> 注：`apps/web` 的内部命令与规范以 `apps/web/AGENTS.md` 为准；根层调用单个 web 命令用 `pnpm --filter @classworks/web run <script>`。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的 `pnpm run lint`（ESLint）是两套，各自独立、互不覆盖。考虑到性能问题，当仅进行 web 开发时，应当特意使用 web 内的策略。
+> 注：
+>
+> `apps/web`
+>
+> 的内部命令与规范以
+>
+> `apps/web/AGENTS.md`
+>
+> 为准；根层调用单个 web 命令用
+>
+> `pnpm --filter @classworks/web run <script>`
+>
+> 。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的
+>
+> `pnpm run lint`
+>
+> （ESLint）是两套，各自独立、互不覆盖。考虑到性能问题，当仅进行 web 开发时，应当特意使用 web 内的策略。
 
 ### Per-app
 
@@ -99,7 +153,7 @@ All apps depend via `"@classworks/shared": "workspace:*"`.
 
 - `@/` alias → each app's `src/`
 
-- 根：ESLint 9 flat config + Prettier。`format:check` 全绿；`apps/web/src/utils/soundList.js` 为 prebuild 生成物，已加入 `.prettierignore`
+- 根：ESLint 10 flat config + Prettier。`format:check` 全绿；`apps/web/src/utils/soundList.js` 为 prebuild 生成物，已加入 `.prettierignore`
 
 - `apps/web` 使用自己的「oxlint + ESLint」双链（见 `apps/web/AGENTS.md`），根工具不覆盖其规范
 
@@ -119,7 +173,7 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 
 ## Notes
 
-- Hoisted deps（`nodeLinker: hoisted`）与 `autoInstallPeers: true` 都写在 `pnpm-workspace.yaml`。pnpm 11 不读取 `.npmrc` 里的同名项，放那里等于未生效
+- Hoisted deps（`nodeLinker: hoisted`）与 `autoInstallPeers: true` 都写在 `pnpm-workspace.yaml`。pnpm 12 不读取 `.npmrc` 里的同名项，放那里等于未生效
 
 - Server native modules (`bcrypt`, `@prisma/client`): run `pnpm rebuild` if needed
 
@@ -130,23 +184,29 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 ## 执行纪律
 
 以下错误在本仓库的真实工作中发生过。
+
 它们有一个共同病因：**先形成根因假设、直接写进汇报，事后才验证**。
 
 ### 1. 文档里的描述可能不是事实
 
 **规则**：汇报根因前必须有可复现证据，最主要以当前代码为准。一切常规方法无法检查出问题时，以实机写错误代码测试和直接使用浏览器抓取为准。
+
 本项目的所有文档需以低置信度看待。
+
 另外，经常有写了却没生效的东西不会产生任何报错的情况。可以做极端负向测试来查看当前代码是否真的起作用。
 
 ### 2. 破坏性操作先问「这步失败了会怎样」
 
 删除全部已跟踪文件 → `git checkout -- .` 恢复流程可能导致文件全部丢失。
+
 **规则**：批量删除、`git reset --hard`、`git clean` 之前先确认恢复手段可用；
+
 优先选择**不删除任何文件**的做法。
 
 ### 3. 新增守护需要做负向测试
 
 **规则**：新增校验脚本、CI 步骤或断言后，必须故意制造一次违规、确认它真的失败，再恢复。
+
 只跑一遍「通过」不算验证。`pnpm run check:agent-docs` 是正面示例，它经过双向验证。
 
 ### 4. 测量方法本身要先自证
@@ -154,9 +214,13 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 已发生的测量错误：
 
 - 用 `Select-Object -First N` 截断输出，掩盖了命令退出码，把「检测成功」误读为「未检出」；
-- 用 `require.resolve(name, { paths: [junction 路径] })` 探测模块解析——该 API 不对起始路径做
+
+- 用 `require.resolve(name, { paths: [junction 路径] })` 探测模块解析 —— 该 API 不对起始路径做
+
   realpath，据此得到的结论是错的；
+
 - 探针文件内容太弱，无法区分正反两种结果，却据此下了结论；
+
 - `git ls-files -c core.quotepath=false` 参数位置写错（`-c` 必须在子命令之前），返回空结果。
 
 **规则**：测退出码不要经过 `Select-Object -First`；探针必须先跑一次「必然失败」的对照，确认它真的能失败，再相信它的「通过」。
@@ -164,6 +228,7 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 ### 5. 报告「仓库有 bug」之前，先排除是输出转义
 
 `git ls-files` 会对非 ASCII 路径做 C 风格转义，文件名会显示成 `...mp3"` 这样，
+
 看起来像文件名里多了引号。这实为输出转义造成的错觉。
 
 **规则**：要拿真实路径用 `git -c core.quotepath=false ls-files`（或 `-z`）。
@@ -171,14 +236,17 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 ### 6. 验证不得改变被验证的对象
 
 根 `lint` 带 `--fix`，用 `pnpm run lint` 做「发布前验证」会把文件改脏。
-已新增 `lint:check`（根与 web），**验证与 CI 一律用 `lint:check`**。
+
+已新增 `lint:check`（根与 web），**验证与 CI 一律用&#x20;**`lint:check`。
 
 ### 7. 既有规则即使动机正当也要先问
 
 `apps/web/AGENTS.md` 的危险操作清单要求 `git checkout` / `git reset` / `git clean` 先获用户同意。
-AI 曾为回滚生成物 `git checkout -- <paths>`，只有事后报告——这不合规。
+
+AI 曾为回滚生成物 `git checkout -- <paths>`，只有事后报告 —— 这不合规。
 
 例外仅限：回滚 **agent 自身在本轮造成的、未提交的意外改动**，且必须限定在受影响路径上
+
 （见 `apps/web/AGENTS.md` 的例外条款）。
 
 ### 8. 提交信息一律用 `-F` 传文件

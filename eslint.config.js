@@ -161,6 +161,17 @@ export default [
     },
   },
 
+  // ===== dashboard UI primitives =====
+  // shadcn-vue 风格的可透传 props 必须保持 undefined，交给 Reka UI 自己决定默认值；
+  // 给它们补默认值会改变组件行为，因此只对 ui/ 目录关闭 require-default-prop。
+  {
+    name: 'monorepo/dashboard-ui-primitives',
+    files: ['apps/dashboard/src/components/ui/**/*.vue'],
+    rules: {
+      'vue/require-default-prop': 'off',
+    },
+  },
+
   // ===== Node server (Express backend) =====
   {
     name: 'monorepo/server',

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Edit } from 'lucide-vue-next'
+import { Edit } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 const props = defineProps({

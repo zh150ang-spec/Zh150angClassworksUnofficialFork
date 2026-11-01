@@ -20,7 +20,7 @@ import {
   Database,
   Eye,
   EyeOff,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()

@@ -53,9 +53,9 @@ Classworks 是一个适用于班级大屏的作业板小工具。本 Fork 以自
 
 ### 环境准备
 
-- Node.js 20+
+- Node.js 26+（当前 LTS）
 
-- pnpm 11+
+- pnpm 12+
 
 ### 安装步骤
 

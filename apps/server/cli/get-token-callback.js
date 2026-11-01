@@ -93,7 +93,7 @@ async function request(path, options = {}) {
     return data
   } catch (error) {
     if (error.message.includes('fetch')) {
-      throw new Error(`无法连接到服务器: ${CONFIG.baseUrl}`)
+      throw new Error(`无法连接到服务器: ${CONFIG.baseUrl}`, { cause: error })
     }
     throw error
   }

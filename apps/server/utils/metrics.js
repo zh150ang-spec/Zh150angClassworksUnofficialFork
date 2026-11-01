@@ -1,5 +1,5 @@
-import client from 'prom-client'
-import { prisma } from './prisma.js'
+import client from '@prometheus-io/client'
+import { prisma, isDatabaseConfigured } from './prisma.js'
 
 // 创建自定义注册表（不包含默认指标）
 const register = new client.Registry()
@@ -27,6 +27,11 @@ export const keysTotal = new client.Gauge({
 
 // 初始化指标数据
 export async function initializeMetrics() {
+  if (!isDatabaseConfigured) {
+    console.warn('[classworks] 未配置 DATABASE_URL，跳过 Prometheus 指标初始化')
+    return
+  }
+
   try {
     // 获取已注册设备总数
     const deviceCount = await prisma.device.count()

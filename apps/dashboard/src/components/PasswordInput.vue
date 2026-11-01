@@ -4,7 +4,7 @@ import { apiClient } from '@/lib/api'
 import { deviceStore } from '@/lib/deviceStore'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { HelpCircle, Info, AlertCircle } from 'lucide-vue-next'
+import { HelpCircle, Info, AlertCircle } from '@lucide/vue'
 
 const props = defineProps({
   // 基础属性
@@ -229,12 +229,12 @@ onMounted(() => {
     <!-- 错误信息 -->
     <div v-if="!validationState.isValid && localValue" class="space-y-1">
       <div
-        v-for="(error, index) in validationState.errors"
+        v-for="(message, index) in validationState.errors"
         :key="index"
         class="flex items-center gap-1.5 text-xs text-red-500"
       >
         <AlertCircle class="h-3 w-3" />
-        <span>{{ error }}</span>
+        <span>{{ message }}</span>
       </div>
     </div>
   </div>

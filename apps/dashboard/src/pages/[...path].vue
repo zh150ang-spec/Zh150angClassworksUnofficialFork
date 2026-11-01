@@ -10,7 +10,7 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card'
-import { AlertCircle, Home, ArrowLeft } from 'lucide-vue-next'
+import { AlertCircle, Home, ArrowLeft } from '@lucide/vue'
 
 const route = useRoute()
 

@@ -32,7 +32,7 @@ import {
   Monitor,
   AlertCircle,
   Copy,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import AutoAuthConfigDialog from '@/components/AutoAuthConfigDialog.vue'
 import EditNamespaceDialog from '@/components/EditNamespaceDialog.vue'

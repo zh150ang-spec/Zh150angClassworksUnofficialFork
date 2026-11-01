@@ -9,9 +9,9 @@
     "./headers": "./headers.js"
   },
   "main": "index.js",
-  "packageManager": "pnpm@11.24.0",
+  "packageManager": "pnpm@12.16.1",
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=11"
+    "node": ">=26.0.0",
+    "pnpm": ">=12"
   }
 }

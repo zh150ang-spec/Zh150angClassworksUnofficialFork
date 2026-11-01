@@ -188,7 +188,7 @@ router.post(
     }
 
     // 查找匹配的自动授权配置
-    let matchedAutoAuth = null
+    let matchedAutoAuth
 
     // 如果提供了密码，查找匹配密码的自动授权
     if (password) {

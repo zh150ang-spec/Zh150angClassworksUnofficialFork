@@ -4,8 +4,6 @@ This file provides guidance to AI agents working with code in this repository.
 
 Classworks is a **pnpm monorepo** containing three apps and a shared package for the Classworks (作业板) classroom homework-board platform. The UI is in Chinese.
 
-
-
 | Package                 | Path              | Stack                          | Description                                           |
 | ----------------------- | ----------------- | ------------------------------ | ----------------------------------------------------- |
 | `@classworks/web`       | `apps/web`        | Vue 3 + Vuetify 4 PWA          | The homework board widget for classroom large screens |
@@ -15,11 +13,11 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 
 > **各 app 自治理**
 >
-> ：目前仅有 
+> ：目前仅有
 >
 > `apps/web`
 >
->  提供了独立的 
+> 提供了独立的
 >
 > `apps/web/AGENTS.md`
 >
@@ -31,15 +29,15 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 >
 > `apps/dashboard`
 >
->  暂无独立 
+> 暂无独立
 >
 > `AGENTS.md`
 >
-> ，其细节见各自的 
+> ，其细节见各自的
 >
 > `README.md`
 >
-> 。尤其涉及 
+> 。尤其涉及
 >
 > `apps/web`
 >
@@ -47,19 +45,13 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 >
 > **以**
 >
->  
->
 > `apps/web/AGENTS.md`
->
->  
 >
 > **为权威**
 >
 > ；本根文档只做透传的笼统说明，避免与子文档冲突或重复。
 
 ## Monorepo Layout
-
-
 
 ```
 .
@@ -75,7 +67,7 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 │   ├── actions/setup-pnpm/   # Reusable CI composite action
 │   └── workflows/
 ├── package.json              # Root workspace scripts + shared dev deps
-├── pnpm-workspace.yaml       # 工作区定义 + pnpm 11 项目级配置（nodeLinker 等）
+├── pnpm-workspace.yaml       # 工作区定义 + pnpm 12 项目级配置（nodeLinker 等）
 ├── pnpm-lock.yaml
 ├── eslint.config.js          # Shared ESLint flat config
 ├── .gitattributes            # 统一行尾为 LF
@@ -88,8 +80,6 @@ Classworks is a **pnpm monorepo** containing three apps and a shared package for
 ## Commands
 
 These commands run from the **repo root**.
-
-
 
 ```
 # For all apps
@@ -117,15 +107,15 @@ pnpm run test:web         # 同上（等价写法，与 build:web 等对齐）
 >
 > `apps/web`
 >
->  的内部命令与规范以 
+> 的内部命令与规范以
 >
 > `apps/web/AGENTS.md`
 >
->  为准；根层调用单个 web 命令用 
+> 为准；根层调用单个 web 命令用
 >
 > `pnpm --filter @classworks/web run <script>`
 >
-> 。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的 
+> 。web 的 lint 是「oxlint + ESLint」双链（见 apps/web/AGENTS.md），与根的
 >
 > `pnpm run lint`
 >
@@ -133,75 +123,63 @@ pnpm run test:web         # 同上（等价写法，与 build:web 等对齐）
 
 ### Per-app
 
+- **apps/web**: `prebuild` (sound list), `build:store` (PWA store validation)
 
+- **apps/server**: `start`, `dev` (nodemon), `build` (prisma generate), `get-token`. Requires `.env` with `DATABASE_URL`.
 
-* **apps/web**: `prebuild` (sound list), `build:store` (PWA store validation)
-
-* **apps/server**: `start`, `dev` (nodemon), `build` (prisma generate), `get-token`. Requires `.env` with `DATABASE_URL`.
-
-* **apps/dashboard**: `dev` / `build` / `preview`
+- **apps/dashboard**: `dev` / `build` / `preview`
 
 ## Shared Package (packages/shared)
 
 Exports constants used across all three apps:
 
+- `HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`, `HEADER_DEVICE_PASSWORD`
 
-
-* `HEADER_APP_TOKEN`, `HEADER_SITE_KEY`, `HEADER_DEVICE_UUID`, `HEADER_DEVICE_PASSWORD`
-
-* `DEFAULT_KV_SERVER`, `DEFAULT_LOCAL_SERVER`, `CLOUD_SERVERS`
+- `DEFAULT_KV_SERVER`, `DEFAULT_LOCAL_SERVER`, `CLOUD_SERVERS`
 
 All apps depend via `"@classworks/shared": "workspace:*"`.
 
 ## Architecture
 
+- **Data layer** (web): `dataProvider.js` → `kvLocalProvider.js` (IndexedDB) or `kvServerProvider.js` (HTTP). Failover via `serverRotation.js`.
 
+- **Real-time**: Client `utils/socketClient.js` (web) ↔ Server `utils/socket.js` (server) — Socket.IO rooms
 
-* **Data layer** (web): `dataProvider.js` → `kvLocalProvider.js` (IndexedDB) or `kvServerProvider.js` (HTTP). Failover via `serverRotation.js`.
-
-* **Real-time**: Client `utils/socketClient.js` (web) ↔ Server `utils/socket.js` (server) — Socket.IO rooms
-
-* **Settings** (web): `settings.js` — localStorage with typed definitions and migration
+- **Settings** (web): `settings.js` — localStorage with typed definitions and migration
 
 ## Code Style
 
+- 2-space indent, no TypeScript, ESM throughout。手写源码一律 JS；唯一的 `.ts` 是 `prisma generate` 的产物 `apps/server/generated/`（不入库、已被 `.prettierignore` 排除），`apps/server/utils/prisma.js` 按 Prisma 生成器约定 import 其 `.ts` 入口
 
+- `@/` alias → each app's `src/`
 
-* 2-space indent, no TypeScript, ESM throughout。手写源码一律 JS；唯一的 `.ts` 是 `prisma generate` 的产物 `apps/server/generated/`（不入库、已被 `.prettierignore` 排除），`apps/server/utils/prisma.js` 按 Prisma 生成器约定 import 其 `.ts` 入口
+- 根：ESLint 10 flat config + Prettier。`format:check` 全绿；`apps/web/src/utils/soundList.js` 为 prebuild 生成物，已加入 `.prettierignore`
 
-* `@/` alias → each app's `src/`
+- `apps/web` 使用自己的「oxlint + ESLint」双链（见 `apps/web/AGENTS.md`），根工具不覆盖其规范
 
-* 根：ESLint 9 flat config + Prettier。`format:check` 全绿；`apps/web/src/utils/soundList.js` 为 prebuild 生成物，已加入 `.prettierignore`
-
-* `apps/web` 使用自己的「oxlint + ESLint」双链（见 `apps/web/AGENTS.md`），根工具不覆盖其规范
-
-* Mixed Composition API / Options API in Vue apps
+- Mixed Composition API / Options API in Vue apps
 
 ## CI/CD
 
 All workflows use `.github/actions/setup-pnpm` composite action.
 
-
-
-| Workflow               | Trigger                           | Action                                                                                                |
-| ---------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Workflow               | Trigger                           | Action                                                                                                                 |
+| ---------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `ci.yml`               | push/PR to main                   | Lint（根 + web 双链，检查态）、format check、AGENTS/CLAUDE 同步校验、Test web (vitest)、build web + dashboard + server |
-| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages                                                                                    |
-| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact                                                                              |
-| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub                                                                            |
-| `store-pwa.yml`        | PR to main (web)                  | PWA store validation                                                                                  |
+| `deploy.yml`           | push to main (web/packages)       | Web → GitHub Pages                                                                                                     |
+| `deploy-dashboard.yml` | push to main (dashboard/packages) | Dashboard build artifact                                                                                               |
+| `docker-publish.yml`   | push/tags (server/packages)       | Docker → GHCR + Docker Hub                                                                                             |
+| `store-pwa.yml`        | PR to main (web)                  | PWA store validation                                                                                                   |
 
 ## Notes
 
+- Hoisted deps（`nodeLinker: hoisted`）与 `autoInstallPeers: true` 都写在 `pnpm-workspace.yaml`。pnpm 12 不读取 `.npmrc` 里的同名项，放那里等于未生效
 
+- Server native modules (`bcrypt`, `@prisma/client`): run `pnpm rebuild` if needed
 
-* Hoisted deps（`nodeLinker: hoisted`）与 `autoInstallPeers: true` 都写在 `pnpm-workspace.yaml`。pnpm 11 不读取 `.npmrc` 里的同名项，放那里等于未生效
+- Docker builds use repo root as context (Dockerfile references `packages/shared`)
 
-* Server native modules (`bcrypt`, `@prisma/client`): run `pnpm rebuild` if needed
-
-* Docker builds use repo root as context (Dockerfile references `packages/shared`)
-
-* Env files gitignored；模板文件为 `apps/web/.env.example`、`apps/dashboard/.env.example`、`apps/server/.env.example`、`apps/server/.env.oauth.example`
+- Env files gitignored；模板文件为 `apps/web/.env.example`、`apps/dashboard/.env.example`、`apps/server/.env.example`、`apps/server/.env.oauth.example`
 
 ## 执行纪律
 
@@ -235,17 +213,15 @@ All workflows use `.github/actions/setup-pnpm` composite action.
 
 已发生的测量错误：
 
+- 用 `Select-Object -First N` 截断输出，掩盖了命令退出码，把「检测成功」误读为「未检出」；
 
-
-* 用 `Select-Object -First N` 截断输出，掩盖了命令退出码，把「检测成功」误读为「未检出」；
-
-* 用 `require.resolve(name, { paths: [junction 路径] })` 探测模块解析 —— 该 API 不对起始路径做
+- 用 `require.resolve(name, { paths: [junction 路径] })` 探测模块解析 —— 该 API 不对起始路径做
 
   realpath，据此得到的结论是错的；
 
-* 探针文件内容太弱，无法区分正反两种结果，却据此下了结论；
+- 探针文件内容太弱，无法区分正反两种结果，却据此下了结论；
 
-* `git ls-files -c core.quotepath=false` 参数位置写错（`-c` 必须在子命令之前），返回空结果。
+- `git ls-files -c core.quotepath=false` 参数位置写错（`-c` 必须在子命令之前），返回空结果。
 
 **规则**：测退出码不要经过 `Select-Object -First`；探针必须先跑一次「必然失败」的对照，确认它真的能失败，再相信它的「通过」。
 

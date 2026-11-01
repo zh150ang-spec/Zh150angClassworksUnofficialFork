@@ -20,14 +20,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Loader2 } from 'lucide-vue-next'
+import { Loader2 } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 const props = defineProps({
   modelValue: Boolean,
-  deviceUuid: String,
-  accountToken: String, // 改为使用 accountToken
-  config: Object, // 如果是编辑模式，传入现有配置
+  deviceUuid: {
+    type: String,
+    default: '',
+  },
+  accountToken: {
+    type: String,
+    default: '',
+  },
+  config: {
+    type: Object,
+    default: null,
+  }, // 如果是编辑模式，传入现有配置
 })
 
 const emit = defineEmits(['update:modelValue', 'success'])

@@ -30,7 +30,6 @@ export function initSentry(app, router) {
     app,
     dsn: sentryDsn,
     enabled: true,
-    sendDefaultPii: true,
     integrations: [
       Sentry.browserTracingIntegration({ router }),
       Sentry.replayIntegration({
@@ -63,7 +62,6 @@ export function initSentry(app, router) {
     tracePropagationTargets: ['localhost', /^https?:\/\/cs\.(houlang\.cloud|houlangs\.com)/],
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 0,
-    enableLogs: true,
     beforeSend(event) {
       // 安全脱敏：移除请求头、URL、breadcrumb 中的敏感凭证（x-app-token、Authorization、x-site-key、?token=）
       // 避免 axios 异常把 error.config.headers 中的 kvToken 上报到远程错误追踪服务

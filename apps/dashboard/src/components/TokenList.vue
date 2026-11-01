@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Copy, CheckCircle2, Key, Clock, Trash2 } from 'lucide-vue-next'
+import { Copy, CheckCircle2, Key, Clock, Trash2 } from '@lucide/vue'
 import RelativeTime from '@/components/RelativeTime.vue'
 
 const props = defineProps({
@@ -24,7 +24,7 @@ const props = defineProps({
   sortByTime: { type: Boolean, default: false }, // 按时间倒序排序
 })
 
-const emit = defineEmits(['copy', 'revoke'])
+const emit = defineEmits(['copy', 'revoke', 'open'])
 
 const rows = computed(() => {
   const list = [...props.items]

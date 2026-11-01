@@ -1,12 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import Card from './ui/card/Card.vue'
 import CardHeader from './ui/card/CardHeader.vue'
 import CardTitle from './ui/card/CardTitle.vue'
 import CardDescription from './ui/card/CardDescription.vue'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
-import { ExternalLink } from 'lucide-vue-next'
+import { ExternalLink } from '@lucide/vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps({
@@ -17,6 +18,7 @@ const props = defineProps({
   class: {
     type: null,
     required: false,
+    default: '',
   },
   compact: {
     type: Boolean,
@@ -39,10 +41,10 @@ const iconUrl = computed(() => {
   return `${assetsBaseUrl}/${app.value.logo_url}`
 })
 
-// 渲染 Markdown 为 HTML
+// 渲染 Markdown 为 HTML（README 来自外部接口，必须清洗后再交给 v-html）
 const renderedReadme = computed(() => {
   if (!readme.value) return ''
-  return marked(readme.value)
+  return DOMPurify.sanitize(marked(readme.value))
 })
 
 // 获取应用信息
@@ -73,7 +75,7 @@ const fetchReadme = async () => {
   if (!app.value?.homepage_url) return
 
   const url = app.value.homepage_url
-  let readmeUrl = null
+  let readmeUrl
 
   try {
     // GitHub
@@ -268,10 +270,13 @@ fetchApp()
       <!-- README 内容 -->
       <div v-if="readme" class="mt-6">
         <h3 class="text-lg font-semibold mb-4">README</h3>
+        <!-- README 内容来自外部接口，已通过 DOMPurify 清洗，故豁免 v-html 规则 -->
+        <!-- eslint-disable vue/no-v-html -->
         <div
           class="prose prose-sm dark:prose-invert max-w-none border rounded-lg p-6 bg-muted/30 prose-headings:font-semibold prose-a:text-primary prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-img:rounded-md prose-table:w-full break-words"
           v-html="renderedReadme"
         ></div>
+        <!-- eslint-enable vue/no-v-html -->
       </div>
       <div v-else-if="!loading && app?.homepage_url" class="mt-6 text-center text-muted-foreground">
         无法加载 README 文件

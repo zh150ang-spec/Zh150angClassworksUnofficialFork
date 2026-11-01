@@ -38,7 +38,7 @@ import {
   Key,
   ShieldCheck,
   Database,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 // Token 与自动授权
 const token = ref(localStorage.getItem('kv_token') || '')
